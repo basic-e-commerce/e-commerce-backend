@@ -9,9 +9,6 @@ import jakarta.persistence.OneToOne;
 public class CoverImage extends Image {
 
     private String url;
-    @JsonIgnore
-    @OneToOne(mappedBy = "coverImage")
-    private Product product;
 
     public CoverImage(String name, Long size, String resolution, String format, String url) {
         super(name, size, resolution, format);
@@ -27,13 +24,5 @@ public class CoverImage extends Image {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
     }
 }

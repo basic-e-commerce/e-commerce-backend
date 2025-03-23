@@ -1,0 +1,46 @@
+services:
+  e-commerce-backend-v1:
+    build:
+      context: .
+    container_name: e-commerce-backend-v1
+    depends_on:
+      - e-commerce-database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://e-commerce-database:5432/ecommercebackend
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/www/upload:/var/www/upload
+    networks:
+      - mynetwork
+
+  e-commerce-database:
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    image: postgres
+    container_name: e-commerce-database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ecommercebackend
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # 🔥 Kalıcı veri deposu ekledik
+    networks:
+      - mynetwork
+
+
+volumes:
+  postgres_data:  # 🔥 Postgres için kalıcı veri deposu
+  upload-data:
+
+
+networks:
+  mynetwork:
+    driver: bridge
