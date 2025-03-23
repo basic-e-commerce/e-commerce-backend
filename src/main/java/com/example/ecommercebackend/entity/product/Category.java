@@ -22,6 +22,9 @@ public class Category {
     @Column(name = "category_description")
     private String categoryDescription;
 
+    @ManyToMany(mappedBy = "categories")
+    private Set<Product> products = new HashSet<>();
+
     @Column(name = "active", nullable = false)
     private Boolean active = true;
 
@@ -147,5 +150,13 @@ public class Category {
 
     public void setSubCategory(boolean subCategory) {
         isSubCategory = subCategory;
+    }
+
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
     }
 }
