@@ -5,6 +5,8 @@ import com.example.ecommercebackend.entity.user.Admin;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tags")
@@ -35,6 +37,14 @@ public class Tag {
     @ManyToOne
     @JoinColumn(name = "updated_by", referencedColumnName = "id")
     private Admin updatedBy;
+
+    @ManyToMany
+    @JoinTable(
+            name = "products_tags",
+            joinColumns = @JoinColumn(name = "tag_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private Set<Product> products = new HashSet<>();
 
     @PreUpdate
     public void preUpdate() {
@@ -105,5 +115,13 @@ public class Tag {
 
     public void setUpdatedBy(Admin updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
     }
 }

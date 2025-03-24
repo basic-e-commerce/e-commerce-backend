@@ -68,6 +68,8 @@ public class Product {
     @ManyToMany(mappedBy = "products")
     private Set<Coupon> coupons = new HashSet<>();
 
+    @ManyToMany(mappedBy = "products")
+    private Set<Tag> tags = new HashSet<>();
 
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant createdAt = Instant.now();
@@ -256,5 +258,13 @@ public class Product {
 
     public void setCoupons(Set<Coupon> coupons) {
         this.coupons = coupons;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
     }
 }
