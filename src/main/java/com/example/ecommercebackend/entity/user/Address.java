@@ -3,7 +3,7 @@ package com.example.ecommercebackend.entity.user;
 import com.example.ecommercebackend.entity.product.shipping.Country;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "address")
@@ -29,12 +29,12 @@ public class Address {
     private String postalCode;
     private String phoneNo;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private Instant createdAt = Instant.now();
+    private Instant updatedAt = Instant.now();
 
     @PreUpdate
     public void preUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = Instant.now();
     }
 
     public Address(String title, Country country, User user, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo) {
@@ -123,19 +123,19 @@ public class Address {
         this.phoneNo = phoneNo;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

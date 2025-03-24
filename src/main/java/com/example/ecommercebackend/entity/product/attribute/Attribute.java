@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /*
 Amaç: Ürünlerin sahip olabileceği özellikleri tanımlar.
@@ -29,9 +29,9 @@ public class Attribute {
 
     private String attributeName;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private Instant createdAt = Instant.now();
 
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private Instant updatedAt = Instant.now();
 
     @ManyToOne
     @JoinColumn(name = "created_by", referencedColumnName = "id")
@@ -43,10 +43,10 @@ public class Attribute {
 
     @PreUpdate
     public void preUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = Instant.now();
     }
 
-    public Attribute(String attributeName, LocalDateTime createdAt, LocalDateTime updatedAt, Admin createdBy, Admin updatedBy) {
+    public Attribute(String attributeName, Instant createdAt, Instant updatedAt, Admin createdBy, Admin updatedBy) {
         this.attributeName = attributeName;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -73,19 +73,19 @@ public class Attribute {
         this.attributeName = attributeName;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 
