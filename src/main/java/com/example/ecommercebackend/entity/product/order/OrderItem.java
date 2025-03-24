@@ -1,7 +1,7 @@
 package com.example.ecommercebackend.entity.product.order;
 
 
-import com.example.ecommercebackend.entity.product.Product;
+import com.example.ecommercebackend.entity.product.products.Product;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

@@ -1,6 +1,6 @@
 package com.example.ecommercebackend.entity.product.attribute;
 
-import com.example.ecommercebackend.entity.product.Product;
+import com.example.ecommercebackend.entity.product.products.Product;
 import jakarta.persistence.*;
 
 /*

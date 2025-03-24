@@ -1,4 +1,4 @@
-package com.example.ecommercebackend.entity.product;
+package com.example.ecommercebackend.entity.product.products;
 
 import com.example.ecommercebackend.entity.user.Admin;
 import jakarta.persistence.*;

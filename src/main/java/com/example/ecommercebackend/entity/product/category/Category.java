@@ -1,11 +1,10 @@
-package com.example.ecommercebackend.entity.product;
+package com.example.ecommercebackend.entity.product.category;
 
+import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Admin;
 import jakarta.persistence.*;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 

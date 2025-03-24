@@ -1,6 +1,6 @@
 package com.example.ecommercebackend.entity.product.order;
 
-import com.example.ecommercebackend.entity.product.Coupon;
+import com.example.ecommercebackend.entity.product.products.Coupon;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.entity.user.Customer;
 import jakarta.persistence.*;

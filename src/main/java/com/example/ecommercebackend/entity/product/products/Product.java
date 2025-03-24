@@ -1,13 +1,13 @@
-package com.example.ecommercebackend.entity.product;
+package com.example.ecommercebackend.entity.product.products;
 
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.file.ProductImage;
+import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.user.Admin;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -65,7 +65,7 @@ public class Product {
     @Column(name = "disable_out_of_stock", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean disableOutOfStock;
 
-    @ManyToMany(mappedBy = "product")
+    @ManyToMany(mappedBy = "products")
     private Set<Coupon> coupons = new HashSet<>();
 
 
