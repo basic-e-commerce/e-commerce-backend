@@ -29,11 +29,9 @@ public class Attribute {
 
     private String attributeName;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "created_by", referencedColumnName = "id")
@@ -42,6 +40,11 @@ public class Attribute {
     @ManyToOne
     @JoinColumn(name = "updated_by", referencedColumnName = "id")
     private Admin updatedBy;
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public Attribute(String attributeName, LocalDateTime createdAt, LocalDateTime updatedAt, Admin createdBy, Admin updatedBy) {
         this.attributeName = attributeName;
