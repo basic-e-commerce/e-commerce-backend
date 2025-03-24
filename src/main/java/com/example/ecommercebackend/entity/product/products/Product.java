@@ -2,6 +2,7 @@ package com.example.ecommercebackend.entity.product.products;
 
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.file.ProductImage;
+import com.example.ecommercebackend.entity.merchant.Supplier;
 import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.user.Admin;
 import jakarta.persistence.*;
@@ -70,6 +71,9 @@ public class Product {
 
     @ManyToMany(mappedBy = "products")
     private Set<Tag> tags = new HashSet<>();
+
+    @ManyToMany(mappedBy = "products")
+    private Set<Supplier> suppliers = new HashSet<>();
 
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant createdAt = Instant.now();
@@ -266,5 +270,13 @@ public class Product {
 
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
+    }
+
+    public Set<Supplier> getSuppliers() {
+        return suppliers;
+    }
+
+    public void setSuppliers(Set<Supplier> suppliers) {
+        this.suppliers = suppliers;
     }
 }

@@ -1,10 +1,36 @@
 package com.example.ecommercebackend.entity.merchant;
 
+import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.shipping.Country;
 import com.example.ecommercebackend.entity.user.Admin;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
+
+/*
+id: Tedarikçi için benzersiz bir UUID kimlik sağlar. @GeneratedValue ile UUID otomatik olarak oluşturulur.
+
+supplierName: Tedarikçi adı, her tedarikçi için belirlenmiş olan ismi tutar. Bu alan NOT NULL olarak işaretlenmiştir.
+
+company: Tedarikçinin bağlı olduğu şirketin adı. Opsiyonel bir alandır, yani null olabilir.
+
+phoneNumber: Tedarikçinin telefon numarası. Opsiyonel bir alandır.
+
+addressLine1 ve addressLine2: Tedarikçinin adresi. addressLine1 alanı zorunlu olup, addressLine2 opsiyoneldir.
+
+country: Tedarikçinin bulunduğu ülke. @ManyToOne ilişkisiyle Country tablosuna bağlanır. Ülke, NOT NULL olmalıdır.
+
+city: Tedarikçinin bulunduğu şehir. Opsiyonel bir alandır.
+
+note: Tedarikçiyle ilgili herhangi bir açıklama veya not. Opsiyonel bir alandır.
+
+createdAt ve updatedAt: Bu alanlar sırasıyla tedarikçinin oluşturulma ve güncellenme tarihlerini tutar. createdAt alanı yalnızca bir kez oluşturulurken atanır ve daha sonra güncellenmez. updatedAt her güncellenme işleminde yenilenir.
+
+createdBy ve updatedBy: Bu alanlar, tedarikçinin oluşturulmasından ve güncellenmesinden sorumlu olan StaffAccount nesnelerine işaret eder. @ManyToOne ilişkisi kullanılarak bu alanlar, staff_accounts tablosundaki id alanına bağlanır.
+ */
+
 
 @Entity
 @Table(name = "suppliers")
@@ -38,6 +64,14 @@ public class Supplier {
 
     @Column(name = "note")
     private String note;
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_suppliers",
+            joinColumns = @JoinColumn(name = "suppliers_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private Set<Product> products = new HashSet<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
