@@ -1,6 +1,8 @@
 package com.example.ecommercebackend.config.emailpassword;
 
 
+import com.example.ecommercebackend.entity.user.Admin;
+import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.entity.user.User;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
@@ -31,14 +33,14 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
         // --- USER YÜKLEME ---
         User user;
 
-        try {
+        Object details = authentication.getDetails();
+
+        if (details instanceof Admin) {
             user = (User) adminUserDetailsService.loadUserByUsername(username);
-        } catch (UsernameNotFoundException e) {
-            try {
-                user = (User) customerUserDetailsService.loadUserByUsername(username);
-            } catch (UsernameNotFoundException ex) {
-                throw new BadRequestException("Kullanıcı bulunamadı");
-            }
+        } else if (details instanceof Customer) {
+            user = (User) customerUserDetailsService.loadUserByUsername(username);
+        } else {
+            throw new BadRequestException("Geçersiz user tipi");
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
