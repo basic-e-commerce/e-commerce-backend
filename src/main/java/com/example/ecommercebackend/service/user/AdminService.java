@@ -53,6 +53,7 @@ public class AdminService {
 
         String hashPassword = passwordEncoder.encode(adminCreateDto.getPassword());
         Set<Role> roles = new HashSet<>();
+        roles.add(roleService.findById(1));
         Admin admin = adminBuilder.AdminCreateDtoToAdmin(adminCreateDto,hashPassword,roles);
 
         return adminRepository.save(admin);
@@ -66,6 +67,6 @@ public class AdminService {
         return adminRepository.existsByUsername(phoneNumber);
     }
     public Admin findByUsername(String username) {
-        return adminRepository.findByUsername(username).orElseThrow(()-> new NotFoundException(ExceptionMessage.USER_NOT_FOUND.getMessage()));
+        return adminRepository.findByUsername(username).orElseThrow(()-> new NotFoundException("Admin "+ExceptionMessage.NOT_FOUND.getMessage()));
     }
 }

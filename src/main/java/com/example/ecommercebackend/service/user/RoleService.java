@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.user;
 
 import com.example.ecommercebackend.entity.user.Role;
 import com.example.ecommercebackend.exception.ExceptionMessage;
+import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.user.RoleRepository;
 import org.springframework.stereotype.Service;
@@ -22,5 +23,9 @@ public class RoleService {
 
         Role role = new Role(roleName.toUpperCase(Locale.ROOT));
         return roleRepository.save(role);
+    }
+
+    public Role findById(int id) {
+        return roleRepository.findById(id).orElseThrow(()-> new NotFoundException("Role "+ExceptionMessage.NOT_FOUND.getMessage()));
     }
 }

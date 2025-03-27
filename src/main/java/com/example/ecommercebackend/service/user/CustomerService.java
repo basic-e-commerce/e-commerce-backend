@@ -15,6 +15,6 @@ public class CustomerService {
     }
 
     public Customer findByUsername(String username) {
-        return customerRepository.findByUsername(username).orElseThrow(() -> new NotFoundException(ExceptionMessage.USER_NOT_FOUND.getMessage()));
+        return customerRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("Customer "+ExceptionMessage.NOT_FOUND.getMessage()));
     }
 }

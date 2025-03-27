@@ -9,10 +9,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "products")
@@ -24,6 +21,9 @@ public class Product {
 
     @Column(name = "product_name", nullable = false)
     private String productName;
+
+    private String productLinkName;
+
     @Column(name = "sale_price", nullable = false, columnDefinition = "NUMERIC DEFAULT 0")
     private BigDecimal salePrice;
 
@@ -92,6 +92,15 @@ public class Product {
     @PreUpdate
     public void preUpdate() {
         updatedAt = Instant.now();
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void generateProductData() {
+        if (productName != null) {
+            this.productLinkName = productName.trim().toLowerCase()
+                    .replaceAll("\\s+", "-"); // Boşlukları "-" ile değiştir
+        }
     }
 
     public Product(String productName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription,Set<Category> categories, String productDescription, ProductType productType, Boolean published, Admin createdBy, Admin updatedBy) {
@@ -278,5 +287,13 @@ public class Product {
 
     public void setSuppliers(Set<Supplier> suppliers) {
         this.suppliers = suppliers;
+    }
+
+    public String getProductLinkName() {
+        return productLinkName;
+    }
+
+    public void setProductLinkName(String productLinkName) {
+        this.productLinkName = productLinkName;
     }
 }

@@ -2,11 +2,13 @@ package com.example.ecommercebackend.entity.product.category;
 
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Admin;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "categories")
@@ -18,6 +20,8 @@ public class Category {
 
     @Column(name = "category_name", nullable = false, unique = true)
     private String categoryName;
+
+    private String categoryLinkName;
 
     @Column(name = "category_description")
     private String categoryDescription;
@@ -39,9 +43,11 @@ public class Category {
     @JoinColumn(name = "updated_by", referencedColumnName = "id")
     private Admin updatedBy;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
     private Category parentCategory;
+
 
     @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Category> subCategories = new HashSet<>();
@@ -62,6 +68,19 @@ public class Category {
     }
 
     public Category() {
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void generateProductData() {
+        if (categoryName != null) {
+            this.categoryLinkName = categoryName.trim().toLowerCase()
+                    .replaceAll("\\s+", "-"); // Boşlukları "-" ile değiştir
+        }
+
+//        if (productCode == null || productCode.isEmpty()) {
+//            this.productCode = UUID.randomUUID().toString();
+//        }
     }
 
     public int getId() {
@@ -152,4 +171,11 @@ public class Category {
         isSubCategory = subCategory;
     }
 
+    public String getCategoryLinkName() {
+        return categoryLinkName;
+    }
+
+    public void setCategoryLinkName(String categoryLinkName) {
+        this.categoryLinkName = categoryLinkName;
+    }
 }
