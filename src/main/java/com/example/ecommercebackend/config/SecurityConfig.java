@@ -3,6 +3,7 @@ package com.example.ecommercebackend.config;
 import com.example.ecommercebackend.config.emailpassword.AdminUserDetailsService;
 import com.example.ecommercebackend.config.emailpassword.CustomerUserDetailsService;
 import com.example.ecommercebackend.config.emailpassword.UsernamePasswordAuthenticationProvider;
+import com.example.ecommercebackend.filter.JwtValidationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -30,10 +31,12 @@ import java.util.List;
 public class SecurityConfig {
     private final CustomerUserDetailsService customerUserDetailService;
     private final AdminUserDetailsService adminUserDetailService;
+    private final JwtValidationFilter jwtValidationFilter;
 
-    public SecurityConfig(CustomerUserDetailsService customerUserDetailService, AdminUserDetailsService adminUserDetailService) {
+    public SecurityConfig(CustomerUserDetailsService customerUserDetailService, AdminUserDetailsService adminUserDetailService, JwtValidationFilter jwtValidationFilter) {
         this.customerUserDetailService = customerUserDetailService;
         this.adminUserDetailService = adminUserDetailService;
+        this.jwtValidationFilter = jwtValidationFilter;
     }
 
 
@@ -42,8 +45,11 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(x->x.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(x->x.anyRequest().permitAll())
+                .authorizeHttpRequests(x->x
+                        .requestMatchers(HttpMethod.POST,"/api/v1/category").hasAuthority("ADMIN")
+                        .anyRequest().permitAll())
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
+                .addFilterBefore(jwtValidationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

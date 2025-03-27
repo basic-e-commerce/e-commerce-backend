@@ -1,9 +1,9 @@
 package com.example.ecommercebackend.filter;
 
-import com.example.ecommercebasic.constant.ApplicationConstant;
-import com.example.ecommercebasic.entity.user.User;
-import com.example.ecommercebasic.service.auth.JwtUtils;
-import com.example.ecommercebasic.service.user.UserService;
+import com.example.ecommercebackend.config.ApplicationConstant;
+import com.example.ecommercebackend.entity.user.User;
+import com.example.ecommercebackend.service.auth.JwtService;
+import com.example.ecommercebackend.service.user.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -26,17 +26,17 @@ import java.io.IOException;
 @Component
 public class JwtValidationFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtValidationFilter.class);
-    private final JwtUtils jwtUtils;
+    private final JwtService jwtService;
     private final UserService userService;
 
-    public JwtValidationFilter(JwtUtils jwtUtils, UserService userService) {
-        this.jwtUtils = jwtUtils;
+    public JwtValidationFilter(JwtService jwtService, UserService userService) {
+        this.jwtService = jwtService;
         this.userService = userService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String authHeader = request.getHeader(ApplicationConstant.JWT_HEADER);
+        final String authHeader = request.getHeader(ApplicationConstant.JWT_HEADER.getMessage());
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -47,8 +47,8 @@ public class JwtValidationFilter extends OncePerRequestFilter {
         }
 
         try {
-            response.setHeader(ApplicationConstant.JWT_HEADER, jwt);
-            Claims claims = jwtUtils.getClaims(jwt);
+            response.setHeader(ApplicationConstant.JWT_HEADER.getMessage(), jwt);
+            Claims claims = jwtService.getClaims(jwt);
             Authentication authentication = createAuthentication(claims, request, response);
             if (authentication == null) return;
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -86,7 +86,7 @@ public class JwtValidationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getServletPath().equals("/api/v1/auth");
+        return request.getServletPath().equals("/api/v1/auth/**");
     }
 
     private void writeErrorResponse(HttpServletResponse response, HttpStatus status, String message, HttpServletRequest request) throws IOException {

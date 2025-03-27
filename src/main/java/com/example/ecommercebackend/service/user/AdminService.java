@@ -43,10 +43,10 @@ public class AdminService {
         */
 
         if (isAdminExistByUsername(adminCreateDto.getUsername()))
-            throw new ResourceAlreadyExistException(ExceptionMessage.USER_ALREADY_EXISTS.getMessage());
+            throw new ResourceAlreadyExistException("Admin "+ExceptionMessage.ALREADY_EXISTS.getMessage());
 
         if (isAdminExistByPhoneNumber(adminCreateDto.getPhoneNumber()))
-            throw new ResourceAlreadyExistException(ExceptionMessage.USER_ALREADY_EXISTS.getMessage());
+            throw new ResourceAlreadyExistException("Admin "+ExceptionMessage.ALREADY_EXISTS.getMessage());
 
         if (!adminCreateDto.getPassword().equals(adminCreateDto.getRePassword()))
             throw new BadRequestException(ExceptionMessage.PASSWORD_NOT_MATCHES.getMessage());
