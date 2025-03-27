@@ -1,4 +1,4 @@
-package com.example.ecommercebasic.exception;
+package com.example.ecommercebackend.exception;
 
 public class ResourceAlreadyExistException extends RuntimeException {
     public ResourceAlreadyExistException(String string) {

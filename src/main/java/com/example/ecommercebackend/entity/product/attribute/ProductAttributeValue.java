@@ -25,6 +25,7 @@ Product_attributes tablosu, ürünler ve özellikler arasındaki ilişkiyi yöne
 Product_attribute_values tablosu, ürünlerin özellik değerlerini saklar.
  */
 
+//  Bir ürünün sahip oldugu hangi değerler var onları belirtir  renk = kırmızı, beden = X gibi
 @Entity
 public class ProductAttributeValue {
     @Id

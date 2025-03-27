@@ -19,7 +19,7 @@ color: Eğer özellik değeri görsel bir öğe ise (örneğin, renk), burada g�
  */
 
 @Entity
-public class AttributeValue {
+public class AttributeValue {   // renk için kırmızı, yeşil
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "attribute_value_seq")
     @SequenceGenerator(name = "attribute_value_seq", sequenceName = "attribute_value_seq", allocationSize = 1)

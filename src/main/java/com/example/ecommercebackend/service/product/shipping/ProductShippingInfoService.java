@@ -1,4 +1,7 @@
 package com.example.ecommercebackend.service.product.shipping;
 
-public class ProductShippingInfo {
+import org.springframework.stereotype.Service;
+
+@Service
+public class ProductShippingInfoService {
 }

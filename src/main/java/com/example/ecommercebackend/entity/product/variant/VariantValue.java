@@ -3,6 +3,10 @@ package com.example.ecommercebackend.entity.product.variant;
 import com.example.ecommercebackend.entity.product.attribute.ProductAttributeValue;
 import jakarta.persistence.*;
 
+/*
+  bu tablo ürün varyantlarının hangi özelliklere sahip oldugunu anlatır
+ */
+
 @Entity
 @Table(name = "variant_value")
 public class VariantValue {

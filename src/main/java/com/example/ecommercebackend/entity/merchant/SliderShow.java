@@ -8,7 +8,7 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "slideshows")
-public class Slideshow {
+public class SliderShow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "slides_show_seq")
@@ -44,7 +44,7 @@ public class Slideshow {
         updatedAt = Instant.now();
     }
 
-    public Slideshow(String title, String destinationUrl, CoverImage coverImage, String description, Integer displayOrder, Boolean published, Admin createdBy, Admin updatedBy) {
+    public SliderShow(String title, String destinationUrl, CoverImage coverImage, String description, Integer displayOrder, Boolean published, Admin createdBy, Admin updatedBy) {
         this.title = title;
         this.destinationUrl = destinationUrl;
         this.coverImage = coverImage;
@@ -55,7 +55,7 @@ public class Slideshow {
         this.updatedBy = updatedBy;
     }
 
-    public Slideshow() {}
+    public SliderShow() {}
 
     public int getId() {
         return id;

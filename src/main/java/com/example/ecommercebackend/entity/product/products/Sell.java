@@ -67,4 +67,12 @@ public class Sell {
     public void setSellDate(Instant sellDate) {
         this.sellDate = sellDate;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

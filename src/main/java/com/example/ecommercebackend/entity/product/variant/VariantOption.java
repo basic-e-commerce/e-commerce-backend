@@ -6,7 +6,10 @@ import com.example.ecommercebackend.entity.product.products.Product;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-
+/*
+ bir ürünün varyantlarının seçeneklerini saklar
+ Örneğin bir tshirtün  farklı renklerde veya farklı bedenlerde olabilir
+ */
 @Entity
 @Table(name = "variant_options")
 public class VariantOption {

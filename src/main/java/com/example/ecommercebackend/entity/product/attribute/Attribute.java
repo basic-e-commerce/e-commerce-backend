@@ -21,7 +21,7 @@ attribute_name: Özelliğin adı. Örneğin, "Renk", "Boyut" gibi.
 */
 
 @Entity
-public class Attribute {
+public class Attribute {   // renk , beden
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "attribute_seq")
     @SequenceGenerator(name = "attribute_seq", sequenceName = "attribute_seq", allocationSize = 1)

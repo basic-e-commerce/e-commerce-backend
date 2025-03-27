@@ -1,9 +1,7 @@
-package com.example.ecommercebasic.config.provider.emailpassword;
+package com.example.ecommercebackend.config.emailpassword;
 
-import com.example.ecommercebasic.entity.user.Admin;
-import com.example.ecommercebasic.entity.user.Customer;
-import com.example.ecommercebasic.service.user.AdminService;
-import com.example.ecommercebasic.service.user.CustomerService;
+import com.example.ecommercebackend.entity.user.Admin;
+import com.example.ecommercebackend.service.user.AdminService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,13 +17,6 @@ public class AdminUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Admin admin = adminService.findByUsername(username);
-
-        return new org.springframework.security.core.userdetails.User(
-                admin.getUsername(),
-                admin.getPassword(),
-                admin.getAuthorities()
-        );
+        return adminService.findByUsername(username);
     }
-
 }

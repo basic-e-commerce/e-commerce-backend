@@ -57,13 +57,11 @@ public class Category {
         updatedAt = Instant.now();
     }
 
-    public Category(String categoryName, String categoryDescription, Boolean active, Admin createdBy, Admin updatedBy, Category parentCategory) {
+    public Category(String categoryName, String categoryDescription, Admin createdBy, Admin updatedBy) {
         this.categoryName = categoryName;
         this.categoryDescription = categoryDescription;
-        this.active = active;
         this.createdBy = createdBy;
         this.updatedBy = updatedBy;
-        this.parentCategory = parentCategory;
     }
 
     public Category() {

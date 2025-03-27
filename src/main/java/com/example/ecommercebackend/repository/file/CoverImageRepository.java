@@ -1,4 +1,7 @@
 package com.example.ecommercebackend.repository.file;
 
-public interface CoverImageRepository {
+import com.example.ecommercebackend.entity.file.CoverImage;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CoverImageRepository extends JpaRepository<CoverImage, Long> {
 }

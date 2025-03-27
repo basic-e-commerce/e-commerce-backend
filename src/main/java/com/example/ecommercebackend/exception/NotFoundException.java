@@ -1,4 +1,4 @@
-package com.example.ecommercebasic.exception;
+package com.example.ecommercebackend.exception;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String string) {

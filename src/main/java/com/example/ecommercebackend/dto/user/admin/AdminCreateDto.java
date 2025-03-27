@@ -1,6 +1,6 @@
 package com.example.ecommercebackend.dto.user.admin;
 
-public class AdminRequestDto {
+public class AdminCreateDto {
     private String firstName;
     private String lastName;
     private String username;
@@ -8,7 +8,7 @@ public class AdminRequestDto {
     private String rePassword;
     private String phoneNumber;
 
-    public AdminRequestDto(String firstName, String lastName, String username, String password, String rePassword, String phoneNumber) {
+    public AdminCreateDto(String firstName, String lastName, String username, String password, String rePassword, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;

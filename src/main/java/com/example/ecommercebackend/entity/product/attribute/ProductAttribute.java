@@ -17,7 +17,7 @@ attribute_id: Hangi özelliği ifade ettiğini belirtir. Bu, attributes tablosun
 İlişkiler: Bu tablo, bir ürün ve bir özellik arasındaki ilişkiyi saklar. Bu da bir ManyToMany ilişkiyi temsil eder çünkü bir ürün birden fazla özelliğe sahip olabilir ve bir özellik birden fazla üründe yer alabilir.
  */
 @Entity
-public class ProductAttribute {
+public class ProductAttribute {   // bir ürünün hangi özelliklere sahip oldugunu belirtir renk , beden vs
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_attribute_seq")
     @SequenceGenerator(name = "product_attribute_seq", sequenceName = "product_attribute_seq", allocationSize = 1)

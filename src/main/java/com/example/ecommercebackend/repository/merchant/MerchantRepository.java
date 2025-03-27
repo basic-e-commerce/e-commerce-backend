@@ -1,4 +1,7 @@
 package com.example.ecommercebackend.repository.merchant;
 
-public interface MerchantRepository {
+import com.example.ecommercebackend.entity.merchant.Merchant;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MerchantRepository extends JpaRepository<Merchant, Long> {
 }
