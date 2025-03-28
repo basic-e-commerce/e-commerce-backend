@@ -53,6 +53,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/tag").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/tag").hasAuthority("ADMIN")
 
+                        .requestMatchers(HttpMethod.POST,"/api/v1/attribute").hasAuthority("ADMIN")
+
                         .anyRequest().permitAll())
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(jwtValidationFilter, UsernamePasswordAuthenticationFilter.class)

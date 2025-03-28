@@ -46,10 +46,8 @@ public class Attribute {   // renk , beden
         updatedAt = Instant.now();
     }
 
-    public Attribute(String attributeName, Instant createdAt, Instant updatedAt, Admin createdBy, Admin updatedBy) {
+    public Attribute(String attributeName, Admin createdBy, Admin updatedBy) {
         this.attributeName = attributeName;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.createdBy = createdBy;
         this.updatedBy = updatedBy;
     }
