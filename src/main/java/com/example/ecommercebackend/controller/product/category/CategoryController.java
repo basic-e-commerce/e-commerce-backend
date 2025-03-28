@@ -5,10 +5,9 @@ import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.service.product.category.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/category")
@@ -20,7 +19,17 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestBody CategoryCreateDto categoryCreateDto) {
+    public ResponseEntity<Category> createCategory(@ModelAttribute CategoryCreateDto categoryCreateDto) {
         return new ResponseEntity<>(categoryService.createCategory(categoryCreateDto), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/parent")
+    public ResponseEntity<List<Category>> getCategoryParent() {
+        return new ResponseEntity<>(categoryService.findParentCategories(), HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Category> deleteCategory(@RequestParam Integer id) {
+        return new ResponseEntity<>(categoryService.deleteCategory(id),HttpStatus.OK);
     }
 }

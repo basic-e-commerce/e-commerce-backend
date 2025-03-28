@@ -1,5 +1,7 @@
 package com.example.ecommercebackend.entity.product.products;
 
+import com.example.ecommercebackend.exception.BadRequestException;
+import com.example.ecommercebackend.exception.ExceptionMessage;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -57,6 +59,8 @@ public class Sell {
     }
 
     public void setQuantity(Integer quantity) {
+        if (quantity < 0)
+            throw new BadRequestException("Quantity "+ ExceptionMessage.NOT_NEGATIVE.getMessage());
         this.quantity = quantity;
     }
 

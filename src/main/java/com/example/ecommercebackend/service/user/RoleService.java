@@ -28,4 +28,8 @@ public class RoleService {
     public Role findById(int id) {
         return roleRepository.findById(id).orElseThrow(()-> new NotFoundException("Role "+ExceptionMessage.NOT_FOUND.getMessage()));
     }
+
+    public Role findByRoleName(String roleName) {
+        return roleRepository.findByRoleName(roleName).orElseThrow(()-> new NotFoundException("Role "+ExceptionMessage.NOT_FOUND.getMessage()));
+    }
 }

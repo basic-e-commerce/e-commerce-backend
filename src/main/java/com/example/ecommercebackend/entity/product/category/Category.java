@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.entity.product.category;
 
+import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,6 +27,9 @@ public class Category {
     @Column(name = "category_description")
     private String categoryDescription;
 
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
+    private CoverImage coverImage;
+
     @Column(name = "active", nullable = false)
     private Boolean active = true;
 
@@ -35,10 +39,12 @@ public class Category {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt = Instant.now();
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "created_by", referencedColumnName = "id")
     private Admin createdBy;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "updated_by", referencedColumnName = "id")
     private Admin updatedBy;
@@ -54,11 +60,6 @@ public class Category {
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean isSubCategory = true;
-
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = Instant.now();
-    }
 
     public Category(String categoryName, String categoryDescription, Admin createdBy, Admin updatedBy) {
         this.categoryName = categoryName;
@@ -78,6 +79,7 @@ public class Category {
                     .replaceAll("\\s+", "-"); // Boşlukları "-" ile değiştir
         }
 
+        updatedAt = Instant.now();
 //        if (productCode == null || productCode.isEmpty()) {
 //            this.productCode = UUID.randomUUID().toString();
 //        }
@@ -177,5 +179,13 @@ public class Category {
 
     public void setCategoryLinkName(String categoryLinkName) {
         this.categoryLinkName = categoryLinkName;
+    }
+
+    public CoverImage getCoverImage() {
+        return coverImage;
+    }
+
+    public void setCoverImage(CoverImage coverImage) {
+        this.coverImage = coverImage;
     }
 }

@@ -1,13 +1,11 @@
 package com.example.ecommercebackend.service.file;
 
-
 import com.example.ecommercebackend.dto.file.FilePropertiesDto;
-import com.example.ecommercebackend.dto.file.ProductImageRequestDto;
+import com.example.ecommercebackend.dto.file.ImageRequestDto;
+import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.file.ImageType;
-import com.example.ecommercebackend.entity.file.ProductImage;
 import com.example.ecommercebackend.exception.BadRequestException;
-import com.example.ecommercebackend.exception.NotFoundException;
-import com.example.ecommercebackend.repository.file.ProductImageRepository;
+import com.example.ecommercebackend.repository.file.CoverImageRepository;
 import com.example.ecommercebackend.service.storagestrategy.IStorageStrategy;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,28 +16,27 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class ProductImageService implements ImageService<ProductImage, ProductImageRequestDto> {
-    private IStorageStrategy storageStrategy;
-    private final ProductImageRepository productImageRepository;
-
-    @Value("${upload.file.product.size}")
-    private long productImageSize;
-
+public class CategoryImageService implements ImageService<CoverImage,ImageRequestDto> {
     @Value("${upload.file.dir}")
     private String uploadFileDir;  //   /var/www/upload/ecommerce/
 
     @Value("${upload.file.url}")
     private String uploadFileUrl;  //   http://localhost:8080/api/v1/upload/
+    @Value("${upload.file.product.size}")
+    private long productImageSize;
 
-    public ProductImageService(@Qualifier("localStorageStrategy") IStorageStrategy storageStrategy, ProductImageRepository productImageRepository) {
-        this.productImageRepository = productImageRepository;
+    private IStorageStrategy storageStrategy;
+    private final CoverImageRepository coverImageRepository;
+
+    public CategoryImageService(@Qualifier("localStorageStrategy") IStorageStrategy storageStrategy, CoverImageRepository coverImageRepository) {
         this.storageStrategy = storageStrategy;
+        this.coverImageRepository = coverImageRepository;
     }
-
 
     @Transactional
     @Override
-    public ProductImage save(ProductImageRequestDto file, Long id) {
+    public CoverImage save(ImageRequestDto file, Long id) {
+
         long maxSize = productImageSize;
         if (file.getMultipartFile().getSize() > maxSize) {
             throw new RuntimeException("File size exceeds the maximum limit of 5MB.");
@@ -56,38 +53,37 @@ public class ProductImageService implements ImageService<ProductImage, ProductIm
             throw new RuntimeException("Invalid file type. Allowed extensions: .jpg, .png, .gif");
         }
 
-        String path = uploadFileDir+ ImageType.PRODUCT_IMAGE.getValue()+"/"+id+"/";
+        String path = uploadFileDir+ ImageType.CATEGORY_IMAGE.getValue()+"/"+id+"/";
+        System.out.println("path:         "+path);
+
         FilePropertiesDto filePropertiesDto = getStorageStrategy().saveFile(file.getMultipartFile(), path);
+
         String newFilePath = path+filePropertiesDto.getName();
         String url = newFilePath.replace(uploadFileDir,uploadFileUrl);
-        ProductImage productImage = new ProductImage(filePropertiesDto.getName(),
-                filePropertiesDto.getSize(),
-                filePropertiesDto.getResolution(),
-                filePropertiesDto.getFormat(),
-                url,
-                file.getOrderIndex());
-        return productImageRepository.save(productImage);
+
+        CoverImage coverImage = new CoverImage(filePropertiesDto.getName(), filePropertiesDto.getSize(), filePropertiesDto.getResolution(),filePropertiesDto.getFormat(),url);
+        return coverImageRepository.save(coverImage);
     }
 
     @Transactional
     @Override
     public String delete(Long id) {
-        ProductImage productImage = getById(id);
-        String path = productImage.getUrl().replace(uploadFileUrl,uploadFileDir);
-        System.out.println("----------------------path : "+path);
+        CoverImage coverImage = getById(id);
+        String path = coverImage.getUrl().replace(uploadFileUrl,uploadFileDir);
+        System.out.println("pppath: "+path);
         getStorageStrategy().deleteFile(path);
 
         return "deleted";
     }
 
     @Override
-    public ProductImage getById(Long id) {
-        return productImageRepository.findById(id).orElseThrow(()-> new NotFoundException("Product Image Not Found"));
+    public CoverImage getById(Long id) {
+        return coverImageRepository.findById(id).orElseThrow(() -> new BadRequestException("CoverImage not found."));
     }
 
     @Override
-    public List<ProductImage> getAll() {
-        return productImageRepository.findAll();
+    public List<CoverImage> getAll() {
+        return coverImageRepository.findAll();
     }
 
 
@@ -109,10 +105,13 @@ public class ProductImageService implements ImageService<ProductImage, ProductIm
         return storageStrategy;
     }
 
+
     // Dosya uzantısını geçerli olup olmadığını kontrol et
     @Override
     public boolean isValidExtension(String extension) {
         Set<String> validExtensions = Set.of(".jpg", ".png", ".jpeg");
         return validExtensions.contains(extension.toLowerCase());
     }
+
+
 }

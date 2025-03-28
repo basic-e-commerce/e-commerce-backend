@@ -5,6 +5,7 @@ import com.example.ecommercebackend.entity.file.ProductImage;
 import com.example.ecommercebackend.entity.merchant.Supplier;
 import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.user.Admin;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -81,18 +82,16 @@ public class Product {
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant updatedAt = Instant.now();
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "created_by", referencedColumnName = "id")
     private Admin createdBy;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "updated_by", referencedColumnName = "id")
     private Admin updatedBy;
 
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = Instant.now();
-    }
 
     @PrePersist
     @PreUpdate
@@ -101,6 +100,7 @@ public class Product {
             this.productLinkName = productName.trim().toLowerCase()
                     .replaceAll("\\s+", "-"); // Boşlukları "-" ile değiştir
         }
+        updatedAt = Instant.now();
     }
 
     public Product(String productName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription,Set<Category> categories, String productDescription, ProductType productType, Boolean published, Admin createdBy, Admin updatedBy) {

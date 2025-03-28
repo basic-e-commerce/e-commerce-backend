@@ -53,7 +53,7 @@ public class AdminService {
 
         String hashPassword = passwordEncoder.encode(adminCreateDto.getPassword());
         Set<Role> roles = new HashSet<>();
-        roles.add(roleService.findById(1));
+        roles.add(roleService.findByRoleName("ADMIN"));
         Admin admin = adminBuilder.AdminCreateDtoToAdmin(adminCreateDto,hashPassword,roles);
 
         return adminRepository.save(admin);
