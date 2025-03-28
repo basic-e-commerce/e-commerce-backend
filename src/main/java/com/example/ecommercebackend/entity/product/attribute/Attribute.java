@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.entity.product.attribute;
 
 import com.example.ecommercebackend.entity.user.Admin;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -21,22 +22,28 @@ attribute_name: Özelliğin adı. Örneğin, "Renk", "Boyut" gibi.
 */
 
 @Entity
+@Table(name = "attribute")
 public class Attribute {   // renk , beden
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "attribute_seq")
     @SequenceGenerator(name = "attribute_seq", sequenceName = "attribute_seq", allocationSize = 1)
     private int id;
 
+    @Column(name = "attribute_name")
     private String attributeName;
 
+    @Column(name = "create_at")
     private Instant createdAt = Instant.now();
 
+    @Column(name = "updated_at")
     private Instant updatedAt = Instant.now();
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "created_by", referencedColumnName = "id")
     private Admin createdBy;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "updated_by", referencedColumnName = "id")
     private Admin updatedBy;

@@ -75,7 +75,7 @@ public class CategoryService {
 
             return saveCategory;
         } else {
-                throw new IllegalArgumentException("Authenticated user is not an Admin.");
+                throw new BadRequestException("Authenticated user is not an Admin.");
         }
 
     }

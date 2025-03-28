@@ -39,7 +39,7 @@ public class AttributeService {
             Attribute attribute = new Attribute(attributeCreateDto.getName(), admin,admin);
             return attributeRepository.save(attribute);
         }else
-            throw new IllegalArgumentException("Authenticated user is not an Admin.");
+            throw new BadRequestException("Authenticated user is not an Admin.");
     }
 
     public Attribute findAttributeById(int id) {

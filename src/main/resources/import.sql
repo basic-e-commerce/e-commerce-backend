@@ -14,3 +14,9 @@ INSERT INTO suppliers (id,supplier_name,company,phone_number,address_line1,addre
 INSERT INTO tags (id,tag_name,created_at,updated_at,created_by,updated_by) VALUES (1,'tag 1',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1);
 INSERT INTO tags (id,tag_name,created_at,updated_at,created_by,updated_by) VALUES (2,'tag 2',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1);
 
+INSERT INTO attribute (id,attribute_name,create_at,updated_at,created_by,updated_by) VALUES (1,'Renk',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1);
+INSERT INTO attribute (id,attribute_name,create_at,updated_at,created_by,updated_by) VALUES (2,'Beden',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1);
+
+INSERT INTO attribute_value (id,attribute_id,value,create_at,update_at,created_by,updated_by) VALUES (1,2,'X',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1);
+INSERT INTO attribute_value (id,attribute_id,value,create_at,update_at,created_by,updated_by) VALUES (2,2,'XL',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1);
+
