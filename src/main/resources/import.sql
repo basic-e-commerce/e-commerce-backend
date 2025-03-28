@@ -10,3 +10,7 @@ INSERT INTO user_roles (role_id,user_id) VALUES (1,1);
 
 INSERT INTO suppliers (id,supplier_name,company,phone_number,address_line1,address_line2,country_id,city,note,created_at,updated_at,created_by,updated_by) VALUES (1,'adminsupp', 'ADMIN supp', '5551234567','istanbul','bagcilar',1,'ISTANBULUE','note 1',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1);
 INSERT INTO suppliers (id,supplier_name,company,phone_number,address_line1,address_line2,country_id,city,note,created_at,updated_at,created_by,updated_by) VALUES (2,'adminsupp2', 'ADMIN supp2', '5551234567222','istanbul2','bagcilar2',1,'ISTANBULUE2','note 2',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1);
+
+INSERT INTO tags (id,tag_name,created_at,updated_at,created_by,updated_by) VALUES (1,'tag 1',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1);
+INSERT INTO tags (id,tag_name,created_at,updated_at,created_by,updated_by) VALUES (1,'tag 2',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1);
+
