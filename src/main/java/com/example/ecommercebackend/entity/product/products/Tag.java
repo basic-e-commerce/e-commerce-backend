@@ -2,6 +2,7 @@ package com.example.ecommercebackend.entity.product.products;
 
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.user.Admin;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -20,9 +21,6 @@ public class Tag {
     @Column(name = "tag_name", nullable = false)
     private String tagName;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "cover_image_id", referencedColumnName = "id")
-    private CoverImage coverImage;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
@@ -30,14 +28,17 @@ public class Tag {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt = Instant.now();
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "created_by", referencedColumnName = "id")
     private Admin createdBy;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "updated_by", referencedColumnName = "id")
     private Admin updatedBy;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "products_tags",
@@ -51,9 +52,8 @@ public class Tag {
         updatedAt = Instant.now();
     }
 
-    public Tag(String tagName, CoverImage coverImage, Admin createdBy, Admin updatedBy) {
+    public Tag(String tagName, Admin createdBy, Admin updatedBy) {
         this.tagName = tagName;
-        this.coverImage = coverImage;
         this.createdBy = createdBy;
         this.updatedBy = updatedBy;
     }
@@ -75,14 +75,6 @@ public class Tag {
 
     public void setTagName(String tagName) {
         this.tagName = tagName;
-    }
-
-    public CoverImage getCoverImage() {
-        return coverImage;
-    }
-
-    public void setCoverImage(CoverImage coverImage) {
-        this.coverImage = coverImage;
     }
 
     public Instant getCreatedAt() {
