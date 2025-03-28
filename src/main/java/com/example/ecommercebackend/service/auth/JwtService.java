@@ -23,7 +23,7 @@ public class JwtService {
     private static final String TOKEN_PREFIX = "Bearer ";
 
     @Value("${jwt.accessExp}")
-    private static final long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000 *10; // 15 dakika
+    private static final long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000 * 10; // 15 dakika
 
     @Value("${jwt.refreshAge}")
     private long REFRESH_TOKEN_EXPIRATION; // 7 gün
