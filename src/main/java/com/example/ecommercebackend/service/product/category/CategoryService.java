@@ -35,11 +35,11 @@ public class CategoryService {
     public Category createCategory(CategoryCreateDto categoryCreateDto) {
 
         if (categoryCreateDto.getName() == null || categoryCreateDto.getName().isBlank()) {
-            throw new IllegalArgumentException("Category name is required.");
+            throw new BadRequestException("Category name is required.");
         }
 
         if (categoryRepository.existsByCategoryNameEqualsIgnoreCase(categoryCreateDto.getName())){
-            throw new ResourceAlreadyExistException("Category name already exists.");
+            throw new ResourceAlreadyExistException("Category "+ExceptionMessage.ALREADY_EXISTS.getMessage());
         }
 
         // Authentication nesnesini güvenlik bağlamından alıyoruz
@@ -75,7 +75,7 @@ public class CategoryService {
 
             return saveCategory;
         } else {
-            throw new IllegalArgumentException("Authenticated user is not an Admin.");
+                throw new IllegalArgumentException("Authenticated user is not an Admin.");
         }
 
     }
@@ -85,7 +85,7 @@ public class CategoryService {
     }
 
     public Category findCategoryById(int id) {
-        return categoryRepository.findById(id).orElseThrow(()-> new NotFoundException(ExceptionMessage.CATEGORY_NOT_FOUND.getMessage()));
+        return categoryRepository.findById(id).orElseThrow(()-> new NotFoundException("Category " +ExceptionMessage.NOT_FOUND.getMessage()));
     }
 
     public Category deleteCategory(Integer id) {

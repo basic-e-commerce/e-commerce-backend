@@ -8,7 +8,6 @@ public enum ExceptionMessage {
     INVALID_USERNAME("invalid username"),
     WRONG_CREDENTIALS("wrong credentials"),
     EXPIRED_TOKEN("expired token"),
-    CATEGORY_NOT_FOUND("category not found"),
     NOT_NEGATIVE("not negative");
 
     private String message;
