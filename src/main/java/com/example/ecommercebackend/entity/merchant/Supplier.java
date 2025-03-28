@@ -211,4 +211,12 @@ public class Supplier {
     public void setUpdatedBy(Admin updatedBy) {
         this.updatedBy = updatedBy;
     }
+
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
+    }
 }
