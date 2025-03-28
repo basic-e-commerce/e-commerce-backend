@@ -103,7 +103,7 @@ public class Product {
         updatedAt = Instant.now();
     }
 
-    public Product(String productName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription,Set<Category> categories, String productDescription, ProductType productType, Boolean published, Admin createdBy, Admin updatedBy) {
+    public Product(String productName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription,Set<Category> categories, String productDescription, ProductType productType, Boolean published, Boolean disableOutOfStock,Admin createdBy, Admin updatedBy) {
         this.productName = productName;
         this.salePrice = salePrice;
         this.comparePrice = comparePrice;
@@ -114,6 +114,7 @@ public class Product {
         this.categories = categories;
         this.productType = productType;
         this.published = published;
+        this.disableOutOfStock = disableOutOfStock;
         this.createdBy = createdBy;
         this.updatedBy = updatedBy;
     }

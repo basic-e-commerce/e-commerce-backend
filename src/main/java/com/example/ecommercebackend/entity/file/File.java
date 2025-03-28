@@ -7,7 +7,7 @@ public abstract class File {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "file_seq")
     @SequenceGenerator(name = "file_seq", sequenceName = "file_seq", allocationSize = 1)
-    private Long id;
+    private Integer id;
 
     private String name;
     private Long size; // Dosya boyutu (byte cinsinden)
@@ -20,11 +20,11 @@ public abstract class File {
 
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

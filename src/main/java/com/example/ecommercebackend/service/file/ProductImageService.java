@@ -39,7 +39,7 @@ public class ProductImageService implements ImageService<ProductImage, ProductIm
 
     @Transactional
     @Override
-    public ProductImage save(ProductImageRequestDto file, Long id) {
+    public ProductImage save(ProductImageRequestDto file, Integer id) {
         long maxSize = productImageSize;
         if (file.getMultipartFile().getSize() > maxSize) {
             throw new RuntimeException("File size exceeds the maximum limit of 5MB.");
@@ -71,7 +71,7 @@ public class ProductImageService implements ImageService<ProductImage, ProductIm
 
     @Transactional
     @Override
-    public String delete(Long id) {
+    public String delete(Integer id) {
         ProductImage productImage = getById(id);
         String path = productImage.getUrl().replace(uploadFileUrl,uploadFileDir);
         System.out.println("----------------------path : "+path);
@@ -81,8 +81,8 @@ public class ProductImageService implements ImageService<ProductImage, ProductIm
     }
 
     @Override
-    public ProductImage getById(Long id) {
-        return productImageRepository.findById(id).orElseThrow(()-> new NotFoundException("Product Image Not Found"));
+    public ProductImage getById(Integer id) {
+        return productImageRepository.findById(Long.valueOf(id)).orElseThrow(()-> new NotFoundException("Product Image Not Found"));
     }
 
     @Override

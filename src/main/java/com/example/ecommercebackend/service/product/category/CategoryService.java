@@ -68,7 +68,7 @@ public class CategoryService {
 
             if (categoryCreateDto.getImage() != null){
                 CoverImageRequestDto coverImageRequestDto = new CoverImageRequestDto(categoryCreateDto.getImage());
-                CoverImage coverImage = categoryImageService.save(coverImageRequestDto, (long) saveCategory.getId());
+                CoverImage coverImage = categoryImageService.save(coverImageRequestDto, saveCategory.getId());
                 saveCategory.setCoverImage(coverImage);
                 categoryRepository.save(saveCategory);
             }

@@ -20,3 +20,5 @@ INSERT INTO attribute (id,attribute_name,create_at,updated_at,created_by,updated
 INSERT INTO attribute_value (id,attribute_id,value,create_at,update_at,created_by,updated_by) VALUES (1,2,'X',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1);
 INSERT INTO attribute_value (id,attribute_id,value,create_at,update_at,created_by,updated_by) VALUES (2,2,'XL',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1);
 
+INSERT INTO categories (id,category_name,category_link_name,category_description,cover_image_id,active,created_at,updated_at,created_by,updated_by,parent_id,is_sub_category) VALUES (1,'Kadın','Kadın','acıklama',null,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1,null,true);
+INSERT INTO categories (id,category_name,category_link_name,category_description,cover_image_id,active,created_at,updated_at,created_by,updated_by,parent_id,is_sub_category) VALUES (2,'Erkek','Erkek','acıklama',null,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1,null,true);

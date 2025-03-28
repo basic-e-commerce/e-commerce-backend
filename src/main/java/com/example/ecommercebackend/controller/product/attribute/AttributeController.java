@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/attribute")
 public class AttributeController {
@@ -24,6 +26,11 @@ public class AttributeController {
     @GetMapping("/id")
     public ResponseEntity<Attribute> findAttributeById(@RequestParam Integer id) {
         return new ResponseEntity<>(attributeService.findAttributeById(id), HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Attribute>> findAllAttributes() {
+        return new ResponseEntity<>(attributeService.findAll(),HttpStatus.OK);
     }
 
 }

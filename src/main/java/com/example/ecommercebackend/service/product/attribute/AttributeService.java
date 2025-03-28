@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Attr;
 
+import java.util.List;
+
 @Service
 public class AttributeService {
     private final AttributeRepository attributeRepository;
@@ -46,4 +48,7 @@ public class AttributeService {
         return attributeRepository.findById(id).orElseThrow(()-> new NotFoundException("Attribute "+ ExceptionMessage.NOT_FOUND.getMessage()));
     }
 
+    public List<Attribute> findAll() {
+        return attributeRepository.findAll();
+    }
 }

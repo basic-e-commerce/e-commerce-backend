@@ -52,4 +52,8 @@ public class AttributeValueService {
         Attribute attribute = attributeService.findAttributeById(attributeId);
         return attributeValueRepository.findByAttribute(attribute);
     }
+
+    public List<AttributeValue> findAll() {
+        return attributeValueRepository.findAll();
+    }
 }

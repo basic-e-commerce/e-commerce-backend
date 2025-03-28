@@ -38,7 +38,7 @@ public class CoverImageService implements ImageService<CoverImage, ImageRequestD
 
     @Transactional
     @Override
-    public CoverImage save(ImageRequestDto file,Long id) {
+    public CoverImage save(ImageRequestDto file,Integer id) {
 
         long maxSize = productImageSize;
         if (file.getMultipartFile().getSize() > maxSize) {
@@ -69,7 +69,7 @@ public class CoverImageService implements ImageService<CoverImage, ImageRequestD
 
     @Transactional
     @Override
-    public String delete(Long id) {
+    public String delete(Integer id) {
         CoverImage coverImage = getById(id);
         String path = coverImage.getUrl().replace(uploadFileUrl,uploadFileDir);
         System.out.println("pppath: "+path);
@@ -79,8 +79,8 @@ public class CoverImageService implements ImageService<CoverImage, ImageRequestD
     }
 
     @Override
-    public CoverImage getById(Long id) {
-        return coverImageRepository.findById(id).orElseThrow(() -> new BadRequestException("CoverImage not found."));
+    public CoverImage getById(Integer id) {
+        return coverImageRepository.findById(Long.valueOf(id)).orElseThrow(() -> new BadRequestException("CoverImage not found."));
     }
 
     @Override

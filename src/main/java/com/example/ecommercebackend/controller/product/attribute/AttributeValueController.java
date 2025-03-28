@@ -35,5 +35,10 @@ public class AttributeValueController {
         return new ResponseEntity<>(attributeValueService.findAttributeValueByAttribute(id), HttpStatus.OK);
     }
 
+    @GetMapping
+    public ResponseEntity<List<AttributeValue>> getAllAttributeValues() {
+        return new ResponseEntity<>(attributeValueService.findAll(),HttpStatus.OK);
+    }
+
 
 }
