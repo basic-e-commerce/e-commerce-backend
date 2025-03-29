@@ -19,10 +19,6 @@ public class Address {
     @JoinColumn(name = "country_id",nullable = false)
     private Country country;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id",nullable = false)
-    private User user;
-
     private String city;
     private String addressLine1;
     private String addressLine2;
@@ -37,10 +33,9 @@ public class Address {
         updatedAt = Instant.now();
     }
 
-    public Address(String title, Country country, User user, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo) {
+    public Address(String title, Country country, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo) {
         this.title = title;
         this.country = country;
-        this.user = user;
         this.city = city;
         this.addressLine1 = addressLine1;
         this.addressLine2 = addressLine2;
@@ -73,14 +68,6 @@ public class Address {
 
     public void setCountry(Country country) {
         this.country = country;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getCity() {
