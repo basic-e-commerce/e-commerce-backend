@@ -41,7 +41,7 @@ public class AddressService {
         return "address deleted";
     }
 
-    public String updateAddressById(Integer id, AddressCreateDto addressCreateDto) {
+    public Address updateAddressById(Integer id, AddressCreateDto addressCreateDto) {
         Address address = getAddressById(id);
         Country country = countryService.findCountryById(addressCreateDto.getCountryId());
 
@@ -77,11 +77,10 @@ public class AddressService {
         }
 
         if (!isUpdated) {
-            return "address already updated";
+            return address;
         }
 
-        addressRepository.save(address);
-        return "address successfully updated";
+        return addressRepository.save(address);
     }
 
 

@@ -1,0 +1,122 @@
+package com.example.ecommercebackend.service.file;
+
+import com.example.ecommercebackend.dto.file.FilePropertiesDto;
+import com.example.ecommercebackend.dto.file.ImageRequestDto;
+import com.example.ecommercebackend.entity.file.CoverImage;
+import com.example.ecommercebackend.entity.file.ImageType;
+import com.example.ecommercebackend.exception.BadRequestException;
+import com.example.ecommercebackend.repository.file.CoverImageRepository;
+import com.example.ecommercebackend.service.storagestrategy.IStorageStrategy;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Set;
+
+@Service
+public class MerchantImageService implements ImageService <CoverImage, ImageRequestDto>{
+
+    @Value("${upload.file.dir}")
+    private String uploadFileDir;  //   /var/www/upload/ecommerce/
+
+    @Value("${upload.file.url}")
+    private String uploadFileUrl;  //   http://localhost:8080/api/v1/upload/
+    @Value("${upload.file.product.size}")
+    private long productImageSize;
+
+    private IStorageStrategy storageStrategy;
+    private final CoverImageRepository coverImageRepository;
+
+    public MerchantImageService(@Qualifier("localStorageStrategy") IStorageStrategy storageStrategy, CoverImageRepository coverImageRepository) {
+        this.coverImageRepository = coverImageRepository;
+        this.storageStrategy = storageStrategy;
+    }
+
+
+    @Transactional
+    @Override
+    public CoverImage save(ImageRequestDto file, Integer id) {
+
+        long maxSize = productImageSize;
+        if (file.getMultipartFile().getSize() > maxSize) {
+            throw new RuntimeException("File size exceeds the maximum limit of 5MB.");
+        }
+
+        if (file.getMultipartFile().isEmpty()) {
+            throw new RuntimeException("File is empty. Please select a valid file.");
+        }
+
+        String originalFileName = file.getMultipartFile().getOriginalFilename();
+        // Dosya uzantısını kontrol et
+        String fileExtension = getFileExtension(originalFileName);
+        if (fileExtension == null || !isValidExtension(fileExtension)) {
+            throw new RuntimeException("Invalid file type. Allowed extensions: .jpg, .png, .gif");
+        }
+
+        String path = uploadFileDir+ ImageType.MERCHANT_IMAGE.getValue()+"/"+id+"/";
+        System.out.println("path:         "+path);
+
+        FilePropertiesDto filePropertiesDto = getStorageStrategy().saveFile(file.getMultipartFile(), path);
+
+        String newFilePath = path+filePropertiesDto.getName();
+        String url = newFilePath.replace(uploadFileDir,uploadFileUrl);
+
+        CoverImage coverImage = new CoverImage(filePropertiesDto.getName(), filePropertiesDto.getSize(), filePropertiesDto.getResolution(),filePropertiesDto.getFormat(),url);
+        return coverImageRepository.save(coverImage);
+
+    }
+
+    @Transactional
+    @Override
+    public String delete(Integer id) {
+        CoverImage coverImage = getById(id);
+        String path = coverImage.getUrl().replace(uploadFileUrl,uploadFileDir);
+        System.out.println("pppath: "+path);
+        getStorageStrategy().deleteFile(path);
+
+        return "deleted";
+    }
+
+    @Override
+    public CoverImage getById(Integer id) {
+        return coverImageRepository.findById(Long.valueOf(id)).orElseThrow(() -> new BadRequestException("CoverImage not found."));
+    }
+
+    @Override
+    public List<CoverImage> getAll() {
+        return coverImageRepository.findAll();
+    }
+
+
+    @Override
+    public void setStorageStrategy(IStorageStrategy strategy) {
+        this.storageStrategy = strategy;
+    }
+
+    @Override
+    public String getFileExtension(String originalFileName) {
+        int lastIndexOfDot = originalFileName.lastIndexOf(".");
+        if (lastIndexOfDot != -1) {
+            return originalFileName.substring(lastIndexOfDot); // Örneğin ".jpg"
+        }else
+            throw new BadRequestException("Invalid file name.");
+    }
+
+    @Override
+    public boolean isFileExist(Integer id) {
+        return coverImageRepository.existsById(Long.valueOf(id));
+    }
+
+    // Dosya uzantısını geçerli olup olmadığını kontrol et
+    @Override
+    public boolean isValidExtension(String extension) {
+        Set<String> validExtensions = Set.of(".jpg", ".png", ".jpeg");
+        return validExtensions.contains(extension.toLowerCase());
+    }
+    public IStorageStrategy getStorageStrategy() {
+        return storageStrategy;
+    }
+}

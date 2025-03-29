@@ -4,6 +4,8 @@ import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.user.Address;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "merchant")
 public class Merchant {
@@ -17,15 +19,17 @@ public class Merchant {
 
     @OneToOne
     private CoverImage coverImage;
-    private String phone;
+    private String phoneNo;
     private String email;
+    private BigDecimal minOrderAmount;
 
-    public Merchant(String name, Address address, CoverImage coverImage, String phone, String email) {
+    public Merchant(String name, Address address, CoverImage coverImage, String phoneNo, String email, BigDecimal minOrderAmount) {
         this.name = name;
         this.address = address;
         this.coverImage = coverImage;
-        this.phone = phone;
+        this.phoneNo = phoneNo;
         this.email = email;
+        this.minOrderAmount = minOrderAmount;
     }
     public Merchant() {}
 
@@ -61,12 +65,12 @@ public class Merchant {
         this.coverImage = coverImage;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhoneNo() {
+        return phoneNo;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
     }
 
     public String getEmail() {
@@ -75,5 +79,13 @@ public class Merchant {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public BigDecimal getMinOrderAmount() {
+        return minOrderAmount;
+    }
+
+    public void setMinOrderAmount(BigDecimal minOrderAmount) {
+        this.minOrderAmount = minOrderAmount;
     }
 }

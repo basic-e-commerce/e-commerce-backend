@@ -1,0 +1,36 @@
+package com.example.ecommercebackend.controller.merchant;
+
+import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
+import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
+import com.example.ecommercebackend.entity.merchant.Merchant;
+import com.example.ecommercebackend.service.merchant.MerchantService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/merchant")
+public class MerchantController {
+    private final MerchantService merchantService;
+
+    public MerchantController(MerchantService merchantService) {
+        this.merchantService = merchantService;
+    }
+
+    @PostMapping
+    public ResponseEntity<Merchant> createMerchant(@ModelAttribute MerchantCreateDto merchantCreateDto) {
+        return new ResponseEntity<>(merchantService.createMerchant(merchantCreateDto), HttpStatus.CREATED);
+    }
+
+    @PutMapping
+    public ResponseEntity<Merchant> updateMerchant(@RequestParam Integer id, @RequestBody MerchantUpdateDto merchantCreateDto) {
+        return new ResponseEntity<>(merchantService.updateMerchant(id,merchantCreateDto),HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Merchant>> getMerchants() {
+        return new ResponseEntity<>(merchantService.getMerchants(), HttpStatus.OK);
+    }
+}
