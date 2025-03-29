@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.repository.product.category;
 
 import com.example.ecommercebackend.entity.product.category.Category;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,8 +17,9 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     boolean existsByCategoryId(@Param("categoryId") Integer categoryId);
 
     @Modifying
+    @Transactional
     @Query(value = "UPDATE product_categories SET category_id = :newCategoryId WHERE category_id = :oldCategoryId", nativeQuery = true)
-    void updateCategoryId(@Param("oldCategoryId") Long oldCategoryId, @Param("newCategoryId") Long newCategoryId);
+    void updateCategoryId(@Param("oldCategoryId") Integer oldCategoryId, @Param("newCategoryId") Integer newCategoryId);
 
 
 }

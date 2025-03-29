@@ -59,7 +59,6 @@ public class CategoryService {
             category.setParentCategory(parentCategory);
 
 
-
             Category saveCategory = categoryRepository.save(category);
             if (parentCategory != null){
                 parentCategory.setSubCategory(false);
@@ -70,6 +69,7 @@ public class CategoryService {
                 CoverImageRequestDto coverImageRequestDto = new CoverImageRequestDto(categoryCreateDto.getImage());
                 CoverImage coverImage = categoryImageService.save(coverImageRequestDto, saveCategory.getId());
                 saveCategory.setCoverImage(coverImage);
+                categoryRepository.updateCategoryId(parentCategory.getId(),saveCategory.getId());
                 categoryRepository.save(saveCategory);
             }
 

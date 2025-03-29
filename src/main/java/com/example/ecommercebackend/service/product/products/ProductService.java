@@ -144,7 +144,9 @@ public class ProductService {
             Product product = findProductById(productId);
 
             // Mevcut kategorileri al
-            Set<Category> existingCategories = new HashSet<>(product.getCategories());
+            Set<Integer> existCategoryIds =  product.getCategories().stream().map(Category::getId).collect(Collectors.toSet());
+
+            Set<Category> existCategory = new HashSet<>(product.getCategories());
 
             // Yeni gelen kategori ID'lerini al
             Set<Integer> newCategoryIds = new HashSet<>(productUpdateDto.getCategoryIds());
@@ -152,13 +154,18 @@ public class ProductService {
             // Yeni eklenmesi gereken kategorileri bul
             Set<Category> categoriesToAdd = new HashSet<>();
             for (Integer categoryId : newCategoryIds) {
-                if (existingCategories.stream().noneMatch(c -> c.getId() == categoryId)) {
-                    categoriesToAdd.add(categoryService.findCategoryById(categoryId)); // Veritabanından bul
+                if (!existCategoryIds.contains(categoryId)){
+                    Category category = categoryService.findCategoryById(categoryId);
+                    if (category.isSubCategory()){
+                        categoriesToAdd.add(category);
+                    }else
+                        throw new BadRequestException("Category is not a sub category");
                 }
+
             }
 
             // Çıkarılması gereken kategorileri bul
-            Set<Category> categoriesToRemove = existingCategories.stream()
+            Set<Category> categoriesToRemove = existCategory.stream()
                     .filter(c -> !newCategoryIds.contains(c.getId()))
                     .collect(Collectors.toSet());
 
