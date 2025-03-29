@@ -92,6 +92,9 @@ public class Product {
     @JoinColumn(name = "updated_by", referencedColumnName = "id")
     private Admin updatedBy;
 
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isDeleted;
+
 
     @PrePersist
     @PreUpdate
@@ -296,5 +299,13 @@ public class Product {
 
     public void setProductLinkName(String productLinkName) {
         this.productLinkName = productLinkName;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 }

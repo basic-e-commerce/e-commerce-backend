@@ -57,6 +57,15 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/attribute-value").hasAuthority("ADMIN")
 
+                        .requestMatchers(HttpMethod.POST,"/api/v1/product/simple").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/product").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/product").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/product/product-image").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/product/product-image").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/product/cover-image").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/product/cover-image").hasAuthority("ADMIN")
+
+
                         .anyRequest().permitAll())
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(jwtValidationFilter, UsernamePasswordAuthenticationFilter.class)

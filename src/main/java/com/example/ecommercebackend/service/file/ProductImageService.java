@@ -105,6 +105,11 @@ public class ProductImageService implements ImageService<ProductImage, ProductIm
             throw new BadRequestException("Invalid file name.");
     }
 
+    @Override
+    public boolean isFileExist(Integer id) {
+        return productImageRepository.existsById(Long.valueOf(id));
+    }
+
     public IStorageStrategy getStorageStrategy() {
         return storageStrategy;
     }

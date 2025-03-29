@@ -1,5 +1,6 @@
-package com.example.ecommercebackend.dto.product.products;
+package com.example.ecommercebackend.builder.product.products;
 
+import com.example.ecommercebackend.dto.product.products.ProductCreateDto;
 import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.products.ProductType;
@@ -11,7 +12,7 @@ import java.util.Set;
 @Component
 public class ProductBuilder {
 
-    public Product productCreateDtoToProduct(ProductCreateDto productCreateDto, Set<Category> categories, ProductType productType, Admin create,Admin update) {
+    public Product productCreateDtoToProduct(ProductCreateDto productCreateDto, Set<Category> categories, ProductType productType, Admin create, Admin update) {
         return new Product(
                 productCreateDto.getName(),
                 productCreateDto.getSalePrice(),

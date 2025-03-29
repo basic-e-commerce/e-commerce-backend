@@ -13,4 +13,5 @@ public interface IFileService<T extends File,R extends FileRequestDto> {
     List<T> getAll();  // Tüm dosyaları getir
     void setStorageStrategy(IStorageStrategy strategy); // Depolama türünü belirle
     String getFileExtension(String fileName);
+    boolean isFileExist(Integer id);
 }

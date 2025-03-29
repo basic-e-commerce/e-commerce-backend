@@ -103,6 +103,11 @@ public class CoverImageService implements ImageService<CoverImage, ImageRequestD
             throw new BadRequestException("Invalid file name.");
     }
 
+    @Override
+    public boolean isFileExist(Integer id) {
+        return coverImageRepository.existsById(Long.valueOf(id));
+    }
+
     public IStorageStrategy getStorageStrategy() {
         return storageStrategy;
     }
