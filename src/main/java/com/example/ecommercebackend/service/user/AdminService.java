@@ -23,13 +23,15 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final RegexValidation regexValidation;
     private final RoleService roleService;
+    private final UserService userService;
 
-    public AdminService(AdminRepository adminRepository, AdminBuilder adminBuilder, PasswordEncoder passwordEncoder, RegexValidation regexValidation, RoleService roleService) {
+    public AdminService(AdminRepository adminRepository, AdminBuilder adminBuilder, PasswordEncoder passwordEncoder, RegexValidation regexValidation, RoleService roleService, UserService userService) {
         this.adminRepository = adminRepository;
         this.adminBuilder = adminBuilder;
         this.passwordEncoder = passwordEncoder;
         this.regexValidation = regexValidation;
         this.roleService = roleService;
+        this.userService = userService;
     }
 
     public Admin createAdmin(AdminCreateDto adminCreateDto) {
@@ -42,10 +44,10 @@ public class AdminService {
             throw new BadRequestException(ExceptionMessage.INVALID_USERNAME.getMessage());
         */
 
-        if (isAdminExistByUsername(adminCreateDto.getUsername()))
+        if (userService.isUserExistByUsername(adminCreateDto.getUsername()))
             throw new ResourceAlreadyExistException("Admin "+ExceptionMessage.ALREADY_EXISTS.getMessage());
 
-        if (isAdminExistByPhoneNumber(adminCreateDto.getPhoneNumber()))
+        if (userService.isUserExistByPhoneNumber(adminCreateDto.getPhoneNumber()))
             throw new ResourceAlreadyExistException("Admin "+ExceptionMessage.ALREADY_EXISTS.getMessage());
 
         if (!adminCreateDto.getPassword().equals(adminCreateDto.getRePassword()))

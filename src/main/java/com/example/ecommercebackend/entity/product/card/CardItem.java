@@ -24,18 +24,13 @@ public class CardItem {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "card_id", referencedColumnName = "id")
-    private Card card;
-
-    @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 
     @Column(nullable = false)
-    private Integer quantity = 1;
+    private Integer quantity = 0;
 
-    public CardItem(Card card, Product product, Integer quantity) {
-        this.card = card;
+    public CardItem(Product product, Integer quantity) {
         this.product = product;
         this.quantity = quantity;
     }
@@ -49,14 +44,6 @@ public class CardItem {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Card getCard() {
-        return card;
-    }
-
-    public void setCard(Card card) {
-        this.card = card;
     }
 
     public Product getProduct() {

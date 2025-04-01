@@ -19,4 +19,12 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("User "+ ExceptionMessage.NOT_FOUND.getMessage()));
     }
 
+    public boolean isUserExistByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean isUserExistByPhoneNumber(String phoneNumber) {
+        return userRepository.existsByPhoneNumber(phoneNumber);
+    }
+
 }

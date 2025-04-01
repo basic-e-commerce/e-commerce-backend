@@ -36,8 +36,10 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
         Object details = authentication.getDetails();
 
         if (details instanceof Admin) {
+            System.out.println("------------admin");
             user = (User) adminUserDetailsService.loadUserByUsername(username);
         } else if (details instanceof Customer) {
+            System.out.println("------------customer");
             user = (User) customerUserDetailsService.loadUserByUsername(username);
         } else {
             throw new BadRequestException("Geçersiz user tipi");

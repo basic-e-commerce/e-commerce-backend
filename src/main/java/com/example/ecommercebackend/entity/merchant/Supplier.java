@@ -3,6 +3,7 @@ package com.example.ecommercebackend.entity.merchant;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.shipping.Country;
 import com.example.ecommercebackend.entity.user.Admin;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -65,6 +66,7 @@ public class Supplier {
     @Column(name = "note")
     private String note;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "product_suppliers",

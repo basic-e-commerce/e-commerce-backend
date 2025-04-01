@@ -23,6 +23,7 @@ public class Product {
     @Column(name = "product_name", nullable = false)
     private String productName;
 
+    @Column(name = "product_link_name")
     private String productLinkName;
 
     @Column(name = "sale_price", nullable = false, columnDefinition = "NUMERIC DEFAULT 0")
@@ -34,7 +35,7 @@ public class Product {
     @Column(name = "buying_price", columnDefinition = "NUMERIC")
     private BigDecimal buyingPrice;
 
-    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
+    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0",name = "quantity")
     private Integer quantity;
 
     @Column(name = "short_description", nullable = false, length = 165)
@@ -55,7 +56,7 @@ public class Product {
     @Column(name = "product_type", length = 64)
     private ProductType productType;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE",name = "published")
     private Boolean published = true;
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)

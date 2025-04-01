@@ -57,7 +57,6 @@ public class ProductController {
         return new ResponseEntity<>(productService.deleteCoverImage(id),HttpStatus.OK);
     }
 
-
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
         return new ResponseEntity<>(productService.findAll(),HttpStatus.OK);
