@@ -2,10 +2,12 @@ package com.example.ecommercebackend.controller.product.products;
 
 import com.example.ecommercebackend.dto.file.productimage.ProductImageUpdateDto;
 import com.example.ecommercebackend.dto.product.products.ProductCreateDto;
+import com.example.ecommercebackend.dto.product.products.ProductFilterRequest;
 import com.example.ecommercebackend.dto.product.products.ProductUpdateDto;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.service.product.products.ProductService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +57,13 @@ public class ProductController {
     @DeleteMapping("/cover-image")
     public ResponseEntity<String> deleteCoverImage(@RequestParam Integer id) {
         return new ResponseEntity<>(productService.deleteCoverImage(id),HttpStatus.OK);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Product>> filter(@RequestBody ProductFilterRequest filterRequest,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size) {
+        return new ResponseEntity<>(productService.filterProductsByCategory(filterRequest,page,size),HttpStatus.OK);
     }
 
     @GetMapping

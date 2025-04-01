@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.entity.product.products;
 
 import com.example.ecommercebackend.entity.user.Admin;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -35,6 +36,7 @@ public class Coupon {
     private Instant couponStartDate;
     private Instant couponEndDate;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "product_coupons",
@@ -48,10 +50,12 @@ public class Coupon {
     @Column(nullable = false)
     private Instant updatedAt = Instant.now();
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "created_by")
     private Admin createdBy;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "updated_by")
     private Admin updatedBy;

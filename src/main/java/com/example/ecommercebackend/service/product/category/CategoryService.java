@@ -17,7 +17,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CategoryService {
@@ -103,6 +105,30 @@ public class CategoryService {
         categoryRepository.deleteById(category.getId());
         return category;
     }
+
+    public Set<Category> getLeafCategories(Category category) {
+        Set<Category> leafCategories = new HashSet<>();
+        findLeafCategories(category, leafCategories);
+        return leafCategories;
+    }
+
+    private void findLeafCategories(Category category, Set<Category> leafCategories) {
+        if (category == null) {
+            return;
+        }
+
+        // Eğer alt kategorisi yoksa, bu bir yaprak kategoridir
+        if (category.getSubCategories() == null || category.getSubCategories().isEmpty()) {
+            leafCategories.add(category);
+            return;
+        }
+
+        // Alt kategorileri dolaş ve yaprakları ekle
+        for (Category subCategory : category.getSubCategories()) {
+            findLeafCategories(subCategory, leafCategories);
+        }
+    }
+
 
 
     public boolean isHasProduct(int id) {

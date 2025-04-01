@@ -6,10 +6,7 @@ import com.example.ecommercebackend.service.auth.AuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -29,4 +26,10 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponseDto> loginAdmin(@RequestBody AuthenticationRequestDto authenticationRequestDto,HttpServletResponse response) {
         return new ResponseEntity<>(authenticationService.loginAdmin(authenticationRequestDto,response), HttpStatus.OK);
     }
+
+    @GetMapping("/is-auth")
+    public ResponseEntity<Boolean> isAuth() {
+        return new ResponseEntity<>(authenticationService.isAuth(),HttpStatus.OK);
+    }
+
 }

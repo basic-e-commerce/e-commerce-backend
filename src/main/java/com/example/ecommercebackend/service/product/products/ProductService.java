@@ -5,6 +5,7 @@ import com.example.ecommercebackend.dto.file.ProductImageRequestDto;
 import com.example.ecommercebackend.builder.product.products.ProductBuilder;
 import com.example.ecommercebackend.dto.file.productimage.ProductImageUpdateDto;
 import com.example.ecommercebackend.dto.product.products.ProductCreateDto;
+import com.example.ecommercebackend.dto.product.products.ProductFilterRequest;
 import com.example.ecommercebackend.dto.product.products.ProductUpdateDto;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.file.ProductImage;
@@ -17,18 +18,26 @@ import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
+import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.product.attribute.ProductAttributeRepository;
 import com.example.ecommercebackend.repository.product.products.ProductRepository;
 import com.example.ecommercebackend.service.file.CoverImageService;
 import com.example.ecommercebackend.service.file.ProductImageService;
 import com.example.ecommercebackend.service.product.attribute.AttributeService;
 import com.example.ecommercebackend.service.product.category.CategoryService;
+import jakarta.persistence.criteria.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -71,6 +80,9 @@ public class ProductService {
 
         if (productCreateDto.getQuantity() < 0)
             throw new BadRequestException("Quantity cannot be less than 0");
+
+        if (productRepository.existsByProductNameEqualsIgnoreCase(productCreateDto.getName()))
+            throw new ResourceAlreadyExistException("Product name already exists");
 
         ProductType productType = ProductType.valueOf(productCreateDto.getProductType());
 
@@ -352,5 +364,74 @@ public class ProductService {
 
     public boolean isExistProductById(int productId) {
         return productRepository.existsById(productId);
+    }
+
+    public List<Product> filterProductsByCategory(ProductFilterRequest filterRequest, int page, int size) {
+        Sort sort = Sort.unsorted();
+        if (filterRequest.getSortBy() != null) {
+            sort = Sort.by(Sort.Direction.fromString(filterRequest.getSortDirection()), filterRequest.getSortBy());
+        }
+        Category category = categoryService.findCategoryById(filterRequest.getCategoryId());
+        Set<Integer> subCategories = categoryService.getLeafCategories(category).stream().map(Category::getId).collect(Collectors.toSet());
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Specification<Product> specification = filterProducts(subCategories,filterRequest.getMinPrice(),filterRequest.getMaxPrice());
+        return productRepository.findAll(specification,pageable).stream().collect(Collectors.toList());
+    }
+
+    public Specification<Product> filterProducts(Set<Integer> categoriesId, BigDecimal minPrice, BigDecimal maxPrice) {
+        return Specification
+                .where(hasCategories(categoriesId))
+                .and(hasMinPrice(minPrice))
+                .and(hasMaxPrice(maxPrice))
+                .and(isDisableOutOfStock(true))
+                .and(hasMinQuantity(0))
+                .and(hasProductType(ProductType.SIMPLE))
+                .and(isPublished(true))
+                .and(isDeleted(false));
+    }
+
+
+    public Specification<Product> hasCategories(Set<Integer> categoryIds) {
+        return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            if (categoryIds == null || categoryIds.isEmpty()) return null;
+            Join<Product, Category> categoryJoin = root.join("categories", JoinType.INNER);
+            return categoryJoin.get("id").in(categoryIds);
+        };
+    }
+
+    public Specification<Product> hasProductType(ProductType productType) {
+        return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                productType == null ? null : cb.equal(root.get("productType"), productType);
+    }
+
+    public Specification<Product> hasMinPrice(BigDecimal minPrice) {
+        return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                minPrice == null ? null : cb.greaterThanOrEqualTo(root.get("comparePrice"), minPrice);
+    }
+
+    public Specification<Product> hasMinQuantity(Integer minQuantity) {
+        return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                minQuantity == null ? null : cb.greaterThanOrEqualTo(root.get("quantity"), minQuantity);
+    }
+
+    public Specification<Product> hasMaxPrice(BigDecimal maxPrice) {
+        return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                maxPrice == null ? null : cb.lessThanOrEqualTo(root.get("comparePrice"), maxPrice);
+    }
+
+    public Specification<Product> isDisableOutOfStock(boolean disableOutOfStock) {
+        return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                cb.equal(root.get("disableOutOfStock"), disableOutOfStock);
+    }
+
+    public Specification<Product> isDeleted(boolean isDeleted) {
+        return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                cb.equal(root.get("isDeleted"), isDeleted);
+    }
+
+    public Specification<Product> isPublished(boolean isPublished) {
+        return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                cb.equal(root.get("published"), isPublished);
     }
 }
