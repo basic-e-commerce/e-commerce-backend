@@ -37,7 +37,7 @@ public class CardService {
         if (!(principal instanceof Customer customer)) {
             throw new BadRequestException("Authentication failed");
         }else
-            System.out.println("Geçersiz kullaniciiiiii-------");
+            System.out.println("Customerr  -------");
 
         // 3. Müşterinin sepetini al
         Card card = customer.getCard();
@@ -55,22 +55,28 @@ public class CardService {
 
                 if (totalQuantity <= 0) {
                     // 6. Miktar sıfır veya negatifse, ürünü sepetten kaldır
+                    System.out.println("ürün 0 ise");
                     card.getItems().remove(existingCardItem);
+                    cardRepository.save(card);
                     cardItemService.delete(existingCardItem);
                 } else {
                     // 7. Miktarı güncelle
                     existingCardItem.setQuantity(totalQuantity);
                     cardItemService.save(existingCardItem);
+                    cardRepository.save(card);
                 }
             } else {
+                if (cardItemCreateDto.getQuantity() <= 0)
+                    throw new BadRequestException("0 ve altında adet olamaz");
                 // 8. Ürün sepette yoksa, yeni CardItem oluştur ve sepete ekle
                 CardItem newCardItem = cardItemService.create(cardItemCreateDto);
                 card.getItems().add(newCardItem);
+                cardRepository.save(card);
             }
         }
 
         // 9. Güncellenmiş sepeti kaydet ve döndür
-        return cardRepository.save(card);
+        return card;
     }
 
 }

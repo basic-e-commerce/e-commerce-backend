@@ -1,11 +1,13 @@
 package com.example.ecommercebackend.entity.product.order;
 
 import com.example.ecommercebackend.entity.product.products.Coupon;
+import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.entity.user.Customer;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -19,9 +21,32 @@ public class Order {
     @JoinColumn(name = "coupon_id", referencedColumnName = "id")
     private Coupon coupon;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
-    private Customer customer;
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "country_name")
+    private String countryName;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "address_line_1")
+    private String addressLine1;
+
+    @Column(name = "address_line_2")
+    private String addressLine2;
+
+    @Column(name = "postal_code")
+    private String postalCode;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<OrderItem> orderItems;
 
     @ManyToOne
     @JoinColumn(name = "order_status_id", referencedColumnName = "id")
@@ -44,9 +69,17 @@ public class Order {
     private Admin updatedBy;
 
 
-    public Order(Coupon coupon, Customer customer, OrderStatus orderStatus, Admin updatedBy) {
+    public Order(Coupon coupon, String firstName, String lastName, String countryName, String city, String addressLine1, String addressLine2, String postalCode, String phoneNumber, List<OrderItem> orderItems, OrderStatus orderStatus, Admin updatedBy) {
         this.coupon = coupon;
-        this.customer = customer;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.countryName = countryName;
+        this.city = city;
+        this.addressLine1 = addressLine1;
+        this.addressLine2 = addressLine2;
+        this.postalCode = postalCode;
+        this.phoneNumber = phoneNumber;
+        this.orderItems = orderItems;
         this.orderStatus = orderStatus;
         this.updatedBy = updatedBy;
     }
@@ -68,14 +101,6 @@ public class Order {
 
     public void setCoupon(Coupon coupon) {
         this.coupon = coupon;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
     }
 
     public OrderStatus getOrderStatus() {
@@ -124,5 +149,77 @@ public class Order {
 
     public void setUpdatedBy(Admin updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    public String getCountry() {
+        return countryName;
+    }
+
+    public void setCountry(String countryName) {
+        this.countryName = countryName;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getAddressLine1() {
+        return addressLine1;
+    }
+
+    public void setAddressLine1(String addressLine1) {
+        this.addressLine1 = addressLine1;
+    }
+
+    public String getAddressLine2() {
+        return addressLine2;
+    }
+
+    public void setAddressLine2(String addressLine2) {
+        this.addressLine2 = addressLine2;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

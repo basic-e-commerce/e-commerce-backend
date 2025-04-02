@@ -18,19 +18,14 @@ public class OrderItem {
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
-    private Order order;
-
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    public OrderItem(Product product, Order order, BigDecimal price, Integer quantity) {
+    public OrderItem(Product product, BigDecimal price, Integer quantity) {
         this.product = product;
-        this.order = order;
         this.price = price;
         this.quantity = quantity;
     }
@@ -52,14 +47,6 @@ public class OrderItem {
 
     public void setProduct(Product product) {
         this.product = product;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
     }
 
     public BigDecimal getPrice() {
