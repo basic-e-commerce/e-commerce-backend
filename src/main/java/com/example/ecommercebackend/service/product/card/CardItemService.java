@@ -8,8 +8,6 @@ import com.example.ecommercebackend.repository.product.card.CardItemRepository;
 import com.example.ecommercebackend.repository.product.products.ProductRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class CardItemService {
     private final CardItemRepository cardItemRepository;
@@ -21,8 +19,8 @@ public class CardItemService {
     }
 
     public CardItem create(CardItemCreateDto cardItemCreateDto) {
-        Product product = productRepository.findById(cardItemCreateDto.getProductId()).orElseThrow(()-> new NotFoundException("Product not found card item"));
-        CardItem cardItem = new CardItem(product, cardItemCreateDto.getQuantity());
+        Product product = productRepository.findById(cardItemCreateDto.productId()).orElseThrow(()-> new NotFoundException("Product not found card item"));
+        CardItem cardItem = new CardItem(product, cardItemCreateDto.quantity());
         return cardItemRepository.save(cardItem);
     }
 

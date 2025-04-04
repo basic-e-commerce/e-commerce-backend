@@ -4,10 +4,14 @@ import com.example.ecommercebackend.entity.product.products.Coupon;
 import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.entity.user.Customer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
@@ -20,6 +24,8 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "coupon_id", referencedColumnName = "id")
     private Coupon coupon;
+
+    private String orderCode;
 
     @Column(name = "first_name")
     private String firstName;
@@ -46,11 +52,14 @@ public class Order {
     private String phoneNumber;
 
     @OneToMany(fetch = FetchType.EAGER)
-    private List<OrderItem> orderItems;
+    private Set<OrderItem> orderItems;
 
     @ManyToOne
     @JoinColumn(name = "order_status_id", referencedColumnName = "id")
     private OrderStatus orderStatus;
+
+    @Column(name = "total_price")
+    private BigDecimal totalPrice;
 
     @Column(name = "order_approved_at")
     private Instant orderApprovedAt;   // siparişin onaylanış tarihi
@@ -64,12 +73,18 @@ public class Order {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "updated_by", referencedColumnName = "id")
     private Admin updatedBy;
 
+    @PrePersist
+    public void prePersist() {
+        createdAt = Instant.now();
+        this.orderCode = UUID.randomUUID().toString();
+    }
 
-    public Order(Coupon coupon, String firstName, String lastName, String countryName, String city, String addressLine1, String addressLine2, String postalCode, String phoneNumber, List<OrderItem> orderItems, OrderStatus orderStatus, Admin updatedBy) {
+    public Order(Coupon coupon, String firstName, String lastName, String countryName, String city, String addressLine1, String addressLine2, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice) {
         this.coupon = coupon;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -81,7 +96,7 @@ public class Order {
         this.phoneNumber = phoneNumber;
         this.orderItems = orderItems;
         this.orderStatus = orderStatus;
-        this.updatedBy = updatedBy;
+        this.totalPrice = totalPrice;
     }
 
     public Order() {
@@ -151,11 +166,11 @@ public class Order {
         this.updatedBy = updatedBy;
     }
 
-    public List<OrderItem> getOrderItems() {
+    public Set<OrderItem> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
+    public void setOrderItems(Set<OrderItem> orderItems) {
         this.orderItems = orderItems;
     }
 
@@ -221,5 +236,21 @@ public class Order {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }

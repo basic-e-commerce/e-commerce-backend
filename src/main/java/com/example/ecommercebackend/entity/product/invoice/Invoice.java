@@ -1,4 +1,4 @@
-package com.example.ecommercebackend.entity.product.bill;
+package com.example.ecommercebackend.entity.product.invoice;
 
 import com.example.ecommercebackend.entity.product.order.Order;
 import jakarta.persistence.*;
@@ -8,7 +8,7 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "billing")
-public class Billing {
+public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "billing_seq")
     @SequenceGenerator(name = "billing_seq", sequenceName = "billing_seq", allocationSize = 1)
@@ -23,16 +23,32 @@ public class Billing {
     @Column(nullable = false , name = "tax_amount")
     private BigDecimal taxAmount;
 
+    @Enumerated(EnumType.STRING)
+    private InvoiceType invoiceType;
+
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant createdAt = Instant.now();
 
-    public Billing(Order order, BigDecimal totalAmount, BigDecimal taxAmount) {
+    public Invoice(Order order, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType) {
         this.order = order;
         this.totalAmount = totalAmount;
         this.taxAmount = taxAmount;
+        this.invoiceType = invoiceType;
+    }
+    public enum InvoiceType {
+        INDIVIDUAL,
+        CORPORATE
     }
 
-    public Billing() {
+    public InvoiceType getInvoiceType() {
+        return invoiceType;
+    }
+
+    public void setInvoiceType(InvoiceType invoiceType) {
+        this.invoiceType = invoiceType;
+    }
+
+    public Invoice() {
     }
 
     public int getId() {

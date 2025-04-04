@@ -64,12 +64,10 @@ public class OrderStatus {
         updatedAt = Instant.now();
     }
 
-    public OrderStatus( Status status, Privacy privacy, Color color, Admin createdBy, Admin updatedBy) {
+    public OrderStatus( Status status, Privacy privacy, Color color) {
         this.status = status;
         this.privacy = privacy;
         this.color = color;
-        this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
     }
 
     public OrderStatus() {

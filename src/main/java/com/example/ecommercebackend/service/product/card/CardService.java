@@ -45,13 +45,13 @@ public class CardService {
         for (CardItemCreateDto cardItemCreateDto : cardCreateDto.getCardItems()) {
             // 4. Sepette aynı üründen olup olmadığını kontrol et
             CardItem existingCardItem = card.getItems().stream()
-                    .filter(item -> item.getProduct().getId() == cardItemCreateDto.getProductId())
+                    .filter(item -> item.getProduct().getId() == cardItemCreateDto.productId())
                     .findFirst()
                     .orElse(null);
 
             if (existingCardItem != null) {
                 // 5. Ürün zaten sepette varsa miktarı güncelle
-                int totalQuantity = existingCardItem.getQuantity() + cardItemCreateDto.getQuantity();
+                int totalQuantity = existingCardItem.getQuantity() + cardItemCreateDto.quantity();
 
                 if (totalQuantity <= 0) {
                     // 6. Miktar sıfır veya negatifse, ürünü sepetten kaldır
@@ -66,7 +66,7 @@ public class CardService {
                     cardRepository.save(card);
                 }
             } else {
-                if (cardItemCreateDto.getQuantity() <= 0)
+                if (cardItemCreateDto.quantity() <= 0)
                     throw new BadRequestException("0 ve altında adet olamaz");
                 // 8. Ürün sepette yoksa, yeni CardItem oluştur ve sepete ekle
                 CardItem newCardItem = cardItemService.create(cardItemCreateDto);
