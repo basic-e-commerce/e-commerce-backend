@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.controller.product.card;
 
 import com.example.ecommercebackend.dto.product.card.CardCreateDto;
+import com.example.ecommercebackend.dto.product.card.CardResponseDto;
 import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.service.product.card.CardService;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ public class CardController {
     }
 
     @PutMapping
-    public ResponseEntity<Card> updateCard(@RequestBody CardCreateDto cardCreateDto) {
+    public ResponseEntity<CardResponseDto> updateCard(@RequestBody CardCreateDto cardCreateDto) {
         return new ResponseEntity<>(cardService.updateCard(cardCreateDto), HttpStatus.OK);
     }
 }

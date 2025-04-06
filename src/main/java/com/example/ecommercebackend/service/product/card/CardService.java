@@ -1,7 +1,9 @@
 package com.example.ecommercebackend.service.product.card;
 
+import com.example.ecommercebackend.builder.product.card.CardBuilder;
 import com.example.ecommercebackend.dto.product.card.CardCreateDto;
 import com.example.ecommercebackend.dto.product.card.CardItemCreateDto;
+import com.example.ecommercebackend.dto.product.card.CardResponseDto;
 import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.card.CardItem;
 import com.example.ecommercebackend.entity.user.Customer;
@@ -15,10 +17,12 @@ import org.springframework.stereotype.Service;
 public class CardService {
     private final CardRepository cardRepository;
     private final CardItemService cardItemService;
+    private final CardBuilder cardBuilder;
 
-    public CardService(CardRepository cardRepository, CardItemService cardItemService) {
+    public CardService(CardRepository cardRepository, CardItemService cardItemService, CardBuilder cardBuilder) {
         this.cardRepository = cardRepository;
         this.cardItemService = cardItemService;
+        this.cardBuilder = cardBuilder;
     }
 
     /*
@@ -28,10 +32,11 @@ public class CardService {
 
      */
 
-    public Card updateCard(CardCreateDto cardCreateDto) {
+    public CardResponseDto updateCard(CardCreateDto cardCreateDto) {
         // 1. Kullanıcı kimlik doğrulamasını al
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
+        System.out.println(111111111);
 
         // 2. Kullanıcının müşteri olup olmadığını kontrol et
         if (!(principal instanceof Customer customer)) {
@@ -39,10 +44,14 @@ public class CardService {
         }else
             System.out.println("Customerr  -------");
 
+        System.out.println(2222222);
         // 3. Müşterinin sepetini al
         Card card = customer.getCard();
+        System.out.println(33333);
 
         for (CardItemCreateDto cardItemCreateDto : cardCreateDto.getCardItems()) {
+            System.out.println(4444444);
+
             // 4. Sepette aynı üründen olup olmadığını kontrol et
             CardItem existingCardItem = card.getItems().stream()
                     .filter(item -> item.getProduct().getId() == cardItemCreateDto.productId())
@@ -50,6 +59,8 @@ public class CardService {
                     .orElse(null);
 
             if (existingCardItem != null) {
+                System.out.println(555555555);
+
                 // 5. Ürün zaten sepette varsa miktarı güncelle
                 int totalQuantity = existingCardItem.getQuantity() + cardItemCreateDto.quantity();
 
@@ -76,7 +87,7 @@ public class CardService {
         }
 
         // 9. Güncellenmiş sepeti kaydet ve döndür
-        return card;
+        return cardBuilder.cardToCardResponseDto(card);
     }
 
 }
