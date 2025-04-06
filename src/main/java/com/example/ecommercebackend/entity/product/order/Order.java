@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.entity.product.order;
 
+import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.products.Coupon;
 import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.entity.user.Admin;
@@ -60,6 +61,9 @@ public class Order {
 
     @Column(name = "total_price")
     private BigDecimal totalPrice;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private Set<Payment> payments;
 
     @Column(name = "order_approved_at")
     private Instant orderApprovedAt;   // siparişin onaylanış tarihi
@@ -252,5 +256,13 @@ public class Order {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public Set<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(Set<Payment> payments) {
+        this.payments = payments;
     }
 }
