@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.config.emailpassword;
 
+import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.service.user.CustomerService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +17,10 @@ public class CustomerUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return customerService.findByUsername(username);
+        System.out.println("loadby usernameee");
+        Customer byUsername = customerService.findByUsername(username);
+        System.out.println("loadby usernameee 22");
+        return byUsername;
     }
 
 }

@@ -15,7 +15,7 @@ public class Card {
     @SequenceGenerator(name = "card_seq", sequenceName = "card_seq", allocationSize = 1)
     private int id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private Customer customer;
 

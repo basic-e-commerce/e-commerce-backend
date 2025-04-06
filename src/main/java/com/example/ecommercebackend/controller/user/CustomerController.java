@@ -21,6 +21,11 @@ public class CustomerController {
         return new ResponseEntity<>(customerService.createCustomer(customerCreateDto), HttpStatus.CREATED);
     }
 
+    @GetMapping("/username")
+    public void getCustomerByUsername(@RequestParam("username") String username) {
+        customerService.findByUsername(username);
+    }
+
 
 
 

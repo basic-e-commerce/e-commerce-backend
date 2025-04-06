@@ -23,8 +23,13 @@ public class Role implements GrantedAuthority {
     private String roleName;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles",fetch = FetchType.LAZY)
     private Set<User> users = new HashSet<>();
+
+    public Role(int id, String roleName) {
+        this.id = id;
+        this.roleName = roleName;
+    }
 
     public Role(String roleName) {
         this.roleName = roleName;
@@ -44,6 +49,7 @@ public class Role implements GrantedAuthority {
     public void setRoleName(String roleName) {
         this.roleName = roleName;
     }
+
 
     public Set<User> getUsers() {
         return users;

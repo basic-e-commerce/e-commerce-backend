@@ -48,6 +48,7 @@ public class OrderService {
             if (customer.getCard().getItems().isEmpty())
                 throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
 
+            System.out.println("1111111111111111");
             OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
             Set<OrderItem> orderItems = new HashSet<>();
             for (CardItem cardItem: customer.getCard().getItems()){
@@ -55,12 +56,13 @@ public class OrderService {
                 OrderItem orderItem = new OrderItem(cardItem.getProduct(),orderItemPrice, cardItem.getQuantity());
                 orderItems.add(orderItem);
             }
+            System.out.println("22222222222222222");
             Set<OrderItem> savedOrderItems = orderItemService.saveOrderItems(orderItems);
             BigDecimal orderPrice = BigDecimal.valueOf(0);
             for (OrderItem orderItem: savedOrderItems){
                 orderPrice = orderPrice.add(orderItem.getPrice());
             }
-
+            System.out.println("333333333333333333");
 
             Order order = new Order(null,
                     orderCreateDto.address().firstName(),
@@ -74,10 +76,12 @@ public class OrderService {
                     savedOrderItems,
                     orderStatus,
                     orderPrice);
-
+            System.out.println("444444444444444444");
             Order save = orderRepository.save(order);
+            System.out.println("55555555555555555555");
             customer.getOrders().add(save);
             customerService.save(customer);
+            System.out.println("666666666666666666");
             return save;
         }else
             return null;

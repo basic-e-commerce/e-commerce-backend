@@ -51,6 +51,17 @@ public abstract class User implements UserDetails {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean accountNonLocked;
 
+    public User(int id, String firstName, String lastName, String username, String password, Set<Role> roles, boolean enabled, boolean accountNonLocked) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
+        this.enabled = enabled;
+        this.accountNonLocked = accountNonLocked;
+    }
+
     public User(String firstName, String lastName, String phoneNumber, String username, String password, Set<Role> roles, boolean accountNonLocked, boolean enabled) {
         this.firstName = firstName;
         this.lastName = lastName;
