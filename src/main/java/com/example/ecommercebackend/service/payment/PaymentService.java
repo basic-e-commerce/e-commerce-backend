@@ -142,12 +142,12 @@ public class PaymentService {
             });
 
 
-            String redirectUrl = "https://litysofttest1.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
+            String redirectUrl = "https://litysofttest.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
             httpServletResponse.sendRedirect(redirectUrl);
         }else{
             Payment payment = findByConversationId(payCallBackDto.getConversationId());
             payment.setPaymentStatus(Payment.PaymentStatus.FAILED);
-            String redirectUrl = "https://litysofttest1.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
+            String redirectUrl = "https://litysofttest.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
             httpServletResponse.sendRedirect(redirectUrl);
         }
     }
