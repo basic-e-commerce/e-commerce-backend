@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.entity.product.invoice;
 
+import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.order.Order;
 import jakarta.persistence.*;
 
@@ -7,15 +8,15 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
-@Table(name = "billing")
-public class Invoice {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) // Table per class inheritance
+public abstract class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "billing_seq")
     @SequenceGenerator(name = "billing_seq", sequenceName = "billing_seq", allocationSize = 1)
     private int id;
 
     @OneToOne(fetch = FetchType.EAGER)
-    private Order order;
+    private Payment payment;
 
     @Column(nullable = false,name = "total_amount")
     private BigDecimal totalAmount;
@@ -29,12 +30,21 @@ public class Invoice {
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant createdAt = Instant.now();
 
-    public Invoice(Order order, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType) {
-        this.order = order;
+    public Invoice(Payment payment, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType) {
+        this.payment = payment;
         this.totalAmount = totalAmount;
         this.taxAmount = taxAmount;
         this.invoiceType = invoiceType;
     }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
     public enum InvoiceType {
         INDIVIDUAL,
         CORPORATE
@@ -57,14 +67,6 @@ public class Invoice {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
     }
 
     public BigDecimal getTotalAmount() {

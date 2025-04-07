@@ -23,13 +23,15 @@ public class Payment {
     private String conversationId;
     private String paymentUniqId;
 
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus = PaymentStatus.PROCESS;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    public Payment(long id, String name, String surname, String username, String phoneNo, String identityNo, String country, String city, String zipCode, String cardHolderName, String conversationId, String paymentUniqId, Order order) {
-        this.id = id;
+    public Payment(String name, String surname, String username, String phoneNo, String identityNo, String country, String city, String zipCode, String cardHolderName, String conversationId, String paymentUniqId, Order order) {
         this.name = name;
         this.surname = surname;
         this.username = username;
@@ -151,7 +153,15 @@ public class Payment {
         this.order = order;
     }
 
-    enum PaymentStatus {
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public enum PaymentStatus {
         SUCCESS,PROCESS,FAILED,REFUNDED;
     }
 }

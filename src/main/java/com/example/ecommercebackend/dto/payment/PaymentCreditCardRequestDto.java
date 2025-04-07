@@ -1,6 +1,6 @@
 package com.example.ecommercebackend.dto.payment;
 
-import com.example.ecommercebasic.dto.product.order.OrderDeliveryRequestDto;
+import com.example.ecommercebackend.dto.product.order.OrderDeliveryRequestDto;
 
 import java.math.BigDecimal;
 

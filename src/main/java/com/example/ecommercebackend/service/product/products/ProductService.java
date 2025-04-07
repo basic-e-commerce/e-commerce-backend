@@ -434,4 +434,8 @@ public class ProductService {
         return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 cb.equal(root.get("published"), isPublished);
     }
+
+    public Product save(Product product) {
+        return productRepository.save(product);
+    }
 }

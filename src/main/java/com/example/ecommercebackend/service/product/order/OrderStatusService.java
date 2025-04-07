@@ -16,4 +16,8 @@ public class OrderStatusService {
         OrderStatus orderStatus = new OrderStatus(status,privacy,color);
         return orderStatusRepository.save(orderStatus);
     }
+
+    public OrderStatus updateOrderStatus(OrderStatus orderStatus) {
+        return orderStatusRepository.save(orderStatus);
+    }
 }
