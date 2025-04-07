@@ -71,7 +71,8 @@ public class OrderService {
             }
             System.out.println("333333333333333333");
 
-            Order order = new Order(null,
+            Order order = new Order(customer,
+                    null,
                     orderCreateDto.address().firstName(),
                     orderCreateDto.address().lastName(),
                     orderCreateDto.address().countryName(),
@@ -85,9 +86,6 @@ public class OrderService {
                     orderPrice);
             System.out.println("444444444444444444");
             Order save = orderRepository.save(order);
-            System.out.println("55555555555555555555");
-            customer.getOrders().add(save);
-            customerService.save(customer);
             System.out.println("666666666666666666");
             return save;
         }else

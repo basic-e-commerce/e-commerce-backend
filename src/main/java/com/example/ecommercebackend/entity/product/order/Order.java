@@ -2,15 +2,13 @@ package com.example.ecommercebackend.entity.product.order;
 
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.products.Coupon;
-import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.entity.user.Admin;
-import com.example.ecommercebackend.entity.user.Customer;
+import com.example.ecommercebackend.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -21,6 +19,10 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")
     @SequenceGenerator(name = "order_seq", sequenceName = "order_seq", allocationSize = 1)
     private int id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id",referencedColumnName = "id")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "coupon_id", referencedColumnName = "id")
@@ -88,7 +90,8 @@ public class Order {
         this.orderCode = UUID.randomUUID().toString();
     }
 
-    public Order(Coupon coupon, String firstName, String lastName, String countryName, String city, String addressLine1, String addressLine2, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice) {
+    public Order(User user, Coupon coupon, String firstName, String lastName, String countryName, String city, String addressLine1, String addressLine2, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice) {
+        this.user = user;
         this.coupon = coupon;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -264,5 +267,13 @@ public class Order {
 
     public void setPayments(Set<Payment> payments) {
         this.payments = payments;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
