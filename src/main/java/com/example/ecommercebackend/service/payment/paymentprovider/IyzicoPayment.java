@@ -199,6 +199,11 @@ public class IyzicoPayment implements PaymentStrategy {
         System.out.println("total price: "  + totalPrice);
         System.out.println("order.getTotalPrice(): " + order.getTotalPrice());
 
+        if (totalPrice.equals(order.getTotalPrice())) {
+            System.out.println("evet eşit !!!!!");
+        }else
+            System.out.println("hayır eşit değil !!!!!");
+
         request.setLocale(Locale.TR.getValue());
         request.setConversationId(conversationId);
         request.setPrice(order.getTotalPrice());
