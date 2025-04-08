@@ -119,7 +119,7 @@ public class PaymentService {
             paymentRepository.save(payment);
 
             // update orderstatus approved,green
-            Order order = orderService.findByPayment(payment);
+            Order order = payment.getOrder();
             OrderStatus orderStatus = order.getOrderStatus();
             orderStatus.setStatus(OrderStatus.Status.APPROVED);
             orderStatus.setColor(OrderStatus.Color.GREEN);
