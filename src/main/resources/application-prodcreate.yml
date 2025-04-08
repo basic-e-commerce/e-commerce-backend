@@ -6,7 +6,7 @@ spring:
   # http://localhost:8080/oauth2/authorization/google
   # Datasource Configuration (Veritabanı Bağlantısı)
   datasource:
-    url: jdbc:postgresql://localhost:5432/e_commerce_basic
+    url: jdbc:postgresql://localhost:5432/ecommercebackend
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
