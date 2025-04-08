@@ -182,7 +182,7 @@ public class IyzicoPayment implements PaymentStrategy {
         Options options = new Options();
         options.setApiKey(apiKey);
         options.setSecretKey(apiSecret);
-        options.setBaseUrl(baseUrl);
+        options.setBaseUrl("https://litysofttest.site");
         return options;
     }
 
