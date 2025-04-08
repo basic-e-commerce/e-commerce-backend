@@ -123,20 +123,27 @@ public class PaymentService {
 
             // update orderstatus approved,green
             Order order = payment.getOrder();
+            System.out.println("order firstname: "+order.getFirstName());
+
             OrderStatus orderStatus = order.getOrderStatus();
+            System.out.println("order status: "+orderStatus.getStatus().name());
             orderStatus.setStatus(OrderStatus.Status.APPROVED);
             orderStatus.setColor(OrderStatus.Color.GREEN);
             OrderStatus saveOrderStatus = orderService.updateOrderStatus(orderStatus);
 
             order.setOrderStatus(saveOrderStatus);
             Order saveOrder = orderService.save(order);
+            System.out.println("save order"+order.getFirstName());
 
             // create save
-            order.getOrderItems().forEach(sellService::save);
+            saveOrder.getOrderItems().forEach(sellService::save);
 
 
+            System.out.println("urun sayısı azaltılacak");
             saveOrder.getOrderItems().forEach(orderItem -> {
                 Product product = orderItem.getProduct();
+                System.out.println("product name : "+product.getProductName());
+
                 int productQuantity = orderItem.getQuantity();
 
                 product.setQuantity(productQuantity-orderItem.getQuantity());
@@ -191,9 +198,5 @@ public class PaymentService {
         }
         throw new BadRequestException("Invalid Card");
     }
-
-
-
-
 
 }
