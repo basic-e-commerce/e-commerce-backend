@@ -62,24 +62,31 @@ public class IyzicoPayment implements PaymentStrategy {
 
         CreatePaymentRequest request = getCreatePaymentRequest(order,conversationId,paymentCreditCardRequestDto.getTotalPrice(),paymentCreditCardRequestDto.getInstallmentNumber());
         System.out.println(8);
+
         PaymentCard paymentCard = getPaymentCard(paymentCreditCardRequestDto.getCreditCardRequestDto());
         request.setPaymentCard(paymentCard);
         System.out.println(9);
+
         Buyer buyer = getBuyer(paymentCreditCardRequestDto.getOrderDeliveryRequestDto(),httpServletRequest);
         request.setBuyer(buyer);
         System.out.println(10);
+
         Address shippingAddress = getShippingAddress(paymentCreditCardRequestDto.getOrderDeliveryRequestDto());
         request.setShippingAddress(shippingAddress);
         System.out.println(11);
+
         Address billingAddress = getBillingAddress(paymentCreditCardRequestDto.getOrderDeliveryRequestDto());
         request.setBillingAddress(billingAddress);
         System.out.println(12);
+
         List<BasketItem> basketItems = getBasketItems(order);
         request.setBasketItems(basketItems);
         System.out.println(13);
+
         ThreedsInitialize threedsInitialize = ThreedsInitialize.create(request, options);
         System.out.println(threedsInitialize);
         System.out.println(14);
+
         return new ProcessCreditCardDto(
                 threedsInitialize.getConversationId(),
                 threedsInitialize.getPaymentId(),
@@ -188,6 +195,9 @@ public class IyzicoPayment implements PaymentStrategy {
 
     public CreatePaymentRequest getCreatePaymentRequest(Order order,String conversationId,BigDecimal totalPrice,Integer installmentNumber) {
         CreatePaymentRequest request = new CreatePaymentRequest();
+
+        System.out.println("total price: "  + totalPrice);
+        System.out.println("order.getTotalPrice(): " + order.getTotalPrice());
 
         request.setLocale(Locale.TR.getValue());
         request.setConversationId(conversationId);
