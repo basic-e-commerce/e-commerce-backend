@@ -39,6 +39,8 @@ public class PaymentService {
         Order order = orderService.findByOrderCode(paymentCreditCardRequestDto.getOrderCode());
 
         if (order.getPayments() != null){
+            System.out.println(order.getPayments().stream().map(payment -> payment.getPaymentStatus().name()));
+
             if (order.getPayments().stream().anyMatch(payment -> payment.getPaymentStatus() == Payment.PaymentStatus.SUCCESS))
                 throw new ResourceAlreadyExistException("payment is successful in order");
 
