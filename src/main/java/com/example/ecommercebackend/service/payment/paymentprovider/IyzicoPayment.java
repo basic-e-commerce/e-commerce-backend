@@ -293,6 +293,7 @@ public class IyzicoPayment implements PaymentStrategy {
         System.out.println("orderitem.getquantity: "+orderItem.getQuantity());
         System.out.println("orderitem.getprice: "+orderItem.getPrice());
 
+
         System.out.println("ürün fiyatları toplamı :    "+BigDecimal.valueOf(orderItem.getQuantity()).multiply(orderItem.getPrice()));
         return basketItem;
     }
