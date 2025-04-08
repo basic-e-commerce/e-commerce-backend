@@ -38,6 +38,7 @@ public class PaymentService {
     public String processCreditCardPayment(PaymentCreditCardRequestDto paymentCreditCardRequestDto, HttpServletRequest httpServletRequest) {
         Order order = orderService.findByOrderCode(paymentCreditCardRequestDto.getOrderCode());
 
+        System.out.println(order.getPayments().size() + "    order.getPayments().size()");
         if (order.getPayments() != null){
             System.out.println(order.getPayments().stream().map(payment -> payment.getPaymentStatus().name()));
 
