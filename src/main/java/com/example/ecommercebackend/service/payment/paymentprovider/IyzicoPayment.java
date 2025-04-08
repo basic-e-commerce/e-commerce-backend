@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
 @Service
@@ -286,9 +287,12 @@ public class IyzicoPayment implements PaymentStrategy {
         BasketItem basketItem = new BasketItem();
         basketItem.setId(String.valueOf(orderItem.getId()));
         basketItem.setName(orderItem.getProduct().getProductName());
-        basketItem.setCategory1((orderItem.getProduct().getCategories().stream().findFirst()).get().getCategoryName());
+        basketItem.setCategory1(Objects.requireNonNull((orderItem.getProduct().getCategories().stream().findFirst()).orElse(null)).getCategoryName());
         basketItem.setItemType(BasketItemType.PHYSICAL.name());
         basketItem.setPrice(BigDecimal.valueOf(orderItem.getQuantity()).multiply(orderItem.getPrice()));
+        System.out.println("orderitem.getquantity: "+orderItem.getQuantity());
+        System.out.println("orderitem.getprice: "+orderItem.getPrice());
+
         System.out.println("ürün fiyatları toplamı :    "+BigDecimal.valueOf(orderItem.getQuantity()).multiply(orderItem.getPrice()));
         return basketItem;
     }
