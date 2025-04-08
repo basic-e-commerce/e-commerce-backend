@@ -1,6 +1,8 @@
 package com.example.ecommercebackend.service.product.order;
 
+import com.example.ecommercebackend.builder.product.order.OrderBuilder;
 import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
+import com.example.ecommercebackend.dto.product.order.OrderResponseDto;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.card.CardItem;
 import com.example.ecommercebackend.entity.product.order.Order;
@@ -32,18 +34,20 @@ public class OrderService {
     private final OrderStatusService orderStatusService;
     private final OrderItemService orderItemService;
     private final ProductService productService;
+    private final OrderBuilder orderBuilder;
 
-    public OrderService(OrderRepository orderRepository, GuestService guestService, CustomerService customerService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService) {
+    public OrderService(OrderRepository orderRepository, GuestService guestService, CustomerService customerService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder) {
         this.orderRepository = orderRepository;
         this.guestService = guestService;
         this.customerService = customerService;
         this.orderStatusService = orderStatusService;
         this.orderItemService = orderItemService;
         this.productService = productService;
+        this.orderBuilder = orderBuilder;
     }
 
     @Transactional
-    public Order createOrder(OrderCreateDto orderCreateDto) {
+    public OrderResponseDto createOrder(OrderCreateDto orderCreateDto) {
         // Authentication nesnesini güvenlik bağlamından alıyoruz
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -89,7 +93,7 @@ public class OrderService {
             System.out.println("666666666666666666");
 
 
-            return save;
+            return orderBuilder.orderToOrderResponseDto(save);
         }else
             return null;
     }
