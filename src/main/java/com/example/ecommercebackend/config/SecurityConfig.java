@@ -46,6 +46,9 @@ public class SecurityConfig {
                 .sessionManagement(x->x.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(x->x
                         .requestMatchers(HttpMethod.POST,"/api/v1/category").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/category").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/category").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/category/image").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/supplier").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/supplier").hasAuthority("ADMIN")

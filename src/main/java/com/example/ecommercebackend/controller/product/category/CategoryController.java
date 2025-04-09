@@ -1,11 +1,13 @@
 package com.example.ecommercebackend.controller.product.category;
 
 import com.example.ecommercebackend.dto.product.category.CategoryCreateDto;
+import com.example.ecommercebackend.dto.product.category.CategoryUpdateDto;
 import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.service.product.category.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -32,4 +34,16 @@ public class CategoryController {
     public ResponseEntity<Category> deleteCategory(@RequestParam Integer id) {
         return new ResponseEntity<>(categoryService.deleteCategory(id),HttpStatus.OK);
     }
+
+    @PutMapping
+    public ResponseEntity<Category> updateCategory(@RequestBody CategoryUpdateDto categoryUpdateDto){
+        return new ResponseEntity<>(categoryService.updateCategory(categoryUpdateDto),HttpStatus.OK);
+    }
+
+    @PutMapping("/image")
+    public ResponseEntity<Category> updateCategoryImage(@RequestParam Integer id, @RequestParam MultipartFile image) {
+        return new ResponseEntity<>(categoryService.updateCategoryImage(id,image),HttpStatus.OK);
+    }
+
+
 }

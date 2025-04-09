@@ -2,7 +2,9 @@ package com.example.ecommercebackend.service.product.category;
 
 import com.example.ecommercebackend.builder.product.category.CategoryBuilder;
 import com.example.ecommercebackend.dto.file.CoverImageRequestDto;
+import com.example.ecommercebackend.dto.file.ImageRequestDto;
 import com.example.ecommercebackend.dto.product.category.CategoryCreateDto;
+import com.example.ecommercebackend.dto.product.category.CategoryUpdateDto;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.user.Admin;
@@ -16,7 +18,9 @@ import com.example.ecommercebackend.service.file.CoverImageService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -129,9 +133,44 @@ public class CategoryService {
         }
     }
 
-
-
     public boolean isHasProduct(int id) {
         return categoryRepository.existsByCategoryId(id);
+    }
+
+    public Category updateCategory(CategoryUpdateDto categoryUpdateDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof Admin admin) {
+            Category category = findCategoryById(categoryUpdateDto.getId());
+            category.setCategoryName(categoryUpdateDto.getName());
+            category.setCategoryDescription(categoryUpdateDto.getDescription());
+            category.setActive(categoryUpdateDto.isActive());
+            category.setUpdatedAt(Instant.now());
+            category.setUpdatedBy(admin);
+            return categoryRepository.save(category);
+        }else
+            throw new BadRequestException("Authenticated user is not an Admin.");
+    }
+
+    public Category updateCategoryImage(Integer id, MultipartFile image) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof Admin admin) {
+            Category category = findCategoryById(id);
+            if (category.getCoverImage() != null){
+                categoryImageService.delete(category.getCoverImage().getId());
+                category.setCoverImage(null);
+                categoryRepository.save(category);
+            }
+
+            ImageRequestDto imageRequestDto = new ImageRequestDto(image);
+            CoverImage coverImage = categoryImageService.save(imageRequestDto, category.getId());
+            category.setCoverImage(coverImage);
+            category.setUpdatedBy(admin);
+            category.setUpdatedAt(Instant.now());
+            return categoryRepository.save(category);
+
+        }else
+            throw new BadRequestException("Authenticated user is not an Admin.");
     }
 }
