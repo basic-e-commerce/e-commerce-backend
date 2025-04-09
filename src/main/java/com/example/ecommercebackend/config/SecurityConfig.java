@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/category").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/category").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/category/image").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/category/image").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/supplier").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/supplier").hasAuthority("ADMIN")

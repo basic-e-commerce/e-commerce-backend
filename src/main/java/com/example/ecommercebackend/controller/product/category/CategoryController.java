@@ -45,5 +45,10 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.updateCategoryImage(id,image),HttpStatus.OK);
     }
 
+    @DeleteMapping("/image")
+    public ResponseEntity<String> deleteCategoryImage(@RequestParam Integer id) {
+        return new ResponseEntity<>(categoryService.deleteCategoryImage(id),HttpStatus.OK);
+    }
+
 
 }

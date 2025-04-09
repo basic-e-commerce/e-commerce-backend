@@ -173,4 +173,21 @@ public class CategoryService {
         }else
             throw new BadRequestException("Authenticated user is not an Admin.");
     }
+
+    public String deleteCategoryImage(Integer categoryId) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Admin admin) {
+            Category category = findCategoryById(categoryId);
+            if (category.getCoverImage() != null){
+                categoryImageService.delete(category.getCoverImage().getId());
+                category.setCoverImage(null);
+                category.setUpdatedAt(Instant.now());
+                category.setUpdatedBy(admin);
+                categoryRepository.save(category);
+                return "Category image deleted successfully";
+            }else
+                throw new BadRequestException("Resource Not Found.");
+        }else
+            throw new BadRequestException("Authenticated user is not an Admin.");
+    }
 }
