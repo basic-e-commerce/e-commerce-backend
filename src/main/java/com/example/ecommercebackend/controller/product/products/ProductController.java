@@ -7,7 +7,6 @@ import com.example.ecommercebackend.dto.product.products.ProductUpdateDto;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.service.product.products.ProductService;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
