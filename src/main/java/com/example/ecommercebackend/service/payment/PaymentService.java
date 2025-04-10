@@ -172,6 +172,8 @@ public class PaymentService {
         BigDecimal minPrice = merchant.getMinOrderAmount();
         System.out.println("******************** min priceeeee : "+minPrice);
 
+        System.out.println("*********** karşılaştırma: "+totalPrice.compareTo(minPrice));
+
         if (totalPrice.compareTo(minPrice) < 0) {
             totalPrice = totalPrice.add(kargoPrice);
         }
