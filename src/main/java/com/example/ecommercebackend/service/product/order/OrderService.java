@@ -36,17 +36,15 @@ import java.util.Set;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final GuestService guestService;
-    private final CustomerService customerService;
     private final OrderStatusService orderStatusService;
     private final OrderItemService orderItemService;
     private final ProductService productService;
     private final OrderBuilder orderBuilder;
 
 
-    public OrderService(OrderRepository orderRepository, GuestService guestService, CustomerService customerService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder) {
+    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder) {
         this.orderRepository = orderRepository;
         this.guestService = guestService;
-        this.customerService = customerService;
         this.orderStatusService = orderStatusService;
         this.orderItemService = orderItemService;
         this.productService = productService;
@@ -86,6 +84,8 @@ public class OrderService {
                     null,
                     orderCreateDto.address().firstName(),
                     orderCreateDto.address().lastName(),
+                    orderCreateDto.address().username(),
+                    orderCreateDto.address().identityNo(),
                     orderCreateDto.address().countryName(),
                     orderCreateDto.address().city(),
                     orderCreateDto.address().addressLine1(),
@@ -154,6 +154,8 @@ public class OrderService {
                     null,
                     orderCreateDto.address().firstName(),
                     orderCreateDto.address().lastName(),
+                    orderCreateDto.address().username(),
+                    orderCreateDto.address().identityNo(),
                     orderCreateDto.address().countryName(),
                     orderCreateDto.address().city(),
                     orderCreateDto.address().addressLine1(),

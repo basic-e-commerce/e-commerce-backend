@@ -8,16 +8,14 @@ public class PaymentCreditCardRequestDto {
     private String paymentMethod;
     private String orderCode;
     private CreditCardRequestDto creditCardRequestDto;
-    private OrderDeliveryRequestDto orderDeliveryRequestDto;
     private BigDecimal totalPrice;
     private Integer installmentNumber;
 
 
-    public PaymentCreditCardRequestDto(String paymentMethod, String orderCode, CreditCardRequestDto creditCardRequestDto, OrderDeliveryRequestDto orderDeliveryRequestDto, BigDecimal totalPrice, Integer installmentNumber) {
+    public PaymentCreditCardRequestDto(String paymentMethod, String orderCode, CreditCardRequestDto creditCardRequestDto, BigDecimal totalPrice, Integer installmentNumber) {
         this.paymentMethod = paymentMethod;
         this.orderCode = orderCode;
         this.creditCardRequestDto = creditCardRequestDto;
-        this.orderDeliveryRequestDto = orderDeliveryRequestDto;
         this.totalPrice = totalPrice;
         this.installmentNumber = installmentNumber;
     }
@@ -44,14 +42,6 @@ public class PaymentCreditCardRequestDto {
 
     public void setCreditCardRequestDto(CreditCardRequestDto creditCardRequestDto) {
         this.creditCardRequestDto = creditCardRequestDto;
-    }
-
-    public OrderDeliveryRequestDto getOrderDeliveryRequestDto() {
-        return orderDeliveryRequestDto;
-    }
-
-    public void setOrderDeliveryRequestDto(OrderDeliveryRequestDto orderDeliveryRequestDto) {
-        this.orderDeliveryRequestDto = orderDeliveryRequestDto;
     }
 
     public BigDecimal getTotalPrice() {

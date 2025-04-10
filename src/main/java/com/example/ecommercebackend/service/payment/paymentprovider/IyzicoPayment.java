@@ -68,15 +68,15 @@ public class IyzicoPayment implements PaymentStrategy {
         request.setPaymentCard(paymentCard);
         System.out.println(9);
 
-        Buyer buyer = getBuyer(paymentCreditCardRequestDto.getOrderDeliveryRequestDto(),httpServletRequest);
+        Buyer buyer = getBuyer(order,httpServletRequest);
         request.setBuyer(buyer);
         System.out.println(10);
 
-        Address shippingAddress = getShippingAddress(paymentCreditCardRequestDto.getOrderDeliveryRequestDto());
+        Address shippingAddress = getShippingAddress(order);
         request.setShippingAddress(shippingAddress);
         System.out.println(11);
 
-        Address billingAddress = getBillingAddress(paymentCreditCardRequestDto.getOrderDeliveryRequestDto());
+        Address billingAddress = getBillingAddress(order);
         request.setBillingAddress(billingAddress);
         System.out.println(12);
 
@@ -230,7 +230,7 @@ public class IyzicoPayment implements PaymentStrategy {
         return paymentCard;
     }
 
-    public Buyer getBuyer(OrderDeliveryRequestDto orderDeliveryRequestDto, HttpServletRequest httpServletRequest) {
+    public Buyer getBuyer(Order order, HttpServletRequest httpServletRequest) {
         String ip = httpServletRequest.getHeader("X-Forwarded-For");
         if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = httpServletRequest.getRemoteAddr();
@@ -238,39 +238,39 @@ public class IyzicoPayment implements PaymentStrategy {
 
         Buyer buyer = new Buyer();
         buyer.setId("BY789");
-        buyer.setName(orderDeliveryRequestDto.getName());
-        buyer.setSurname(orderDeliveryRequestDto.getSurname());
-        buyer.setGsmNumber(orderDeliveryRequestDto.getPhone());
-        buyer.setEmail(orderDeliveryRequestDto.getEmail());
-        buyer.setIdentityNumber(orderDeliveryRequestDto.getIdentityNo());
+        buyer.setName(order.getFirstName());
+        buyer.setSurname(order.getLastName());
+        buyer.setGsmNumber(order.getPhoneNumber());
+        buyer.setEmail(order.getUsername());
+        buyer.setIdentityNumber(order.getIdentityNo());
         //buyer.setLastLoginDate("2015-10-05 12:43:35");
         //buyer.setRegistrationDate("2013-04-21 15:12:09");
-        buyer.setRegistrationAddress(orderDeliveryRequestDto.getAddress());
+        buyer.setRegistrationAddress(order.getAddressLine1());
         buyer.setIp(ip);
-        buyer.setCity(orderDeliveryRequestDto.getCity());
-        buyer.setCountry(orderDeliveryRequestDto.getCountry());
-        buyer.setZipCode(orderDeliveryRequestDto.getPostalCode());
+        buyer.setCity(order.getCity());
+        buyer.setCountry(order.getCountry());
+        buyer.setZipCode(order.getPostalCode());
 
         return buyer;
     }
 
-    public Address getShippingAddress(OrderDeliveryRequestDto orderDeliveryRequestDto) {
+    public Address getShippingAddress(Order order) {
         Address shippingAddress = new Address();
-        shippingAddress.setContactName(orderDeliveryRequestDto.getName() + " " + orderDeliveryRequestDto.getSurname());
-        shippingAddress.setCity(orderDeliveryRequestDto.getCity());
-        shippingAddress.setCountry(orderDeliveryRequestDto.getCountry());
-        shippingAddress.setAddress(orderDeliveryRequestDto.getAddress());
-        shippingAddress.setZipCode(orderDeliveryRequestDto.getPostalCode());
+        shippingAddress.setContactName(order.getFirstName() + " " + order.getLastName());
+        shippingAddress.setCity(order.getCity());
+        shippingAddress.setCountry(order.getCountry());
+        shippingAddress.setAddress(order.getAddressLine1());
+        shippingAddress.setZipCode(order.getPostalCode());
         return shippingAddress;
     }
 
-    public Address getBillingAddress(OrderDeliveryRequestDto orderDeliveryRequestDto) {
+    public Address getBillingAddress(Order order) {
         Address billingAddress = new Address();
-        billingAddress.setContactName(orderDeliveryRequestDto.getName() + " " + orderDeliveryRequestDto.getSurname());
-        billingAddress.setCity(orderDeliveryRequestDto.getCity());
-        billingAddress.setCountry(orderDeliveryRequestDto.getCountry());
-        billingAddress.setAddress(orderDeliveryRequestDto.getAddress());
-        billingAddress.setZipCode(orderDeliveryRequestDto.getPostalCode());
+        billingAddress.setContactName(order.getFirstName() + " " + order.getLastName());
+        billingAddress.setCity(order.getCity());
+        billingAddress.setCountry(order.getCountry());
+        billingAddress.setAddress(order.getAddressLine1());
+        billingAddress.setZipCode(order.getPostalCode());
         return billingAddress;
     }
 

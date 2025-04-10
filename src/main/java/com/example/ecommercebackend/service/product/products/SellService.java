@@ -18,7 +18,12 @@ public class SellService {
 
     public Sell save(OrderItem orderItem) {
         Product product = orderItem.getProduct();
-        product.setQuantity(product.getQuantity()-orderItem.getQuantity());
+        int quantity = orderItem.getQuantity();
+        System.out.println("sell product: "+product.getProductName());
+        System.out.println("sell product quantity: : "+product.getQuantity());
+
+        System.out.println("orderItem quantity: : "+orderItem.getQuantity());
+        product.setQuantity(quantity-orderItem.getQuantity());
         Product save = productService.save(product);
 
         Sell sell = new Sell(

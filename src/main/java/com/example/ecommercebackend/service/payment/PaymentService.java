@@ -53,14 +53,14 @@ public class PaymentService {
 
         String conversationId = UUID.randomUUID().toString();
         Payment payment = new Payment(
-                paymentCreditCardRequestDto.getOrderDeliveryRequestDto().getName(),
-                paymentCreditCardRequestDto.getOrderDeliveryRequestDto().getSurname(),
-                paymentCreditCardRequestDto.getOrderDeliveryRequestDto().getEmail(),
-                paymentCreditCardRequestDto.getOrderDeliveryRequestDto().getPhone(),
-                paymentCreditCardRequestDto.getOrderDeliveryRequestDto().getIdentityNo(),
-                paymentCreditCardRequestDto.getOrderDeliveryRequestDto().getCountry(),
-                paymentCreditCardRequestDto.getOrderDeliveryRequestDto().getCity(),
-                paymentCreditCardRequestDto.getOrderDeliveryRequestDto().getPostalCode(),
+                order.getFirstName(),
+                order.getLastName(),
+                order.getUsername(),
+                order.getPhoneNumber(),
+                order.getIdentityNo(),
+                order.getCountry(),
+                order.getCity(),
+                order.getPostalCode(),
                 paymentCreditCardRequestDto.getCreditCardRequestDto().getCardHolderName(),
                 conversationId,
                 "İslem Baslatılıyor",
@@ -72,8 +72,6 @@ public class PaymentService {
         PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod(paymentCreditCardRequestDto.getPaymentMethod());
         BigDecimal totalPrice = processTotalPrice(order.getTotalPrice());
         String binNumber = paymentCreditCardRequestDto.getCreditCardRequestDto().getCardNumber().substring(0, 6);
-
-
 
         if (paymentCreditCardRequestDto.getInstallmentNumber() > 1){
             InstallmentInfoDto bin = getBin(binNumber, totalPrice);
@@ -133,18 +131,17 @@ public class PaymentService {
             System.out.println("order status: "+orderStatus.getStatus().name());
             orderStatus.setStatus(OrderStatus.Status.APPROVED);
             orderStatus.setColor(OrderStatus.Color.GREEN);
-            OrderStatus saveOrderStatus = orderService.updateOrderStatus(orderStatus);
+            orderService.updateOrderStatus(orderStatus);
 
-            order.setOrderStatus(saveOrderStatus);
-            Order saveOrder = orderService.save(order);
+            order.setIdentityNo("***********");
             System.out.println("save order"+order.getFirstName());
 
             // create save
-            saveOrder.getOrderItems().forEach(sellService::save);
+            order.getOrderItems().forEach(sellService::save);
 
 
             System.out.println("urun sayısı azaltılacak");
-            saveOrder.getOrderItems().forEach(orderItem -> {
+            order.getOrderItems().forEach(orderItem -> {
                 Product product = orderItem.getProduct();
                 System.out.println("product name : "+product.getProductName());
 
@@ -160,6 +157,7 @@ public class PaymentService {
             httpServletResponse.sendRedirect(redirectUrl);
         }else{
             Payment payment = findByConversationId(payCallBackDto.getConversationId());
+            payment.getOrder().setIdentityNo("***********");
             payment.setPaymentStatus(Payment.PaymentStatus.FAILED);
             String redirectUrl = "https://litysofttest.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
             httpServletResponse.sendRedirect(redirectUrl);
