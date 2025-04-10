@@ -1,7 +1,5 @@
 package com.example.ecommercebackend.dto.payment;
 
-import com.example.ecommercebackend.dto.product.order.OrderDeliveryRequestDto;
-
 import java.math.BigDecimal;
 
 public class PaymentCreditCardRequestDto {

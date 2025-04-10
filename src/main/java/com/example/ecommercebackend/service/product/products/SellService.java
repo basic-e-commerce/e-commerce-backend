@@ -23,6 +23,7 @@ public class SellService {
         System.out.println("sell product quantity: : "+product.getQuantity());
 
         System.out.println("orderItem quantity: : "+orderItem.getQuantity());
+        System.out.println("kalan quantity: "+ (quantity-orderItem.getQuantity()));
         product.setQuantity(quantity-orderItem.getQuantity());
         Product save = productService.save(product);
 
