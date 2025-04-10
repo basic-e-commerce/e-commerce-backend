@@ -35,7 +35,7 @@ public class Product {
     @Column(name = "buying_price", columnDefinition = "NUMERIC")
     private BigDecimal buyingPrice;
 
-    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0",name = "quantity")
+    @Column(name = "quantity")
     private Integer quantity;
 
     @Column(name = "short_description", nullable = false, length = 165)
