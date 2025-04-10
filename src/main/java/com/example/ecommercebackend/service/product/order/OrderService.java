@@ -16,6 +16,7 @@ import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.order.OrderRepository;
+import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.example.ecommercebackend.service.product.products.ProductService;
 import com.example.ecommercebackend.service.user.GuestService;
 import jakarta.transaction.Transactional;
@@ -36,15 +37,17 @@ public class OrderService {
     private final OrderItemService orderItemService;
     private final ProductService productService;
     private final OrderBuilder orderBuilder;
+    private final MerchantService merchantService;
 
 
-    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder) {
+    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService) {
         this.orderRepository = orderRepository;
         this.guestService = guestService;
         this.orderStatusService = orderStatusService;
         this.orderItemService = orderItemService;
         this.productService = productService;
         this.orderBuilder = orderBuilder;
+        this.merchantService = merchantService;
     }
 
     @Transactional
@@ -81,7 +84,6 @@ public class OrderService {
                     orderCreateDto.address().firstName(),
                     orderCreateDto.address().lastName(),
                     orderCreateDto.address().username(),
-                    orderCreateDto.address().identityNo(),
                     orderCreateDto.address().countryName(),
                     orderCreateDto.address().city(),
                     orderCreateDto.address().addressLine1(),
@@ -151,7 +153,6 @@ public class OrderService {
                     orderCreateDto.address().firstName(),
                     orderCreateDto.address().lastName(),
                     orderCreateDto.address().username(),
-                    orderCreateDto.address().identityNo(),
                     orderCreateDto.address().countryName(),
                     orderCreateDto.address().city(),
                     orderCreateDto.address().addressLine1(),

@@ -15,7 +15,6 @@ public class Payment {
     private String surname;
     private String username;
     private String phoneNo;
-    private String identityNo;
     private String country;
     private String city;
     private String zipCode;
@@ -31,12 +30,11 @@ public class Payment {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    public Payment(String name, String surname, String username, String phoneNo, String identityNo, String country, String city, String zipCode, String cardHolderName, String conversationId, String paymentUniqId, Order order) {
+    public Payment(String name, String surname, String username, String phoneNo,String country, String city, String zipCode, String cardHolderName, String conversationId, String paymentUniqId, Order order) {
         this.name = name;
         this.surname = surname;
         this.username = username;
         this.phoneNo = phoneNo;
-        this.identityNo = identityNo;
         this.country = country;
         this.city = city;
         this.zipCode = zipCode;
@@ -87,14 +85,6 @@ public class Payment {
 
     public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
-    }
-
-    public String getIdentityNo() {
-        return identityNo;
-    }
-
-    public void setIdentityNo(String identityNo) {
-        this.identityNo = identityNo;
     }
 
     public String getCountry() {

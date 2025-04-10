@@ -61,7 +61,6 @@ public class PaymentService {
                 order.getLastName(),
                 order.getUsername(),
                 order.getPhoneNumber(),
-                order.getIdentityNo(),
                 order.getCountry(),
                 order.getCity(),
                 order.getPostalCode(),
@@ -138,7 +137,6 @@ public class PaymentService {
             orderStatus.setColor(OrderStatus.Color.GREEN);
             orderService.updateOrderStatus(orderStatus);
 
-            order.setIdentityNo("***********");
             System.out.println("save order"+order.getFirstName());
 
             // create save
@@ -148,7 +146,6 @@ public class PaymentService {
             httpServletResponse.sendRedirect(redirectUrl);
         }else{
             Payment payment = findByConversationId(payCallBackDto.getConversationId());
-            payment.getOrder().setIdentityNo("***********");
             payment.setPaymentStatus(Payment.PaymentStatus.FAILED);
             String redirectUrl = "https://litysofttest.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
             httpServletResponse.sendRedirect(redirectUrl);

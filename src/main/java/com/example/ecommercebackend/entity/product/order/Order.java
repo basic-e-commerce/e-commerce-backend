@@ -39,9 +39,6 @@ public class Order {
     @Column(name = "username")
     private String username;
 
-    @Column(name = "identity_no")
-    private String identityNo;
-
     @Column(name = "country_name")
     private String countryName;
 
@@ -96,13 +93,12 @@ public class Order {
         this.orderCode = UUID.randomUUID().toString();
     }
 
-    public Order(User user, Coupon coupon, String firstName, String lastName, String username, String identityNo, String countryName, String city, String addressLine1, String addressLine2, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice) {
+    public Order(User user, Coupon coupon, String firstName, String lastName, String username, String countryName, String city, String addressLine1, String addressLine2, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice) {
         this.user = user;
         this.coupon = coupon;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
-        this.identityNo = identityNo;
         this.countryName = countryName;
         this.city = city;
         this.addressLine1 = addressLine1;
@@ -287,13 +283,5 @@ public class Order {
 
     public String getUsername() {
         return username;
-    }
-
-    public String getIdentityNo() {
-        return identityNo;
-    }
-
-    public void setIdentityNo(String identityNo) {
-        this.identityNo = identityNo;
     }
 }
