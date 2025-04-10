@@ -73,7 +73,7 @@ public class PaymentService {
         order.getPayments().add(savePayment);
 
         PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod(paymentCreditCardRequestDto.getPaymentMethod());
-        BigDecimal totalPrice = processTotalPrice(order.getTotalPrice());
+        BigDecimal totalPrice = order.getTotalPrice();
         String binNumber = paymentCreditCardRequestDto.getCreditCardRequestDto().getCardNumber().substring(0, 6);
 
         if (paymentCreditCardRequestDto.getInstallmentNumber() > 1){
@@ -160,22 +160,6 @@ public class PaymentService {
     public InstallmentInfoDto getBin(String binCode, BigDecimal price) {
         PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
         return paymentStrategy.getBin(binCode, price);
-    }
-
-    private BigDecimal processTotalPrice(BigDecimal totalPrice) {
-        Merchant merchant = merchantService.getMerchant();
-        BigDecimal kargoPrice = merchant.getShippingFee();
-        System.out.println("******************** kargoprice : "+ kargoPrice);
-        BigDecimal minPrice = merchant.getMinOrderAmount();
-        System.out.println("******************** min priceeeee : "+minPrice);
-
-        System.out.println("*********** karşılaştırma: "+totalPrice.compareTo(minPrice));
-
-        if (totalPrice.compareTo(minPrice) < 0) {
-            totalPrice = totalPrice.add(kargoPrice);
-        }
-        System.out.println("************************processTotalPrice: "+totalPrice);
-        return totalPrice;
     }
 
     // Taksite göre fiyatı ayarlama

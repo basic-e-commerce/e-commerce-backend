@@ -4,6 +4,7 @@ import com.example.ecommercebackend.builder.product.order.OrderBuilder;
 import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
 import com.example.ecommercebackend.dto.product.order.OrderItemCreateDto;
 import com.example.ecommercebackend.dto.product.order.OrderResponseDto;
+import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.card.CardItem;
 import com.example.ecommercebackend.entity.product.order.Order;
@@ -146,6 +147,10 @@ public class OrderService {
             for (OrderItem orderItem: savedOrderItems){
                 orderPrice = orderPrice.add(orderItem.getPrice());
             }
+
+            BigDecimal totalPrice = processTotalPrice(orderPrice);
+            System.out.println("totalPrice = " + totalPrice);
+
             System.out.println("333333333333333333");
 
             Order order = new Order(guest,
@@ -170,10 +175,23 @@ public class OrderService {
             return orderBuilder.orderToOrderResponseDto(save);
 
         }
-
-
         throw new BadRequestException("Geçersiz Kullanıcı");
+    }
 
+    private BigDecimal processTotalPrice(BigDecimal totalPrice) {
+        Merchant merchant = merchantService.getMerchant();
+        BigDecimal kargoPrice = merchant.getShippingFee();
+        System.out.println("******************** kargoprice : "+ kargoPrice);
+        BigDecimal minPrice = merchant.getMinOrderAmount();
+        System.out.println("******************** min priceeeee : "+minPrice);
+
+        System.out.println("*********** karşılaştırma: "+totalPrice.compareTo(minPrice));
+
+        if (totalPrice.compareTo(minPrice) < 0) {
+            totalPrice = totalPrice.add(kargoPrice);
+        }
+        System.out.println("************************processTotalPrice: "+totalPrice);
+        return totalPrice;
     }
 
     public Order findByOrderCode(String orderCode) {
@@ -193,7 +211,4 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public Product saveProduct(Product product) {
-        return productService.save(product);
-    }
 }
