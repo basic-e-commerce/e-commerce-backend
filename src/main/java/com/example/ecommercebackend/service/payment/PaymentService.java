@@ -86,6 +86,7 @@ public class PaymentService {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         System.out.println(18);
         BigDecimal finalTotalPrice = totalPrice;
+        System.out.println("------------------ finalTotal price: "+finalTotalPrice);
         System.out.println(19);
         Future<ProcessCreditCardDto> future = executor.submit(() ->
                 paymentStrategy.processCreditCardPayment(finalTotalPrice, order, paymentCreditCardRequestDto, conversationId, finalTotalPrice,httpServletRequest)
