@@ -68,8 +68,8 @@ public class CategoryService {
             Category saveCategory = categoryRepository.save(category);
             if (parentCategory != null){
                 parentCategory.setSubCategory(false);
-                categoryRepository.updateCategoryId(parentCategory.getId(),saveCategory.getId());
                 categoryRepository.save(parentCategory);
+                categoryRepository.updateCategoryId(parentCategory.getId(),saveCategory.getId());
             }
 
             if (categoryCreateDto.getImage() != null){
