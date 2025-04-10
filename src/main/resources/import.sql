@@ -6,6 +6,7 @@ SELECT setval('countries_seq', (SELECT MAX(id) FROM countries));
 
 INSERT INTO roles (id,role_name) VALUES (1,'ADMIN');
 INSERT INTO roles (id,role_name) VALUES (2,'CUSTOMER');
+INSERT INTO roles (id,role_name) VALUES (3,'GUEST');
 SELECT setval('role_seq', (SELECT MAX(id) FROM roles));
 
 

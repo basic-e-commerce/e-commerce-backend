@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.product.order;
 
 import com.example.ecommercebackend.builder.product.order.OrderBuilder;
 import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
+import com.example.ecommercebackend.dto.product.order.OrderItemCreateDto;
 import com.example.ecommercebackend.dto.product.order.OrderResponseDto;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.card.CardItem;
@@ -10,6 +11,8 @@ import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Customer;
+import com.example.ecommercebackend.entity.user.Guest;
+import com.example.ecommercebackend.entity.user.Role;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
@@ -18,11 +21,14 @@ import com.example.ecommercebackend.service.product.products.ProductService;
 import com.example.ecommercebackend.service.user.CustomerService;
 import com.example.ecommercebackend.service.user.GuestService;
 import jakarta.transaction.Transactional;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +41,7 @@ public class OrderService {
     private final OrderItemService orderItemService;
     private final ProductService productService;
     private final OrderBuilder orderBuilder;
+
 
     public OrderService(OrderRepository orderRepository, GuestService guestService, CustomerService customerService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder) {
         this.orderRepository = orderRepository;
@@ -94,8 +101,74 @@ public class OrderService {
 
 
             return orderBuilder.orderToOrderResponseDto(save);
-        }else
-            return null;
+        }
+
+
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            Guest guest = guestService.findByUsernameOrNull(orderCreateDto.address().username());
+
+            if (orderCreateDto.orderItemCreateDtos().isEmpty())
+                throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
+
+            if (guest == null){
+                guest = guestService.save(orderCreateDto.address().firstName(),
+                        orderCreateDto.address().lastName(),
+                        orderCreateDto.address().phoneNo(),
+                        orderCreateDto.address().username(),
+                        false,
+                        false);
+
+                System.out.println("1111111111111111");
+            }
+
+            System.out.println("1111111111111111");
+            OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
+            Set<OrderItem> orderItems = new HashSet<>();
+
+            for (OrderItemCreateDto orderItemCreateDto: orderCreateDto.orderItemCreateDtos()){
+                Product product = productService.findProductById(orderItemCreateDto.productId());
+
+                if (product.getQuantity() < orderItemCreateDto.quantity())
+                    throw new BadRequestException("Yetersiz Ürün Stoğu: "+product.getProductName());
+
+                BigDecimal orderItemPrice = product.getComparePrice().multiply(new BigDecimal(orderItemCreateDto.quantity()));
+                OrderItem orderItem = new OrderItem(product,orderItemPrice, orderItemCreateDto.quantity());
+                orderItems.add(orderItem);
+            }
+
+            System.out.println("22222222222222222");
+            Set<OrderItem> savedOrderItems = orderItemService.saveOrderItems(orderItems);
+            BigDecimal orderPrice = BigDecimal.valueOf(0);
+            for (OrderItem orderItem: savedOrderItems){
+                orderPrice = orderPrice.add(orderItem.getPrice());
+            }
+            System.out.println("333333333333333333");
+
+            Order order = new Order(guest,
+                    null,
+                    orderCreateDto.address().firstName(),
+                    orderCreateDto.address().lastName(),
+                    orderCreateDto.address().countryName(),
+                    orderCreateDto.address().city(),
+                    orderCreateDto.address().addressLine1(),
+                    orderCreateDto.address().addressLine2(),
+                    orderCreateDto.address().postalCode(),
+                    orderCreateDto.address().phoneNo(),
+                    savedOrderItems,
+                    orderStatus,
+                    orderPrice);
+
+            System.out.println("444444444444444444");
+            Order save = orderRepository.save(order);
+            System.out.println("666666666666666666");
+
+            return orderBuilder.orderToOrderResponseDto(save);
+
+        }
+
+
+        throw new BadRequestException("Geçersiz Kullanıcı");
+
     }
 
     public Order findByOrderCode(String orderCode) {

@@ -68,4 +68,9 @@ public class CustomerService {
     public Customer save(Customer customer) {
         return customerRepository.save(customer);
     }
+
+    public Role findByRoleName(String roleName) {
+        return roleService.findByRoleName(roleName);
+    }
+
 }

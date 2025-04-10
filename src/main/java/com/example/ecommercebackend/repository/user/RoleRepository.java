@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface RoleRepository extends JpaRepository<Role, Integer> {
     boolean existsByRoleNameEqualsIgnoreCase(String roleName);
     Optional<Role> findByRoleName(String roleName);
+    Optional<Role> findByRoleNameEqualsIgnoreCase(String roleName);
+
 
     @Query("SELECT new com.example.ecommercebackend.dto.user.role.RoleValidationDto(r.id,r.roleName) FROM Role r")
     List<RoleValidationDto>  findRoleDtosByUserId(@Param("userId") Integer userId);
