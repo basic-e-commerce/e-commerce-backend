@@ -12,23 +12,19 @@ import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.entity.user.Guest;
-import com.example.ecommercebackend.entity.user.Role;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.order.OrderRepository;
 import com.example.ecommercebackend.service.product.products.ProductService;
-import com.example.ecommercebackend.service.user.CustomerService;
 import com.example.ecommercebackend.service.user.GuestService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 

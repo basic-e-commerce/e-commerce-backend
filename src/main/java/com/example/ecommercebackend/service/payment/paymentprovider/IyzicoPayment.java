@@ -53,12 +53,12 @@ public class IyzicoPayment implements PaymentStrategy {
             backoff = @Backoff(delay = 2000) // 2 saniye bekleyerek yeniden dene
     )  // Eğer ödeme sağlayıcısı geçici bir hata döndürürse (örneğin, zaman aşımı ya da bağlantı hatası), Spring otomatik olarak 3 defa yeniden deneyecek.
     @Override
-    public ProcessCreditCardDto processCreditCardPayment(BigDecimal topAmount, Order order, PaymentCreditCardRequestDto paymentCreditCardRequestDto, String conversationId, HttpServletRequest httpServletRequest) {
+    public ProcessCreditCardDto processCreditCardPayment(BigDecimal topAmount, Order order, PaymentCreditCardRequestDto paymentCreditCardRequestDto, String conversationId,BigDecimal paidPrice, HttpServletRequest httpServletRequest) {
         System.out.println("toplam: "+topAmount);
         System.out.println(7);
         Options options = getOptions();
 
-        CreatePaymentRequest request = getCreatePaymentRequest(order,conversationId,paymentCreditCardRequestDto.getTotalPrice(),paymentCreditCardRequestDto.getInstallmentNumber());
+        CreatePaymentRequest request = getCreatePaymentRequest(order,conversationId,paidPrice,paymentCreditCardRequestDto.getInstallmentNumber());
         System.out.println(8);
 
         PaymentCard paymentCard = getPaymentCard(paymentCreditCardRequestDto.getCreditCardRequestDto());
@@ -195,7 +195,6 @@ public class IyzicoPayment implements PaymentStrategy {
         CreatePaymentRequest request = new CreatePaymentRequest();
 
         System.out.println("order.getTotalPrice(): " + order.getTotalPrice());
-
 
         request.setLocale(Locale.TR.getValue());
         request.setConversationId(conversationId);

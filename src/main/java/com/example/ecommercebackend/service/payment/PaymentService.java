@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.payment;
 
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.response.*;
+import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
@@ -87,7 +88,7 @@ public class PaymentService {
         BigDecimal finalTotalPrice = totalPrice;
         System.out.println(19);
         Future<ProcessCreditCardDto> future = executor.submit(() ->
-                paymentStrategy.processCreditCardPayment(finalTotalPrice, order, paymentCreditCardRequestDto, conversationId, BigDecimal.valueOf(0),httpServletRequest)
+                paymentStrategy.processCreditCardPayment(finalTotalPrice, order, paymentCreditCardRequestDto, conversationId, finalTotalPrice,httpServletRequest)
         );
 
         try {
@@ -164,8 +165,9 @@ public class PaymentService {
     }
 
     private BigDecimal processTotalPrice(BigDecimal totalPrice) {
-        BigDecimal kargoPrice = new  BigDecimal("75.00");
-        BigDecimal minPrice = new BigDecimal("2000.00");
+        Merchant merchant = merchantService.getMerchant();
+        BigDecimal kargoPrice = merchant.getShippingFee();
+        BigDecimal minPrice = merchant.getMinOrderAmount();
 
         if (totalPrice.compareTo(minPrice) < 0) {
             totalPrice.add(kargoPrice);
