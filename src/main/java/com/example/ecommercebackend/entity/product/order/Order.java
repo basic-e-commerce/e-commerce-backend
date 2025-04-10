@@ -48,9 +48,6 @@ public class Order {
     @Column(name = "address_line_1")
     private String addressLine1;
 
-    @Column(name = "address_line_2")
-    private String addressLine2;
-
     @Column(name = "postal_code")
     private String postalCode;
 
@@ -93,7 +90,7 @@ public class Order {
         this.orderCode = UUID.randomUUID().toString();
     }
 
-    public Order(User user, Coupon coupon, String firstName, String lastName, String username, String countryName, String city, String addressLine1, String addressLine2, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice) {
+    public Order(User user, Coupon coupon, String firstName, String lastName, String username, String countryName, String city, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice) {
         this.user = user;
         this.coupon = coupon;
         this.firstName = firstName;
@@ -102,7 +99,6 @@ public class Order {
         this.countryName = countryName;
         this.city = city;
         this.addressLine1 = addressLine1;
-        this.addressLine2 = addressLine2;
         this.postalCode = postalCode;
         this.phoneNumber = phoneNumber;
         this.orderItems = orderItems;
@@ -207,14 +203,6 @@ public class Order {
 
     public void setAddressLine1(String addressLine1) {
         this.addressLine1 = addressLine1;
-    }
-
-    public String getAddressLine2() {
-        return addressLine2;
-    }
-
-    public void setAddressLine2(String addressLine2) {
-        this.addressLine2 = addressLine2;
     }
 
     public String getPostalCode() {
