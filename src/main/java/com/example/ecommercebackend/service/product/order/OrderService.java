@@ -164,7 +164,7 @@ public class OrderService {
                     orderCreateDto.address().phoneNo(),
                     savedOrderItems,
                     orderStatus,
-                    orderPrice);
+                    totalPrice);
 
             System.out.println("444444444444444444");
             Order save = orderRepository.save(order);
