@@ -4,6 +4,7 @@ import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.products.Sell;
 import com.example.ecommercebackend.repository.product.products.SellRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,6 +17,7 @@ public class SellService {
         this.productService = productService;
     }
 
+    @Transactional
     public Sell save(OrderItem orderItem) {
         Product product = orderItem.getProduct();
         System.out.println("sell product: "+product.getProductName());
