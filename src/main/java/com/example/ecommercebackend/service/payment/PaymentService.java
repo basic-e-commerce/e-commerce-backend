@@ -82,7 +82,7 @@ public class PaymentService {
         System.out.println("------------------ finalTotal price: "+finalTotalPrice);
         System.out.println(19);
         Future<ProcessCreditCardDto> future = executor.submit(() ->
-                paymentStrategy.processCreditCardPayment(finalTotalPrice, order, paymentCreditCardRequestDto, conversationId, finalTotalPrice,httpServletRequest)
+                paymentStrategy.processCreditCardPayment(order, paymentCreditCardRequestDto, conversationId,httpServletRequest)
         );
 
         try {

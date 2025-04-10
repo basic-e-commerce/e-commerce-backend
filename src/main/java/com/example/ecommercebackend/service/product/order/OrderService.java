@@ -79,6 +79,8 @@ public class OrderService {
                 orderPrice = orderPrice.add(orderItem.getPrice());
             }
             System.out.println("333333333333333333");
+            BigDecimal totalPrice = processTotalPrice(orderPrice);
+
 
             Order order = new Order(customer,
                     null,
@@ -92,6 +94,7 @@ public class OrderService {
                     orderCreateDto.address().phoneNo(),
                     savedOrderItems,
                     orderStatus,
+                    totalPrice,
                     orderPrice);
             System.out.println("444444444444444444");
             Order save = orderRepository.save(order);
@@ -164,7 +167,8 @@ public class OrderService {
                     orderCreateDto.address().phoneNo(),
                     savedOrderItems,
                     orderStatus,
-                    totalPrice);
+                    totalPrice,
+                    orderPrice);
 
             System.out.println("444444444444444444");
             Order save = orderRepository.save(order);

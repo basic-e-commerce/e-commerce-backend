@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 public interface PaymentStrategy {
-    ProcessCreditCardDto processCreditCardPayment(BigDecimal totalAmount, Order order, PaymentCreditCardRequestDto paymentCreditCardRequestDto, String conversationId, BigDecimal totalPaidPrice,HttpServletRequest httpServletRequest);
+    ProcessCreditCardDto processCreditCardPayment(Order order, PaymentCreditCardRequestDto paymentCreditCardRequestDto, String conversationId, HttpServletRequest httpServletRequest);
     PayCallBackDto payCallBack(Map<String, String> collections);
     InstallmentInfoDto getBin(String bin, BigDecimal price);
     String refund(String paymentId,BigDecimal refundAmount);

@@ -64,6 +64,9 @@ public class Order {
     @Column(name = "total_price")
     private BigDecimal totalPrice;
 
+    @Column(name = "price")
+    private BigDecimal price;
+
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<Payment> payments;
 
@@ -90,7 +93,7 @@ public class Order {
         this.orderCode = UUID.randomUUID().toString();
     }
 
-    public Order(User user, Coupon coupon, String firstName, String lastName, String username, String countryName, String city, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice) {
+    public Order(User user, Coupon coupon, String firstName, String lastName, String username, String countryName, String city, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price) {
         this.user = user;
         this.coupon = coupon;
         this.firstName = firstName;
@@ -104,6 +107,7 @@ public class Order {
         this.orderItems = orderItems;
         this.orderStatus = orderStatus;
         this.totalPrice = totalPrice;
+        this.price = price;
     }
 
     public Order() {
@@ -271,5 +275,13 @@ public class Order {
 
     public String getUsername() {
         return username;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 }
