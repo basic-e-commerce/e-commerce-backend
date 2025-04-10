@@ -45,8 +45,8 @@ public class MerchantService {
         return merchantRepository.save(merchant);
     }
 
-    public Merchant updateMerchant(int merchantId, MerchantUpdateDto merchantCreateDto) {
-        Merchant merchant= getMerchant(merchantId);
+    public Merchant updateMerchant(MerchantUpdateDto merchantCreateDto) {
+        Merchant merchant= getMerchant();
         AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(), merchantCreateDto.getCountryId(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getAddressLine2(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
         Address address = addressService.updateAddressById(merchant.getAddress().getId(),addressCreateDto);
         merchant.setAddress(address);
@@ -54,11 +54,12 @@ public class MerchantService {
         merchant.setPhoneNo(merchantCreateDto.getPhoneNo());
         merchant.setEmail(merchantCreateDto.getEmail());
         merchant.setMinOrderAmount(merchantCreateDto.getMinOrderAmount());
+        merchant.setShippingFee(merchantCreateDto.getShippingFee());
         return merchantRepository.save(merchant);
     }
 
-    public Merchant getMerchant(int merchantId) {
-        return merchantRepository.findById((long) merchantId).orElseThrow(()-> new NotFoundException("Merchant "+ ExceptionMessage.NOT_FOUND.getMessage()));
+    public Merchant getMerchant() {
+        return merchantRepository.findAll().stream().findFirst().orElseThrow(()-> new NotFoundException("Merchant "+ ExceptionMessage.NOT_FOUND.getMessage()));
     }
     public List<Merchant> getMerchants() {
         return merchantRepository.findAll();

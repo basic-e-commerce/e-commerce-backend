@@ -13,8 +13,9 @@ public class MerchantUpdateDto {
     private String phoneNo;
     private String email;
     private BigDecimal minOrderAmount;
+    private BigDecimal shippingFee;
 
-    public MerchantUpdateDto(String name, String title, Integer countryId, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo, String email, BigDecimal minOrderAmount) {
+    public MerchantUpdateDto(String name, String title, Integer countryId, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo, String email, BigDecimal minOrderAmount, BigDecimal shippingFee) {
         this.name = name;
         this.title = title;
         this.countryId = countryId;
@@ -25,6 +26,7 @@ public class MerchantUpdateDto {
         this.phoneNo = phoneNo;
         this.email = email;
         this.minOrderAmount = minOrderAmount;
+        this.shippingFee = shippingFee;
     }
 
     public String getName() {
@@ -65,5 +67,9 @@ public class MerchantUpdateDto {
 
     public BigDecimal getMinOrderAmount() {
         return minOrderAmount;
+    }
+
+    public BigDecimal getShippingFee() {
+        return shippingFee;
     }
 }

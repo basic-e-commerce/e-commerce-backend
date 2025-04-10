@@ -16,7 +16,8 @@ public class MerchantBuilder {
                 null,
                 merchantCreateDto.getPhoneNo(),
                 merchantCreateDto.getEmail(),
-                merchantCreateDto.getMinOrderAmount()
+                merchantCreateDto.getMinOrderAmount(),
+                merchantCreateDto.getShippingFee()
         );
     }
 

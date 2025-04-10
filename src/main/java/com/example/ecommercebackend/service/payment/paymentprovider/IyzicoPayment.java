@@ -32,9 +32,6 @@ import java.util.concurrent.TimeoutException;
 @Service
 public class IyzicoPayment implements PaymentStrategy {
 
-
-
-
     @Value("${payment.iyzico.apiKey}")
     private String apiKey = "sandbox-JbYzNd3TVSGRKgrKKFiM5Ha7MJP7YZSo";
 
@@ -197,17 +194,14 @@ public class IyzicoPayment implements PaymentStrategy {
     public CreatePaymentRequest getCreatePaymentRequest(Order order,String conversationId,BigDecimal totalPrice,Integer installmentNumber) {
         CreatePaymentRequest request = new CreatePaymentRequest();
 
-        System.out.println("total price: "  + totalPrice);
         System.out.println("order.getTotalPrice(): " + order.getTotalPrice());
 
-        if (totalPrice.equals(order.getTotalPrice())) {
-            System.out.println("evet eşit !!!!!");
-        }else
-            System.out.println("hayır eşit değil !!!!!");
 
         request.setLocale(Locale.TR.getValue());
         request.setConversationId(conversationId);
+        // sepette ürün fiyatları toplamı bu olmalı
         request.setPrice(order.getTotalPrice());
+        // komisyon cart curt vade farkı hesaplanmış ve postan geçecek olan miktar
         request.setPaidPrice(totalPrice);
         request.setCurrency(Currency.TRY.name());
         request.setInstallment(installmentNumber);

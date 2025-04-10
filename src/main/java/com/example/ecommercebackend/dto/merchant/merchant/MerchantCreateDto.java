@@ -17,8 +17,9 @@ public class MerchantCreateDto {
     MultipartFile image;
     private String email;
     private BigDecimal minOrderAmount;
+    private BigDecimal shippingFee;
 
-    public MerchantCreateDto(String name, String title, Integer countryId, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo, MultipartFile image, String email, BigDecimal minOrderAmount) {
+    public MerchantCreateDto(String name, String title, Integer countryId, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo, MultipartFile image, String email, BigDecimal minOrderAmount, BigDecimal shippingFee) {
         this.name = name;
         this.title = title;
         this.countryId = countryId;
@@ -30,6 +31,7 @@ public class MerchantCreateDto {
         this.image = image;
         this.email = email;
         this.minOrderAmount = minOrderAmount;
+        this.shippingFee = shippingFee;
     }
 
     public String getName() {
@@ -74,5 +76,9 @@ public class MerchantCreateDto {
 
     public BigDecimal getMinOrderAmount() {
         return minOrderAmount;
+    }
+
+    public BigDecimal getShippingFee() {
+        return shippingFee;
     }
 }

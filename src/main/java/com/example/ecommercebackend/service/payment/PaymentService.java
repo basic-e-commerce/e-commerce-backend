@@ -11,6 +11,7 @@ import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.payment.PaymentRepository;
+import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import com.example.ecommercebackend.service.product.products.SellService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,11 +29,13 @@ public class PaymentService {
     private final OrderService orderService;
     private final PaymentRepository paymentRepository;
     private final SellService sellService;
+    private final MerchantService merchantService;
 
-    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService) {
+    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MerchantService merchantService) {
         this.orderService = orderService;
         this.paymentRepository = paymentRepository;
         this.sellService = sellService;
+        this.merchantService = merchantService;
     }
 
     public String processCreditCardPayment(PaymentCreditCardRequestDto paymentCreditCardRequestDto, HttpServletRequest httpServletRequest) {
@@ -84,7 +87,7 @@ public class PaymentService {
         BigDecimal finalTotalPrice = totalPrice;
         System.out.println(19);
         Future<ProcessCreditCardDto> future = executor.submit(() ->
-                paymentStrategy.processCreditCardPayment(finalTotalPrice, order, paymentCreditCardRequestDto, conversationId, httpServletRequest)
+                paymentStrategy.processCreditCardPayment(finalTotalPrice, order, paymentCreditCardRequestDto, conversationId, BigDecimal.valueOf(0),httpServletRequest)
         );
 
         try {

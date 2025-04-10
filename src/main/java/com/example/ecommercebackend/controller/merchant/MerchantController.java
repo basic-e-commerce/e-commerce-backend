@@ -25,8 +25,8 @@ public class MerchantController {
     }
 
     @PutMapping
-    public ResponseEntity<Merchant> updateMerchant(@RequestParam Integer id, @RequestBody MerchantUpdateDto merchantCreateDto) {
-        return new ResponseEntity<>(merchantService.updateMerchant(id,merchantCreateDto),HttpStatus.OK);
+    public ResponseEntity<Merchant> updateMerchant(@RequestBody MerchantUpdateDto merchantCreateDto) {
+        return new ResponseEntity<>(merchantService.updateMerchant(merchantCreateDto),HttpStatus.OK);
     }
 
     @GetMapping

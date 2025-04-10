@@ -22,14 +22,16 @@ public class Merchant {
     private String phoneNo;
     private String email;
     private BigDecimal minOrderAmount;
+    private BigDecimal shippingFee;
 
-    public Merchant(String name, Address address, CoverImage coverImage, String phoneNo, String email, BigDecimal minOrderAmount) {
+    public Merchant(String name, Address address, CoverImage coverImage, String phoneNo, String email, BigDecimal minOrderAmount, BigDecimal shippingFee) {
         this.name = name;
         this.address = address;
         this.coverImage = coverImage;
         this.phoneNo = phoneNo;
         this.email = email;
         this.minOrderAmount = minOrderAmount;
+        this.shippingFee = shippingFee;
     }
     public Merchant() {}
 
@@ -87,5 +89,13 @@ public class Merchant {
 
     public void setMinOrderAmount(BigDecimal minOrderAmount) {
         this.minOrderAmount = minOrderAmount;
+    }
+
+    public BigDecimal getShippingFee() {
+        return shippingFee;
+    }
+
+    public void setShippingFee(BigDecimal shippingFee) {
+        this.shippingFee = shippingFee;
     }
 }
