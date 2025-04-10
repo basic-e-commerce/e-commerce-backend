@@ -139,20 +139,6 @@ public class PaymentService {
             // create save
             order.getOrderItems().forEach(sellService::save);
 
-
-            System.out.println("urun sayısı azaltılacak");
-            order.getOrderItems().forEach(orderItem -> {
-                Product product = orderItem.getProduct();
-                System.out.println("product name : "+product.getProductName());
-
-                int productQuantity = orderItem.getQuantity();
-
-                product.setQuantity(productQuantity-orderItem.getQuantity());
-
-                orderService.saveProduct(product);
-            });
-
-
             String redirectUrl = "https://litysofttest.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
             httpServletResponse.sendRedirect(redirectUrl);
         }else{
