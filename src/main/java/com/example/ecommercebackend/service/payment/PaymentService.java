@@ -168,11 +168,14 @@ public class PaymentService {
     private BigDecimal processTotalPrice(BigDecimal totalPrice) {
         Merchant merchant = merchantService.getMerchant();
         BigDecimal kargoPrice = merchant.getShippingFee();
+        System.out.println("******************** kargoprice : "+ kargoPrice);
         BigDecimal minPrice = merchant.getMinOrderAmount();
+        System.out.println("******************** min priceeeee : "+minPrice);
 
         if (totalPrice.compareTo(minPrice) < 0) {
             totalPrice = totalPrice.add(kargoPrice);
         }
+        System.out.println("************************processTotalPrice: "+totalPrice);
         return totalPrice;
     }
 
