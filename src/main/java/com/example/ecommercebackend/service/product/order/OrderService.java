@@ -105,10 +105,16 @@ public class OrderService {
 
 
         if (authentication instanceof AnonymousAuthenticationToken) {
-            Guest guest = guestService.findByUsernameOrNull(orderCreateDto.address().username());
-
             if (orderCreateDto.orderItemCreateDtos().isEmpty())
                 throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
+
+            for (OrderItemCreateDto item : orderCreateDto.orderItemCreateDtos()) {
+                if (item.quantity() <= 0) {
+                    throw new BadRequestException("Sepette 0 ve altında ürün sayısı bulunamaz");
+                }
+            }
+
+            Guest guest = guestService.findByUsernameOrNull(orderCreateDto.address().username());
 
             if (guest == null){
                 guest = guestService.save(orderCreateDto.address().firstName(),

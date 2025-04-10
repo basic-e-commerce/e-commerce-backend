@@ -40,7 +40,9 @@ public class PaymentService {
 
         System.out.println(order.getPayments().size() + "    order.getPayments().size()");
         if (order.getPayments() != null){
+            System.out.println("------------------------------");
             System.out.println(order.getPayments().stream().map(payment -> payment.getPaymentStatus().name()));
+            System.out.println("------------------------------");
 
             if (order.getPayments().stream().anyMatch(payment -> payment.getPaymentStatus() == Payment.PaymentStatus.SUCCESS))
                 throw new ResourceAlreadyExistException("payment is successful in order");
@@ -65,6 +67,8 @@ public class PaymentService {
                 order
         );
         Payment savePayment = paymentRepository.save(payment);
+        order.getPayments().add(savePayment);
+
         PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod(paymentCreditCardRequestDto.getPaymentMethod());
         BigDecimal totalPrice = processTotalPrice(order.getTotalPrice());
         String binNumber = paymentCreditCardRequestDto.getCreditCardRequestDto().getCardNumber().substring(0, 6);
