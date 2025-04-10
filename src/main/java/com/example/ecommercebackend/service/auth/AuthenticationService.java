@@ -23,6 +23,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserService userService;
+    private final RefreshTokenService refreshTokenService;
 
     @Value("${cookie.refreshTokenCookie.secure}")
     private boolean secure;
@@ -33,10 +34,11 @@ public class AuthenticationService {
     @Value("${cookie.refreshTokenCookie.refreshmaxAge}")
     private String maxAge;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, JwtService jwtService, UserService userService) {
+    public AuthenticationService(AuthenticationManager authenticationManager, JwtService jwtService, UserService userService, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userService = userService;
+        this.refreshTokenService = refreshTokenService;
     }
 
 
@@ -61,6 +63,17 @@ public class AuthenticationService {
         // Eğer kullanıcı doğrulanamazsa hata fırlat
         if (!authenticatedUser.isAuthenticated())
             throw new NotFoundException(ExceptionMessage.WRONG_CREDENTIALS.getMessage());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof Customer)
+            System.out.println("-----------secCUSTOMER----------");
+        else
+            System.out.println("----------secNOCUSTOMER----------");
+
+        if (authenticatedUser.getPrincipal() instanceof Customer)
+            System.out.println("-----------CUSTOMER----------");
+        else
+            System.out.println("----------NOCUSTOMER----------");
 
 
         String accessToken = jwtService.generateAccessToken(authenticatedUser.getName());
@@ -104,6 +117,11 @@ public class AuthenticationService {
         // Eğer kullanıcı doğrulanamazsa hata fırlat
         if (!authenticatedUser.isAuthenticated())
             throw new NotFoundException(ExceptionMessage.WRONG_CREDENTIALS.getMessage());
+
+        if (authenticatedUser.getPrincipal() instanceof Admin)
+            System.out.println("-----------AMDİN----------");
+        else
+            System.out.println("-----------NOAMDİN----------");
 
 
         String accessToken = jwtService.generateAccessToken(authenticatedUser.getName());

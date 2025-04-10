@@ -58,7 +58,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.deleteCoverImage(id),HttpStatus.OK);
     }
 
-    @GetMapping("/filter")
+    @PostMapping("/filter")
     public ResponseEntity<List<Product>> filter(@RequestBody ProductFilterRequest filterRequest,
                                                 @RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "10") int size) {
