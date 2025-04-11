@@ -4,9 +4,14 @@ import com.example.ecommercebackend.dto.user.authentication.AuthenticationReques
 import com.example.ecommercebackend.dto.user.authentication.AuthenticationResponseDto;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.entity.user.Customer;
+import com.example.ecommercebackend.entity.user.RefreshToken;
 import com.example.ecommercebackend.entity.user.User;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
+import com.example.ecommercebackend.exception.TokenExpiredException;
+import com.example.ecommercebackend.exception.UnAuthorizedException;
+import com.example.ecommercebackend.service.user.AdminService;
+import com.example.ecommercebackend.service.user.CustomerService;
 import com.example.ecommercebackend.service.user.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,12 +22,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 
 @Service
 public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final UserService userService;
+    private final CustomerService customerService;
+    private final AdminService adminService;
     private final RefreshTokenService refreshTokenService;
 
     @Value("${cookie.refreshTokenCookie.secure}")
@@ -34,10 +41,11 @@ public class AuthenticationService {
     @Value("${cookie.refreshTokenCookie.refreshmaxAge}")
     private String maxAge;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, JwtService jwtService, UserService userService, RefreshTokenService refreshTokenService) {
+    public AuthenticationService(AuthenticationManager authenticationManager, JwtService jwtService, CustomerService customerService, AdminService adminService, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
-        this.userService = userService;
+        this.customerService = customerService;
+        this.adminService = adminService;
         this.refreshTokenService = refreshTokenService;
     }
 
@@ -64,24 +72,14 @@ public class AuthenticationService {
         if (!authenticatedUser.isAuthenticated())
             throw new NotFoundException(ExceptionMessage.WRONG_CREDENTIALS.getMessage());
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof Customer)
-            System.out.println("-----------secCUSTOMER----------");
-        else
-            System.out.println("----------secNOCUSTOMER----------");
+        Customer customer = customerService.findByUsername(authenticationRequestDto.getUsername());
 
-        if (authenticatedUser.getPrincipal() instanceof Customer)
-            System.out.println("-----------CUSTOMER----------");
-        else
-            System.out.println("----------NOCUSTOMER----------");
-
-
-        String accessToken = jwtService.generateAccessToken(authenticatedUser.getName());
-        String refreshToken = jwtService.generateRefreshToken(authenticatedUser.getName());
+        String accessToken = jwtService.generateAccessToken(customer.getUsername());
+        String refreshToken = jwtService.generateRefreshToken(customer.getUsername());
 
         try {
             String refreshHash = jwtService.hashToken(refreshToken);
-            String hash = refreshHash;
+            String hash = refreshTokenService.createRefreshToken(customer, refreshHash);
             // Set-Cookie başlığı ile cookie'yi gönder
             response.addHeader("Set-Cookie", "refresh_token=" + hash
                     + "; Path=" + path
@@ -90,8 +88,7 @@ public class AuthenticationService {
                     + "; Max-Age=" + Integer.parseInt(maxAge)
                     + "; SameSite=" + sameSite);
 
-            User user = userService.getUserByUsername(authenticatedUser.getName());
-            return new AuthenticationResponseDto(accessToken, user.getFirstName(),user.getLastName(), user.getUsername());
+            return new AuthenticationResponseDto(accessToken, customer.getFirstName(),customer.getLastName(), customer.getUsername());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -118,18 +115,14 @@ public class AuthenticationService {
         if (!authenticatedUser.isAuthenticated())
             throw new NotFoundException(ExceptionMessage.WRONG_CREDENTIALS.getMessage());
 
-        if (authenticatedUser.getPrincipal() instanceof Admin)
-            System.out.println("-----------AMDİN----------");
-        else
-            System.out.println("-----------NOAMDİN----------");
+        Admin admin = adminService.findByUsername(authenticationRequestDto.getUsername());
 
-
-        String accessToken = jwtService.generateAccessToken(authenticatedUser.getName());
-        String refreshToken = jwtService.generateRefreshToken(authenticatedUser.getName());
+        String accessToken = jwtService.generateAccessToken(admin.getUsername());
+        String refreshToken = jwtService.generateRefreshToken(admin.getUsername());
 
         try {
             String refreshHash = jwtService.hashToken(refreshToken);
-            String hash = refreshHash; //refreshTokenService.createRefreshToken(authenticatedUser.getName(),refreshHash);
+            String hash = refreshTokenService.createRefreshToken(admin,refreshHash);
             // Set-Cookie başlığı ile cookie'yi gönder
             response.addHeader("Set-Cookie", "refresh_token=" + hash
                     + "; Path=" + path
@@ -137,9 +130,9 @@ public class AuthenticationService {
                     + "; Secure=" + secure
                     + "; Max-Age=" + Integer.parseInt(maxAge)
                     + "; SameSite=" + sameSite);
+            
 
-            User user = userService.getUserByUsername(authenticatedUser.getName());
-            return new AuthenticationResponseDto(accessToken, user.getFirstName(), user.getLastName(), user.getUsername());
+            return new AuthenticationResponseDto(accessToken, admin.getFirstName(), admin.getLastName(), admin.getUsername());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -147,5 +140,23 @@ public class AuthenticationService {
 
     public Boolean isAuth() {
         return SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
+    }
+
+    public AuthenticationResponseDto refresh(String refreshTokenHash) {
+        RefreshToken refreshToken = refreshTokenService.getRefreshTokenHash(refreshTokenHash);
+
+        if (refreshToken.isActive() && refreshToken.getExpirationTime().isBefore(LocalDateTime.now())) {
+            User user = refreshToken.getUser();
+            return  new AuthenticationResponseDto(jwtService.generateAccessToken(refreshToken.getUser().getUsername()),user.getFirstName(), user.getLastName(), user.getUsername());
+        }else
+            throw new TokenExpiredException(ExceptionMessage.TRY_LOGIN.getMessage());
+    }
+
+    public String logout(String refreshToken) {
+        RefreshToken refresh = refreshTokenService.getRefreshTokenHash(refreshToken);
+        refresh.setActive(false);
+        refresh.setExpirationTime(LocalDateTime.now());
+        refreshTokenService.save(refresh);
+        return "Successfully logged out";
     }
 }

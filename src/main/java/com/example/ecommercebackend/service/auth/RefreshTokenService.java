@@ -24,8 +24,7 @@ public class RefreshTokenService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    public String createRefreshToken(String username,String refreshTokenHash) {
-        User user = userService.getUserByUsername(username);
+    public String createRefreshToken(User user,String refreshTokenHash) {
         RefreshToken refreshToken = new RefreshToken(user,refreshTokenHash, LocalDateTime.now().plusNanos(refreshExp));
         refreshTokenRepository.save(refreshToken);
         return refreshTokenHash;
