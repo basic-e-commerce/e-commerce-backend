@@ -1,25 +1,30 @@
 package com.example.ecommercebackend.dto.product.products;
 
 import java.math.BigDecimal;
+import java.util.List;
 
-public class ProductSmallDto {
+public class ProductDetailDto {
     private int id;
     private String name;
     private String productLinkName;
     private String shortDescription;
+    private String description;
     private BigDecimal salePrice;
     private BigDecimal comparePrice;
     private String coverImageUrl;
+    private List<String> productImageUrls;
     private int quantity;
 
-    public ProductSmallDto(int id, String name, String productLinkName, String shortDescription, BigDecimal salePrice, BigDecimal comparePrice, String coverImageUrl, int quantity) {
+    public ProductDetailDto(int id, String name, String productLinkName, String shortDescription, String description, BigDecimal salePrice, BigDecimal comparePrice, String coverImageUrl, List<String> productImageUrls, int quantity) {
         this.id = id;
         this.name = name;
         this.productLinkName = productLinkName;
         this.shortDescription = shortDescription;
+        this.description = description;
         this.salePrice = salePrice;
         this.comparePrice = comparePrice;
         this.coverImageUrl = coverImageUrl;
+        this.productImageUrls = productImageUrls;
         this.quantity = quantity;
     }
 
@@ -55,6 +60,14 @@ public class ProductSmallDto {
         this.shortDescription = shortDescription;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public BigDecimal getSalePrice() {
         return salePrice;
     }
@@ -77,6 +90,14 @@ public class ProductSmallDto {
 
     public void setCoverImageUrl(String coverImageUrl) {
         this.coverImageUrl = coverImageUrl;
+    }
+
+    public List<String> getProductImageUrls() {
+        return productImageUrls;
+    }
+
+    public void setProductImageUrls(List<String> productImageUrls) {
+        this.productImageUrls = productImageUrls;
     }
 
     public int getQuantity() {

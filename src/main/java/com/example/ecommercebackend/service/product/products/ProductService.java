@@ -6,6 +6,7 @@ import com.example.ecommercebackend.builder.product.products.ProductBuilder;
 import com.example.ecommercebackend.dto.file.productimage.ProductImageUpdateDto;
 import com.example.ecommercebackend.dto.product.products.ProductCreateDto;
 import com.example.ecommercebackend.dto.product.products.ProductFilterRequest;
+import com.example.ecommercebackend.dto.product.products.ProductSmallDto;
 import com.example.ecommercebackend.dto.product.products.ProductUpdateDto;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.file.ProductImage;
@@ -379,6 +380,19 @@ public class ProductService {
         return productRepository.findAll(specification,pageable).stream().collect(Collectors.toList());
     }
 
+    public Set<ProductSmallDto> filterProductsByCategorySmall(ProductFilterRequest filterRequest, int page, int size) {
+        Sort sort = Sort.unsorted();
+        if (filterRequest.getSortBy() != null) {
+            sort = Sort.by(Sort.Direction.fromString(filterRequest.getSortDirection()), filterRequest.getSortBy());
+        }
+
+        Category category = categoryService.findCategoryById(filterRequest.getCategoryId());
+        Set<Integer> subCategories = categoryService.getLeafCategories(category).stream().map(Category::getId).collect(Collectors.toSet());
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Specification<Product> specification = filterProducts(subCategories,filterRequest.getMinPrice(),filterRequest.getMaxPrice());
+        return productRepository.findAll(specification,pageable).stream().map(productBuilder::productToProductSmallDto).collect(Collectors.toSet());
+    }
+
     public Specification<Product> filterProducts(Set<Integer> categoriesId, BigDecimal minPrice, BigDecimal maxPrice) {
         return Specification
                 .where(hasCategories(categoriesId))
@@ -438,4 +452,6 @@ public class ProductService {
     public Product save(Product product) {
         return productRepository.save(product);
     }
+
+
 }

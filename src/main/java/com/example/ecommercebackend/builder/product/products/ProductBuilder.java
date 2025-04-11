@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.builder.product.products;
 
 import com.example.ecommercebackend.dto.product.products.ProductCreateDto;
+import com.example.ecommercebackend.dto.product.products.ProductSmallDto;
 import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.products.ProductType;
@@ -27,6 +28,24 @@ public class ProductBuilder {
                 productCreateDto.getDisableOutOfStock(),
                 create,
                 update
+        );
+    }
+
+    public ProductSmallDto productToProductSmallDto(Product product) {
+        String coverUrl = "";
+        if (product.getCoverImage() != null) {
+            coverUrl = product.getCoverImage().getUrl();
+        }
+
+        return new ProductSmallDto(
+                product.getId(),
+                product.getProductName(),
+                product.getProductLinkName(),
+                product.getShortDescription(),
+                product.getSalePrice(),
+                product.getComparePrice(),
+                coverUrl,
+                product.getQuantity()
         );
     }
 

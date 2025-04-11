@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.entity.product.products;
 
+import com.example.ecommercebackend.config.validation.RegexValidation;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.file.ProductImage;
 import com.example.ecommercebackend.entity.merchant.Supplier;
@@ -101,8 +102,7 @@ public class Product {
     @PreUpdate
     private void generateProductData() {
         if (productName != null) {
-            this.productLinkName = productName.trim().toLowerCase()
-                    .replaceAll("\\s+", "-"); // Boşlukları "-" ile değiştir
+            this.productLinkName = RegexValidation.replaceTurkishChars(productName);
         }
         updatedAt = Instant.now();
     }
