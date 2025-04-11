@@ -1,30 +1,32 @@
 package com.example.ecommercebackend.dto.product.products;
 
+import com.example.ecommercebackend.dto.file.ImageDetailDto;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 public class ProductDetailDto {
     private int id;
     private String name;
-    private String productLinkName;
+    private String linkName;
     private String shortDescription;
     private String description;
     private BigDecimal salePrice;
     private BigDecimal comparePrice;
-    private String coverImageUrl;
-    private List<String> productImageUrls;
+    private ImageDetailDto coverImage;
+    private List<ImageDetailDto> productImage;
     private int quantity;
 
-    public ProductDetailDto(int id, String name, String productLinkName, String shortDescription, String description, BigDecimal salePrice, BigDecimal comparePrice, String coverImageUrl, List<String> productImageUrls, int quantity) {
+    public ProductDetailDto(int id, String name, String linkName, String shortDescription, String description, BigDecimal salePrice, BigDecimal comparePrice, ImageDetailDto coverImage, List<ImageDetailDto> productImage, int quantity) {
         this.id = id;
         this.name = name;
-        this.productLinkName = productLinkName;
+        this.linkName = linkName;
         this.shortDescription = shortDescription;
         this.description = description;
         this.salePrice = salePrice;
         this.comparePrice = comparePrice;
-        this.coverImageUrl = coverImageUrl;
-        this.productImageUrls = productImageUrls;
+        this.coverImage = coverImage;
+        this.productImage = productImage;
         this.quantity = quantity;
     }
 
@@ -44,12 +46,12 @@ public class ProductDetailDto {
         this.name = name;
     }
 
-    public String getProductLinkName() {
-        return productLinkName;
+    public String getLinkName() {
+        return linkName;
     }
 
-    public void setProductLinkName(String productLinkName) {
-        this.productLinkName = productLinkName;
+    public void setLinkName(String linkName) {
+        this.linkName = linkName;
     }
 
     public String getShortDescription() {
@@ -84,20 +86,20 @@ public class ProductDetailDto {
         this.comparePrice = comparePrice;
     }
 
-    public String getCoverImageUrl() {
-        return coverImageUrl;
+    public ImageDetailDto getCoverImage() {
+        return coverImage;
     }
 
-    public void setCoverImageUrl(String coverImageUrl) {
-        this.coverImageUrl = coverImageUrl;
+    public void setCoverImage(ImageDetailDto coverImage) {
+        this.coverImage = coverImage;
     }
 
-    public List<String> getProductImageUrls() {
-        return productImageUrls;
+    public List<ImageDetailDto> getProductImage() {
+        return productImage;
     }
 
-    public void setProductImageUrls(List<String> productImageUrls) {
-        this.productImageUrls = productImageUrls;
+    public void setProductImage(List<ImageDetailDto> productImage) {
+        this.productImage = productImage;
     }
 
     public int getQuantity() {

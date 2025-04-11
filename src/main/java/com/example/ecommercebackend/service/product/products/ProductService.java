@@ -4,10 +4,7 @@ import com.example.ecommercebackend.dto.file.ImageRequestDto;
 import com.example.ecommercebackend.dto.file.ProductImageRequestDto;
 import com.example.ecommercebackend.builder.product.products.ProductBuilder;
 import com.example.ecommercebackend.dto.file.productimage.ProductImageUpdateDto;
-import com.example.ecommercebackend.dto.product.products.ProductCreateDto;
-import com.example.ecommercebackend.dto.product.products.ProductFilterRequest;
-import com.example.ecommercebackend.dto.product.products.ProductSmallDto;
-import com.example.ecommercebackend.dto.product.products.ProductUpdateDto;
+import com.example.ecommercebackend.dto.product.products.*;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.file.ProductImage;
 import com.example.ecommercebackend.entity.product.attribute.Attribute;
@@ -454,4 +451,8 @@ public class ProductService {
     }
 
 
+    public ProductDetailDto findProductDetail(String linkName) {
+        Product product = productRepository.findByProductLinkName(linkName).orElseThrow(()-> new NotFoundException("Product "+ExceptionMessage.NOT_FOUND.getMessage()));
+        return productBuilder.productToProductDetailDto(product);
+    }
 }

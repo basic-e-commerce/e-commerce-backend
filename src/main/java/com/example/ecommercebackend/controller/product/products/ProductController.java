@@ -1,10 +1,7 @@
 package com.example.ecommercebackend.controller.product.products;
 
 import com.example.ecommercebackend.dto.file.productimage.ProductImageUpdateDto;
-import com.example.ecommercebackend.dto.product.products.ProductCreateDto;
-import com.example.ecommercebackend.dto.product.products.ProductFilterRequest;
-import com.example.ecommercebackend.dto.product.products.ProductSmallDto;
-import com.example.ecommercebackend.dto.product.products.ProductUpdateDto;
+import com.example.ecommercebackend.dto.product.products.*;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.service.product.products.ProductService;
@@ -74,6 +71,10 @@ public class ProductController {
         return new ResponseEntity<>(productService.filterProductsByCategorySmall(filterRequest,page,size),HttpStatus.OK);
     }
 
+    @GetMapping("/name/{linkName}")
+    public ResponseEntity<ProductDetailDto> findProductDetail(@PathVariable String linkName) {
+        return new ResponseEntity<>(productService.findProductDetail(linkName),HttpStatus.OK);
+    }
 
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
