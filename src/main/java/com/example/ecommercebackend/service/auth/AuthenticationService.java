@@ -126,11 +126,12 @@ public class AuthenticationService {
             String hash = refreshTokenService.createRefreshToken(admin,refreshHash);
             // Set-Cookie başlığı ile cookie'yi gönder
             response.addHeader("Set-Cookie", "refresh_token=" + hash
-                    + "; Path=" + path
+                    + "; Path=" + "/"//path
                     + "; HttpOnly"
-                    + "; Secure=" + secure
-                    + "; Max-Age=" + Integer.parseInt(maxAge)
-                    + "; SameSite=" + sameSite);
+                    + "; Secure=" + "false"//secure
+                    + "; Max-Age=" + "360000" //Integer.parseInt(maxAge)
+                    + "; SameSite=" + "Lax"//sameSite
+            );
             
 
 
