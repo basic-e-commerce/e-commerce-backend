@@ -7,7 +7,6 @@ import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.response.InstallmentInfoDto;
 import com.example.ecommercebackend.dto.payment.response.PayCallBackDto;
 import com.example.ecommercebackend.dto.payment.response.ProcessCreditCardDto;
-import com.example.ecommercebackend.dto.product.order.OrderDeliveryRequestDto;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.exception.BadRequestException;
@@ -41,24 +40,18 @@ public class IyzicoPayment implements PaymentStrategy {
     @Value("${payment.iyzico.baseUrl}")
     private String apiUrl = "https://sandbox-api.iyzipay.com";
 
-    @Value("${domain.test}")
-    private String baseUrl;
-
-    @Value("${payment.iyzico.callBack}")
-    private String callBackUrl = "/api/v1/payment/payCallBack";
-
     @Retryable(
             value = {IOException.class, TimeoutException.class},
             maxAttempts = 3,
             backoff = @Backoff(delay = 2000) // 2 saniye bekleyerek yeniden dene
     )  // Eğer ödeme sağlayıcısı geçici bir hata döndürürse (örneğin, zaman aşımı ya da bağlantı hatası), Spring otomatik olarak 3 defa yeniden deneyecek.
     @Override
-    public ProcessCreditCardDto processCreditCardPayment(BigDecimal topAmount, Order order, PaymentCreditCardRequestDto paymentCreditCardRequestDto, String conversationId,BigDecimal paidPrice, HttpServletRequest httpServletRequest) {
-        System.out.println("toplam: "+topAmount);
+    public ProcessCreditCardDto processCreditCardPayment(Order order, PaymentCreditCardRequestDto paymentCreditCardRequestDto, String conversationId, HttpServletRequest httpServletRequest) {
+
         System.out.println(7);
         Options options = getOptions();
 
-        CreatePaymentRequest request = getCreatePaymentRequest(order,conversationId,paidPrice,paymentCreditCardRequestDto.getInstallmentNumber());
+        CreatePaymentRequest request = getCreatePaymentRequest(order,conversationId,paymentCreditCardRequestDto.getInstallmentNumber());
         System.out.println(8);
 
         PaymentCard paymentCard = getPaymentCard(paymentCreditCardRequestDto.getCreditCardRequestDto());
@@ -160,7 +153,7 @@ public class IyzicoPayment implements PaymentStrategy {
             retrieveInstallmentInfoRequest.setCurrency(Currency.TRY.name());
 
             InstallmentInfo installmentInfo = InstallmentInfo.retrieve(retrieveInstallmentInfoRequest,options);
-            System.out.println("installmentInfo: "+installmentInfo);;
+            System.out.println("installmentInfo: "+installmentInfo);
 
             return PaymentBuilder.installmentInfoDto(installmentInfo);
         }else
@@ -191,7 +184,7 @@ public class IyzicoPayment implements PaymentStrategy {
         return options;
     }
 
-    public CreatePaymentRequest getCreatePaymentRequest(Order order,String conversationId,BigDecimal totalPrice,Integer installmentNumber) {
+    public CreatePaymentRequest getCreatePaymentRequest(Order order,String conversationId,Integer installmentNumber) {
         CreatePaymentRequest request = new CreatePaymentRequest();
 
         System.out.println("order.getTotalPrice(): " + order.getTotalPrice());
@@ -199,9 +192,9 @@ public class IyzicoPayment implements PaymentStrategy {
         request.setLocale(Locale.TR.getValue());
         request.setConversationId(conversationId);
         // sepette ürün fiyatları toplamı bu olmalı
-        request.setPrice(order.getTotalPrice());
+        request.setPrice(order.getPrice());
         // komisyon cart curt vade farkı hesaplanmış ve postan geçecek olan miktar
-        request.setPaidPrice(totalPrice);
+        request.setPaidPrice(order.getTotalPrice());
         request.setCurrency(Currency.TRY.name());
         request.setInstallment(installmentNumber);
         request.setBasketId(order.getOrderCode());

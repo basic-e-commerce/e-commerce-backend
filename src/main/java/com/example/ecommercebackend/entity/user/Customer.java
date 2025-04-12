@@ -16,6 +16,9 @@ public class Customer extends User {
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private Card card;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Address> addresses = new HashSet<>();
+
 
     public Customer(int id, String firstName, String lastName, String username, String password, Set<Role> roles, boolean enabled, boolean accountNonLocked) {
         super(id, firstName, lastName, username, password, roles, enabled, accountNonLocked);
@@ -36,4 +39,11 @@ public class Customer extends User {
         this.card = card;
     }
 
+    public Set<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(Set<Address> addresses) {
+        this.addresses = addresses;
+    }
 }

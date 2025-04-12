@@ -2,17 +2,13 @@ package com.example.ecommercebackend.service.payment;
 
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.response.*;
-import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
-import com.example.ecommercebackend.entity.product.products.Product;
-import com.example.ecommercebackend.entity.product.products.Sell;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.payment.PaymentRepository;
-import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import com.example.ecommercebackend.service.product.products.SellService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,13 +26,11 @@ public class PaymentService {
     private final OrderService orderService;
     private final PaymentRepository paymentRepository;
     private final SellService sellService;
-    private final MerchantService merchantService;
 
-    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MerchantService merchantService) {
+    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService) {
         this.orderService = orderService;
         this.paymentRepository = paymentRepository;
         this.sellService = sellService;
-        this.merchantService = merchantService;
     }
 
     public String processCreditCardPayment(PaymentCreditCardRequestDto paymentCreditCardRequestDto, HttpServletRequest httpServletRequest) {
@@ -88,7 +82,7 @@ public class PaymentService {
         System.out.println("------------------ finalTotal price: "+finalTotalPrice);
         System.out.println(19);
         Future<ProcessCreditCardDto> future = executor.submit(() ->
-                paymentStrategy.processCreditCardPayment(finalTotalPrice, order, paymentCreditCardRequestDto, conversationId, finalTotalPrice,httpServletRequest)
+                paymentStrategy.processCreditCardPayment(order, paymentCreditCardRequestDto, conversationId,httpServletRequest)
         );
 
         try {

@@ -1,7 +1,6 @@
 package com.example.ecommercebackend.service.user;
 
 import com.example.ecommercebackend.builder.user.AdminBuilder;
-import com.example.ecommercebackend.config.validation.RegexValidation;
 import com.example.ecommercebackend.dto.user.admin.AdminCreateDto;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.entity.user.Role;
@@ -21,15 +20,13 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final AdminBuilder adminBuilder;
     private final PasswordEncoder passwordEncoder;
-    private final RegexValidation regexValidation;
     private final RoleService roleService;
     private final UserService userService;
 
-    public AdminService(AdminRepository adminRepository, AdminBuilder adminBuilder, PasswordEncoder passwordEncoder, RegexValidation regexValidation, RoleService roleService, UserService userService) {
+    public AdminService(AdminRepository adminRepository, AdminBuilder adminBuilder, PasswordEncoder passwordEncoder, RoleService roleService, UserService userService) {
         this.adminRepository = adminRepository;
         this.adminBuilder = adminBuilder;
         this.passwordEncoder = passwordEncoder;
-        this.regexValidation = regexValidation;
         this.roleService = roleService;
         this.userService = userService;
     }

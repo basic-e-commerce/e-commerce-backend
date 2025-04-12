@@ -1,8 +1,11 @@
 package com.example.ecommercebackend.service.user;
 
 import com.example.ecommercebackend.builder.user.CustomerBuilder;
+import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
+import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.dto.user.customer.CustomerCreateDto;
 import com.example.ecommercebackend.entity.product.card.Card;
+import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.entity.user.Role;
 import com.example.ecommercebackend.exception.BadRequestException;
@@ -10,12 +13,17 @@ import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.product.card.CardRepository;
+import com.example.ecommercebackend.repository.user.AddressRepository;
 import com.example.ecommercebackend.repository.user.CustomerRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -26,14 +34,16 @@ public class CustomerService {
     private final RoleService roleService;
     private final CustomerBuilder customerBuilder;
     private final CardRepository cardRepository;
+    private final AddressService addressService;
 
-    public CustomerService(CustomerRepository customerRepository, UserService userService, PasswordEncoder passwordEncoder, RoleService roleService, CustomerBuilder customerBuilder, CardRepository cardRepository) {
+    public CustomerService(CustomerRepository customerRepository, UserService userService, PasswordEncoder passwordEncoder, RoleService roleService, CustomerBuilder customerBuilder, CardRepository cardRepository, AddressService addressService) {
         this.customerRepository = customerRepository;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
         this.customerBuilder = customerBuilder;
         this.cardRepository = cardRepository;
+        this.addressService = addressService;
     }
 
     public Customer findByUsername(String username) {
@@ -69,8 +79,93 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
-    public Role findByRoleName(String roleName) {
-        return roleService.findByRoleName(roleName);
+
+    // -------------- address --------------------
+
+    public AddressDetailDto createAddress(AddressCreateDto addressCreateDto) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof Customer customer){
+            Customer customer1 = findByUsername(customer.getUsername());
+            String newTitle = addressCreateDto.getTitle().trim().toLowerCase();
+
+            boolean titleExists = customer1.getAddresses().stream()
+                    .anyMatch(address -> address.getTitle() != null &&
+                            address.getTitle().trim().equalsIgnoreCase(newTitle));
+
+            if (titleExists)
+                throw new ResourceAlreadyExistException("Address "+ExceptionMessage.ALREADY_EXISTS.getMessage());
+
+            Address address = addressService.createAddress(addressCreateDto);
+            customer1.getAddresses().add(address);
+            customerRepository.save(customer1);
+            return new AddressDetailDto(address.getId(),address.getTitle(),address.getCountry().getName(),address.getCity(),address.getPostalCode(),address.getPhoneNo(),address.getAddressLine1());
+        }else
+            throw new BadRequestException("Customer Not Authenticated");
     }
 
+    public Set<AddressDetailDto> getAddresses(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof Customer customer){
+            Customer customer1 = findByUsername(customer.getUsername());
+            Set<Address> addresses = customer1.getAddresses();
+            return addresses.stream().map(x-> {
+                return new AddressDetailDto(x.getId(),
+                        x.getTitle(),
+                        x.getCountry().getName(),
+                        x.getCity(),
+                        x.getPostalCode(),
+                        x.getPhoneNo(),
+                        x.getAddressLine1());
+            }).collect(Collectors.toSet());
+        }else
+            throw new BadRequestException("Customer Not Authenticated");
+
+    }
+
+    public AddressDetailDto updateAddress(Integer addressId, AddressCreateDto addressCreateDto) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof Customer customer){
+            Customer customer1 = findByUsername(customer.getUsername());
+
+            Address targetAddress = customer1.getAddresses().stream()
+                        .filter(address -> address.getId() == addressId)
+                        .findFirst()
+                        .orElseThrow(()-> new NotFoundException("Address "+ExceptionMessage.NOT_FOUND.getMessage()));
+
+            customer1.getAddresses().remove(targetAddress);
+
+            String newTitle = addressCreateDto.getTitle().trim().toLowerCase();
+            boolean titleExists = customer1.getAddresses().stream()
+                        .anyMatch(address -> address.getTitle() != null &&
+                                address.getTitle().trim().equalsIgnoreCase(newTitle));
+            if (titleExists)
+                throw new ResourceAlreadyExistException("Address "+ExceptionMessage.ALREADY_EXISTS.getMessage());
+            else
+                customer1.getAddresses().add(targetAddress);
+
+            Address updateAddress = addressService.updateAddressById(addressId, addressCreateDto);
+            return new AddressDetailDto(updateAddress.getId(),updateAddress.getTitle(),updateAddress.getCountry().getName(),updateAddress.getCity(),updateAddress.getPostalCode(),updateAddress.getPhoneNo(),updateAddress.getAddressLine1());
+        }else
+            throw new BadRequestException("Customer Not Authenticated");
+    }
+
+    public String deleteAddress(Integer addressId) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Customer customer){
+            Customer customer1 = findByUsername(customer.getUsername());
+            Address address = addressService.findAddressById(addressId);
+            boolean removed = customer1.getAddresses().removeIf(a -> a.getId() == address.getId());
+
+            if (removed){
+                customerRepository.save(customer1);
+                return "address deleted";
+            }else
+                throw new NotFoundException("Address :"+ExceptionMessage.NOT_FOUND.getMessage());
+        }else
+            throw new BadRequestException("Customer Not Authenticated");
+
+    }
 }

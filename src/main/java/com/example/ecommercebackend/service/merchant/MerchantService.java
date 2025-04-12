@@ -11,9 +11,7 @@ import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.merchant.MerchantRepository;
-import com.example.ecommercebackend.repository.product.shipping.CountryRepository;
 import com.example.ecommercebackend.service.file.MerchantImageService;
-import com.example.ecommercebackend.service.product.shipping.CountryService;
 import com.example.ecommercebackend.service.user.AddressService;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +31,7 @@ public class MerchantService {
         this.merchantImageService = merchantImageService;
     }
     public Merchant createMerchant(MerchantCreateDto merchantCreateDto) {
-        AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(), merchantCreateDto.getCountryId(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getAddressLine2(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
+        AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(), merchantCreateDto.getCountryId(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
         Address address = addressService.createAddress(addressCreateDto);
 
         Merchant merchant = merchantBuilder.merchantCreateDtoToMerchant(merchantCreateDto, address);
@@ -47,7 +45,7 @@ public class MerchantService {
 
     public Merchant updateMerchant(MerchantUpdateDto merchantCreateDto) {
         Merchant merchant= getMerchant();
-        AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(), merchantCreateDto.getCountryId(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getAddressLine2(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
+        AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(), merchantCreateDto.getCountryId(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
         Address address = addressService.updateAddressById(merchant.getAddress().getId(),addressCreateDto);
         merchant.setAddress(address);
         merchant.setName(merchantCreateDto.getName());

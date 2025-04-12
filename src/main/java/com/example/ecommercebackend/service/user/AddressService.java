@@ -30,19 +30,18 @@ public class AddressService {
         return addressRepository.save(address);
     }
 
-    public Address getAddressById(Integer id) {
+    public Address findAddressById(Integer id) {
         return addressRepository.findById(id).orElseThrow(()-> new NotFoundException("Address "+ ExceptionMessage.NOT_FOUND.getMessage()));
     }
 
     public String deleteAddressById(Integer id) {
-        if (!addressRepository.existsById(id))
-            throw new NotFoundException("Address "+ExceptionMessage.NOT_FOUND.getMessage());
-        addressRepository.deleteById(id);
+        Address address = findAddressById(id); // veya direkt repository.getById(id)
+        addressRepository.delete(address);
         return "address deleted";
     }
 
     public Address updateAddressById(Integer id, AddressCreateDto addressCreateDto) {
-        Address address = getAddressById(id);
+        Address address = findAddressById(id);
         Country country = countryService.findCountryById(addressCreateDto.getCountryId());
 
         boolean isUpdated = false;
@@ -63,10 +62,7 @@ public class AddressService {
             address.setAddressLine1(addressCreateDto.getAddressLine1());
             isUpdated = true;
         }
-        if (!Objects.equals(address.getAddressLine2(), addressCreateDto.getAddressLine2())) {
-            address.setAddressLine2(addressCreateDto.getAddressLine2());
-            isUpdated = true;
-        }
+
         if (!Objects.equals(address.getPostalCode(), addressCreateDto.getPostalCode())) {
             address.setPostalCode(addressCreateDto.getPostalCode());
             isUpdated = true;

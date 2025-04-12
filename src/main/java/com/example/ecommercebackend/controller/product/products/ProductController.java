@@ -1,9 +1,7 @@
 package com.example.ecommercebackend.controller.product.products;
 
 import com.example.ecommercebackend.dto.file.productimage.ProductImageUpdateDto;
-import com.example.ecommercebackend.dto.product.products.ProductCreateDto;
-import com.example.ecommercebackend.dto.product.products.ProductFilterRequest;
-import com.example.ecommercebackend.dto.product.products.ProductUpdateDto;
+import com.example.ecommercebackend.dto.product.products.*;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.service.product.products.ProductService;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/product")
@@ -58,11 +57,23 @@ public class ProductController {
         return new ResponseEntity<>(productService.deleteCoverImage(id),HttpStatus.OK);
     }
 
-    @GetMapping("/filter")
+    @PostMapping("/filter")
     public ResponseEntity<List<Product>> filter(@RequestBody ProductFilterRequest filterRequest,
                                                 @RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "10") int size) {
         return new ResponseEntity<>(productService.filterProductsByCategory(filterRequest,page,size),HttpStatus.OK);
+    }
+
+    @PostMapping("/filter/small")
+    public ResponseEntity<Set<ProductSmallDto>> filterSmall(@RequestBody ProductFilterRequest filterRequest,
+                                                            @RequestParam(defaultValue = "0") int page,
+                                                            @RequestParam(defaultValue = "10") int size){
+        return new ResponseEntity<>(productService.filterProductsByCategorySmall(filterRequest,page,size),HttpStatus.OK);
+    }
+
+    @GetMapping("/name/{linkName}")
+    public ResponseEntity<ProductDetailDto> findProductDetail(@PathVariable String linkName) {
+        return new ResponseEntity<>(productService.findProductDetail(linkName),HttpStatus.OK);
     }
 
     @GetMapping

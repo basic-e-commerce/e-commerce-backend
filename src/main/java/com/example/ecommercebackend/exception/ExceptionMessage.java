@@ -8,7 +8,8 @@ public enum ExceptionMessage {
     INVALID_USERNAME("invalid username"),
     WRONG_CREDENTIALS("wrong credentials"),
     EXPIRED_TOKEN("expired token"),
-    NOT_NEGATIVE("not negative");
+    NOT_NEGATIVE("not negative"),
+    TRY_LOGIN("Try login");
 
     private String message;
     ExceptionMessage(String message) {

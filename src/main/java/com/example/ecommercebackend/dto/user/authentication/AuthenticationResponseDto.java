@@ -5,12 +5,14 @@ public class AuthenticationResponseDto {
     private String firstName;
     private String lastName;
     private String username;
+    private String role;
 
-    public AuthenticationResponseDto(String accessToken, String firstName, String lastName, String username) {
+    public AuthenticationResponseDto(String accessToken, String firstName, String lastName, String username, String role) {
         this.accessToken = accessToken;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
+        this.role = role;
     }
 
     public String getAccessToken() {
@@ -43,5 +45,13 @@ public class AuthenticationResponseDto {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

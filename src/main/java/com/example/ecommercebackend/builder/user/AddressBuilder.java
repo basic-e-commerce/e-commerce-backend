@@ -13,7 +13,6 @@ public class AddressBuilder {
                 country,
                 addressCreateDto.getCity(),
                 addressCreateDto.getAddressLine1(),
-                addressCreateDto.getAddressLine2(),
                 addressCreateDto.getPostalCode(),
                 addressCreateDto.getPhoneNo()
         );

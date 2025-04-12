@@ -27,6 +27,17 @@ public class AuthenticationController {
         return new ResponseEntity<>(authenticationService.loginAdmin(authenticationRequestDto,response), HttpStatus.OK);
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticationResponseDto> refresh(@CookieValue(name = "refresh_token")String refreshToken){
+        return new ResponseEntity<>(authenticationService.refresh(refreshToken),HttpStatus.OK);
+    }
+
+    @PostMapping("/refresh/logout")
+    public ResponseEntity<String> logout(@CookieValue(name = "refresh_token")String refreshToken){
+        System.out.println("ref: "+refreshToken);
+        return new ResponseEntity<>(authenticationService.logout(refreshToken),HttpStatus.OK);
+    }
+
     @GetMapping("/is-auth")
     public ResponseEntity<Boolean> isAuth() {
         return new ResponseEntity<>(authenticationService.isAuth(),HttpStatus.OK);

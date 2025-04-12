@@ -21,7 +21,6 @@ public class Address {
 
     private String city;
     private String addressLine1;
-    private String addressLine2;
     private String postalCode;
     private String phoneNo;
 
@@ -33,12 +32,11 @@ public class Address {
         updatedAt = Instant.now();
     }
 
-    public Address(String title, Country country, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo) {
+    public Address(String title, Country country, String city, String addressLine1, String postalCode, String phoneNo) {
         this.title = title;
         this.country = country;
         this.city = city;
         this.addressLine1 = addressLine1;
-        this.addressLine2 = addressLine2;
         this.postalCode = postalCode;
         this.phoneNo = phoneNo;
     }
@@ -84,14 +82,6 @@ public class Address {
 
     public void setAddressLine1(String addressLine1) {
         this.addressLine1 = addressLine1;
-    }
-
-    public String getAddressLine2() {
-        return addressLine2;
-    }
-
-    public void setAddressLine2(String addressLine2) {
-        this.addressLine2 = addressLine2;
     }
 
     public String getPostalCode() {
