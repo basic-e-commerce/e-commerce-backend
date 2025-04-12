@@ -133,7 +133,9 @@ public class AuthenticationService {
                     + "; SameSite=" + sameSite);
             
 
+
             return new AuthenticationResponseDto(accessToken, admin.getFirstName(), admin.getLastName(), admin.getUsername(),"ADMIN");
+
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -148,9 +150,11 @@ public class AuthenticationService {
 
         if (refreshToken.isActive() && refreshToken.getExpirationTime().isBefore(LocalDateTime.now())) {
             User user = refreshToken.getUser();
+
             String role = user.getAuthorities().stream().findFirst().get().getAuthority();
 
             return  new AuthenticationResponseDto(jwtService.generateAccessToken(refreshToken.getUser().getUsername()),user.getFirstName(), user.getLastName(), user.getUsername(),role);
+
         }else
             throw new TokenExpiredException(ExceptionMessage.TRY_LOGIN.getMessage());
     }
