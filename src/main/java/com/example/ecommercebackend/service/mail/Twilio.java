@@ -15,9 +15,7 @@ import java.io.IOException;
 
 @Service
 public class Twilio {
-    @Value("${mail.twilio}")
     private String apiKey;
-
     public Twilio() {
         Dotenv dotenv = Dotenv.load(); // .env dosyasını otomatik bulur
         this.apiKey = dotenv.get("SENDGRID_API_KEY");
