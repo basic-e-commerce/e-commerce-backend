@@ -132,8 +132,6 @@ public class AuthenticationService {
                     + "; Max-Age=" + "360000" //Integer.parseInt(maxAge)
                     + "; SameSite=" + "Lax"//sameSite
             );
-            
-
 
             return new AuthenticationResponseDto(accessToken, admin.getFirstName(), admin.getLastName(), admin.getUsername(),"ADMIN");
 
