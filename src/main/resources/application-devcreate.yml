@@ -61,3 +61,4 @@ domain:
   test: https://litysofttest.site
 server:
   port: 8083
+mail: fatihgs133@gmail.com

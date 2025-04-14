@@ -8,28 +8,27 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import io.github.cdimascio.dotenv.Dotenv;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
 @Service
-public class Twilio {
+public class TwilioStrategy implements IMailStrategy{
+
     private String apiKey;
-    public Twilio() {
+    public TwilioStrategy() {
         Dotenv dotenv = Dotenv.load(); // .env dosyasını otomatik bulur
         this.apiKey = dotenv.get("SENDGRID_API_KEY");
 
     }
 
-    public String send() {
+    @Override
+    public String send(String from, String to,String subject,String body) {
 
-
-        Email from = new Email("fatihgs133@gmail.com");
-        String subject = "Haktana bastığım e-posta";
-        Email to = new Email("hktndmrr25@gmail.com");
-        Content content = new Content("text/plain", "Haktana bastığımın kanıt maili");
-        Mail mail = new Mail(from, subject, to, content);
+        Email from1 = new Email(from);
+        Email to1 = new Email(to);
+        Content content = new Content("text/plain", body);
+        Mail mail = new Mail(from1, subject, to1, content);
 
         SendGrid sg = new SendGrid(apiKey);
         Request request = new Request();
