@@ -33,6 +33,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -241,6 +242,10 @@ public class OrderService {
             Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
             return cb.equal(statusJoin.get("status"), status);
         };
+    }
+
+    public BigDecimal getTotalPrice(Instant startDate, Instant endDate) {
+        return orderRepository.findTotalPriceBetweenDates(startDate, endDate);
     }
 
 

@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -32,6 +34,12 @@ public class OrderController {
                                                        @RequestParam(defaultValue = "0") int page,
                                                        @RequestParam(defaultValue = "10") int size) {
         return new ResponseEntity<>(orderService.filterOrder(orderFilterRequest,page,size),HttpStatus.OK);
+    }
+
+    @GetMapping("/total-price")
+    public ResponseEntity<BigDecimal> getTotalPrice(@RequestParam Instant startDate,
+                                                    @RequestParam Instant endDate) {
+        return new ResponseEntity<>(orderService.getTotalPrice(startDate,endDate), HttpStatus.OK);
     }
 
 
