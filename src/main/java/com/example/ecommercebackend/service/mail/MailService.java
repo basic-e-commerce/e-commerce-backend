@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MailService {
 
-    @Value("${mail}")
+    @Value("${mail.from}")
     private String from;
 
     private final IMailStrategy mailStrategy;
