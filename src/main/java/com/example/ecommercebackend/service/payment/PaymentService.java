@@ -9,6 +9,7 @@ import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.payment.PaymentRepository;
+import com.example.ecommercebackend.service.mail.MailService;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import com.example.ecommercebackend.service.product.products.SellService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,11 +27,13 @@ public class PaymentService {
     private final OrderService orderService;
     private final PaymentRepository paymentRepository;
     private final SellService sellService;
+    private final MailService mailService;
 
-    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService) {
+    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MailService mailService) {
         this.orderService = orderService;
         this.paymentRepository = paymentRepository;
         this.sellService = sellService;
+        this.mailService = mailService;
     }
 
     public String processCreditCardPayment(PaymentCreditCardRequestDto paymentCreditCardRequestDto, HttpServletRequest httpServletRequest) {
@@ -135,8 +138,8 @@ public class PaymentService {
 
             // create save
             order.getOrderItems().forEach(sellService::save);
-
             String redirectUrl = "https://litysofttest.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
+            mailService.send(order.getUsername(),"Siparişiniz onaylandı",order.getOrderItems().stream().findFirst().get().getProduct().getProductName());
             httpServletResponse.sendRedirect(redirectUrl);
         }else{
             Payment payment = findByConversationId(payCallBackDto.getConversationId());

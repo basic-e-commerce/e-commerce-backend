@@ -62,4 +62,5 @@ domain:
 server:
   port: 8083
 
-mail: fatihgs133@gmail.com
+mail:
+  from: fatihgs133@gmail.com
