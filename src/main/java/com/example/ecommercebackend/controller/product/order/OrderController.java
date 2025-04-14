@@ -2,7 +2,6 @@ package com.example.ecommercebackend.controller.product.order;
 
 import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
 import com.example.ecommercebackend.dto.product.order.OrderResponseDto;
-import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
