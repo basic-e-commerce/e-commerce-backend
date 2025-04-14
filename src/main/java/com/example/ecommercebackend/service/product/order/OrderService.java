@@ -1,9 +1,7 @@
 package com.example.ecommercebackend.service.product.order;
 
 import com.example.ecommercebackend.builder.product.order.OrderBuilder;
-import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
-import com.example.ecommercebackend.dto.product.order.OrderItemCreateDto;
-import com.example.ecommercebackend.dto.product.order.OrderResponseDto;
+import com.example.ecommercebackend.dto.product.order.*;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.card.CardItem;
@@ -20,7 +18,15 @@ import com.example.ecommercebackend.repository.product.order.OrderRepository;
 import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.example.ecommercebackend.service.product.products.ProductService;
 import com.example.ecommercebackend.service.user.GuestService;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +34,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -212,5 +220,30 @@ public class OrderService {
     public Order save(Order order) {
         return orderRepository.save(order);
     }
+
+    public List<OrderDetailDto> filterOrder(OrderFilterRequest orderFilterRequest, int page, int size) {
+        Sort sort = Sort.unsorted();
+        if (orderFilterRequest.getSortBy() != null) {
+            sort = Sort.by(Sort.Direction.fromString(orderFilterRequest.getSortDirection()), orderFilterRequest.getSortBy());
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Specification<Order> specification = filterOrders();
+        return orderRepository.findAll(specification,pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
+    }
+
+    private Specification<Order> filterOrders() {
+        return Specification.where(hasStatus(OrderStatus.Status.APPROVED));
+    }
+
+    public Specification<Order> hasStatus(OrderStatus.Status status) {
+        return (Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
+            return cb.equal(statusJoin.get("status"), status);
+        };
+    }
+
+
+
 
 }
