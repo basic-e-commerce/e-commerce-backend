@@ -139,7 +139,7 @@ public class PaymentService {
             // create save
             order.getOrderItems().forEach(sellService::save);
             String redirectUrl = "https://litysofttest.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
-            mailService.send(order.getUsername(),"Siparişiniz onaylandı",order.getOrderItems().stream().findFirst().get().getProduct().getProductName());
+            mailService.send(order.getUsername(),"Siparişiniz onaylandı","Order code: "+ order.getOrderCode());
             httpServletResponse.sendRedirect(redirectUrl);
         }else{
             Payment payment = findByConversationId(payCallBackDto.getConversationId());
