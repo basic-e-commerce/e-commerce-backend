@@ -191,7 +191,7 @@ public class IyzicoPayment implements PaymentStrategy {
                             .filter(l -> l.getInstallmentNumber() == paymentCreditCardRequestDto.getInstallmentNumber())
                             .findFirst();
             if (matchingInstallmentPrice.isPresent()){
-                paidPrice = matchingInstallmentPrice.get().getInstallmentPrice();
+                paidPrice = matchingInstallmentPrice.get().getTotalPrice();
             }else
                 throw new BadRequestException("Seçili Taksit Miktarı kullanılamaz!");
         }
