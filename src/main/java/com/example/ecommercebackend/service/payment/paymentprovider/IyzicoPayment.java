@@ -196,6 +196,7 @@ public class IyzicoPayment implements PaymentStrategy {
                 throw new BadRequestException("Seçili Taksit Miktarı kullanılamaz!");
         }
 
+        System.out.println("------------------------- last paid price: "+paidPrice);
         request.setLocale(Locale.TR.getValue());
         request.setConversationId(conversationId);
         // sepette ürün fiyatları toplamı bu olmalı
