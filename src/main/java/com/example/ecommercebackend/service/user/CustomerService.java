@@ -55,9 +55,6 @@ public class CustomerService {
         if (userService.isUserExistByUsername(customerCreateDto.getUsername()))
             throw new ResourceAlreadyExistException("Customer "+ExceptionMessage.ALREADY_EXISTS.getMessage());
 
-        if (userService.isUserExistByPhoneNumber(customerCreateDto.getPhoneNumber()))
-            throw new ResourceAlreadyExistException("Customer "+ExceptionMessage.ALREADY_EXISTS.getMessage());
-
         if (!customerCreateDto.getPassword().equals(customerCreateDto.getRePassword()))
             throw new BadRequestException(ExceptionMessage.PASSWORD_NOT_MATCHES.getMessage());
 

@@ -6,6 +6,7 @@ import com.example.ecommercebackend.dto.user.customer.CustomerCreateDto;
 import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.service.user.CustomerService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<Customer> createCustomer(@RequestBody CustomerCreateDto customerCreateDto) {
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody CustomerCreateDto customerCreateDto) {
         return new ResponseEntity<>(customerService.createCustomer(customerCreateDto), HttpStatus.CREATED);
     }
 

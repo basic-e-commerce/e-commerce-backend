@@ -5,6 +5,7 @@ import com.example.ecommercebackend.dto.product.products.*;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.service.product.products.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,7 +59,7 @@ public class ProductController {
     }
 
     @PostMapping("/filter")
-    public ResponseEntity<List<Product>> filter(@RequestBody ProductFilterRequest filterRequest,
+    public ResponseEntity<List<Product>> filter(@Valid @RequestBody ProductFilterRequest filterRequest,
                                                 @RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "10") int size) {
         return new ResponseEntity<>(productService.filterProductsByCategory(filterRequest,page,size),HttpStatus.OK);

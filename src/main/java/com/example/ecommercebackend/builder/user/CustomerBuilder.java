@@ -13,12 +13,12 @@ public class CustomerBuilder {
         return new Customer(
                 customerCreateDto.getFirstName(),
                 customerCreateDto.getLastName(),
-                customerCreateDto.getPhoneNumber(),
+                null,
                 customerCreateDto.getUsername(),
                 hashpassword,
                 roles,
-                true,
-                true
+                false,
+                false
         );
     }
 }

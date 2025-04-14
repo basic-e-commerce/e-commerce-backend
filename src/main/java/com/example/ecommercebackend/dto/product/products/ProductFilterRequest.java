@@ -1,21 +1,20 @@
 package com.example.ecommercebackend.dto.product.products;
 
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 import java.math.BigDecimal;
 
 public class ProductFilterRequest {
-    private final Integer categoryId;
-    private final BigDecimal minPrice;
-    private final BigDecimal maxPrice;
-    private final String sortBy; // "price", "name" vb.
-    private final String sortDirection; // "asc" veya "desc"
+    private Integer categoryId;
 
-    public ProductFilterRequest(Integer categoryId, BigDecimal minPrice, BigDecimal maxPrice, String sortBy, String sortDirection) {
-        this.categoryId = categoryId;
-        this.minPrice = minPrice;
-        this.maxPrice = maxPrice;
-        this.sortBy = sortBy;
-        this.sortDirection = sortDirection;
-    }
+    @Positive(message = "Mininum fiyat 0 dan büyük olmalıdır")
+    private BigDecimal minPrice= BigDecimal.ZERO;
+    private BigDecimal maxPrice = new BigDecimal("10000000");
+    private String sortBy="productName"; // "price", "name" vb.
+    private String sortDirection = "desc"; // "asc" veya "desc"
+
 
     public Integer getCategoryId() {
         return categoryId;
@@ -37,4 +36,23 @@ public class ProductFilterRequest {
         return sortDirection;
     }
 
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public void setMinPrice(BigDecimal minPrice) {
+        this.minPrice = minPrice;
+    }
+
+    public void setMaxPrice(BigDecimal maxPrice) {
+        this.maxPrice = maxPrice;
+    }
+
+    public void setSortBy(String sortBy) {
+        this.sortBy = sortBy;
+    }
+
+    public void setSortDirection(String sortDirection) {
+        this.sortDirection = sortDirection;
+    }
 }

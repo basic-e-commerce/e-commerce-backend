@@ -45,6 +45,9 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
             throw new BadRequestException("Geçersiz user tipi");
         }
 
+        if (!user.isAccountNonExpired() || !user.isEnabled())
+            throw new BadRequestException("Lütfen hesabınızı onaylatın");
+
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new UnAuthorizedException(ExceptionMessage.WRONG_CREDENTIALS.getMessage());
         }
