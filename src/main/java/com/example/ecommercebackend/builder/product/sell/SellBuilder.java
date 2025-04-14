@@ -13,7 +13,7 @@ public class SellBuilder {
             url = sell.getProduct().getCoverImage().getUrl();
         }
         return new ProductSellDto(
-                sell.getProduct().getId(),
+                sell.getId(),
                 sell.getProduct().getProductName(),
                 sell.getPrice(),
                 sell.getQuantity(),
