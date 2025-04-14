@@ -5,6 +5,7 @@ import com.example.ecommercebackend.builder.payment.PaymentBuilder;
 import com.example.ecommercebackend.dto.payment.CreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.response.InstallmentInfoDto;
+import com.example.ecommercebackend.dto.payment.response.InstallmentPriceDto;
 import com.example.ecommercebackend.dto.payment.response.PayCallBackDto;
 import com.example.ecommercebackend.dto.payment.response.ProcessCreditCardDto;
 import com.example.ecommercebackend.entity.product.order.Order;
@@ -13,6 +14,8 @@ import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.service.payment.PaymentStrategy;
 import com.iyzipay.Options;
 import com.iyzipay.model.*;
+import com.iyzipay.model.Currency;
+import com.iyzipay.model.Locale;
 import com.iyzipay.request.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 @Service
@@ -51,7 +51,7 @@ public class IyzicoPayment implements PaymentStrategy {
         System.out.println(7);
         Options options = getOptions();
 
-        CreatePaymentRequest request = getCreatePaymentRequest(order,conversationId,paymentCreditCardRequestDto.getInstallmentNumber());
+        CreatePaymentRequest request = getCreatePaymentRequest(order,conversationId,paymentCreditCardRequestDto);
         System.out.println(8);
 
         PaymentCard paymentCard = getPaymentCard(paymentCreditCardRequestDto.getCreditCardRequestDto());
@@ -135,15 +135,11 @@ public class IyzicoPayment implements PaymentStrategy {
 
     @Override
     public InstallmentInfoDto getBin(String bin, BigDecimal price) {
-
-        System.out.println("binnnn :" + bin);
         RetrieveBinNumberRequest retrieveBinNumberRequest = new RetrieveBinNumberRequest();
         retrieveBinNumberRequest.setBinNumber(bin);
 
         Options options = getOptions();
-
         BinNumber binNumber = BinNumber.retrieve(retrieveBinNumberRequest, options);
-        System.out.println("binNumber: "+binNumber);
 
         if (binNumber.getCardType().equals("CREDIT_CARD")){
 
@@ -184,19 +180,30 @@ public class IyzicoPayment implements PaymentStrategy {
         return options;
     }
 
-    public CreatePaymentRequest getCreatePaymentRequest(Order order,String conversationId,Integer installmentNumber) {
+    public CreatePaymentRequest getCreatePaymentRequest(Order order,String conversationId,PaymentCreditCardRequestDto paymentCreditCardRequestDto) {
         CreatePaymentRequest request = new CreatePaymentRequest();
+        BigDecimal paidPrice = order.getTotalPrice();
 
-        System.out.println("order.getTotalPrice(): " + order.getTotalPrice());
+        if (paymentCreditCardRequestDto.getInstallmentNumber() > 1){
+            InstallmentInfoDto bin = getBin(paymentCreditCardRequestDto.getCreditCardRequestDto().getCardNumber().substring(0, 6), paidPrice);
+            Optional<InstallmentPriceDto> matchingInstallmentPrice = bin.getInstallmentDetails().stream()
+                            .flatMap(x -> x.getInstallmentPrices().stream())
+                            .filter(l -> l.getInstallmentNumber() == paymentCreditCardRequestDto.getInstallmentNumber())
+                            .findFirst();
+            if (matchingInstallmentPrice.isPresent()){
+                paidPrice = matchingInstallmentPrice.get().getInstallmentPrice();
+            }else
+                throw new BadRequestException("Seçili Taksit Miktarı kullanılamaz!");
+        }
 
         request.setLocale(Locale.TR.getValue());
         request.setConversationId(conversationId);
         // sepette ürün fiyatları toplamı bu olmalı
         request.setPrice(order.getPrice());
         // komisyon cart curt vade farkı hesaplanmış ve postan geçecek olan miktar
-        request.setPaidPrice(order.getTotalPrice());
+        request.setPaidPrice(paidPrice);
         request.setCurrency(Currency.TRY.name());
-        request.setInstallment(installmentNumber);
+        request.setInstallment(paymentCreditCardRequestDto.getInstallmentNumber());
         request.setBasketId(order.getOrderCode());
         request.setPaymentChannel(PaymentChannel.WEB.name());
         request.setPaymentGroup(PaymentGroup.PRODUCT.name());
