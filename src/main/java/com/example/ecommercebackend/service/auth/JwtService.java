@@ -20,11 +20,6 @@ public class JwtService {
     @Value("${jwt.secret}")
     private  String SECRET_KEY;
 
-    private static final String TOKEN_PREFIX = "Bearer ";
-
-    @Value("${jwt.accessExp}")
-    private static final long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000 * 10; // 15 dakika
-
     @Value("${jwt.refreshAge}")
     private long REFRESH_TOKEN_EXPIRATION; // 7 gün
 
@@ -33,6 +28,8 @@ public class JwtService {
     }
 
     public String generateAccessToken(String username) {
+        // 15 dakika
+        long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000 * 10;
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
@@ -86,6 +83,7 @@ public class JwtService {
     }
 
     public boolean isTokenExpired(String token) {
+        String TOKEN_PREFIX = "Bearer ";
         if (token != null && token.startsWith(TOKEN_PREFIX)) {
             String substring = token.substring(TOKEN_PREFIX.length());
             Claims claims = getClaims(substring);
