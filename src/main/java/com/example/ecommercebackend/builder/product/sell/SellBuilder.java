@@ -8,12 +8,16 @@ import org.springframework.stereotype.Component;
 public class SellBuilder {
 
     public ProductSellDto sellToProductSellDto(Sell sell) {
+        String url = "";
+        if (sell.getProduct().getCoverImage() != null) {
+            url = sell.getProduct().getCoverImage().getUrl();
+        }
         return new ProductSellDto(
                 sell.getProduct().getId(),
                 sell.getProduct().getProductName(),
                 sell.getPrice(),
                 sell.getQuantity(),
-                sell.getProduct().getCoverImage().getUrl()
+                url
         );
     }
 }
