@@ -10,11 +10,13 @@ import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.TokenExpiredException;
 import com.example.ecommercebackend.exception.UnAuthorizedException;
+import com.example.ecommercebackend.service.redis.RedisService;
 import com.example.ecommercebackend.service.user.AdminService;
 import com.example.ecommercebackend.service.user.CustomerService;
 import com.example.ecommercebackend.service.user.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,6 +33,7 @@ public class AuthenticationService {
     private final CustomerService customerService;
     private final AdminService adminService;
     private final RefreshTokenService refreshTokenService;
+    private final RedisService redisService;
 
     @Value("${cookie.refreshTokenCookie.secure}")
     private boolean secure;
@@ -41,12 +44,13 @@ public class AuthenticationService {
     @Value("${cookie.refreshTokenCookie.refreshmaxAge}")
     private String maxAge;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, JwtService jwtService, CustomerService customerService, AdminService adminService, RefreshTokenService refreshTokenService) {
+    public AuthenticationService(AuthenticationManager authenticationManager, JwtService jwtService, CustomerService customerService, AdminService adminService, RefreshTokenService refreshTokenService, RedisService redisService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.customerService = customerService;
         this.adminService = adminService;
         this.refreshTokenService = refreshTokenService;
+        this.redisService = redisService;
     }
 
 
@@ -164,5 +168,14 @@ public class AuthenticationService {
         refresh.setExpirationTime(LocalDateTime.now());
         refreshTokenService.save(refresh);
         return "Successfully logged out";
+    }
+
+    public String verification(String code) {
+        String username = (String) redisService.getData(code);
+        Customer customer = customerService.findByUsername(username);
+        customer.setEnabled(true);
+        customer.setAccountNonLocked(true);
+        customerService.save(customer);
+        return "customer onaylandı";
     }
 }

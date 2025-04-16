@@ -15,14 +15,18 @@ import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.product.card.CardRepository;
 import com.example.ecommercebackend.repository.user.AddressRepository;
 import com.example.ecommercebackend.repository.user.CustomerRepository;
+import com.example.ecommercebackend.service.mail.MailService;
+import com.example.ecommercebackend.service.redis.RedisService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -35,8 +39,10 @@ public class CustomerService {
     private final CustomerBuilder customerBuilder;
     private final CardRepository cardRepository;
     private final AddressService addressService;
+    private final RedisService redisService;
+    private final MailService mailService;
 
-    public CustomerService(CustomerRepository customerRepository, UserService userService, PasswordEncoder passwordEncoder, RoleService roleService, CustomerBuilder customerBuilder, CardRepository cardRepository, AddressService addressService) {
+    public CustomerService(CustomerRepository customerRepository, UserService userService, PasswordEncoder passwordEncoder, RoleService roleService, CustomerBuilder customerBuilder, CardRepository cardRepository, AddressService addressService, RedisService redisService, MailService mailService) {
         this.customerRepository = customerRepository;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -44,6 +50,8 @@ public class CustomerService {
         this.customerBuilder = customerBuilder;
         this.cardRepository = cardRepository;
         this.addressService = addressService;
+        this.redisService = redisService;
+        this.mailService = mailService;
     }
 
     public Customer findByUsername(String username) {
@@ -68,6 +76,11 @@ public class CustomerService {
         cardRepository.save(card);
         save.setCard(card);
 
+        String generateCode = String.valueOf(100000 + (int)(Math.random() * 900000));
+        redisService.saveData(generateCode,customer.getUsername(), Duration.ofMinutes(30));
+        System.out.println("----------"+customer.getUsername());
+        System.out.println(mailService.send(customer.getUsername(),"Onay Kodu","http://localhost:8080/api/v1/auth/verification/"+generateCode));
+        System.out.println("http://localhost:8080/api/v1/auth/verification/"+generateCode);
         return customerRepository.save(save);
     }
 
