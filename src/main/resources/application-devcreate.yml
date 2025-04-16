@@ -64,7 +64,7 @@ payment:
     callBack: /api/v1/payment/payCallBack
 
 domain:
-  test: https://litysofttest.site
+  test: http://localhost:8080
 server:
   port: 8083
 mail:

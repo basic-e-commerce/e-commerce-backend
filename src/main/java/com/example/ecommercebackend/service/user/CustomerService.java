@@ -18,6 +18,7 @@ import com.example.ecommercebackend.repository.user.CustomerRepository;
 import com.example.ecommercebackend.service.mail.MailService;
 import com.example.ecommercebackend.service.redis.RedisService;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class CustomerService {
+
+    @Value("${domain.test}")
+    private String domain;
+
     private final CustomerRepository customerRepository;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -79,8 +84,8 @@ public class CustomerService {
         String generateCode = String.valueOf(100000 + (int)(Math.random() * 900000));
         redisService.saveData(generateCode,customer.getUsername(), Duration.ofMinutes(30));
         System.out.println("----------"+customer.getUsername());
-        System.out.println(mailService.send(customer.getUsername(),"Onay Kodu","http://localhost:8080/api/v1/auth/verification/"+generateCode));
-        System.out.println("http://localhost:8080/api/v1/auth/verification/"+generateCode);
+        System.out.println(mailService.send(customer.getUsername(),"Onay Kodu",domain+"/api/v1/auth/verification/"+generateCode));
+        System.out.println(domain+"/api/v1/auth/verification/"+generateCode);
         return customerRepository.save(save);
     }
 
