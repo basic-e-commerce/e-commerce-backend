@@ -13,8 +13,8 @@ public class RedisService {
         this.redisTemplate = redisTemplate;
     }
 
-    public void saveData(String key, String value) {
-        redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(10));
+    public void saveData(String key, String value,Duration duration) {
+        redisTemplate.opsForValue().set(key, value, duration);
     }
 
     public Object getData(String key) {
