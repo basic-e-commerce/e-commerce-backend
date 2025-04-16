@@ -43,7 +43,7 @@ public class AuthenticationController {
         return new ResponseEntity<>(authenticationService.isAuth(),HttpStatus.OK);
     }
 
-    @PutMapping("/verification/{code}")
+    @GetMapping("/verification/{code}")
     public ResponseEntity<String> verification(@PathVariable("code") String code) {
         return new ResponseEntity<>(authenticationService.verification(code),HttpStatus.OK);
     }
