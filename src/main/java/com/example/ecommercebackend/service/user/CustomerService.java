@@ -129,7 +129,7 @@ public class CustomerService {
                 "    <p>Hesabınızı başarıyla oluşturduğunuz için teşekkür ederiz.</p>\n" +
                 "    <p>Lütfen aşağıdaki butona tıklayarak e-posta adresinizi onaylayın:</p>\n" +
                 "    \n" +
-                "    <a href= "+ link +"class=\"button\">E-posta Adresini Onayla</a>\n" +
+                "    <a href= "+ link +" class=\"button\">E-posta Adresini Onayla</a>\n" +
                 "    \n" +
                 "    <p>Eğer bu e-postayı siz istemediyseniz, bu mesajı yok sayabilirsiniz.</p>\n" +
                 "\n" +
