@@ -25,6 +25,7 @@ public class MailGunStrategy implements IMailStrategy{
                 .queryString("subject", subject)
                 .queryString("html", body)
                 .asJson();
-        return request.getBody().toString();
+        System.out.println("body: ----------- "+request.getBody());
+        return "mail";
     }
 }
