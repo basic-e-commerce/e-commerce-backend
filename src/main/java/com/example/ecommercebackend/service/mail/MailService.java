@@ -12,7 +12,7 @@ public class MailService {
 
     private final IMailStrategy mailStrategy;
 
-    public MailService(@Qualifier("mailGunStrategy") IMailStrategy mailStrategy) {
+    public MailService(@Qualifier("twilioStrategy") IMailStrategy mailStrategy) {
         this.mailStrategy = mailStrategy;
     }
     public String send(String to, String subject, String body) {
