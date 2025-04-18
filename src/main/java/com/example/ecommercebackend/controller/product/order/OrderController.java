@@ -42,6 +42,11 @@ public class OrderController {
         return new ResponseEntity<>(orderService.getTotalPrice(startDate,endDate), HttpStatus.OK);
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<List<OrderResponseDto>> getAllOrders() {
+        return new ResponseEntity<>(orderService.findSuccessOrderByUser(),HttpStatus.OK);
+    }
+
 
 
 

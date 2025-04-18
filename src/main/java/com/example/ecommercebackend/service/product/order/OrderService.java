@@ -33,6 +33,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -259,11 +260,6 @@ public class OrderService {
         return orderRepository.findByOrderCode(orderCode).orElseThrow(()-> new NotFoundException("Order "+ ExceptionMessage.NOT_FOUND.getMessage()));
     }
 
-
-    public Order findByPayment(Payment payment) {
-        return orderRepository.findByPaymentsContaining(payment).orElseThrow(()-> new NotFoundException("Order "+ ExceptionMessage.NOT_FOUND.getMessage()+ " for payment"));
-    }
-
     public OrderStatus updateOrderStatus(OrderStatus orderStatus) {
         return orderStatusService.updateOrderStatus(orderStatus);
     }
@@ -283,9 +279,9 @@ public class OrderService {
         return orderRepository.findAll(specification,pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
     }
 
-    public List<Order> filterGuestSuccessOrder(Guest guest){
+    public List<Order> filterGuestSuccessOrder(User user){
         Sort sort = Sort.by("id","desc");
-        Specification<Order> specification = filterGuestSuccessOrders(guest);
+        Specification<Order> specification = filterGuestSuccessOrders(user);
         return orderRepository.findAll(specification,sort);
     }
 
@@ -293,8 +289,8 @@ public class OrderService {
         return Specification.where(hasStatus(OrderStatus.Status.APPROVED));
     }
 
-    private Specification<Order> filterGuestSuccessOrders(Guest guest) {
-        return Specification.where(hasStatus(OrderStatus.Status.APPROVED)).and(hasUser(guest));
+    private Specification<Order> filterGuestSuccessOrders(User user) {
+        return Specification.where(hasStatus(OrderStatus.Status.APPROVED)).and(hasUser(user));
     }
 
     public Specification<Order> hasStatus(OrderStatus.Status status) {
@@ -330,5 +326,15 @@ public class OrderService {
             order.setUser(save);
             orderRepository.save(order);
         }
+    }
+
+    public List<OrderResponseDto> findSuccessOrderByUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof Customer customer) {
+            return filterGuestSuccessOrder(customer).stream().map(orderBuilder::orderToOrderResponseDto).collect(Collectors.toList());
+        }else
+            throw new BadRequestException("USer Not Authanticated");
+
     }
 }
