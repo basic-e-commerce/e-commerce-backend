@@ -11,10 +11,12 @@ import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.entity.user.Guest;
+import com.example.ecommercebackend.entity.user.User;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.order.OrderRepository;
+import com.example.ecommercebackend.repository.user.CustomerRepository;
 import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.example.ecommercebackend.service.product.products.ProductService;
 import com.example.ecommercebackend.service.user.GuestService;
@@ -23,6 +25,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -48,9 +51,10 @@ public class OrderService {
     private final ProductService productService;
     private final OrderBuilder orderBuilder;
     private final MerchantService merchantService;
+    private final CustomerRepository customerRepository;
 
 
-    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService) {
+    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService, CustomerRepository customerRepository) {
         this.orderRepository = orderRepository;
         this.guestService = guestService;
         this.orderStatusService = orderStatusService;
@@ -58,6 +62,7 @@ public class OrderService {
         this.productService = productService;
         this.orderBuilder = orderBuilder;
         this.merchantService = merchantService;
+        this.customerRepository = customerRepository;
     }
 
     @Transactional
@@ -124,69 +129,114 @@ public class OrderService {
                 }
             }
 
-            Guest guest = guestService.findByUsernameOrNull(orderCreateDto.address().username());
+            if (customerRepository.findByUsername(orderCreateDto.address().username()).isPresent()){
+                Customer customer = customerRepository.findByUsername(orderCreateDto.address().username()).get();
 
-            if (guest == null){
-                guest = guestService.save(orderCreateDto.address().firstName(),
+                OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
+                Set<OrderItem> orderItems = new HashSet<>();
+                for (CardItem cardItem: customer.getCard().getItems()){
+                    BigDecimal orderItemPrice = cardItem.getProduct().getComparePrice().multiply(new BigDecimal(cardItem.getQuantity()));
+                    OrderItem orderItem = new OrderItem(cardItem.getProduct(),orderItemPrice, cardItem.getQuantity());
+                    orderItems.add(orderItem);
+                }
+                System.out.println("22222222222222222");
+                Set<OrderItem> savedOrderItems = orderItemService.saveOrderItems(orderItems);
+                BigDecimal orderPrice = BigDecimal.valueOf(0);
+                for (OrderItem orderItem: savedOrderItems){
+                    orderPrice = orderPrice.add(orderItem.getPrice());
+                }
+                System.out.println("333333333333333333");
+                BigDecimal totalPrice = processTotalPrice(orderPrice);
+
+
+                Order order = new Order(customer,
+                        null,
+                        orderCreateDto.address().firstName(),
                         orderCreateDto.address().lastName(),
-                        orderCreateDto.address().phoneNo(),
                         orderCreateDto.address().username(),
-                        false,
-                        false);
+                        orderCreateDto.address().countryName(),
+                        orderCreateDto.address().city(),
+                        orderCreateDto.address().addressLine1(),
+                        orderCreateDto.address().postalCode(),
+                        orderCreateDto.address().phoneNo(),
+                        savedOrderItems,
+                        orderStatus,
+                        totalPrice,
+                        orderPrice);
+                System.out.println("444444444444444444");
+                Order save = orderRepository.save(order);
+                System.out.println("666666666666666666");
+
+
+                return orderBuilder.orderToOrderResponseDto(save);
+
+            }else {
+                Guest guest = guestService.findByUsernameOrNull(orderCreateDto.address().username());
+
+                if (guest == null){
+                    guest = guestService.save(orderCreateDto.address().firstName(),
+                            orderCreateDto.address().lastName(),
+                            orderCreateDto.address().phoneNo(),
+                            orderCreateDto.address().username(),
+                            false,
+                            false);
+
+                    System.out.println("1111111111111111");
+                }
 
                 System.out.println("1111111111111111");
+                OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
+                Set<OrderItem> orderItems = new HashSet<>();
+
+                for (OrderItemCreateDto orderItemCreateDto: orderCreateDto.orderItemCreateDtos()){
+                    Product product = productService.findProductById(orderItemCreateDto.productId());
+
+                    if (product.getQuantity() < orderItemCreateDto.quantity())
+                        throw new BadRequestException("Yetersiz Ürün Stoğu: "+product.getProductName());
+
+                    BigDecimal orderItemPrice = product.getComparePrice().multiply(new BigDecimal(orderItemCreateDto.quantity()));
+                    OrderItem orderItem = new OrderItem(product,orderItemPrice, orderItemCreateDto.quantity());
+                    orderItems.add(orderItem);
+                }
+
+                System.out.println("22222222222222222");
+                Set<OrderItem> savedOrderItems = orderItemService.saveOrderItems(orderItems);
+                BigDecimal orderPrice = BigDecimal.valueOf(0);
+                for (OrderItem orderItem: savedOrderItems){
+                    orderPrice = orderPrice.add(orderItem.getPrice());
+                }
+
+                BigDecimal totalPrice = processTotalPrice(orderPrice);
+                System.out.println("totalPrice = " + totalPrice);
+
+                System.out.println("333333333333333333");
+
+                Order order = new Order(guest,
+                        null,
+                        orderCreateDto.address().firstName(),
+                        orderCreateDto.address().lastName(),
+                        orderCreateDto.address().username(),
+                        orderCreateDto.address().countryName(),
+                        orderCreateDto.address().city(),
+                        orderCreateDto.address().addressLine1(),
+                        orderCreateDto.address().postalCode(),
+                        orderCreateDto.address().phoneNo(),
+                        savedOrderItems,
+                        orderStatus,
+                        totalPrice,
+                        orderPrice);
+
+                System.out.println("444444444444444444");
+                Order save = orderRepository.save(order);
+                System.out.println("666666666666666666");
+
+                return orderBuilder.orderToOrderResponseDto(save);
             }
 
-            System.out.println("1111111111111111");
-            OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
-            Set<OrderItem> orderItems = new HashSet<>();
 
-            for (OrderItemCreateDto orderItemCreateDto: orderCreateDto.orderItemCreateDtos()){
-                Product product = productService.findProductById(orderItemCreateDto.productId());
 
-                if (product.getQuantity() < orderItemCreateDto.quantity())
-                    throw new BadRequestException("Yetersiz Ürün Stoğu: "+product.getProductName());
-
-                BigDecimal orderItemPrice = product.getComparePrice().multiply(new BigDecimal(orderItemCreateDto.quantity()));
-                OrderItem orderItem = new OrderItem(product,orderItemPrice, orderItemCreateDto.quantity());
-                orderItems.add(orderItem);
-            }
-
-            System.out.println("22222222222222222");
-            Set<OrderItem> savedOrderItems = orderItemService.saveOrderItems(orderItems);
-            BigDecimal orderPrice = BigDecimal.valueOf(0);
-            for (OrderItem orderItem: savedOrderItems){
-                orderPrice = orderPrice.add(orderItem.getPrice());
-            }
-
-            BigDecimal totalPrice = processTotalPrice(orderPrice);
-            System.out.println("totalPrice = " + totalPrice);
-
-            System.out.println("333333333333333333");
-
-            Order order = new Order(guest,
-                    null,
-                    orderCreateDto.address().firstName(),
-                    orderCreateDto.address().lastName(),
-                    orderCreateDto.address().username(),
-                    orderCreateDto.address().countryName(),
-                    orderCreateDto.address().city(),
-                    orderCreateDto.address().addressLine1(),
-                    orderCreateDto.address().postalCode(),
-                    orderCreateDto.address().phoneNo(),
-                    savedOrderItems,
-                    orderStatus,
-                    totalPrice,
-                    orderPrice);
-
-            System.out.println("444444444444444444");
-            Order save = orderRepository.save(order);
-            System.out.println("666666666666666666");
-
-            return orderBuilder.orderToOrderResponseDto(save);
-
-        }
-        throw new BadRequestException("Geçersiz Kullanıcı");
+        }else
+            throw new BadRequestException("Geçersiz Kullanıcı");
     }
 
     private BigDecimal processTotalPrice(BigDecimal totalPrice) {
@@ -233,8 +283,18 @@ public class OrderService {
         return orderRepository.findAll(specification,pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
     }
 
+    public List<Order> filterGuestSuccessOrder(Guest guest){
+        Sort sort = Sort.by("id","desc");
+        Specification<Order> specification = filterGuestSuccessOrders(guest);
+        return orderRepository.findAll(specification,sort);
+    }
+
     private Specification<Order> filterOrders() {
         return Specification.where(hasStatus(OrderStatus.Status.APPROVED));
+    }
+
+    private Specification<Order> filterGuestSuccessOrders(Guest guest) {
+        return Specification.where(hasStatus(OrderStatus.Status.APPROVED)).and(hasUser(guest));
     }
 
     public Specification<Order> hasStatus(OrderStatus.Status status) {
@@ -244,11 +304,31 @@ public class OrderService {
         };
     }
 
+    public Specification<Order> hasUser(User user) {
+        return (Root<Order> root,CriteriaQuery<?> query,CriteriaBuilder cb) ->
+                user == null ? null : cb.equal(root.get("user"), user);
+    }
+
     public BigDecimal getTotalPrice(Instant startDate, Instant endDate) {
         return orderRepository.findTotalPriceBetweenDates(startDate, endDate);
     }
 
 
+    public List<Order> changeSuccessGuestNull(Guest guest) {
+        Specification<Order> getGuestSuccessOrder = Specification.where(hasStatus(OrderStatus.Status.APPROVED)).and(hasUser(guest));
+        List<Order> all = orderRepository.findAll(getGuestSuccessOrder);
+        for (Order order : all) {
+            order.setUser(null);
+            orderRepository.save(order);
+        }
+        return all;
+    }
 
 
+    public void changeSuccessCustomerOrder(Customer save, List<Order> guestOrders) {
+        for (Order order : guestOrders) {
+            order.setUser(save);
+            orderRepository.save(order);
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.service.user;
 
+import com.example.ecommercebackend.entity.user.Guest;
 import com.example.ecommercebackend.entity.user.User;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
@@ -18,6 +19,9 @@ public class UserService {
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("User "+ ExceptionMessage.NOT_FOUND.getMessage()));
     }
+    public User getUserByUsernameOrNull(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
 
     public boolean isUserExistByUsername(String username) {
         return userRepository.existsByUsername(username);
@@ -27,4 +31,7 @@ public class UserService {
         return userRepository.existsByPhoneNumber(phoneNumber);
     }
 
+    public void deleteUser(User user) {
+        userRepository.delete(user);
+    }
 }

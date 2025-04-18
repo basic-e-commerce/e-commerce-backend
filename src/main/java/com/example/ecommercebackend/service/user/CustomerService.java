@@ -5,9 +5,8 @@ import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.dto.user.customer.CustomerCreateDto;
 import com.example.ecommercebackend.entity.product.card.Card;
-import com.example.ecommercebackend.entity.user.Address;
-import com.example.ecommercebackend.entity.user.Customer;
-import com.example.ecommercebackend.entity.user.Role;
+import com.example.ecommercebackend.entity.product.order.Order;
+import com.example.ecommercebackend.entity.user.*;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
@@ -16,6 +15,7 @@ import com.example.ecommercebackend.repository.product.card.CardRepository;
 import com.example.ecommercebackend.repository.user.AddressRepository;
 import com.example.ecommercebackend.repository.user.CustomerRepository;
 import com.example.ecommercebackend.service.mail.MailService;
+import com.example.ecommercebackend.service.product.order.OrderService;
 import com.example.ecommercebackend.service.redis.RedisService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,8 +46,9 @@ public class CustomerService {
     private final AddressService addressService;
     private final RedisService redisService;
     private final MailService mailService;
+    private final OrderService orderService;
 
-    public CustomerService(CustomerRepository customerRepository, UserService userService, PasswordEncoder passwordEncoder, RoleService roleService, CustomerBuilder customerBuilder, CardRepository cardRepository, AddressService addressService, RedisService redisService, MailService mailService) {
+    public CustomerService(CustomerRepository customerRepository, UserService userService, PasswordEncoder passwordEncoder, RoleService roleService, CustomerBuilder customerBuilder, CardRepository cardRepository, AddressService addressService, RedisService redisService, MailService mailService, OrderService orderService) {
         this.customerRepository = customerRepository;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -57,6 +58,7 @@ public class CustomerService {
         this.addressService = addressService;
         this.redisService = redisService;
         this.mailService = mailService;
+        this.orderService = orderService;
     }
 
     public Customer findByUsername(String username) {
@@ -64,84 +66,166 @@ public class CustomerService {
     }
 
     public Customer createCustomer(CustomerCreateDto customerCreateDto){
+        User user = userService.getUserByUsernameOrNull(customerCreateDto.getUsername());
+        if (user == null) {
+            if (!customerCreateDto.getPassword().equals(customerCreateDto.getRePassword()))
+                throw new BadRequestException(ExceptionMessage.PASSWORD_NOT_MATCHES.getMessage());
 
-        if (userService.isUserExistByUsername(customerCreateDto.getUsername()))
-            throw new ResourceAlreadyExistException("Customer "+ExceptionMessage.ALREADY_EXISTS.getMessage());
+            String hashPassword = passwordEncoder.encode(customerCreateDto.getPassword());
+            Set<Role> roles = new HashSet<>();
+            roles.add(roleService.findByRoleName("CUSTOMER"));
+            Customer customer = customerBuilder.customerCreateDtoToCustomer(customerCreateDto,hashPassword,roles);
 
-        if (!customerCreateDto.getPassword().equals(customerCreateDto.getRePassword()))
-            throw new BadRequestException(ExceptionMessage.PASSWORD_NOT_MATCHES.getMessage());
+            Customer save = customerRepository.save(customer);
+            Card card = new Card(save);
+            cardRepository.save(card);
+            save.setCard(card);
 
-        String hashPassword = passwordEncoder.encode(customerCreateDto.getPassword());
-        Set<Role> roles = new HashSet<>();
-        roles.add(roleService.findByRoleName("CUSTOMER"));
-        Customer customer = customerBuilder.customerCreateDtoToCustomer(customerCreateDto,hashPassword,roles);
+            String generateCode = String.valueOf(100000 + (int)(Math.random() * 900000));
+            redisService.saveData(generateCode,customer.getUsername(), Duration.ofMinutes(30));
+            System.out.println("----------"+customer.getUsername());
+            String link = domain + "/api/v1/auth/verification/" + generateCode;
+            String onayKodu = mailService.send(customer.getUsername(), "Onay Kodu","<!DOCTYPE html>\n" +
+                    "<html lang=\"tr\">\n" +
+                    "<head>\n" +
+                    "  <meta charset=\"UTF-8\">\n" +
+                    "  <title>Hesabınızı Onaylayın</title>\n" +
+                    "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                    "  <style>\n" +
+                    "    body {\n" +
+                    "      font-family: Arial, sans-serif;\n" +
+                    "      background-color: #f4f6f8;\n" +
+                    "      margin: 0;\n" +
+                    "      padding: 0;\n" +
+                    "    }\n" +
+                    "    .container {\n" +
+                    "      max-width: 600px;\n" +
+                    "      margin: auto;\n" +
+                    "      background-color: #ffffff;\n" +
+                    "      padding: 30px;\n" +
+                    "      border-radius: 10px;\n" +
+                    "      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);\n" +
+                    "    }\n" +
+                    "    .button {\n" +
+                    "      background-color: #007bff;\n" +
+                    "      color: white;\n" +
+                    "      padding: 12px 24px;\n" +
+                    "      text-decoration: none;\n" +
+                    "      border-radius: 5px;\n" +
+                    "      display: inline-block;\n" +
+                    "      margin-top: 20px;\n" +
+                    "    }\n" +
+                    "    .footer {\n" +
+                    "      margin-top: 40px;\n" +
+                    "      font-size: 12px;\n" +
+                    "      color: #888;\n" +
+                    "      text-align: center;\n" +
+                    "    }\n" +
+                    "  </style>\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "  <div class=\"container\">\n" +
+                    "    <h2>Merhaba,</h2>\n" +
+                    "    <p>Hesabınızı başarıyla oluşturduğunuz için teşekkür ederiz.</p>\n" +
+                    "    <p>Lütfen aşağıdaki butona tıklayarak e-posta adresinizi onaylayın:</p>\n" +
+                    "    \n" +
+                    "<a href=\"" + link + "\" class=\"button\">E-posta Adresini Onayla</a>\n" +
+                    "    \n" +
+                    "    <p>Eğer bu e-postayı siz istemediyseniz, bu mesajı yok sayabilirsiniz.</p>\n" +
+                    "\n" +
+                    "    <div class=\"footer\">\n" +
+                    "      © 2025 Litysoft Tüm hakları saklıdır.\n" +
+                    "    </div>\n" +
+                    "  </div>\n" +
+                    "</body>\n" +
+                    "</html>\n" );
+            System.out.println(onayKodu);
+            System.out.println(domain+"/api/v1/auth/verification/"+generateCode);
+            return customerRepository.save(save);
+        }else {
+            if (user instanceof Guest guest){
+                if (!customerCreateDto.getPassword().equals(customerCreateDto.getRePassword()))
+                    throw new BadRequestException(ExceptionMessage.PASSWORD_NOT_MATCHES.getMessage());
 
-        Customer save = customerRepository.save(customer);
-        Card card = new Card(save);
-        cardRepository.save(card);
-        save.setCard(card);
+                String hashPassword = passwordEncoder.encode(customerCreateDto.getPassword());
+                Set<Role> roles = new HashSet<>();
+                roles.add(roleService.findByRoleName("CUSTOMER"));
+                Customer customer = customerBuilder.customerCreateDtoToCustomer(customerCreateDto,hashPassword,roles);
 
-        String generateCode = String.valueOf(100000 + (int)(Math.random() * 900000));
-        redisService.saveData(generateCode,customer.getUsername(), Duration.ofMinutes(30));
-        System.out.println("----------"+customer.getUsername());
-        String link = domain + "/api/v1/auth/verification/" + generateCode;
-        String onayKodu = mailService.send(customer.getUsername(), "Onay Kodu","<!DOCTYPE html>\n" +
-                "<html lang=\"tr\">\n" +
-                "<head>\n" +
-                "  <meta charset=\"UTF-8\">\n" +
-                "  <title>Hesabınızı Onaylayın</title>\n" +
-                "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-                "  <style>\n" +
-                "    body {\n" +
-                "      font-family: Arial, sans-serif;\n" +
-                "      background-color: #f4f6f8;\n" +
-                "      margin: 0;\n" +
-                "      padding: 0;\n" +
-                "    }\n" +
-                "    .container {\n" +
-                "      max-width: 600px;\n" +
-                "      margin: auto;\n" +
-                "      background-color: #ffffff;\n" +
-                "      padding: 30px;\n" +
-                "      border-radius: 10px;\n" +
-                "      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);\n" +
-                "    }\n" +
-                "    .button {\n" +
-                "      background-color: #007bff;\n" +
-                "      color: white;\n" +
-                "      padding: 12px 24px;\n" +
-                "      text-decoration: none;\n" +
-                "      border-radius: 5px;\n" +
-                "      display: inline-block;\n" +
-                "      margin-top: 20px;\n" +
-                "    }\n" +
-                "    .footer {\n" +
-                "      margin-top: 40px;\n" +
-                "      font-size: 12px;\n" +
-                "      color: #888;\n" +
-                "      text-align: center;\n" +
-                "    }\n" +
-                "  </style>\n" +
-                "</head>\n" +
-                "<body>\n" +
-                "  <div class=\"container\">\n" +
-                "    <h2>Merhaba,</h2>\n" +
-                "    <p>Hesabınızı başarıyla oluşturduğunuz için teşekkür ederiz.</p>\n" +
-                "    <p>Lütfen aşağıdaki butona tıklayarak e-posta adresinizi onaylayın:</p>\n" +
-                "    \n" +
-                "<a href=\"" + link + "\" class=\"button\">E-posta Adresini Onayla</a>\n" +
-                "    \n" +
-                "    <p>Eğer bu e-postayı siz istemediyseniz, bu mesajı yok sayabilirsiniz.</p>\n" +
-                "\n" +
-                "    <div class=\"footer\">\n" +
-                "      © 2025 Litysoft Tüm hakları saklıdır.\n" +
-                "    </div>\n" +
-                "  </div>\n" +
-                "</body>\n" +
-                "</html>\n" );
-        System.out.println(onayKodu);
-        System.out.println(domain+"/api/v1/auth/verification/"+generateCode);
-        return customerRepository.save(save);
+                List<Order> guestOrders = orderService.changeSuccessGuestNull(guest);
+                userService.deleteUser(guest);
+
+                Customer save = customerRepository.save(customer);
+                orderService.changeSuccessCustomerOrder(save,guestOrders);
+                Card card = new Card(save);
+                cardRepository.save(card);
+                save.setCard(card);
+
+                String generateCode = String.valueOf(100000 + (int)(Math.random() * 900000));
+                redisService.saveData(generateCode,customer.getUsername(), Duration.ofMinutes(30));
+                System.out.println("----------"+customer.getUsername());
+                String link = domain + "/api/v1/auth/verification/" + generateCode;
+                String onayKodu = mailService.send(customer.getUsername(), "Onay Kodu","<!DOCTYPE html>\n" +
+                        "<html lang=\"tr\">\n" +
+                        "<head>\n" +
+                        "  <meta charset=\"UTF-8\">\n" +
+                        "  <title>Hesabınızı Onaylayın</title>\n" +
+                        "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                        "  <style>\n" +
+                        "    body {\n" +
+                        "      font-family: Arial, sans-serif;\n" +
+                        "      background-color: #f4f6f8;\n" +
+                        "      margin: 0;\n" +
+                        "      padding: 0;\n" +
+                        "    }\n" +
+                        "    .container {\n" +
+                        "      max-width: 600px;\n" +
+                        "      margin: auto;\n" +
+                        "      background-color: #ffffff;\n" +
+                        "      padding: 30px;\n" +
+                        "      border-radius: 10px;\n" +
+                        "      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);\n" +
+                        "    }\n" +
+                        "    .button {\n" +
+                        "      background-color: #007bff;\n" +
+                        "      color: white;\n" +
+                        "      padding: 12px 24px;\n" +
+                        "      text-decoration: none;\n" +
+                        "      border-radius: 5px;\n" +
+                        "      display: inline-block;\n" +
+                        "      margin-top: 20px;\n" +
+                        "    }\n" +
+                        "    .footer {\n" +
+                        "      margin-top: 40px;\n" +
+                        "      font-size: 12px;\n" +
+                        "      color: #888;\n" +
+                        "      text-align: center;\n" +
+                        "    }\n" +
+                        "  </style>\n" +
+                        "</head>\n" +
+                        "<body>\n" +
+                        "  <div class=\"container\">\n" +
+                        "    <h2>Merhaba,</h2>\n" +
+                        "    <p>Hesabınızı başarıyla oluşturduğunuz için teşekkür ederiz.</p>\n" +
+                        "    <p>Lütfen aşağıdaki butona tıklayarak e-posta adresinizi onaylayın:</p>\n" +
+                        "    \n" +
+                        "<a href=\"" + link + "\" class=\"button\">E-posta Adresini Onayla</a>\n" +
+                        "    \n" +
+                        "    <p>Eğer bu e-postayı siz istemediyseniz, bu mesajı yok sayabilirsiniz.</p>\n" +
+                        "\n" +
+                        "    <div class=\"footer\">\n" +
+                        "      © 2025 Litysoft Tüm hakları saklıdır.\n" +
+                        "    </div>\n" +
+                        "  </div>\n" +
+                        "</body>\n" +
+                        "</html>\n" );
+                System.out.println(onayKodu);
+                System.out.println(domain+"/api/v1/auth/verification/"+generateCode);
+
+                return customerRepository.save(save);
+            }else
+                throw new ResourceAlreadyExistException("Bu e posta kullanılmaktadır");
+        }
     }
 
 
