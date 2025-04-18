@@ -184,19 +184,8 @@ public class IyzicoPayment implements PaymentStrategy {
         CreatePaymentRequest request = new CreatePaymentRequest();
         BigDecimal paidPrice = order.getTotalPrice();
 
-        if (paymentCreditCardRequestDto.getInstallmentNumber() > 1){
-            InstallmentInfoDto bin = getBin(paymentCreditCardRequestDto.getCreditCardRequestDto().getCardNumber().substring(0, 6), paidPrice);
-            Optional<InstallmentPriceDto> matchingInstallmentPrice = bin.getInstallmentDetails().stream()
-                            .flatMap(x -> x.getInstallmentPrices().stream())
-                            .filter(l -> l.getInstallmentNumber() == paymentCreditCardRequestDto.getInstallmentNumber())
-                            .findFirst();
-            if (matchingInstallmentPrice.isPresent()){
-                paidPrice = matchingInstallmentPrice.get().getTotalPrice();
-            }else
-                throw new BadRequestException("Seçili Taksit Miktarı kullanılamaz!");
-        }
-
         System.out.println("------------------------- last paid price: "+paidPrice);
+
         request.setLocale(Locale.TR.getValue());
         request.setConversationId(conversationId);
         // sepette ürün fiyatları toplamı bu olmalı
