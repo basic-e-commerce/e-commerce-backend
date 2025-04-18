@@ -77,6 +77,8 @@ public class PaymentService {
             InstallmentInfoDto bin = getBin(binNumber, totalPrice);
             InstallmentPriceDto installmentPrice = getInstallmentPrice(binNumber, bin, paymentCreditCardRequestDto.getInstallmentNumber());
             totalPrice = installmentPrice.getTotalPrice();
+            order.setTotalPrice(totalPrice);
+            orderService.save(order);
         }
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
