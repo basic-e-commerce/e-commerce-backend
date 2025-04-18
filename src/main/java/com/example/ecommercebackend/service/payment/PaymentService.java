@@ -64,6 +64,8 @@ public class PaymentService {
                 paymentCreditCardRequestDto.getCreditCardRequestDto().getCardHolderName(),
                 conversationId,
                 "İslem Baslatılıyor",
+                BigDecimal.ONE,
+                paymentCreditCardRequestDto.getInstallmentNumber(),
                 order
         );
         Payment savePayment = paymentRepository.save(payment);
@@ -94,6 +96,7 @@ public class PaymentService {
             ProcessCreditCardDto processCreditCardDto = future.get(10, TimeUnit.SECONDS);
             System.out.println(21);
             savePayment.setPaymentUniqId(processCreditCardDto.getPaymentId());
+            payment.setTotalAmount(finalTotalPrice);
             paymentRepository.save(savePayment);
             System.out.println(22);
 

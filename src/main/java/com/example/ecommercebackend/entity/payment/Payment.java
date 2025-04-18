@@ -4,6 +4,8 @@ import com.example.ecommercebackend.entity.product.order.Order;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "payment")
 public class Payment {
@@ -21,6 +23,8 @@ public class Payment {
     private String cardHolderName;
     private String conversationId;
     private String paymentUniqId;
+    private BigDecimal totalAmount;
+    private int installment;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus = PaymentStatus.PROCESS;
@@ -30,7 +34,7 @@ public class Payment {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    public Payment(String name, String surname, String username, String phoneNo,String country, String city, String zipCode, String cardHolderName, String conversationId, String paymentUniqId, Order order) {
+    public Payment(String name, String surname, String username, String phoneNo, String country, String city, String zipCode, String cardHolderName, String conversationId, String paymentUniqId, BigDecimal totalAmount, int installment, Order order) {
         this.name = name;
         this.surname = surname;
         this.username = username;
@@ -41,6 +45,8 @@ public class Payment {
         this.cardHolderName = cardHolderName;
         this.conversationId = conversationId;
         this.paymentUniqId = paymentUniqId;
+        this.totalAmount = totalAmount;
+        this.installment = installment;
         this.order = order;
     }
     public Payment() {
@@ -149,6 +155,22 @@ public class Payment {
 
     public void setPaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public int getInstallment() {
+        return installment;
+    }
+
+    public void setInstallment(int installment) {
+        this.installment = installment;
     }
 
     public enum PaymentStatus {
