@@ -328,11 +328,11 @@ public class OrderService {
         }
     }
 
-    public List<OrderResponseDto> findSuccessOrderByUser() {
+    public List<OrderDetailDto> findSuccessOrderByUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal instanceof Customer customer) {
-            return filterGuestSuccessOrder(customer).stream().map(orderBuilder::orderToOrderResponseDto).collect(Collectors.toList());
+            return filterGuestSuccessOrder(customer).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
         }else
             throw new BadRequestException("USer Not Authanticated");
 

@@ -43,7 +43,7 @@ public class OrderController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<OrderResponseDto>> getAllOrders() {
+    public ResponseEntity<List<OrderDetailDto>> getAllOrders() {
         return new ResponseEntity<>(orderService.findSuccessOrderByUser(),HttpStatus.OK);
     }
 
