@@ -27,7 +27,7 @@ public class TwilioStrategy implements IMailStrategy{
 
         Email from1 = new Email(from);
         Email to1 = new Email(to);
-        Content content = new Content("html", body);
+        Content content = new Content("text/html", body);
         Mail mail = new Mail(from1, subject, to1, content);
 
         SendGrid sg = new SendGrid(apiKey);
