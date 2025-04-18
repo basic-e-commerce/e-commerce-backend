@@ -4,6 +4,7 @@ import com.example.ecommercebackend.dto.product.order.AddressOrderDetailDto;
 import com.example.ecommercebackend.dto.product.order.OrderDetailDto;
 import com.example.ecommercebackend.dto.product.order.OrderResponseDto;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
+import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.order.Order;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,8 @@ public class OrderBuilder {
                 ),
                 order.getOrderItems().stream().map(orderItem -> {
                     return new OrderItemResponseDto(orderItem.getProduct().getId(),orderItem.getProduct().getProductName(),orderItem.getQuantity());
-                }).toList()
+                }).toList(),
+                order.getPayments().stream().filter(p -> p.getPaymentStatus() == Payment.PaymentStatus.PROCESS).findFirst().get().getInstallment()
         );
     }
 }
