@@ -2,6 +2,7 @@ package com.example.ecommercebackend.filter;
 
 import com.example.ecommercebackend.config.ApplicationConstant;
 import com.example.ecommercebackend.entity.user.User;
+import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.service.auth.JwtService;
 import com.example.ecommercebackend.service.user.UserService;
 import io.jsonwebtoken.Claims;
@@ -60,6 +61,10 @@ public class JwtValidationFilter extends OncePerRequestFilter {
         } catch (JwtException | IllegalArgumentException ex) {
             logger.error("Invalid JWT: {}", ex.getMessage());
             writeErrorResponse(response, HttpStatus.UNAUTHORIZED, "Invalid token", request);
+            return;
+        }catch (NotFoundException ex){
+            logger.error("User not found: {}", ex.getMessage());
+            writeErrorResponse(response, HttpStatus.NOT_FOUND, "User not found", request);
             return;
         }
         filterChain.doFilter(request, response);
