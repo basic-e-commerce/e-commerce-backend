@@ -280,7 +280,7 @@ public class OrderService {
     }
 
     public List<Order> filterGuestSuccessOrder(User user){
-        Sort sort = Sort.by("id","desc");
+        Sort sort = Sort.by(Sort.Direction.DESC,"id");
         Specification<Order> specification = filterGuestSuccessOrders(user);
         return orderRepository.findAll(specification,sort);
     }

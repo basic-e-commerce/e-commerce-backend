@@ -79,6 +79,8 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/auth/verification/**").permitAll()
 
+                        .requestMatchers(HttpMethod.GET,"/api/v1/order/user").hasAuthority("CUSTOMER")
+
                         .anyRequest().permitAll())
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(jwtValidationFilter, UsernamePasswordAuthenticationFilter.class)
