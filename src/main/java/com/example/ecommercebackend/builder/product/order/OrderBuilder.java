@@ -22,6 +22,12 @@ public class OrderBuilder {
     }
 
     public OrderDetailDto orderToOrderDetailDto(Order order) {
+        int installment = 1;
+        for (Payment payment : order.getPayments()) {
+            if (payment.getPaymentStatus() == Payment.PaymentStatus.SUCCESS){
+                installment = payment.getInstallment();
+            }
+        }
         return new OrderDetailDto(
                 order.getId(),
                 order.getOrderCode(),
@@ -41,7 +47,7 @@ public class OrderBuilder {
                 order.getOrderItems().stream().map(orderItem -> {
                     return new OrderItemResponseDto(orderItem.getProduct().getId(),orderItem.getProduct().getProductName(),orderItem.getQuantity());
                 }).toList(),
-                order.getPayments().stream().filter(p -> p.getPaymentStatus() == Payment.PaymentStatus.PROCESS).findFirst().get().getInstallment()
+                installment
         );
     }
 }
