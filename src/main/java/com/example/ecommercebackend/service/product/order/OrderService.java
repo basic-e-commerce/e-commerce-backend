@@ -4,6 +4,7 @@ import com.example.ecommercebackend.builder.product.order.OrderBuilder;
 import com.example.ecommercebackend.dto.product.order.*;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.payment.Payment;
+import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.card.CardItem;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderItem;
@@ -66,64 +67,28 @@ public class OrderService {
         this.customerRepository = customerRepository;
     }
 
+
     @Transactional
     public OrderResponseDto createOrder(OrderCreateDto orderCreateDto) {
         // Authentication nesnesini güvenlik bağlamından alıyoruz
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // Kullanıcı bilgilerini principal üzerinden alıyoruz
         Object principal = authentication.getPrincipal();
 
+        OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
         if (principal instanceof Customer customer) {
 
             if (customer.getCard().getItems().isEmpty())
                 throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
 
-            System.out.println("1111111111111111");
-            OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
-            Set<OrderItem> orderItems = new HashSet<>();
-            for (CardItem cardItem: customer.getCard().getItems()){
-                BigDecimal orderItemPrice = cardItem.getProduct().getComparePrice().multiply(new BigDecimal(cardItem.getQuantity()));
-                OrderItem orderItem = new OrderItem(cardItem.getProduct(),orderItemPrice, cardItem.getQuantity());
-                orderItems.add(orderItem);
-            }
-            System.out.println("22222222222222222");
-            Set<OrderItem> savedOrderItems = orderItemService.saveOrderItems(orderItems);
-            BigDecimal orderPrice = BigDecimal.valueOf(0);
-            for (OrderItem orderItem: savedOrderItems){
-                orderPrice = orderPrice.add(orderItem.getPrice());
-            }
-            System.out.println("333333333333333333");
+            Set<OrderItem> savedOrderItems = createOrderItemWithCustomer(customer.getCard());
+            BigDecimal orderPrice = orderPrice(savedOrderItems);
             BigDecimal totalPrice = processTotalPrice(orderPrice);
-
-
-            Order order = new Order(customer,
-                    null,
-                    orderCreateDto.address().firstName(),
-                    orderCreateDto.address().lastName(),
-                    orderCreateDto.address().username(),
-                    orderCreateDto.address().countryName(),
-                    orderCreateDto.address().city(),
-                    orderCreateDto.address().addressLine1(),
-                    orderCreateDto.address().postalCode(),
-                    orderCreateDto.address().phoneNo(),
-                    savedOrderItems,
-                    orderStatus,
-                    totalPrice,
-                    orderPrice);
-            System.out.println("444444444444444444");
-            Order save = orderRepository.save(order);
-            System.out.println("666666666666666666");
-
-
-            return orderBuilder.orderToOrderResponseDto(save);
+            return orderBuilder.orderToOrderResponseDto(saveOrder(customer,orderCreateDto,savedOrderItems,orderStatus,totalPrice,orderPrice));
         }
-
 
         if (authentication instanceof AnonymousAuthenticationToken) {
             if (orderCreateDto.orderItemCreateDtos().isEmpty())
                 throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
-
             for (OrderItemCreateDto item : orderCreateDto.orderItemCreateDtos()) {
                 if (item.quantity() <= 0) {
                     throw new BadRequestException("Sepette 0 ve altında ürün sayısı bulunamaz");
@@ -132,48 +97,14 @@ public class OrderService {
 
             if (customerRepository.findByUsername(orderCreateDto.address().username()).isPresent()){
                 Customer customer = customerRepository.findByUsername(orderCreateDto.address().username()).get();
+                Set<OrderItem> savedOrderItems = createOrderItemWithAnon(orderCreateDto);
 
-                OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
-                Set<OrderItem> orderItems = new HashSet<>();
-                for (CardItem cardItem: customer.getCard().getItems()){
-                    BigDecimal orderItemPrice = cardItem.getProduct().getComparePrice().multiply(new BigDecimal(cardItem.getQuantity()));
-                    OrderItem orderItem = new OrderItem(cardItem.getProduct(),orderItemPrice, cardItem.getQuantity());
-                    orderItems.add(orderItem);
-                }
-                System.out.println("22222222222222222");
-                Set<OrderItem> savedOrderItems = orderItemService.saveOrderItems(orderItems);
-                BigDecimal orderPrice = BigDecimal.valueOf(0);
-                for (OrderItem orderItem: savedOrderItems){
-                    orderPrice = orderPrice.add(orderItem.getPrice());
-                }
-                System.out.println("333333333333333333");
+                BigDecimal orderPrice = orderPrice(savedOrderItems);
                 BigDecimal totalPrice = processTotalPrice(orderPrice);
-
-
-                Order order = new Order(customer,
-                        null,
-                        orderCreateDto.address().firstName(),
-                        orderCreateDto.address().lastName(),
-                        orderCreateDto.address().username(),
-                        orderCreateDto.address().countryName(),
-                        orderCreateDto.address().city(),
-                        orderCreateDto.address().addressLine1(),
-                        orderCreateDto.address().postalCode(),
-                        orderCreateDto.address().phoneNo(),
-                        savedOrderItems,
-                        orderStatus,
-                        totalPrice,
-                        orderPrice);
-                System.out.println("444444444444444444");
-                Order save = orderRepository.save(order);
-                System.out.println("666666666666666666");
-
-
-                return orderBuilder.orderToOrderResponseDto(save);
+                return orderBuilder.orderToOrderResponseDto(saveOrder(customer,orderCreateDto,savedOrderItems,orderStatus,totalPrice,orderPrice));
 
             }else {
                 Guest guest = guestService.findByUsernameOrNull(orderCreateDto.address().username());
-
                 if (guest == null){
                     guest = guestService.save(orderCreateDto.address().firstName(),
                             orderCreateDto.address().lastName(),
@@ -182,63 +113,76 @@ public class OrderService {
                             false,
                             false);
 
-                    System.out.println("1111111111111111");
                 }
-
-                System.out.println("1111111111111111");
-                OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
-                Set<OrderItem> orderItems = new HashSet<>();
-
-                for (OrderItemCreateDto orderItemCreateDto: orderCreateDto.orderItemCreateDtos()){
-                    Product product = productService.findProductById(orderItemCreateDto.productId());
-
-                    if (product.getQuantity() < orderItemCreateDto.quantity())
-                        throw new BadRequestException("Yetersiz Ürün Stoğu: "+product.getProductName());
-
-                    BigDecimal orderItemPrice = product.getComparePrice().multiply(new BigDecimal(orderItemCreateDto.quantity()));
-                    OrderItem orderItem = new OrderItem(product,orderItemPrice, orderItemCreateDto.quantity());
-                    orderItems.add(orderItem);
-                }
-
-                System.out.println("22222222222222222");
-                Set<OrderItem> savedOrderItems = orderItemService.saveOrderItems(orderItems);
-                BigDecimal orderPrice = BigDecimal.valueOf(0);
-                for (OrderItem orderItem: savedOrderItems){
-                    orderPrice = orderPrice.add(orderItem.getPrice());
-                }
-
+                Set<OrderItem> savedOrderItems = createOrderItemWithAnon(orderCreateDto);
+                BigDecimal orderPrice = orderPrice(savedOrderItems);
                 BigDecimal totalPrice = processTotalPrice(orderPrice);
-                System.out.println("totalPrice = " + totalPrice);
-
-                System.out.println("333333333333333333");
-
-                Order order = new Order(guest,
-                        null,
-                        orderCreateDto.address().firstName(),
-                        orderCreateDto.address().lastName(),
-                        orderCreateDto.address().username(),
-                        orderCreateDto.address().countryName(),
-                        orderCreateDto.address().city(),
-                        orderCreateDto.address().addressLine1(),
-                        orderCreateDto.address().postalCode(),
-                        orderCreateDto.address().phoneNo(),
-                        savedOrderItems,
-                        orderStatus,
-                        totalPrice,
-                        orderPrice);
-
-                System.out.println("444444444444444444");
-                Order save = orderRepository.save(order);
-                System.out.println("666666666666666666");
-
-                return orderBuilder.orderToOrderResponseDto(save);
+                return orderBuilder.orderToOrderResponseDto(saveOrder(guest,orderCreateDto,savedOrderItems,orderStatus,totalPrice,orderPrice));
             }
-
-
-
         }else
             throw new BadRequestException("Geçersiz Kullanıcı");
     }
+
+    public BigDecimal orderPrice(Set<OrderItem> orderItems) {
+        BigDecimal orderPrice = BigDecimal.valueOf(0);
+        for (OrderItem orderItem: orderItems) {
+            orderPrice = orderPrice.add(orderItem.getPrice());
+        }
+        return orderPrice;
+    }
+
+    public Set<OrderItem> createOrderItemWithCustomer(Card card) {
+        Set<OrderItem> orderItems = new HashSet<>();
+        for (CardItem cardItem: card.getItems()){
+            BigDecimal orderItemPrice = cardItem.getProduct().getComparePrice().multiply(new BigDecimal(cardItem.getQuantity()));
+            OrderItem orderItem = new OrderItem(cardItem.getProduct(),orderItemPrice, cardItem.getQuantity());
+            orderItems.add(orderItem);
+        }
+
+        return orderItemService.saveOrderItems(orderItems);
+    }
+
+    public Set<OrderItem> createOrderItemWithAnon(OrderCreateDto orderCreateDto) {
+        Set<OrderItem> orderItems = new HashSet<>();
+
+        for (OrderItemCreateDto orderItemCreateDto: orderCreateDto.orderItemCreateDtos()){
+            Product product = productService.findProductById(orderItemCreateDto.productId());
+
+            if (product.getQuantity() < orderItemCreateDto.quantity())
+                throw new BadRequestException("Yetersiz Ürün Stoğu: "+product.getProductName());
+
+            BigDecimal orderItemPrice = product.getComparePrice().multiply(new BigDecimal(orderItemCreateDto.quantity()));
+            OrderItem orderItem = new OrderItem(product,orderItemPrice, orderItemCreateDto.quantity());
+            orderItems.add(orderItem);
+        }
+
+        return orderItemService.saveOrderItems(orderItems);
+    }
+
+
+
+    public Order saveOrder(User user,OrderCreateDto orderCreateDto,Set<OrderItem> orderItems,OrderStatus orderStatus,BigDecimal totalPrice,BigDecimal orderPrice) {
+        Order order = new Order(user,
+                null,
+                orderCreateDto.address().firstName(),
+                orderCreateDto.address().lastName(),
+                orderCreateDto.address().username(),
+                orderCreateDto.address().countryName(),
+                orderCreateDto.address().city(),
+                orderCreateDto.address().addressLine1(),
+                orderCreateDto.address().postalCode(),
+                orderCreateDto.address().phoneNo(),
+                orderItems,
+                orderStatus,
+                totalPrice,
+                orderPrice);
+
+        return orderRepository.save(order);
+    }
+
+
+
+
 
     private BigDecimal processTotalPrice(BigDecimal totalPrice) {
         Merchant merchant = merchantService.getMerchant();

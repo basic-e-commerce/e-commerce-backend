@@ -59,6 +59,12 @@ INSERT INTO products_tags (tag_id,product_id) VALUES (2,2);
 INSERT INTO cards(id,customer_id) VALUES (1,2);
 SELECT setval('card_seq', (SELECT MAX(id) FROM cards));
 
+INSERT INTO address (id,title,country_id,city,address_line1,postal_code,phone_no,created_at,updated_at) VALUES (1,'Şirket Yol Tarifi',1,'İstanbul','Bağcılar','34000','+905075431646',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
+SELECT setval('address_seq',(SELECT MAX(id) FROM address));
+
+INSERT INTO merchant(id,name,address_id,cover_image_id,phone_no,email,min_order_amount,shipping_fee) VALUES (1,'Lity Digital',1,null,'+905075431646','fatihgs133@gmail.com',1000,75);
+SELECT setval('merchant_seq',(SELECT MAX(id) FROM merchant));
+
 
 
 
