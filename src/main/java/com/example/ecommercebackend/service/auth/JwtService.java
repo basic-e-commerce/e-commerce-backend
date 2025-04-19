@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.auth;
 
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.InvalidFormatException;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,11 +18,15 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-    @Value("${jwt.secret}")
     private  String SECRET_KEY;
 
     @Value("${jwt.refreshAge}")
     private long REFRESH_TOKEN_EXPIRATION; // 7 gün
+
+    public JwtService() {
+        Dotenv dotenv = Dotenv.load(); // .env dosyasını otomatik bulur
+        this.SECRET_KEY = dotenv.get("JWT_SECRET");
+    }
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
