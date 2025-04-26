@@ -34,7 +34,6 @@ public class AuthenticationController {
 
     @PostMapping("/refresh/logout")
     public ResponseEntity<String> logout(@CookieValue(name = "refresh_token")String refreshToken){
-        System.out.println("ref: "+refreshToken);
         return new ResponseEntity<>(authenticationService.logout(refreshToken),HttpStatus.OK);
     }
 
@@ -46,6 +45,16 @@ public class AuthenticationController {
     @GetMapping("/verification/{code}")
     public ResponseEntity<String> verification(@PathVariable("code") String code) {
         return new ResponseEntity<>(authenticationService.verification(code),HttpStatus.OK);
+    }
+
+    @PutMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestParam String username) {
+        return new ResponseEntity<>(authenticationService.resetPassword(username),HttpStatus.OK);
+    }
+
+    @PutMapping("/verification-password")
+    public ResponseEntity<String> verificationPassword(@RequestParam String code, @RequestParam String password,@RequestParam String rePassword) {
+        return new ResponseEntity<>(authenticationService.verificationPassword(code,password,rePassword),HttpStatus.OK);
     }
 
 }

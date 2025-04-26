@@ -322,4 +322,8 @@ public class CustomerService {
             throw new BadRequestException("Customer Not Authenticated");
 
     }
+
+    public boolean existByUsername(String username) {
+        return customerRepository.existsByUsername(username);
+    }
 }

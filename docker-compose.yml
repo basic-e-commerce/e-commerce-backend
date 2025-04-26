@@ -5,6 +5,7 @@ services:
     container_name: backend-e-commerce
     depends_on:
       - database-e-commerce
+      - redis-e-commerce
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres

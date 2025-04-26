@@ -6,10 +6,8 @@ import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.entity.user.RefreshToken;
 import com.example.ecommercebackend.entity.user.User;
-import com.example.ecommercebackend.exception.ExceptionMessage;
-import com.example.ecommercebackend.exception.NotFoundException;
-import com.example.ecommercebackend.exception.TokenExpiredException;
-import com.example.ecommercebackend.exception.UnAuthorizedException;
+import com.example.ecommercebackend.exception.*;
+import com.example.ecommercebackend.service.mail.MailService;
 import com.example.ecommercebackend.service.redis.RedisService;
 import com.example.ecommercebackend.service.user.AdminService;
 import com.example.ecommercebackend.service.user.CustomerService;
@@ -21,9 +19,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Service
@@ -34,6 +34,8 @@ public class AuthenticationService {
     private final AdminService adminService;
     private final RefreshTokenService refreshTokenService;
     private final RedisService redisService;
+    private final MailService mailService;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${cookie.refreshTokenCookie.secure}")
     private boolean secure;
@@ -44,13 +46,18 @@ public class AuthenticationService {
     @Value("${cookie.refreshTokenCookie.refreshmaxAge}")
     private String maxAge;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, JwtService jwtService, CustomerService customerService, AdminService adminService, RefreshTokenService refreshTokenService, RedisService redisService) {
+    @Value("${domain.test}")
+    private String domain;
+
+    public AuthenticationService(AuthenticationManager authenticationManager, JwtService jwtService, CustomerService customerService, AdminService adminService, RefreshTokenService refreshTokenService, RedisService redisService, MailService mailService, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.customerService = customerService;
         this.adminService = adminService;
         this.refreshTokenService = refreshTokenService;
         this.redisService = redisService;
+        this.mailService = mailService;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -178,4 +185,36 @@ public class AuthenticationService {
         customerService.save(customer);
         return "customer onaylandı";
     }
+
+    public String resetPassword(String username) {
+        Customer customer = customerService.findByUsername(username);
+
+        String generateCode = String.valueOf(100000 + (int)(Math.random() * 900000));
+        redisService.saveData(generateCode,customer.getUsername(), Duration.ofMinutes(30));
+        System.out.println("----------"+customer.getUsername());
+        String link = domain + "/password-reset/" + generateCode;
+
+        String onayKodu = mailService.send(customer.getUsername(),"Şifre resetleme linki",link);
+        System.out.println(onayKodu);
+        System.out.println("reset link: "+link);
+        return onayKodu;
+    }
+
+    public String verificationPassword(String verificationCode, String password,String rePassword) {
+        String username = (String) redisService.getData(verificationCode);
+        if (username == null)
+            throw new BadRequestException("Geçerli User bulunamadı");
+
+        if (!password.equals(rePassword))
+            throw new BadRequestException("Şifreler Eşleşmiyor");
+
+        Customer customer = customerService.findByUsername(username);
+        String hashPassword = passwordEncoder.encode(password);
+        customer.setPassword(hashPassword);
+        customerService.save(customer);
+        redisService.deleteData(verificationCode);
+        return "Password verification";
+    }
+
+
 }
