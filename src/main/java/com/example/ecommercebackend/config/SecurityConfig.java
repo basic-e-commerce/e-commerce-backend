@@ -81,7 +81,12 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET,"/api/v1/order/user").hasAuthority("CUSTOMER")
 
+                        .requestMatchers(HttpMethod.GET,"/api/v1/card-item/by-ids").permitAll()
+
                         .anyRequest().permitAll())
+                .anonymous(anonymous -> anonymous
+                        .principal("anonymousUser") // Opsiyonel: Principal adını belirtebilirsin
+                        .authorities("ROLE_ANONYMOUS"))
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(jwtValidationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

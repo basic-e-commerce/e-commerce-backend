@@ -1,9 +1,7 @@
 package com.example.ecommercebackend.service.product.card;
 
 import com.example.ecommercebackend.builder.product.card.CardBuilder;
-import com.example.ecommercebackend.dto.product.card.CardCreateDto;
-import com.example.ecommercebackend.dto.product.card.CardItemCreateDto;
-import com.example.ecommercebackend.dto.product.card.CardResponseDto;
+import com.example.ecommercebackend.dto.product.card.*;
 import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.card.CardItem;
 import com.example.ecommercebackend.entity.product.products.Product;
@@ -11,9 +9,12 @@ import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.repository.product.card.CardRepository;
 import com.example.ecommercebackend.service.product.products.ProductService;
+import com.example.ecommercebackend.service.user.CustomerService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CardService {
@@ -96,5 +97,14 @@ public class CardService {
         // 9. Güncellenmiş sepeti kaydet ve döndür
         return cardBuilder.cardToCardResponseDto(card);
     }
+
+
+
+
+
+
+
+
+
 
 }
