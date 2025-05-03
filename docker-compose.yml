@@ -13,7 +13,7 @@ services:
     ports:
       - "8083:8083"
     volumes:
-      - /var/www/upload:/var/www/upload
+      - "${HOST_UPLOAD_PATH}:/var/www/upload/ecommerce"
     networks:
       - mynetwork
 
