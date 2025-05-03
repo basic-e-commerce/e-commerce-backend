@@ -6,13 +6,12 @@ public class CategoryUpdateDto {
     private int id;
     private final String name;
     private final String description;
-    private final boolean active;
 
-    public CategoryUpdateDto(int id, String name, String description, boolean active) {
+
+    public CategoryUpdateDto(int id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.active = active;
     }
 
     public String getName() {
@@ -21,10 +20,6 @@ public class CategoryUpdateDto {
 
     public String getDescription() {
         return description;
-    }
-
-    public boolean isActive() {
-        return active;
     }
 
     public int getId() {

@@ -144,7 +144,6 @@ public class CategoryService {
             Category category = findCategoryById(categoryUpdateDto.getId());
             category.setCategoryName(categoryUpdateDto.getName());
             category.setCategoryDescription(categoryUpdateDto.getDescription());
-            category.setActive(categoryUpdateDto.isActive());
             category.setUpdatedAt(Instant.now());
             category.setUpdatedBy(admin);
             return categoryRepository.save(category);

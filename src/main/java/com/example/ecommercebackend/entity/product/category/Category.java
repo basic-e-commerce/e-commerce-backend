@@ -30,9 +30,6 @@ public class Category {
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     private CoverImage coverImage;
 
-    @Column(name = "active", nullable = false)
-    private Boolean active = true;
-
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
@@ -107,14 +104,6 @@ public class Category {
 
     public void setCategoryDescription(String categoryDescription) {
         this.categoryDescription = categoryDescription;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
     }
 
     public Instant getCreatedAt() {
