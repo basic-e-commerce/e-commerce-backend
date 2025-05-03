@@ -37,8 +37,8 @@ INSERT INTO attribute_value (id,attribute_id,value,create_at,update_at,created_b
 SELECT setval('attribute_value_seq', (SELECT MAX(id) FROM attribute_value));
 
 
-INSERT INTO categories (id,category_name,category_link_name,category_description,cover_image_id,active,created_at,updated_at,created_by,updated_by,parent_id,is_sub_category) VALUES (1,'Kadın','Kadın','acıklama',null,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1,null,true);
-INSERT INTO categories (id,category_name,category_link_name,category_description,cover_image_id,active,created_at,updated_at,created_by,updated_by,parent_id,is_sub_category) VALUES (2,'Erkek','Erkek','acıklama',null,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1,null,true);
+INSERT INTO categories (id,category_name,category_link_name,category_description,cover_image_id,created_at,updated_at,created_by,updated_by,parent_id,is_sub_category) VALUES (1,'Kadın','Kadın','acıklama',null,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1,null,true);
+INSERT INTO categories (id,category_name,category_link_name,category_description,cover_image_id,created_at,updated_at,created_by,updated_by,parent_id,is_sub_category) VALUES (2,'Erkek','Erkek','acıklama',null,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1,null,true);
 SELECT setval('category_seq', (SELECT MAX(id) FROM categories));
 
 INSERT INTO products (id,product_name,product_link_name,sale_price,compare_price,buying_price,quantity,short_description,product_description,product_type,published,cover_image_id,disable_out_of_stock,created_at,updated_at,created_by,updated_by,is_deleted) VALUES (1,'ürün 1','urun-1',100.99,90.00,50.00,100,'kısa açıklama','uzun açıklama','SIMPLE',true,null,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1,false);
