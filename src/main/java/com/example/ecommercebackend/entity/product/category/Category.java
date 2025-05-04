@@ -9,7 +9,6 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = "categories")
@@ -50,7 +49,6 @@ public class Category {
     @ManyToOne
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
     private Category parentCategory;
-
 
     @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Category> subCategories = new HashSet<>();
