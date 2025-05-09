@@ -10,20 +10,20 @@ public class ProductUpdateDto {
     private BigDecimal buyingPrice;
     private Integer quantity;
     private String shortDescription;
-    private String productDescription;
+    private String description;
     private Set<Integer> categoryIds;
     private String productType;
     private Boolean published;
     private Boolean disableOutOfStock;
 
-    public ProductUpdateDto(String name, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, String productDescription, Set<Integer> categoryIds, String productType, Boolean published, Boolean disableOutOfStock) {
+    public ProductUpdateDto(String name, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, String description, Set<Integer> categoryIds, String productType, Boolean published, Boolean disableOutOfStock) {
         this.name = name;
         this.salePrice = salePrice;
         this.comparePrice = comparePrice;
         this.buyingPrice = buyingPrice;
         this.quantity = quantity;
         this.shortDescription = shortDescription;
-        this.productDescription = productDescription;
+        this.description = description;
         this.categoryIds = categoryIds;
         this.productType = productType;
         this.published = published;
@@ -54,8 +54,8 @@ public class ProductUpdateDto {
         return shortDescription;
     }
 
-    public String getProductDescription() {
-        return productDescription;
+    public String getDescription() {
+        return description;
     }
 
     public Set<Integer> getCategoryIds() {

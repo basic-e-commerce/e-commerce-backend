@@ -20,4 +20,12 @@ public class ProductImageUpdateDto {
     public List<Integer> getDeleteImages() {
         return deleteImages;
     }
+
+    public void setNewImages(MultipartFile[] newImages) {
+        this.newImages = newImages;
+    }
+
+    public void setDeleteImages(List<Integer> deleteImages) {
+        this.deleteImages = deleteImages;
+    }
 }

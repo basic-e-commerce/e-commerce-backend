@@ -26,7 +26,7 @@ public class ProductBuilder {
                 productCreateDto.getQuantity(),
                 productCreateDto.getShortDescription(),
                 categories,
-                productCreateDto.getProductDescription(),
+                productCreateDto.getDescription(),
                 productType,
                 productCreateDto.getPublished(),
                 productCreateDto.getDisableOutOfStock(),
@@ -36,9 +36,15 @@ public class ProductBuilder {
     }
 
     public ProductSmallDto productToProductSmallDto(Product product) {
-        String coverUrl = "";
+        ImageDetailDto imageDetailDto = null;
         if (product.getCoverImage() != null) {
-            coverUrl = product.getCoverImage().getUrl();
+            imageDetailDto = new ImageDetailDto(
+                    product.getCoverImage().getId(),
+                    product.getCoverImage().getUrl(),
+                    product.getCoverImage().getResolution(),
+                    product.getCoverImage().getName(),
+                    product.getCoverImage().getUrl(),
+                    0);
         }
 
         return new ProductSmallDto(
@@ -48,7 +54,7 @@ public class ProductBuilder {
                 product.getShortDescription(),
                 product.getSalePrice(),
                 product.getComparePrice(),
-                coverUrl,
+                imageDetailDto,
                 product.getQuantity()
         );
     }
@@ -56,13 +62,26 @@ public class ProductBuilder {
     public ProductDetailDto productToProductDetailDto(Product product) {
         ImageDetailDto coverImage = null;
         if (product.getCoverImage() != null) {
-            coverImage = new ImageDetailDto(product.getCoverImage().getId(),product.getCoverImage().getUrl(),0);
+            coverImage = new ImageDetailDto(
+                    product.getCoverImage().getId(),
+                    product.getCoverImage().getUrl(),
+                    product.getCoverImage().getResolution(),
+                    product.getCoverImage().getName(),
+                    product.getCoverImage().getUrl(),
+                    0);
         }
 
         List<ImageDetailDto> productImages = new ArrayList<>();
         if (product.getProductImages() != null) {
             for (int i = 0; i < product.getProductImages().size(); i++) {
-                productImages.add(new ImageDetailDto(product.getProductImages().get(i).getId(),product.getProductImages().get(i).getUrl(),0));
+                productImages.add(
+                        new ImageDetailDto(
+                                product.getProductImages().get(i).getId(),
+                                product.getProductImages().get(i).getUrl(),
+                                product.getProductImages().get(i).getResolution(),
+                                product.getProductImages().get(i).getName(),
+                                product.getProductImages().get(i).getUrl(),
+                                0));
             }
         }
         return new ProductDetailDto(

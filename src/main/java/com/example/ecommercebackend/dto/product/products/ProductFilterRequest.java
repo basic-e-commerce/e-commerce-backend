@@ -8,8 +8,6 @@ import java.math.BigDecimal;
 
 public class ProductFilterRequest {
     private Integer categoryId;
-
-    @Positive(message = "Mininum fiyat 0 dan büyük olmalıdır")
     private BigDecimal minPrice= BigDecimal.ZERO;
     private BigDecimal maxPrice = new BigDecimal("10000000");
     private String sortBy="productName"; // "price", "name" vb.

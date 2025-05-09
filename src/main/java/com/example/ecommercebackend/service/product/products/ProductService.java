@@ -24,6 +24,7 @@ import com.example.ecommercebackend.service.file.ProductImageService;
 import com.example.ecommercebackend.service.product.attribute.AttributeService;
 import com.example.ecommercebackend.service.product.category.CategoryService;
 import jakarta.persistence.criteria.*;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -67,7 +68,7 @@ public class ProductService {
         if (productCreateDto.getShortDescription() == null || productCreateDto.getShortDescription().length() > 165)
             throw new BadRequestException("ShortDescription cannot be longer than 165 characters");
 
-        if (productCreateDto.getProductDescription() == null || productCreateDto.getProductDescription().isEmpty())
+        if (productCreateDto.getDescription() == null || productCreateDto.getDescription().isEmpty())
             throw new BadRequestException("Product description cannot be empty");
 
         if ((productCreateDto.getComparePrice() == null)
@@ -110,10 +111,10 @@ public class ProductService {
                 saveProduct.setCoverImage(coverImage);
             }
 
-            if (productCreateDto.getImages() != null){
+            if (productCreateDto.getProductImages() != null){
                 List<ProductImage> productImages = new ArrayList<>();
-                for (int i = 0;i<productCreateDto.getImages().length;i++){
-                    ProductImageRequestDto productImageRequestDto = new ProductImageRequestDto(productCreateDto.getImages()[i],i);
+                for (int i = 0;i<productCreateDto.getProductImages().length;i++){
+                    ProductImageRequestDto productImageRequestDto = new ProductImageRequestDto(productCreateDto.getProductImages()[i],i);
                     ProductImage productImage = productImageService.save(productImageRequestDto, saveProduct.getId());
                     productImages.add(productImage);
                 }
@@ -132,7 +133,7 @@ public class ProductService {
         if (productUpdateDto.getShortDescription() == null || productUpdateDto.getShortDescription().length() > 165)
             throw new BadRequestException("ShortDescription cannot be longer than 165 characters");
 
-        if (productUpdateDto.getProductDescription() == null || productUpdateDto.getProductDescription().isEmpty())
+        if (productUpdateDto.getDescription() == null || productUpdateDto.getDescription().isEmpty())
             throw new BadRequestException("Product description cannot be empty");
 
         if ((productUpdateDto.getComparePrice() == null)
@@ -215,8 +216,8 @@ public class ProductService {
                 isUpdated = true;
             }
 
-            if (!Objects.equals(product.getProductDescription(), productUpdateDto.getProductDescription())) {
-                product.setProductDescription(productUpdateDto.getProductDescription());
+            if (!Objects.equals(product.getProductDescription(), productUpdateDto.getDescription())) {
+                product.setProductDescription(productUpdateDto.getDescription());
                 isUpdated = true;
             }
 
@@ -249,6 +250,7 @@ public class ProductService {
     }
 
 
+    @Transactional
     public String updateProductImage(int productId, ProductImageUpdateDto productImageUpdateDto) {
         // Authentication nesnesini güvenlik bağlamından alıyoruz
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -258,17 +260,31 @@ public class ProductService {
 
         if (principal instanceof Admin admin){
             Product product = findProductById(productId);
+            Set<ProductImage> currentImages = new HashSet<>(product.getProductImages()); // kopya
 
-            for (Integer deleteImage : productImageUpdateDto.getDeleteImages()) {
-                deleteProductImage(productId, deleteImage);
+            boolean flag = false;
+
+            for (ProductImage productImage : currentImages) {
+                for (int i = 0;i < productImageUpdateDto.getDeleteImages().size();i++){
+                    if (productImageUpdateDto.getDeleteImages().get(i).equals(productImage.getId())){
+                        deleteProductImage(productId, productImage.getId());
+                        flag = true;
+                    }
+                }
             }
+            if (!flag)
+                throw new NotFoundException("ProductImage" + ExceptionMessage.NOT_FOUND.getMessage());
 
             Set<ProductImage> newProductImages = new HashSet<>();
-            for (MultipartFile newImage : productImageUpdateDto.getNewImages()) {
-                ProductImageRequestDto productImageRequestDto = new ProductImageRequestDto(newImage,0);
-                ProductImage save = productImageService.save(productImageRequestDto, productId);
-                newProductImages.add(save);
-            }
+            if (productImageUpdateDto.getNewImages() != null){
+                for (MultipartFile newImage : productImageUpdateDto.getNewImages()) {
+                    System.out.println("name: "+newImage.getName());
+                    ProductImageRequestDto productImageRequestDto = new ProductImageRequestDto(newImage,0);
+                    ProductImage save = productImageService.save(productImageRequestDto, productId);
+                    newProductImages.add(save);
+                }
+            }else
+                System.out.println("updateproductImage ,image not found");
 
             product.getProductImages().addAll(newProductImages);
             product.setUpdatedBy(admin);
@@ -278,19 +294,29 @@ public class ProductService {
             throw new BadRequestException("Authenticated user is not an Admin.");
     }
 
+    @Transactional
     public String deleteProductImage(int productId, int productImageId) {
+        System.out.println("deleteProductImage" + productImageId + " prod: " + productId);
         Product product = findProductById(productId);
 
-        List<ProductImage> productImages = product.getProductImages();
-        for (ProductImage productImage : productImages) {
+        ProductImage targetImage = null;
+        for (ProductImage productImage : product.getProductImages()) {
             if (productImage.getId() == productImageId) {
-                product.getProductImages().remove(productImage);
-                productImageService.delete(productImage.getId());
+                targetImage = productImage;
+                break;
             }
         }
+
+        if (targetImage != null) {
+            product.getProductImages().remove(targetImage);
+            productImageService.delete(targetImage.getId());
+        }else
+            throw new NotFoundException("ProductImage" + ExceptionMessage.NOT_FOUND.getMessage());
+
         productRepository.save(product);
         return "deleted ProductImage";
     }
+
 
     public String deleteCoverImage(int productId) {
         Product product = findProductById(productId);

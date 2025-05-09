@@ -1,25 +1,28 @@
 package com.example.ecommercebackend.dto.product.products;
 
+import com.example.ecommercebackend.dto.file.ImageDetailDto;
+
 import java.math.BigDecimal;
 
 public class ProductSmallDto {
     private int id;
     private String name;
-    private String productLinkName;
+    private String linkName;
     private String shortDescription;
     private BigDecimal salePrice;
     private BigDecimal comparePrice;
-    private String coverImageUrl;
+    private ImageDetailDto coverImage;
     private int quantity;
 
-    public ProductSmallDto(int id, String name, String productLinkName, String shortDescription, BigDecimal salePrice, BigDecimal comparePrice, String coverImageUrl, int quantity) {
+    public ProductSmallDto(int id, String name, String linkName, String shortDescription, BigDecimal salePrice, BigDecimal comparePrice, ImageDetailDto coverImage, int quantity) {
         this.id = id;
         this.name = name;
-        this.productLinkName = productLinkName;
+        this.linkName = linkName;
         this.shortDescription = shortDescription;
         this.salePrice = salePrice;
         this.comparePrice = comparePrice;
-        this.coverImageUrl = coverImageUrl;
+        this.coverImage = coverImage;
+
         this.quantity = quantity;
     }
 
@@ -39,12 +42,12 @@ public class ProductSmallDto {
         this.name = name;
     }
 
-    public String getProductLinkName() {
-        return productLinkName;
+    public String getLinkName() {
+        return linkName;
     }
 
-    public void setProductLinkName(String productLinkName) {
-        this.productLinkName = productLinkName;
+    public void setLinkName(String linkName) {
+        this.linkName = linkName;
     }
 
     public String getShortDescription() {
@@ -71,19 +74,19 @@ public class ProductSmallDto {
         this.comparePrice = comparePrice;
     }
 
-    public String getCoverImageUrl() {
-        return coverImageUrl;
-    }
-
-    public void setCoverImageUrl(String coverImageUrl) {
-        this.coverImageUrl = coverImageUrl;
-    }
-
     public int getQuantity() {
         return quantity;
     }
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public ImageDetailDto getCoverImage() {
+        return coverImage;
+    }
+
+    public void setCoverImage(ImageDetailDto coverImage) {
+        this.coverImage = coverImage;
     }
 }
