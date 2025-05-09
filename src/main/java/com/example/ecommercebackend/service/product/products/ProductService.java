@@ -455,4 +455,8 @@ public class ProductService {
         Product product = productRepository.findByProductLinkName(linkName).orElseThrow(()-> new NotFoundException("Product "+ExceptionMessage.NOT_FOUND.getMessage()));
         return productBuilder.productToProductDetailDto(product);
     }
+
+    public Product findProductDetailAdmin(String linkName) {
+        return productRepository.findByProductLinkName(linkName).orElseThrow(()-> new NotFoundException("Product "+ExceptionMessage.NOT_FOUND.getMessage()));
+    }
 }

@@ -77,6 +77,11 @@ public class ProductController {
         return new ResponseEntity<>(productService.findProductDetail(linkName),HttpStatus.OK);
     }
 
+    @GetMapping("/name/admin/{linkName}")
+    public ResponseEntity<Product> findProductDetailAdmin(@PathVariable String linkName) {
+        return new ResponseEntity<>(productService.findProductDetailAdmin(linkName),HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
         return new ResponseEntity<>(productService.findAll(),HttpStatus.OK);
