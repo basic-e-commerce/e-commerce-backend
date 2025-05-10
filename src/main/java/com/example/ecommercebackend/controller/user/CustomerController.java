@@ -27,11 +27,6 @@ public class CustomerController {
         return new ResponseEntity<>(customerService.createCustomer(customerCreateDto), HttpStatus.CREATED);
     }
 
-    @GetMapping("/username")
-    public void getCustomerByUsername(@RequestParam("username") String username) {
-        customerService.findByUsername(username);
-    }
-
     // ----------- address ------------
     @PostMapping("/address")
     public ResponseEntity<AddressDetailDto> createAddress(@RequestBody AddressCreateDto addressCreateDto) {
