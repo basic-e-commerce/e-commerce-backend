@@ -22,7 +22,6 @@ public class ProductSmallDto {
         this.salePrice = salePrice;
         this.comparePrice = comparePrice;
         this.coverImage = coverImage;
-
         this.quantity = quantity;
     }
 

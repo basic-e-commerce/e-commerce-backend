@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.controller.product.products;
 
+import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.file.productimage.ProductImageUpdateDto;
 import com.example.ecommercebackend.dto.product.products.*;
 import com.example.ecommercebackend.entity.file.CoverImage;
@@ -24,17 +25,17 @@ public class ProductController {
     }
 
     @PostMapping("/simple")
-    public ResponseEntity<Product> createSimpleProduct(@ModelAttribute ProductCreateDto productCreateDto) {
+    public ResponseEntity<ProductAdminDetailDto> createSimpleProduct(@ModelAttribute ProductCreateDto productCreateDto) {
         return new ResponseEntity<>(productService.createSimpleProduct(productCreateDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping
-    public ResponseEntity<Product> deleteProduct(@RequestParam Integer id){
+    public ResponseEntity<ProductAdminDetailDto> deleteProduct(@RequestParam Integer id){
         return new ResponseEntity<>(productService.deleteProduct(id), HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<Product> updateSimpleProduct(@RequestParam Integer id, @RequestBody ProductUpdateDto productUpdateDto) {
+    public ResponseEntity<ProductAdminDetailDto> updateSimpleProduct(@RequestParam Integer id, @RequestBody ProductUpdateDto productUpdateDto) {
         return new ResponseEntity<>(productService.updateSimpleProduct(id, productUpdateDto), HttpStatus.OK);
     }
 
@@ -49,7 +50,7 @@ public class ProductController {
     }
 
     @PutMapping("/cover-image")
-    public ResponseEntity<CoverImage> updateCoverImage(@RequestParam Integer id, @RequestParam("image") MultipartFile file) {
+    public ResponseEntity<ImageDetailDto> updateCoverImage(@RequestParam Integer id, @RequestParam("image") MultipartFile file) {
         return new ResponseEntity<>(productService.updateCoverImage(id, file), HttpStatus.OK);
     }
 
@@ -59,7 +60,7 @@ public class ProductController {
     }
 
     @PostMapping("/filter")
-    public ResponseEntity<List<Product>> filter(@Valid @RequestBody ProductFilterRequest filterRequest,
+    public ResponseEntity<List<ProductAdminDetailDto>> filter(@Valid @RequestBody ProductFilterRequest filterRequest,
                                                 @RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "10") int size) {
         return new ResponseEntity<>(productService.filterProductsByCategory(filterRequest,page,size),HttpStatus.OK);

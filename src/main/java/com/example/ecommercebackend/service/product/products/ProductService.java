@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.service.product.products;
 
+import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.file.ImageRequestDto;
 import com.example.ecommercebackend.dto.file.ProductImageRequestDto;
 import com.example.ecommercebackend.builder.product.products.ProductBuilder;
@@ -60,7 +61,7 @@ public class ProductService {
         this.attributeService = attributeService;
     }
 
-    public Product createSimpleProduct(ProductCreateDto productCreateDto) {
+    public ProductAdminDetailDto createSimpleProduct(ProductCreateDto productCreateDto) {
 
         if (productCreateDto.getName() == null || productCreateDto.getName().isEmpty())
             throw new BadRequestException("Product name cannot be empty");
@@ -120,12 +121,12 @@ public class ProductService {
                 }
                 saveProduct.setProductImages(productImages);
             }
-            return productRepository.save(saveProduct);
+            return productBuilder.productToProductAdmindetailDto(productRepository.save(saveProduct));
         }else
             throw new BadRequestException("Authenticated user is not an Admin.");
     }
 
-    public Product updateSimpleProduct(int productId, ProductUpdateDto productUpdateDto){
+    public ProductAdminDetailDto updateSimpleProduct(int productId, ProductUpdateDto productUpdateDto){
 
         if (productUpdateDto.getName() == null || productUpdateDto.getName().isEmpty())
             throw new BadRequestException("Product name cannot be empty");
@@ -238,11 +239,11 @@ public class ProductService {
             }
 
             if (!isUpdated) {
-                return product; // Değişiklik yoksa, gereksiz `save` çağrısı yapma
+                return productBuilder.productToProductAdmindetailDto(product); // Değişiklik yoksa, gereksiz `save` çağrısı yapma
             }
 
             product.setUpdatedBy(admin);
-            return productRepository.save(product);
+            return productBuilder.productToProductAdmindetailDto(productRepository.save(product));
 
         } else {
             throw new BadRequestException("Authenticated user is not an Admin.");
@@ -329,7 +330,7 @@ public class ProductService {
             throw new NotFoundException("Cover image" + ExceptionMessage.NOT_FOUND.getMessage());
     }
 
-    public CoverImage updateCoverImage(int productId, MultipartFile coverImage) {
+    public ImageDetailDto updateCoverImage(int productId, MultipartFile coverImage) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
         if (principal instanceof Admin admin){
@@ -345,13 +346,13 @@ public class ProductService {
             product.setCoverImage(newCoverImage);
             product.setUpdatedBy(admin);
             productRepository.save(product);
-            return newCoverImage;
+            return new ImageDetailDto(newCoverImage.getId(), newCoverImage.getName(),newCoverImage.getResolution(),newCoverImage.getName(), newCoverImage.getUrl(), 0);
         }else
             throw new BadRequestException("Authenticated user is not an Admin.");
     }
 
 
-    public Product deleteProduct(int productId) {
+    public ProductAdminDetailDto deleteProduct(int productId) {
         // Authentication nesnesini güvenlik bağlamından alıyoruz
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -363,7 +364,7 @@ public class ProductService {
             Product product = findProductById(productId);
             product.setDeleted(true);
             product.setUpdatedBy(admin);
-            return productRepository.save(product);
+            return productBuilder.productToProductAdmindetailDto(productRepository.save(product));
         }else
             throw new BadRequestException("Authenticated user is not an Admin.");
     }
@@ -390,7 +391,7 @@ public class ProductService {
         return productRepository.existsById(productId);
     }
 
-    public List<Product> filterProductsByCategory(ProductFilterRequest filterRequest, int page, int size) {
+    public List<ProductAdminDetailDto> filterProductsByCategory(ProductFilterRequest filterRequest, int page, int size) {
         Sort sort = Sort.unsorted();
         if (filterRequest.getSortBy() != null) {
             sort = Sort.by(Sort.Direction.fromString(filterRequest.getSortDirection()), filterRequest.getSortBy());
@@ -400,7 +401,7 @@ public class ProductService {
 
         Pageable pageable = PageRequest.of(page, size, sort);
         Specification<Product> specification = filterProducts(subCategories,filterRequest.getMinPrice(),filterRequest.getMaxPrice());
-        return productRepository.findAll(specification,pageable).stream().collect(Collectors.toList());
+        return productRepository.findAll(specification,pageable).stream().map(productBuilder::productToProductAdmindetailDto).collect(Collectors.toList());
     }
 
     public Set<ProductSmallDto> filterProductsByCategorySmall(ProductFilterRequest filterRequest, int page, int size) {

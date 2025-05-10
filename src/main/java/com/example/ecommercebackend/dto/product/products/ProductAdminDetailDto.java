@@ -6,6 +6,7 @@ import com.example.ecommercebackend.dto.product.tag.TagDetailDto;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 public class ProductAdminDetailDto {
     private int id;
@@ -22,11 +23,11 @@ public class ProductAdminDetailDto {
     private List<ImageDetailDto> productImage;
     private int quantity;
 
-    private SupplierDetailDto supplier;
-    private List<TagDetailDto> tag;
+    private Set<SupplierDetailDto> supplier;
+    private Set<TagDetailDto> tag;
     private Boolean isDeleted;
 
-    public ProductAdminDetailDto(int id, String name, String linkName, String shortDescription, String description, BigDecimal buyingPrice, BigDecimal salePrice, BigDecimal comparePrice, ImageDetailDto coverImage, List<ImageDetailDto> productImage, int quantity, SupplierDetailDto supplier, List<TagDetailDto> tag, Boolean isDeleted) {
+    public ProductAdminDetailDto(int id, String name, String linkName, String shortDescription, String description, BigDecimal buyingPrice, BigDecimal salePrice, BigDecimal comparePrice, ImageDetailDto coverImage, List<ImageDetailDto> productImage, int quantity, Set<SupplierDetailDto> supplier, Set<TagDetailDto> tag, Boolean isDeleted) {
         this.id = id;
         this.name = name;
         this.linkName = linkName;
@@ -131,19 +132,19 @@ public class ProductAdminDetailDto {
         this.quantity = quantity;
     }
 
-    public SupplierDetailDto getSupplier() {
+    public Set<SupplierDetailDto> getSupplier() {
         return supplier;
     }
 
-    public void setSupplier(SupplierDetailDto supplier) {
+    public void setSupplier(Set<SupplierDetailDto> supplier) {
         this.supplier = supplier;
     }
 
-    public List<TagDetailDto> getTag() {
+    public Set<TagDetailDto> getTag() {
         return tag;
     }
 
-    public void setTag(List<TagDetailDto> tag) {
+    public void setTag(Set<TagDetailDto> tag) {
         this.tag = tag;
     }
 
