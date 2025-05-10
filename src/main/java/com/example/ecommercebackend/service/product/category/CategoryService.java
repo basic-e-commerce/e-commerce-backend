@@ -4,6 +4,7 @@ import com.example.ecommercebackend.builder.product.category.CategoryBuilder;
 import com.example.ecommercebackend.dto.file.CoverImageRequestDto;
 import com.example.ecommercebackend.dto.file.ImageRequestDto;
 import com.example.ecommercebackend.dto.product.category.CategoryCreateDto;
+import com.example.ecommercebackend.dto.product.category.CategoryDetailDto;
 import com.example.ecommercebackend.dto.product.category.CategoryUpdateDto;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.product.category.Category;
@@ -38,7 +39,7 @@ public class CategoryService {
         this.categoryImageService = categoryImageService;
     }
 
-    public Category createCategory(CategoryCreateDto categoryCreateDto) {
+    public CategoryDetailDto createCategory(CategoryCreateDto categoryCreateDto) {
 
         if (categoryCreateDto.getName() == null || categoryCreateDto.getName().isBlank()) {
             throw new BadRequestException("Category name is required.");
@@ -79,7 +80,7 @@ public class CategoryService {
                 categoryRepository.save(saveCategory);
             }
 
-            return saveCategory;
+            return categoryBuilder.categoryToCategoryDetailDto(saveCategory);
         } else {
                 throw new BadRequestException("Authenticated user is not an Admin.");
         }
@@ -94,7 +95,7 @@ public class CategoryService {
         return categoryRepository.findById(id).orElseThrow(()-> new NotFoundException("Category " +ExceptionMessage.NOT_FOUND.getMessage()));
     }
 
-    public Category deleteCategory(Integer id) {
+    public CategoryDetailDto deleteCategory(Integer id) {
         Category category = findCategoryById(id);
         if (isHasProduct(category.getId()))
             throw new BadRequestException("Category already has a product.");
@@ -107,7 +108,7 @@ public class CategoryService {
         }
 
         categoryRepository.deleteById(category.getId());
-        return category;
+        return categoryBuilder.categoryToCategoryDetailDto(category);
     }
 
     public Set<Category> getLeafCategories(Category category) {
@@ -137,7 +138,7 @@ public class CategoryService {
         return categoryRepository.existsByCategoryId(id);
     }
 
-    public Category updateCategory(CategoryUpdateDto categoryUpdateDto) {
+    public CategoryDetailDto updateCategory(CategoryUpdateDto categoryUpdateDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
         if (principal instanceof Admin admin) {
@@ -146,12 +147,12 @@ public class CategoryService {
             category.setCategoryDescription(categoryUpdateDto.getDescription());
             category.setUpdatedAt(Instant.now());
             category.setUpdatedBy(admin);
-            return categoryRepository.save(category);
+            return categoryBuilder.categoryToCategoryDetailDto(categoryRepository.save(category));
         }else
             throw new BadRequestException("Authenticated user is not an Admin.");
     }
 
-    public Category updateCategoryImage(Integer id, MultipartFile image) {
+    public CategoryDetailDto updateCategoryImage(Integer id, MultipartFile image) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
         if (principal instanceof Admin admin) {
@@ -167,7 +168,7 @@ public class CategoryService {
             category.setCoverImage(coverImage);
             category.setUpdatedBy(admin);
             category.setUpdatedAt(Instant.now());
-            return categoryRepository.save(category);
+            return categoryBuilder.categoryToCategoryDetailDto(categoryRepository.save(category));
 
         }else
             throw new BadRequestException("Authenticated user is not an Admin.");

@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.merchant;
 
 import com.example.ecommercebackend.builder.merchant.SupplierBuilder;
 import com.example.ecommercebackend.dto.merchant.supplier.SupplierCreateDto;
+import com.example.ecommercebackend.dto.product.supplier.SupplierDetailDto;
 import com.example.ecommercebackend.entity.merchant.Supplier;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.exception.BadRequestException;
@@ -26,7 +27,7 @@ public class SupplierService {
         this.supplierBuilder = supplierBuilder;
     }
 
-    public Supplier createSupplier(SupplierCreateDto supplierCreateDto) {
+    public SupplierDetailDto createSupplier(SupplierCreateDto supplierCreateDto) {
         if (supplierRepository.existsBySupplierNameEqualsIgnoreCase(supplierCreateDto.getSupplierName()))
             throw new ResourceAlreadyExistException("Supplier "+ ExceptionMessage.ALREADY_EXISTS.getMessage());
 
@@ -38,7 +39,7 @@ public class SupplierService {
 
         if (principal instanceof Admin admin){
             Supplier supplier = supplierBuilder.supplierCreateDtoToSupplier(supplierCreateDto,countryService.findCountryByIso3("TUR"),admin,admin);
-            return supplierRepository.save(supplier);
+            return supplierBuilder.supplierToSupplierDetailDto(supplierRepository.save(supplier));
         }else
             throw new BadRequestException("Authenticated user is not an Admin.");
 

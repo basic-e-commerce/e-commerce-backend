@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.builder.merchant;
 
 import com.example.ecommercebackend.dto.merchant.supplier.SupplierCreateDto;
+import com.example.ecommercebackend.dto.product.supplier.SupplierDetailDto;
 import com.example.ecommercebackend.entity.merchant.Supplier;
 import com.example.ecommercebackend.entity.product.shipping.Country;
 import com.example.ecommercebackend.entity.user.Admin;
@@ -21,6 +22,17 @@ public class SupplierBuilder {
                 supplierCreateDto.getNote(),
                 createAdmin,
                 updateAdmin
+        );
+    }
+
+    public SupplierDetailDto supplierToSupplierDetailDto(Supplier supplier) {
+        return new SupplierDetailDto(
+                supplier.getId(),
+                supplier.getSupplierName(),
+                supplier.getCompany(),
+                supplier.getPhoneNumber(),
+                supplier.getAddressLine1()+" "+supplier.getCity()+"/"+supplier.getCountry().getName(),
+                supplier.getNote()
         );
     }
 }

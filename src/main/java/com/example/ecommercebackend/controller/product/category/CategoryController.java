@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.controller.product.category;
 
 import com.example.ecommercebackend.dto.product.category.CategoryCreateDto;
+import com.example.ecommercebackend.dto.product.category.CategoryDetailDto;
 import com.example.ecommercebackend.dto.product.category.CategoryUpdateDto;
 import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.service.product.category.CategoryService;
@@ -21,7 +22,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@ModelAttribute CategoryCreateDto categoryCreateDto) {
+    public ResponseEntity<CategoryDetailDto> createCategory(@ModelAttribute CategoryCreateDto categoryCreateDto) {
         return new ResponseEntity<>(categoryService.createCategory(categoryCreateDto), HttpStatus.CREATED);
     }
 
@@ -31,17 +32,17 @@ public class CategoryController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Category> deleteCategory(@RequestParam Integer id) {
+    public ResponseEntity<CategoryDetailDto> deleteCategory(@RequestParam Integer id) {
         return new ResponseEntity<>(categoryService.deleteCategory(id),HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<Category> updateCategory(@RequestBody CategoryUpdateDto categoryUpdateDto){
+    public ResponseEntity<CategoryDetailDto> updateCategory(@RequestBody CategoryUpdateDto categoryUpdateDto){
         return new ResponseEntity<>(categoryService.updateCategory(categoryUpdateDto),HttpStatus.OK);
     }
 
     @PutMapping("/image")
-    public ResponseEntity<Category> updateCategoryImage(@RequestParam Integer id, @RequestParam MultipartFile image) {
+    public ResponseEntity<CategoryDetailDto> updateCategoryImage(@RequestParam Integer id, @RequestParam MultipartFile image) {
         return new ResponseEntity<>(categoryService.updateCategoryImage(id,image),HttpStatus.OK);
     }
 

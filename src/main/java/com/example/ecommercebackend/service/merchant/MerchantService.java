@@ -3,6 +3,7 @@ package com.example.ecommercebackend.service.merchant;
 import com.example.ecommercebackend.builder.merchant.MerchantBuilder;
 import com.example.ecommercebackend.dto.file.CoverImageRequestDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
+import com.example.ecommercebackend.dto.merchant.merchant.MerchantResponseDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.entity.file.CoverImage;
@@ -30,7 +31,7 @@ public class MerchantService {
         this.merchantBuilder = merchantBuilder;
         this.merchantImageService = merchantImageService;
     }
-    public Merchant createMerchant(MerchantCreateDto merchantCreateDto) {
+    public MerchantResponseDto createMerchant(MerchantCreateDto merchantCreateDto) {
         AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(), merchantCreateDto.getCountryId(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
         Address address = addressService.createAddress(addressCreateDto);
 
@@ -40,10 +41,10 @@ public class MerchantService {
         CoverImageRequestDto coverImageRequestDto = new CoverImageRequestDto(merchantCreateDto.getImage());
         CoverImage coverImage = merchantImageService.save(coverImageRequestDto, save.getId());
         merchant.setCoverImage(coverImage);
-        return merchantRepository.save(merchant);
+        return merchantBuilder.merchantToMerchantResponseDto(merchantRepository.save(merchant));
     }
 
-    public Merchant updateMerchant(MerchantUpdateDto merchantCreateDto) {
+    public MerchantResponseDto updateMerchant(MerchantUpdateDto merchantCreateDto) {
         Merchant merchant= getMerchant();
         AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(), merchantCreateDto.getCountryId(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
         Address address = addressService.updateAddressById(merchant.getAddress().getId(),addressCreateDto);
@@ -53,7 +54,7 @@ public class MerchantService {
         merchant.setEmail(merchantCreateDto.getEmail());
         merchant.setMinOrderAmount(merchantCreateDto.getMinOrderAmount());
         merchant.setShippingFee(merchantCreateDto.getShippingFee());
-        return merchantRepository.save(merchant);
+        return merchantBuilder.merchantToMerchantResponseDto(merchantRepository.save(merchant));
     }
 
     public Merchant getMerchant() {
