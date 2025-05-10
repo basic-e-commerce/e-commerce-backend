@@ -103,7 +103,7 @@ public class ProductService {
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof Admin admin){
-            Product product = productBuilder.productCreateDtoToProduct(productCreateDto,categories,productType,admin,admin);
+            Product product = productBuilder.productCreateDtoToProduct(productCreateDto,categories,productType,admin,admin,generateLinkName(productCreateDto.getName()));
             Product saveProduct = productRepository.save(product);
 
             if (productCreateDto.getCoverImage() != null){
@@ -125,6 +125,7 @@ public class ProductService {
         }else
             throw new BadRequestException("Authenticated user is not an Admin.");
     }
+
 
     public ProductAdminDetailDto updateSimpleProduct(int productId, ProductUpdateDto productUpdateDto){
 
@@ -319,6 +320,7 @@ public class ProductService {
     }
 
 
+    @Transactional
     public String deleteCoverImage(int productId) {
         Product product = findProductById(productId);
         if (product.getCoverImage() != null) {
@@ -330,6 +332,7 @@ public class ProductService {
             throw new NotFoundException("Cover image" + ExceptionMessage.NOT_FOUND.getMessage());
     }
 
+    @Transactional
     public ImageDetailDto updateCoverImage(int productId, MultipartFile coverImage) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
@@ -429,6 +432,14 @@ public class ProductService {
                 .and(isDeleted(false));
     }
 
+    public Product findProductByLinkName(String linkName) {
+        return productRepository.findByProductLinkName(linkName).orElseThrow(()-> new NotFoundException("Product "+ExceptionMessage.NOT_FOUND.getMessage()));
+    }
+
+    public Specification<Product> hasLinkName(String linkName) {
+        return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                linkName == null ? null : cb.equal(root.get("productLinkName"), linkName);
+    }
 
     public Specification<Product> hasCategories(Set<Integer> categoryIds) {
         return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
@@ -485,5 +496,30 @@ public class ProductService {
 
     public Product findProductDetailAdmin(String linkName) {
         return productRepository.findByProductLinkName(linkName).orElseThrow(()-> new NotFoundException("Product "+ExceptionMessage.NOT_FOUND.getMessage()));
+    }
+
+
+    private String generateLinkName(String name) {
+        if (name == null) return "";
+
+        String processedName = name.trim().toLowerCase()
+                .replace("ç", "c")
+                .replace("ğ", "g")
+                .replace("ı", "i")
+                .replace("ö", "o")
+                .replace("ş", "s")
+                .replace("ü", "u")
+                .replaceAll("\\s+", "-");
+
+        String finalLinkName = processedName;
+        int counter = 1;
+
+        // Zaten linkName kontrolünü yapan metodunu kullanalım
+        while (findProductByLinkName(finalLinkName) != null) {
+            finalLinkName = processedName + "-" + counter;
+            counter++;
+        }
+
+        return finalLinkName;
     }
 }

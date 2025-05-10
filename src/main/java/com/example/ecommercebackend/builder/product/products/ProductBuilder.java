@@ -21,9 +21,10 @@ import java.util.stream.Collectors;
 @Component
 public class ProductBuilder {
 
-    public Product productCreateDtoToProduct(ProductCreateDto productCreateDto, Set<Category> categories, ProductType productType, Admin create, Admin update) {
+    public Product productCreateDtoToProduct(ProductCreateDto productCreateDto, Set<Category> categories, ProductType productType, Admin create, Admin update,String linkName) {
         return new Product(
                 productCreateDto.getName(),
+                linkName,
                 productCreateDto.getSalePrice(),
                 productCreateDto.getComparePrice(),
                 productCreateDto.getBuyingPrice(),

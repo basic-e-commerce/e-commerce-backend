@@ -101,14 +101,12 @@ public class Product {
     @PrePersist
     @PreUpdate
     private void generateProductData() {
-        if (productName != null) {
-            this.productLinkName = RegexValidation.replaceTurkishChars(productName);
-        }
         updatedAt = Instant.now();
     }
 
-    public Product(String productName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription,Set<Category> categories, String productDescription, ProductType productType, Boolean published, Boolean disableOutOfStock,Admin createdBy, Admin updatedBy) {
+    public Product(String productName,String productLinkName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription,Set<Category> categories, String productDescription, ProductType productType, Boolean published, Boolean disableOutOfStock,Admin createdBy, Admin updatedBy) {
         this.productName = productName;
+        this.productLinkName= productLinkName;
         this.salePrice = salePrice;
         this.comparePrice = comparePrice;
         this.buyingPrice = buyingPrice;
