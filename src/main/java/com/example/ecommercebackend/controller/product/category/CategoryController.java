@@ -26,6 +26,7 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.createCategory(categoryCreateDto), HttpStatus.CREATED);
     }
 
+
     @GetMapping("/parent")
     public ResponseEntity<List<Category>> getCategoryParent() {
         return new ResponseEntity<>(categoryService.findParentCategories(), HttpStatus.OK);
