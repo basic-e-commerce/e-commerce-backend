@@ -163,6 +163,7 @@ public class CategoryService {
                 categoryRepository.save(category);
             }
 
+
             ImageRequestDto imageRequestDto = new ImageRequestDto(image);
             CoverImage coverImage = categoryImageService.save(imageRequestDto, category.getId());
             category.setCoverImage(coverImage);

@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.controller.merchant;
 
 import com.example.ecommercebackend.dto.merchant.supplier.SupplierCreateDto;
+import com.example.ecommercebackend.dto.product.supplier.SupplierDetailDto;
 import com.example.ecommercebackend.entity.merchant.Supplier;
 import com.example.ecommercebackend.service.merchant.SupplierService;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ public class SupplierController {
     }
 
     @PostMapping
-    public ResponseEntity<Supplier> createSupplier(@RequestBody SupplierCreateDto supplierCreateDto) {
+    public ResponseEntity<SupplierDetailDto> createSupplier(@RequestBody SupplierCreateDto supplierCreateDto) {
         return new ResponseEntity<>(supplierService.createSupplier(supplierCreateDto), HttpStatus.CREATED);
     }
 

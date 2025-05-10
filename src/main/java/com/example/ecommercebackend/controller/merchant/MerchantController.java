@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.controller.merchant;
 
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
+import com.example.ecommercebackend.dto.merchant.merchant.MerchantResponseDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.service.merchant.MerchantService;
@@ -20,12 +21,12 @@ public class MerchantController {
     }
 
     @PostMapping
-    public ResponseEntity<Merchant> createMerchant(@ModelAttribute MerchantCreateDto merchantCreateDto) {
+    public ResponseEntity<MerchantResponseDto> createMerchant(@ModelAttribute MerchantCreateDto merchantCreateDto) {
         return new ResponseEntity<>(merchantService.createMerchant(merchantCreateDto), HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<Merchant> updateMerchant(@RequestBody MerchantUpdateDto merchantCreateDto) {
+    public ResponseEntity<MerchantResponseDto> updateMerchant(@RequestBody MerchantUpdateDto merchantCreateDto) {
         return new ResponseEntity<>(merchantService.updateMerchant(merchantCreateDto),HttpStatus.OK);
     }
 
