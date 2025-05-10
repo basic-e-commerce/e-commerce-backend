@@ -433,7 +433,7 @@ public class ProductService {
     }
 
     public Product findProductByLinkName(String linkName) {
-        return productRepository.findByProductLinkName(linkName).orElseThrow(()-> new NotFoundException("Product "+ExceptionMessage.NOT_FOUND.getMessage()));
+        return productRepository.findByProductLinkName(linkName).orElse(null);
     }
 
     public Specification<Product> hasLinkName(String linkName) {
