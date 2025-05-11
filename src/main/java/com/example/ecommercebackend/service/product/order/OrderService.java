@@ -219,8 +219,7 @@ public class OrderService {
         }
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        Specification<Order> specification = filterOrders();
-        return orderRepository.findAll(specification,pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
+        return orderRepository.findAll(filterOrders(),pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
     }
 
     public List<Order> filterGuestSuccessOrder(User user){
@@ -237,20 +236,10 @@ public class OrderService {
         return Specification.where(hasStatus(OrderStatus.Status.APPROVED)).and(hasUser(user));
     }
 
-    public Specification<Order> hasStatus(OrderStatus.Status status) {
-        return (Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
-            return cb.equal(statusJoin.get("status"), status);
-        };
-    }
 
-    public Specification<Order> hasUser(User user) {
-        return (Root<Order> root,CriteriaQuery<?> query,CriteriaBuilder cb) ->
-                user == null ? null : cb.equal(root.get("user"), user);
-    }
 
     public BigDecimal getTotalPrice(Instant startDate, Instant endDate) {
-        return orderRepository.findTotalPriceBetweenDates(startDate, endDate);
+        return orderRepository.findSuccessTotalPriceBetweenDates(OrderStatus.Status.APPROVED,startDate, endDate);
     }
 
 
@@ -281,4 +270,31 @@ public class OrderService {
             throw new BadRequestException("USer Not Authanticated");
 
     }
+
+
+
+
+
+
+
+
+
+
+    public Specification<Order> createdAtBetween(Instant start, Instant end) {
+        return (root, query, cb) -> cb.between(root.get("createdAt"), start, end);
+    }
+
+
+    public Specification<Order> hasStatus(OrderStatus.Status status) {
+        return (Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
+            return cb.equal(statusJoin.get("status"), status);
+        };
+    }
+
+    public Specification<Order> hasUser(User user) {
+        return (Root<Order> root,CriteriaQuery<?> query,CriteriaBuilder cb) ->
+                user == null ? null : cb.equal(root.get("user"), user);
+    }
+
 }
