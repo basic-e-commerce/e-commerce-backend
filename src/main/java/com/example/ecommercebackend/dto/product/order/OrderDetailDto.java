@@ -15,8 +15,9 @@ public class OrderDetailDto {
     private AddressOrderDetailDto address;
     private List<OrderItemResponseDto> orderItemResponseDtos;
     private int installment;
+    private String orderStatus;
 
-    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, int installment) {
+    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, int installment, String orderStatus) {
         this.id = id;
         this.orderCode = orderCode;
         this.firstName = firstName;
@@ -25,6 +26,7 @@ public class OrderDetailDto {
         this.address = address;
         this.orderItemResponseDtos = orderItemResponseDtos;
         this.installment = installment;
+        this.orderStatus = orderStatus;
     }
 
     public int getId() {
@@ -89,5 +91,13 @@ public class OrderDetailDto {
 
     public void setInstallment(int installment) {
         this.installment = installment;
+    }
+
+    public String getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
     }
 }

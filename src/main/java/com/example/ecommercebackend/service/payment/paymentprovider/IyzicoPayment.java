@@ -197,7 +197,7 @@ public class IyzicoPayment implements PaymentStrategy {
         request.setBasketId(order.getOrderCode());
         request.setPaymentChannel(PaymentChannel.WEB.name());
         request.setPaymentGroup(PaymentGroup.PRODUCT.name());
-        request.setCallbackUrl("https://litysofttest.site/api/v1/payment/payCallBack");
+        request.setCallbackUrl("http://localhost:8083/api/v1/payment/payCallBack");
         return request;
     }
 
@@ -217,7 +217,8 @@ public class IyzicoPayment implements PaymentStrategy {
         String ip = httpServletRequest.getHeader("X-Forwarded-For");
         if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = httpServletRequest.getRemoteAddr();
-        }
+        }else
+            ip="84.17.86.74";
 
         Buyer buyer = new Buyer();
         buyer.setId("BY789");

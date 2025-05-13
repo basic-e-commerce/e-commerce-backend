@@ -127,7 +127,7 @@ public class ProductService {
     }
 
 
-    public ProductAdminDetailDto updateSimpleProduct(int productId, ProductUpdateDto productUpdateDto){
+    public ProductAdminDetailDto updateSimpleProduct(Integer productId, ProductUpdateDto productUpdateDto){
 
         if (productUpdateDto.getName() == null || productUpdateDto.getName().isEmpty())
             throw new BadRequestException("Product name cannot be empty");
@@ -190,6 +190,7 @@ public class ProductService {
 
             if (!Objects.equals(product.getProductName(), productUpdateDto.getName())) {
                 product.setProductName(productUpdateDto.getName());
+                product.setProductLinkName(generateLinkName(product.getProductName()));
                 isUpdated = true;
             }
 
@@ -253,7 +254,7 @@ public class ProductService {
 
 
     @Transactional
-    public String updateProductImage(int productId, ProductImageUpdateDto productImageUpdateDto) {
+    public String updateProductImage(Integer productId, ProductImageUpdateDto productImageUpdateDto) {
         // Authentication nesnesini güvenlik bağlamından alıyoruz
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -266,11 +267,13 @@ public class ProductService {
 
             boolean flag = false;
 
-            for (ProductImage productImage : currentImages) {
-                for (int i = 0;i < productImageUpdateDto.getDeleteImages().size();i++){
-                    if (productImageUpdateDto.getDeleteImages().get(i).equals(productImage.getId())){
-                        deleteProductImage(productId, productImage.getId());
-                        flag = true;
+            if (productImageUpdateDto.getDeleteImages() != null){
+                for (ProductImage productImage : currentImages) {
+                    for (int i = 0;i < productImageUpdateDto.getDeleteImages().size();i++){
+                        if (productImageUpdateDto.getDeleteImages().get(i).equals(productImage.getId())){
+                            deleteProductImage(productId, productImage.getId());
+                            flag = true;
+                        }
                     }
                 }
             }
@@ -297,7 +300,7 @@ public class ProductService {
     }
 
     @Transactional
-    public String deleteProductImage(int productId, int productImageId) {
+    public String deleteProductImage(Integer productId, Integer productImageId) {
         System.out.println("deleteProductImage" + productImageId + " prod: " + productId);
         Product product = findProductById(productId);
 
@@ -321,7 +324,7 @@ public class ProductService {
 
 
     @Transactional
-    public String deleteCoverImage(int productId) {
+    public String deleteCoverImage(Integer productId) {
         Product product = findProductById(productId);
         if (product.getCoverImage() != null) {
             coverImageService.delete(product.getCoverImage().getId());
@@ -333,7 +336,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ImageDetailDto updateCoverImage(int productId, MultipartFile coverImage) {
+    public ImageDetailDto updateCoverImage(Integer productId, MultipartFile coverImage) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
         if (principal instanceof Admin admin){
@@ -355,7 +358,7 @@ public class ProductService {
     }
 
 
-    public ProductAdminDetailDto deleteProduct(int productId) {
+    public ProductAdminDetailDto deleteProduct(Integer productId) {
         // Authentication nesnesini güvenlik bağlamından alıyoruz
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -372,7 +375,7 @@ public class ProductService {
             throw new BadRequestException("Authenticated user is not an Admin.");
     }
 
-    public ProductAttribute createProductAttribute(int productId,int attributeId) {
+    public ProductAttribute createProductAttribute(Integer productId,Integer attributeId) {
         Attribute attribute = attributeService.findAttributeById(attributeId);
         Product product = findProductById(productId);
 
@@ -382,7 +385,7 @@ public class ProductService {
 
     // ------------- list product ------------------
 
-    public Product findProductById(int productId) {
+    public Product findProductById(Integer productId) {
         return productRepository.findById(productId).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
     }
 
@@ -390,11 +393,11 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public boolean isExistProductById(int productId) {
+    public boolean isExistProductById(Integer productId) {
         return productRepository.existsById(productId);
     }
 
-    public List<ProductAdminDetailDto> filterProductsByCategory(ProductFilterRequest filterRequest, int page, int size) {
+    public List<ProductAdminDetailDto> filterProductsByCategory(ProductFilterRequest filterRequest, Integer page, Integer size) {
         Sort sort = Sort.unsorted();
         if (filterRequest.getSortBy() != null) {
             sort = Sort.by(Sort.Direction.fromString(filterRequest.getSortDirection()), filterRequest.getSortBy());
@@ -407,7 +410,7 @@ public class ProductService {
         return productRepository.findAll(specification,pageable).stream().map(productBuilder::productToProductAdmindetailDto).collect(Collectors.toList());
     }
 
-    public Set<ProductSmallDto> filterProductsByCategorySmall(ProductFilterRequest filterRequest, int page, int size) {
+    public Set<ProductSmallDto> filterProductsByCategorySmall(ProductFilterRequest filterRequest, Integer page, Integer size) {
         Sort sort = Sort.unsorted();
         if (filterRequest.getSortBy() != null) {
             sort = Sort.by(Sort.Direction.fromString(filterRequest.getSortDirection()), filterRequest.getSortBy());
@@ -469,17 +472,17 @@ public class ProductService {
                 maxPrice == null ? null : cb.lessThanOrEqualTo(root.get("comparePrice"), maxPrice);
     }
 
-    public Specification<Product> isDisableOutOfStock(boolean disableOutOfStock) {
+    public Specification<Product> isDisableOutOfStock(Boolean disableOutOfStock) {
         return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 cb.equal(root.get("disableOutOfStock"), disableOutOfStock);
     }
 
-    public Specification<Product> isDeleted(boolean isDeleted) {
+    public Specification<Product> isDeleted(Boolean isDeleted) {
         return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 cb.equal(root.get("isDeleted"), isDeleted);
     }
 
-    public Specification<Product> isPublished(boolean isPublished) {
+    public Specification<Product> isPublished(Boolean isPublished) {
         return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 cb.equal(root.get("published"), isPublished);
     }

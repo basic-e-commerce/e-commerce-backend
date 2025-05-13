@@ -219,7 +219,7 @@ public class OrderService {
         }
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        return orderRepository.findAll(filterOrders(),pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
+        return orderRepository.findAll(filterOrders(orderFilterRequest.getPaymentStatus()),pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
     }
 
     public List<Order> filterGuestSuccessOrder(User user){
@@ -228,8 +228,11 @@ public class OrderService {
         return orderRepository.findAll(specification,sort);
     }
 
-    private Specification<Order> filterOrders() {
-        return Specification.where(hasStatus(OrderStatus.Status.APPROVED));
+    private Specification<Order> filterOrders(String status) {
+        if (!(status == null || status.isEmpty()))
+            return Specification.where(hasStatus(OrderStatus.Status.valueOf(status)));
+        else
+            return Specification.where(hasStatus(null));
     }
 
     private Specification<Order> filterGuestSuccessOrders(User user) {
@@ -267,7 +270,7 @@ public class OrderService {
         if (principal instanceof Customer customer) {
             return filterGuestSuccessOrder(customer).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
         }else
-            throw new BadRequestException("USer Not Authanticated");
+            throw new BadRequestException("User Not Authanticated");
 
     }
 
@@ -278,15 +281,13 @@ public class OrderService {
 
 
 
-
-
-    public Specification<Order> createdAtBetween(Instant start, Instant end) {
-        return (root, query, cb) -> cb.between(root.get("createdAt"), start, end);
-    }
 
 
     public Specification<Order> hasStatus(OrderStatus.Status status) {
         return (Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            if (status == null) {
+                return null; // Bu durumda filtre uygulanmaz
+            }
             Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
             return cb.equal(statusJoin.get("status"), status);
         };
@@ -297,4 +298,7 @@ public class OrderService {
                 user == null ? null : cb.equal(root.get("user"), user);
     }
 
+    public List<OrderDetailDto> getAll() {
+        return orderRepository.findAll().stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
+    }
 }

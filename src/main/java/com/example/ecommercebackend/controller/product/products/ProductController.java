@@ -61,15 +61,15 @@ public class ProductController {
 
     @PostMapping("/filter")
     public ResponseEntity<List<ProductAdminDetailDto>> filter(@Valid @RequestBody ProductFilterRequest filterRequest,
-                                                @RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "10") int size) {
+                                                @RequestParam(defaultValue = "0") Integer page,
+                                                @RequestParam(defaultValue = "10") Integer size) {
         return new ResponseEntity<>(productService.filterProductsByCategory(filterRequest,page,size),HttpStatus.OK);
     }
 
     @PostMapping("/filter/small")
     public ResponseEntity<Set<ProductSmallDto>> filterSmall(@RequestBody ProductFilterRequest filterRequest,
-                                                            @RequestParam(defaultValue = "0") int page,
-                                                            @RequestParam(defaultValue = "10") int size){
+                                                            @RequestParam(defaultValue = "0") Integer page,
+                                                            @RequestParam(defaultValue = "10") Integer size){
         return new ResponseEntity<>(productService.filterProductsByCategorySmall(filterRequest,page,size),HttpStatus.OK);
     }
 

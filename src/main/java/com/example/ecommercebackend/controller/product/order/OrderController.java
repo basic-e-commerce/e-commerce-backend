@@ -47,6 +47,11 @@ public class OrderController {
         return new ResponseEntity<>(orderService.findSuccessOrderByUser(),HttpStatus.OK);
     }
 
+    @GetMapping
+    public ResponseEntity<List<OrderDetailDto>> getAllOrdersWithProducts() {
+        return new ResponseEntity<>(orderService.getAll(),HttpStatus.OK);
+    }
+
 
 
 

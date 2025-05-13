@@ -47,7 +47,8 @@ public class OrderBuilder {
                 order.getOrderItems().stream().map(orderItem -> {
                     return new OrderItemResponseDto(orderItem.getProduct().getId(),orderItem.getProduct().getProductName(),orderItem.getQuantity());
                 }).toList(),
-                installment
+                installment,
+                order.getOrderStatus().getStatus().name()
         );
     }
 }
