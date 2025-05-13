@@ -255,11 +255,19 @@ public class ProductService {
 
     @Transactional
     public String updateProductImage(Integer productId, ProductImageUpdateDto productImageUpdateDto) {
+        if(productImageUpdateDto == null)
+            throw new BadRequestException("ProductImageUpdate "+ExceptionMessage.NOT_FOUND.getMessage());
+
+        if (productId == null)
+            throw new BadRequestException("ProductId Not Null");
+
         // Authentication nesnesini güvenlik bağlamından alıyoruz
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // Kullanıcı bilgilerini principal üzerinden alıyoruz
         Object principal = authentication.getPrincipal();
+
+
 
         if (principal instanceof Admin admin){
             Product product = findProductById(productId);
@@ -281,6 +289,7 @@ public class ProductService {
                 throw new NotFoundException("ProductImage" + ExceptionMessage.NOT_FOUND.getMessage());
 
             Set<ProductImage> newProductImages = new HashSet<>();
+
             if (productImageUpdateDto.getNewImages() != null){
                 for (MultipartFile newImage : productImageUpdateDto.getNewImages()) {
                     System.out.println("name: "+newImage.getName());
@@ -301,6 +310,13 @@ public class ProductService {
 
     @Transactional
     public String deleteProductImage(Integer productId, Integer productImageId) {
+        if (productId == null)
+            throw new BadRequestException("ProductId Not Null");
+
+        if(productImageId == null){
+            throw new BadRequestException("ProductImageId Not Null");
+        }
+
         System.out.println("deleteProductImage" + productImageId + " prod: " + productId);
         Product product = findProductById(productId);
 
@@ -325,6 +341,9 @@ public class ProductService {
 
     @Transactional
     public String deleteCoverImage(Integer productId) {
+        if (productId == null)
+            throw new BadRequestException("ProductId Not Null");
+
         Product product = findProductById(productId);
         if (product.getCoverImage() != null) {
             coverImageService.delete(product.getCoverImage().getId());
@@ -337,6 +356,12 @@ public class ProductService {
 
     @Transactional
     public ImageDetailDto updateCoverImage(Integer productId, MultipartFile coverImage) {
+        if (productId == null)
+            throw new BadRequestException("ProductId Not Null");
+
+        if (coverImage == null)
+            throw new BadRequestException("CoverImage Not Null");
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
         if (principal instanceof Admin admin){
@@ -359,6 +384,8 @@ public class ProductService {
 
 
     public ProductAdminDetailDto deleteProduct(Integer productId) {
+        if (productId == null)
+            throw new BadRequestException("ProductId Not Null");
         // Authentication nesnesini güvenlik bağlamından alıyoruz
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
