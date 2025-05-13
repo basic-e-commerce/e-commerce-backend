@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.service.product.products;
 
+import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.file.ImageRequestDto;
 import com.example.ecommercebackend.dto.file.ProductImageRequestDto;
@@ -383,9 +384,8 @@ public class ProductService {
     }
 
 
-    public ProductAdminDetailDto deleteProduct(Integer productId) {
-        if (productId == null)
-            throw new BadRequestException("ProductId Not Null");
+    public ProductAdminDetailDto deleteProduct(@NotNullParam Integer productId) {
+
         // Authentication nesnesini güvenlik bağlamından alıyoruz
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

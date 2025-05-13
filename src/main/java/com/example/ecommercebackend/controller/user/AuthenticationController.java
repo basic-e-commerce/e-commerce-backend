@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.controller.user;
 
+import com.example.ecommercebackend.anotation.NotNullMethod;
 import com.example.ecommercebackend.dto.user.authentication.AuthenticationRequestDto;
 import com.example.ecommercebackend.dto.user.authentication.AuthenticationResponseDto;
 import com.example.ecommercebackend.service.auth.AuthenticationService;
@@ -18,12 +19,12 @@ public class AuthenticationController {
     }
 
     @PostMapping("/c-login")
-    public ResponseEntity<AuthenticationResponseDto> loginCustomer(@RequestBody AuthenticationRequestDto authenticationRequestDto, HttpServletResponse response) {
+    public ResponseEntity<AuthenticationResponseDto> loginCustomer(@RequestBody(required = false) AuthenticationRequestDto authenticationRequestDto, HttpServletResponse response) {
         return new ResponseEntity<>(authenticationService.loginCustomer(authenticationRequestDto,response), HttpStatus.OK);
     }
 
     @PostMapping("/a-login")
-    public ResponseEntity<AuthenticationResponseDto> loginAdmin(@RequestBody AuthenticationRequestDto authenticationRequestDto,HttpServletResponse response) {
+    public ResponseEntity<AuthenticationResponseDto> loginAdmin(@RequestBody(required = false) AuthenticationRequestDto authenticationRequestDto,HttpServletResponse response) {
         return new ResponseEntity<>(authenticationService.loginAdmin(authenticationRequestDto,response), HttpStatus.OK);
     }
 

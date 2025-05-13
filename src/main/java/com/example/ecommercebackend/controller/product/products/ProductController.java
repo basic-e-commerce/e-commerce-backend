@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.controller.product.products;
 
+import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.file.productimage.ProductImageUpdateDto;
 import com.example.ecommercebackend.dto.product.products.*;
@@ -30,7 +31,7 @@ public class ProductController {
     }
 
     @DeleteMapping
-    public ResponseEntity<ProductAdminDetailDto> deleteProduct(@RequestParam Integer id){
+    public ResponseEntity<ProductAdminDetailDto> deleteProduct(@RequestParam(required = false) Integer id){
         return new ResponseEntity<>(productService.deleteProduct(id), HttpStatus.OK);
     }
 

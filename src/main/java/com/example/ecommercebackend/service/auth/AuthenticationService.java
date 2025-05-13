@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.service.auth;
 
+import com.example.ecommercebackend.anotation.NotNullMethod;
 import com.example.ecommercebackend.dto.user.authentication.AuthenticationRequestDto;
 import com.example.ecommercebackend.dto.user.authentication.AuthenticationResponseDto;
 import com.example.ecommercebackend.entity.user.Admin;
@@ -61,6 +62,7 @@ public class AuthenticationService {
     }
 
 
+    @NotNullMethod
     public AuthenticationResponseDto loginCustomer(AuthenticationRequestDto authenticationRequestDto, HttpServletResponse response) {
 
         /**
