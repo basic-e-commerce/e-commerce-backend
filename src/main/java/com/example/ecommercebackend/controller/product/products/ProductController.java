@@ -67,6 +67,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.filterProductsByCategory(filterRequest,page,size),HttpStatus.OK);
     }
 
+
     @PostMapping("/filter/small")
     public ResponseEntity<Set<ProductSmallDto>> filterSmall(@RequestBody(required = false) ProductFilterRequest filterRequest,
                                                             @RequestParam(defaultValue = "0",required = false) Integer page,

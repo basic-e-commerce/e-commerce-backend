@@ -28,7 +28,6 @@ import com.example.ecommercebackend.service.product.attribute.AttributeService;
 import com.example.ecommercebackend.service.product.category.CategoryService;
 import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -96,34 +95,26 @@ public class ProductService {
                 throw new BadRequestException("Category is not a sub category");
         }
 
-        // Authentication nesnesini güvenlik bağlamından alıyoruz
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        // Kullanıcı bilgilerini principal üzerinden alıyoruz
-        Object principal = authentication.getPrincipal();
+        Product product = productBuilder.productCreateDtoToProduct(productCreateDto,categories,productType,generateLinkName(productCreateDto.getName()));
+        Product saveProduct = productRepository.save(product);
 
-        if (principal instanceof Admin admin){
-            Product product = productBuilder.productCreateDtoToProduct(productCreateDto,categories,productType,admin,admin,generateLinkName(productCreateDto.getName()));
-            Product saveProduct = productRepository.save(product);
+        if (productCreateDto.getCoverImage() != null){
+            ImageRequestDto imageRequestDto = new ImageRequestDto(productCreateDto.getCoverImage());
+            CoverImage coverImage = coverImageService.save(imageRequestDto,saveProduct.getId());
+            saveProduct.setCoverImage(coverImage);
+        }
 
-            if (productCreateDto.getCoverImage() != null){
-                ImageRequestDto imageRequestDto = new ImageRequestDto(productCreateDto.getCoverImage());
-                CoverImage coverImage = coverImageService.save(imageRequestDto,saveProduct.getId());
-                saveProduct.setCoverImage(coverImage);
+        if (productCreateDto.getProductImages() != null){
+            List<ProductImage> productImages = new ArrayList<>();
+            for (int i = 0;i<productCreateDto.getProductImages().length;i++){
+                ProductImageRequestDto productImageRequestDto = new ProductImageRequestDto(productCreateDto.getProductImages()[i],i);
+                ProductImage productImage = productImageService.save(productImageRequestDto, saveProduct.getId());
+                productImages.add(productImage);
             }
-
-            if (productCreateDto.getProductImages() != null){
-                List<ProductImage> productImages = new ArrayList<>();
-                for (int i = 0;i<productCreateDto.getProductImages().length;i++){
-                    ProductImageRequestDto productImageRequestDto = new ProductImageRequestDto(productCreateDto.getProductImages()[i],i);
-                    ProductImage productImage = productImageService.save(productImageRequestDto, saveProduct.getId());
-                    productImages.add(productImage);
-                }
-                saveProduct.setProductImages(productImages);
+            saveProduct.setProductImages(productImages);
             }
             return productBuilder.productToProductAdmindetailDto(productRepository.save(saveProduct));
-        }else
-            throw new BadRequestException("Authenticated user is not an Admin.");
     }
 
 
@@ -147,109 +138,100 @@ public class ProductService {
         if (productUpdateDto.getQuantity() < 0)
             throw new BadRequestException("Quantity cannot be less than 0");
 
-        // Authentication nesnesini güvenlik bağlamından alıyoruz
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
 
-        if (principal instanceof Admin admin){
-            Product product = findProductById(productId);
+        Product product = findProductById(productId);
 
-            boolean isUpdated = false;  // Değişiklik olup olmadığını kontrol eden flag
+        boolean isUpdated = false;  // Değişiklik olup olmadığını kontrol eden flag
 
-            // Mevcut kategorileri al
-            Set<Integer> existCategoryIds = product.getCategories().stream().map(Category::getId).collect(Collectors.toSet());
-            Set<Category> existCategory = new HashSet<>(product.getCategories());
+        // Mevcut kategorileri al
+        Set<Integer> existCategoryIds = product.getCategories().stream().map(Category::getId).collect(Collectors.toSet());
+        Set<Category> existCategory = new HashSet<>(product.getCategories());
 
-            // Yeni gelen kategori ID'lerini al
-            Set<Integer> newCategoryIds = new HashSet<>(productUpdateDto.getCategoryIds());
+        // Yeni gelen kategori ID'lerini al
+        Set<Integer> newCategoryIds = new HashSet<>(productUpdateDto.getCategoryIds());
 
-            // Yeni eklenmesi gereken kategorileri bul
-            Set<Category> categoriesToAdd = new HashSet<>();
-            for (Integer categoryId : newCategoryIds) {
-                if (!existCategoryIds.contains(categoryId)){
-                    Category category = categoryService.findCategoryById(categoryId);
-                    if (category.isSubCategory()){
-                        categoriesToAdd.add(category);
-                        isUpdated = true; // Kategori değişti
-                    } else {
-                        throw new BadRequestException("Category is not a sub category");
-                    }
+        // Yeni eklenmesi gereken kategorileri bul
+        Set<Category> categoriesToAdd = new HashSet<>();
+        for (Integer categoryId : newCategoryIds) {
+            if (!existCategoryIds.contains(categoryId)){
+                Category category = categoryService.findCategoryById(categoryId);
+                if (category.isSubCategory()){
+                    categoriesToAdd.add(category);
+                    isUpdated = true; // Kategori değişti
+                } else {
+                    throw new BadRequestException("Category is not a sub category");
                 }
             }
-
-            // Çıkarılması gereken kategorileri bul
-            Set<Category> categoriesToRemove = existCategory.stream()
-                    .filter(c -> !newCategoryIds.contains(c.getId()))
-                    .collect(Collectors.toSet());
-
-            if (!categoriesToRemove.isEmpty() || !categoriesToAdd.isEmpty()) {
-                product.getCategories().removeAll(categoriesToRemove);
-                product.getCategories().addAll(categoriesToAdd);
-                isUpdated = true;
-            }
-
-            if (!Objects.equals(product.getProductName(), productUpdateDto.getName())) {
-                product.setProductName(productUpdateDto.getName());
-                product.setProductLinkName(generateLinkName(product.getProductName()));
-                isUpdated = true;
-            }
-
-            if (!Objects.equals(product.getSalePrice(), productUpdateDto.getSalePrice())) {
-                product.setSalePrice(productUpdateDto.getSalePrice());
-                isUpdated = true;
-            }
-
-            if (!Objects.equals(product.getComparePrice(), productUpdateDto.getComparePrice())) {
-                product.setComparePrice(productUpdateDto.getComparePrice());
-                isUpdated = true;
-            }
-
-            if (!Objects.equals(product.getBuyingPrice(), productUpdateDto.getBuyingPrice())) {
-                product.setBuyingPrice(productUpdateDto.getBuyingPrice());
-                isUpdated = true;
-            }
-
-            if (!Objects.equals(product.getQuantity(), productUpdateDto.getQuantity())) {
-                product.setQuantity(productUpdateDto.getQuantity());
-                isUpdated = true;
-            }
-
-            if (!Objects.equals(product.getShortDescription(), productUpdateDto.getShortDescription())) {
-                product.setShortDescription(productUpdateDto.getShortDescription());
-                isUpdated = true;
-            }
-
-            if (!Objects.equals(product.getProductDescription(), productUpdateDto.getDescription())) {
-                product.setProductDescription(productUpdateDto.getDescription());
-                isUpdated = true;
-            }
-
-            if (!Objects.equals(product.getProductType().name(), productUpdateDto.getProductType())) {
-                ProductType productType = ProductType.valueOf(productUpdateDto.getProductType());
-                product.setProductType(productType);
-                isUpdated = true;
-            }
-
-            if (!Objects.equals(product.getPublished(), productUpdateDto.getPublished())) {
-                product.setPublished(productUpdateDto.getPublished());
-                isUpdated = true;
-            }
-
-            if (!Objects.equals(product.getDisableOutOfStock(), productUpdateDto.getDisableOutOfStock())) {
-                product.setDisableOutOfStock(productUpdateDto.getDisableOutOfStock());
-                isUpdated = true;
-            }
-
-            if (!isUpdated) {
-                return productBuilder.productToProductAdmindetailDto(product); // Değişiklik yoksa, gereksiz `save` çağrısı yapma
-            }
-
-            product.setUpdatedBy(admin);
-            return productBuilder.productToProductAdmindetailDto(productRepository.save(product));
-
-        } else {
-            throw new BadRequestException("Authenticated user is not an Admin.");
         }
+
+        // Çıkarılması gereken kategorileri bul
+        Set<Category> categoriesToRemove = existCategory.stream()
+                .filter(c -> !newCategoryIds.contains(c.getId()))
+                .collect(Collectors.toSet());
+
+        if (!categoriesToRemove.isEmpty() || !categoriesToAdd.isEmpty()) {
+            product.getCategories().removeAll(categoriesToRemove);
+            product.getCategories().addAll(categoriesToAdd);
+            isUpdated = true;
+        }
+
+        if (!Objects.equals(product.getProductName(), productUpdateDto.getName())) {
+            product.setProductName(productUpdateDto.getName());
+            product.setProductLinkName(generateLinkName(product.getProductName()));
+            isUpdated = true;
+        }
+
+        if (!Objects.equals(product.getSalePrice(), productUpdateDto.getSalePrice())) {
+            product.setSalePrice(productUpdateDto.getSalePrice());
+            isUpdated = true;
+        }
+
+        if (!Objects.equals(product.getComparePrice(), productUpdateDto.getComparePrice())) {
+            product.setComparePrice(productUpdateDto.getComparePrice());
+            isUpdated = true;
+        }
+
+        if (!Objects.equals(product.getBuyingPrice(), productUpdateDto.getBuyingPrice())) {
+            product.setBuyingPrice(productUpdateDto.getBuyingPrice());
+            isUpdated = true;
+        }
+
+        if (!Objects.equals(product.getQuantity(), productUpdateDto.getQuantity())) {
+            product.setQuantity(productUpdateDto.getQuantity());
+            isUpdated = true;
+        }
+
+        if (!Objects.equals(product.getShortDescription(), productUpdateDto.getShortDescription())) {
+            product.setShortDescription(productUpdateDto.getShortDescription());
+            isUpdated = true;
+        }
+
+        if (!Objects.equals(product.getProductDescription(), productUpdateDto.getDescription())) {
+            product.setProductDescription(productUpdateDto.getDescription());
+            isUpdated = true;
+        }
+
+        if (!Objects.equals(product.getProductType().name(), productUpdateDto.getProductType())) {
+            ProductType productType = ProductType.valueOf(productUpdateDto.getProductType());
+            product.setProductType(productType);
+            isUpdated = true;
+        }
+
+        if (!Objects.equals(product.getPublished(), productUpdateDto.getPublished())) {
+            product.setPublished(productUpdateDto.getPublished());
+            isUpdated = true;
+        }
+
+        if (!Objects.equals(product.getDisableOutOfStock(), productUpdateDto.getDisableOutOfStock())) {
+            product.setDisableOutOfStock(productUpdateDto.getDisableOutOfStock());
+            isUpdated = true;
+        }
+
+        if (!isUpdated) {
+            return productBuilder.productToProductAdmindetailDto(product); // Değişiklik yoksa, gereksiz `save` çağrısı yapma
+        }
+        return productBuilder.productToProductAdmindetailDto(productRepository.save(product));
+
     }
 
 
@@ -261,52 +243,41 @@ public class ProductService {
         if (productId == null)
             throw new BadRequestException("ProductId Not Null");
 
-        // Authentication nesnesini güvenlik bağlamından alıyoruz
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Product product = findProductById(productId);
+        Set<ProductImage> currentImages = new HashSet<>(product.getProductImages()); // kopya
 
-        // Kullanıcı bilgilerini principal üzerinden alıyoruz
-        Object principal = authentication.getPrincipal();
+        boolean flag = false;
 
-
-
-        if (principal instanceof Admin admin){
-            Product product = findProductById(productId);
-            Set<ProductImage> currentImages = new HashSet<>(product.getProductImages()); // kopya
-
-            boolean flag = false;
-
-            if (productImageUpdateDto.getDeleteImages() != null){
-                for (ProductImage productImage : currentImages) {
-                    for (int i = 0;i < productImageUpdateDto.getDeleteImages().size();i++){
-                        if (productImageUpdateDto.getDeleteImages().get(i).equals(productImage.getId())){
-                            deleteProductImage(productId, productImage.getId());
-                            flag = true;
-                        }
+        if (productImageUpdateDto.getDeleteImages() != null){
+            for (ProductImage productImage : currentImages) {
+                for (int i = 0;i < productImageUpdateDto.getDeleteImages().size();i++){
+                    if (productImageUpdateDto.getDeleteImages().get(i).equals(productImage.getId())){
+                        deleteProductImage(productId, productImage.getId());
+                        flag = true;
                     }
                 }
-                if (!flag)
-                    throw new NotFoundException("ProductImage" + ExceptionMessage.NOT_FOUND.getMessage());
             }
+            if (!flag)
+                throw new NotFoundException("ProductImage" + ExceptionMessage.NOT_FOUND.getMessage());
+        }
 
 
-            Set<ProductImage> newProductImages = new HashSet<>();
+        Set<ProductImage> newProductImages = new HashSet<>();
 
-            if (productImageUpdateDto.getNewImages() != null){
-                for (MultipartFile newImage : productImageUpdateDto.getNewImages()) {
-                    System.out.println("name: "+newImage.getName());
-                    ProductImageRequestDto productImageRequestDto = new ProductImageRequestDto(newImage,0);
-                    ProductImage save = productImageService.save(productImageRequestDto, productId);
-                    newProductImages.add(save);
-                }
-            }else
-                System.out.println("updateproductImage ,image not found");
-
-            product.getProductImages().addAll(newProductImages);
-            product.setUpdatedBy(admin);
-            productRepository.save(product);
-            return "updated ProductImage";
+        if (productImageUpdateDto.getNewImages() != null){
+            for (MultipartFile newImage : productImageUpdateDto.getNewImages()) {
+                System.out.println("name: "+newImage.getName());
+                ProductImageRequestDto productImageRequestDto = new ProductImageRequestDto(newImage,0);
+                ProductImage save = productImageService.save(productImageRequestDto, productId);
+                newProductImages.add(save);
+            }
         }else
-            throw new BadRequestException("Authenticated user is not an Admin.");
+            System.out.println("updateproductImage ,image not found");
+
+        product.getProductImages().addAll(newProductImages);
+        productRepository.save(product);
+        return "updated ProductImage";
+
     }
 
     @Transactional
@@ -350,43 +321,28 @@ public class ProductService {
     @Transactional
     public ImageDetailDto updateCoverImage(@NotNullParam Integer productId,@NotNullParam MultipartFile coverImage) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof Admin admin){
-            Product product = findProductById(productId);
-            if (product.getCoverImage() != null) {
-                coverImageService.delete(product.getCoverImage().getId());
-                product.setCoverImage(null);
-                productRepository.save(product);
-            }
-
-            ImageRequestDto imageRequestDto = new ImageRequestDto(coverImage);
-            CoverImage newCoverImage = coverImageService.save(imageRequestDto,product.getId());
-            product.setCoverImage(newCoverImage);
-            product.setUpdatedBy(admin);
+        Product product = findProductById(productId);
+        if (product.getCoverImage() != null) {
+            coverImageService.delete(product.getCoverImage().getId());
+            product.setCoverImage(null);
             productRepository.save(product);
-            return new ImageDetailDto(newCoverImage.getId(), newCoverImage.getName(),newCoverImage.getResolution(),newCoverImage.getName(), newCoverImage.getUrl(), 0);
-        }else
-            throw new BadRequestException("Authenticated user is not an Admin.");
+        }
+
+        ImageRequestDto imageRequestDto = new ImageRequestDto(coverImage);
+        CoverImage newCoverImage = coverImageService.save(imageRequestDto,product.getId());
+        product.setCoverImage(newCoverImage);
+        productRepository.save(product);
+        return new ImageDetailDto(newCoverImage.getId(), newCoverImage.getName(),newCoverImage.getResolution(),newCoverImage.getName(), newCoverImage.getUrl(), 0);
+
     }
 
 
     public ProductAdminDetailDto deleteProduct(@NotNullParam Integer productId) {
 
-        // Authentication nesnesini güvenlik bağlamından alıyoruz
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Product product = findProductById(productId);
+        product.setDeleted(true);
+        return productBuilder.productToProductAdmindetailDto(productRepository.save(product));
 
-        // Kullanıcı bilgilerini principal üzerinden alıyoruz
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof Admin admin){
-
-            Product product = findProductById(productId);
-            product.setDeleted(true);
-            product.setUpdatedBy(admin);
-            return productBuilder.productToProductAdmindetailDto(productRepository.save(product));
-        }else
-            throw new BadRequestException("Authenticated user is not an Admin.");
     }
 
     public ProductAttribute createProductAttribute(Integer productId,Integer attributeId) {
@@ -430,8 +386,12 @@ public class ProductService {
             sort = Sort.by(Sort.Direction.fromString(filterRequest.getSortDirection()), filterRequest.getSortBy());
         }
 
-        Category category = categoryService.findCategoryById(filterRequest.getCategoryId());
-        Set<Integer> subCategories = categoryService.getLeafCategories(category).stream().map(Category::getId).collect(Collectors.toSet());
+
+        Set<Integer> subCategories = null;
+        if (filterRequest.getCategoryId() != null) {
+            Category category = categoryService.findCategoryById(filterRequest.getCategoryId());
+            subCategories = categoryService.getLeafCategories(category).stream().map(Category::getId).collect(Collectors.toSet());
+        }
         Pageable pageable = PageRequest.of(page, size, sort);
         Specification<Product> specification = filterProducts(subCategories,filterRequest.getMinPrice(),filterRequest.getMaxPrice());
         return productRepository.findAll(specification,pageable).stream().map(productBuilder::productToProductSmallDto).collect(Collectors.toSet());

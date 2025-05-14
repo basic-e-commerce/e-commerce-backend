@@ -69,6 +69,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/v1/product/cover-image").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/product/cover-image").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/product/name/admin/{name}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/product/filter").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/merchant").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/merchant").hasAuthority("ADMIN")

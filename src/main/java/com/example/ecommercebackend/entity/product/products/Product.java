@@ -8,6 +8,8 @@ import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -99,12 +101,28 @@ public class Product {
 
 
     @PrePersist
-    @PreUpdate
     private void generateProductData() {
-        updatedAt = Instant.now();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Admin admin) {
+            this.createdBy = admin;
+            this.updatedBy = admin;
+        }
+        Instant now = Instant.now();
+        this.updatedAt = now;
+        this.createdAt = now;
     }
 
-    public Product(String productName,String productLinkName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription,Set<Category> categories, String productDescription, ProductType productType, Boolean published, Boolean disableOutOfStock,Admin createdBy, Admin updatedBy) {
+    @PreUpdate
+    private void updateProductData() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Admin admin) {
+            this.createdBy = admin;
+            this.updatedBy = admin;
+        }
+        this.updatedAt = Instant.now();
+    }
+
+    public Product(String productName,String productLinkName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription,Set<Category> categories, String productDescription, ProductType productType, Boolean published, Boolean disableOutOfStock) {
         this.productName = productName;
         this.productLinkName= productLinkName;
         this.salePrice = salePrice;
@@ -117,8 +135,6 @@ public class Product {
         this.productType = productType;
         this.published = published;
         this.disableOutOfStock = disableOutOfStock;
-        this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
     }
 
     public Product() {

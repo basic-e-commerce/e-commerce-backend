@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Component
 public class ProductBuilder {
 
-    public Product productCreateDtoToProduct(ProductCreateDto productCreateDto, Set<Category> categories, ProductType productType, Admin create, Admin update,String linkName) {
+    public Product productCreateDtoToProduct(ProductCreateDto productCreateDto, Set<Category> categories, ProductType productType,String linkName) {
         return new Product(
                 productCreateDto.getName(),
                 linkName,
@@ -34,9 +34,7 @@ public class ProductBuilder {
                 productCreateDto.getDescription(),
                 productType,
                 productCreateDto.getPublished(),
-                productCreateDto.getDisableOutOfStock(),
-                create,
-                update
+                productCreateDto.getDisableOutOfStock()
         );
     }
 
