@@ -63,20 +63,19 @@ public class ProductService {
         this.attributeService = attributeService;
     }
 
+    @NotNullParameter
     public ProductAdminDetailDto createSimpleProduct(ProductCreateDto productCreateDto) {
 
-        if (productCreateDto.getName() == null || productCreateDto.getName().isEmpty())
+        if (productCreateDto.getName().isEmpty())
             throw new BadRequestException("Product name cannot be empty");
 
-        if (productCreateDto.getShortDescription() == null || productCreateDto.getShortDescription().length() > 165)
+        if (productCreateDto.getShortDescription().length() > 165)
             throw new BadRequestException("ShortDescription cannot be longer than 165 characters");
 
-        if (productCreateDto.getDescription() == null || productCreateDto.getDescription().isEmpty())
+        if (productCreateDto.getDescription().isEmpty())
             throw new BadRequestException("Product description cannot be empty");
 
-        if ((productCreateDto.getComparePrice() == null)
-                || (productCreateDto.getComparePrice().doubleValue() < 0)
-                || productCreateDto.getComparePrice().compareTo(productCreateDto.getSalePrice()) > 0){
+        if ((productCreateDto.getComparePrice().doubleValue() < 0) || productCreateDto.getComparePrice().compareTo(productCreateDto.getSalePrice()) > 0){
             throw new BadRequestException("ComparePrice cannot be greater than SalePrice");
         }
 

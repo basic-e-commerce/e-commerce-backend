@@ -41,46 +41,46 @@ public class ProductController {
     }
 
     @PutMapping("/product-image")
-    public ResponseEntity<String> updateProductImage(@RequestParam Integer id, @ModelAttribute ProductImageUpdateDto productImageUpdateDto) {
+    public ResponseEntity<String> updateProductImage(@RequestParam(required = false) Integer id, @ModelAttribute ProductImageUpdateDto productImageUpdateDto) {
         return new ResponseEntity<>(productService.updateProductImage(id, productImageUpdateDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/product-image")
-    public ResponseEntity<String> deleteProductImage(@RequestParam Integer id,@RequestParam Integer productImageId) {
+    public ResponseEntity<String> deleteProductImage(@RequestParam(required = false) Integer id,@RequestParam Integer productImageId) {
         return new ResponseEntity<>(productService.deleteProductImage(id,productImageId),HttpStatus.OK);
     }
 
     @PutMapping("/cover-image")
-    public ResponseEntity<ImageDetailDto> updateCoverImage(@RequestParam Integer id, @RequestParam("image") MultipartFile file) {
+    public ResponseEntity<ImageDetailDto> updateCoverImage(@RequestParam(required = false) Integer id, @RequestParam("image") MultipartFile file) {
         return new ResponseEntity<>(productService.updateCoverImage(id, file), HttpStatus.OK);
     }
 
     @DeleteMapping("/cover-image")
-    public ResponseEntity<String> deleteCoverImage(@RequestParam Integer id) {
+    public ResponseEntity<String> deleteCoverImage(@RequestParam(required = false) Integer id) {
         return new ResponseEntity<>(productService.deleteCoverImage(id),HttpStatus.OK);
     }
 
     @PostMapping("/filter")
-    public ResponseEntity<List<ProductAdminDetailDto>> filter(@Valid @RequestBody ProductFilterRequest filterRequest,
-                                                @RequestParam(defaultValue = "0") Integer page,
-                                                @RequestParam(defaultValue = "10") Integer size) {
+    public ResponseEntity<List<ProductAdminDetailDto>> filter(@RequestBody(required = false) ProductFilterRequest filterRequest,
+                                                @RequestParam(defaultValue = "0",required = false) Integer page,
+                                                @RequestParam(defaultValue = "10",required = false) Integer size) {
         return new ResponseEntity<>(productService.filterProductsByCategory(filterRequest,page,size),HttpStatus.OK);
     }
 
     @PostMapping("/filter/small")
-    public ResponseEntity<Set<ProductSmallDto>> filterSmall(@RequestBody ProductFilterRequest filterRequest,
-                                                            @RequestParam(defaultValue = "0") Integer page,
-                                                            @RequestParam(defaultValue = "10") Integer size){
+    public ResponseEntity<Set<ProductSmallDto>> filterSmall(@RequestBody(required = false) ProductFilterRequest filterRequest,
+                                                            @RequestParam(defaultValue = "0",required = false) Integer page,
+                                                            @RequestParam(defaultValue = "10",required = false) Integer size){
         return new ResponseEntity<>(productService.filterProductsByCategorySmall(filterRequest,page,size),HttpStatus.OK);
     }
 
     @GetMapping("/name/{linkName}")
-    public ResponseEntity<ProductDetailDto> findProductDetail(@PathVariable String linkName) {
+    public ResponseEntity<ProductDetailDto> findProductDetail(@PathVariable(required = false) String linkName) {
         return new ResponseEntity<>(productService.findProductDetail(linkName),HttpStatus.OK);
     }
 
     @GetMapping("/name/admin/{linkName}")
-    public ResponseEntity<Product> findProductDetailAdmin(@PathVariable String linkName) {
+    public ResponseEntity<Product> findProductDetailAdmin(@PathVariable(required = false) String linkName) {
         return new ResponseEntity<>(productService.findProductDetailAdmin(linkName),HttpStatus.OK);
     }
 
