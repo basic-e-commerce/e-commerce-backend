@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class CategoryBuilder {
 
-    public Category CategoryCreateDtoToCategory(CategoryCreateDto categoryCreateDto, Admin create,Admin update) {
-        return new Category(categoryCreateDto.getName(), categoryCreateDto.getDescription(),create, update);
+    public Category CategoryCreateDtoToCategory(CategoryCreateDto categoryCreateDto) {
+        return new Category(categoryCreateDto.getName(), categoryCreateDto.getDescription());
     }
 
     public CategoryDetailDto categoryToCategoryDetailDto(Category category) {

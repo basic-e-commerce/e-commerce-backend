@@ -1,10 +1,13 @@
 package com.example.ecommercebackend.dto.product.category;
 
-import org.springframework.web.multipart.MultipartFile;
+import com.example.ecommercebackend.anotation.NotNullField;
 
 public class CategoryUpdateDto {
+    @NotNullField
     private int id;
+    @NotNullField
     private final String name;
+    @NotNullField
     private final String description;
 
 

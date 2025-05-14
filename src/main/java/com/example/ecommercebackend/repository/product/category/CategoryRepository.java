@@ -21,5 +21,6 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     @Query(value = "UPDATE product_categories SET category_id = :newCategoryId WHERE category_id = :oldCategoryId", nativeQuery = true)
     void updateCategoryId(@Param("oldCategoryId") Integer oldCategoryId, @Param("newCategoryId") Integer newCategoryId);
 
+    Boolean existsByCategoryLinkName(String categoryLinkName);
 
 }

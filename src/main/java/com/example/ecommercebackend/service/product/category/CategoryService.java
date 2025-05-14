@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.service.product.category;
 
+import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.category.CategoryBuilder;
 import com.example.ecommercebackend.dto.file.CoverImageRequestDto;
 import com.example.ecommercebackend.dto.file.ImageRequestDto;
@@ -39,7 +40,7 @@ public class CategoryService {
         this.categoryImageService = categoryImageService;
     }
 
-    public CategoryDetailDto createCategory(CategoryCreateDto categoryCreateDto) {
+    public CategoryDetailDto createCategory(@NotNullParam CategoryCreateDto categoryCreateDto) {
 
         if (categoryCreateDto.getName() == null || categoryCreateDto.getName().isBlank()) {
             throw new BadRequestException("Category name is required.");
@@ -49,41 +50,34 @@ public class CategoryService {
             throw new ResourceAlreadyExistException("Category "+ExceptionMessage.ALREADY_EXISTS.getMessage());
         }
 
-        // Authentication nesnesini güvenlik bağlamından alıyoruz
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        // Kullanıcı bilgilerini principal üzerinden alıyoruz
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof Admin admin) {
-            Category parentCategory = null;
-            if (categoryCreateDto.getParentCategoryId() != 0){
-                parentCategory = findCategoryById(categoryCreateDto.getParentCategoryId());
-                parentCategory.setSubCategory(false);
-                categoryRepository.save(parentCategory);
-            }
-            Category category = categoryBuilder.CategoryCreateDtoToCategory(categoryCreateDto,admin,admin);
-            category.setParentCategory(parentCategory);
-
-
-            Category saveCategory = categoryRepository.save(category);
-            if (parentCategory != null){
-                parentCategory.setSubCategory(false);
-                categoryRepository.save(parentCategory);
-                categoryRepository.updateCategoryId(parentCategory.getId(),saveCategory.getId());
-            }
-
-            if (categoryCreateDto.getImage() != null){
-                CoverImageRequestDto coverImageRequestDto = new CoverImageRequestDto(categoryCreateDto.getImage());
-                CoverImage coverImage = categoryImageService.save(coverImageRequestDto, saveCategory.getId());
-                saveCategory.setCoverImage(coverImage);
-                categoryRepository.save(saveCategory);
-            }
-
-            return categoryBuilder.categoryToCategoryDetailDto(saveCategory);
-        } else {
-                throw new BadRequestException("Authenticated user is not an Admin.");
+        Category parentCategory = null;
+        if (categoryCreateDto.getParentCategoryId() != 0){
+            parentCategory = findCategoryById(categoryCreateDto.getParentCategoryId());
+            parentCategory.setSubCategory(false);
+            categoryRepository.save(parentCategory);
         }
+        Category category = categoryBuilder.CategoryCreateDtoToCategory(categoryCreateDto);
+        category.setParentCategory(parentCategory);
+        category.setCategoryLinkName(generateLinkName(categoryCreateDto.getName()));
+
+
+        Category saveCategory = categoryRepository.save(category);
+        if (parentCategory != null){
+            parentCategory.setSubCategory(false);
+            categoryRepository.save(parentCategory);
+            categoryRepository.updateCategoryId(parentCategory.getId(),saveCategory.getId());
+        }
+
+        if (categoryCreateDto.getImage() != null){
+            CoverImageRequestDto coverImageRequestDto = new CoverImageRequestDto(categoryCreateDto.getImage());
+            CoverImage coverImage = categoryImageService.save(coverImageRequestDto, saveCategory.getId());
+            saveCategory.setCoverImage(coverImage);
+            categoryRepository.save(saveCategory);
+        }
+
+        return categoryBuilder.categoryToCategoryDetailDto(saveCategory);
+
 
     }
 
@@ -95,7 +89,7 @@ public class CategoryService {
         return categoryRepository.findById(id).orElseThrow(()-> new NotFoundException("Category " +ExceptionMessage.NOT_FOUND.getMessage()));
     }
 
-    public CategoryDetailDto deleteCategory(Integer id) {
+    public CategoryDetailDto deleteCategory(@NotNullParam Integer id) {
         Category category = findCategoryById(id);
         if (isHasProduct(category.getId()))
             throw new BadRequestException("Category already has a product.");
@@ -138,57 +132,69 @@ public class CategoryService {
         return categoryRepository.existsByCategoryId(id);
     }
 
-    public CategoryDetailDto updateCategory(CategoryUpdateDto categoryUpdateDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof Admin admin) {
-            Category category = findCategoryById(categoryUpdateDto.getId());
-            category.setCategoryName(categoryUpdateDto.getName());
-            category.setCategoryDescription(categoryUpdateDto.getDescription());
-            category.setUpdatedAt(Instant.now());
-            category.setUpdatedBy(admin);
-            return categoryBuilder.categoryToCategoryDetailDto(categoryRepository.save(category));
-        }else
-            throw new BadRequestException("Authenticated user is not an Admin.");
+    public CategoryDetailDto updateCategory(@NotNullParam CategoryUpdateDto categoryUpdateDto) {
+        Category category = findCategoryById(categoryUpdateDto.getId());
+        category.setCategoryName(categoryUpdateDto.getName());
+        category.setCategoryDescription(categoryUpdateDto.getDescription());
+
+        return categoryBuilder.categoryToCategoryDetailDto(categoryRepository.save(category));
     }
 
-    public CategoryDetailDto updateCategoryImage(Integer id, MultipartFile image) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof Admin admin) {
-            Category category = findCategoryById(id);
-            if (category.getCoverImage() != null){
-                categoryImageService.delete(category.getCoverImage().getId());
-                category.setCoverImage(null);
-                categoryRepository.save(category);
-            }
+    public CategoryDetailDto updateCategoryImage(@NotNullParam Integer id,@NotNullParam MultipartFile image) {
+
+        Category category = findCategoryById(id);
+        if (category.getCoverImage() != null){
+            categoryImageService.delete(category.getCoverImage().getId());
+            category.setCoverImage(null);
+            categoryRepository.save(category);
+        }
 
 
-            ImageRequestDto imageRequestDto = new ImageRequestDto(image);
-            CoverImage coverImage = categoryImageService.save(imageRequestDto, category.getId());
-            category.setCoverImage(coverImage);
-            category.setUpdatedBy(admin);
-            category.setUpdatedAt(Instant.now());
-            return categoryBuilder.categoryToCategoryDetailDto(categoryRepository.save(category));
+        ImageRequestDto imageRequestDto = new ImageRequestDto(image);
+        CoverImage coverImage = categoryImageService.save(imageRequestDto, category.getId());
+        category.setCoverImage(coverImage);
 
-        }else
-            throw new BadRequestException("Authenticated user is not an Admin.");
+        return categoryBuilder.categoryToCategoryDetailDto(categoryRepository.save(category));
     }
 
-    public String deleteCategoryImage(Integer categoryId) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof Admin admin) {
-            Category category = findCategoryById(categoryId);
-            if (category.getCoverImage() != null){
-                categoryImageService.delete(category.getCoverImage().getId());
-                category.setCoverImage(null);
-                category.setUpdatedAt(Instant.now());
-                category.setUpdatedBy(admin);
-                categoryRepository.save(category);
-                return "Category image deleted successfully";
-            }else
-                throw new BadRequestException("Resource Not Found.");
+    public String deleteCategoryImage(@NotNullParam Integer categoryId) {
+
+        Category category = findCategoryById(categoryId);
+        if (category.getCoverImage() != null){
+            categoryImageService.delete(category.getCoverImage().getId());
+            category.setCoverImage(null);
+            categoryRepository.save(category);
+            return "Category image deleted successfully";
         }else
-            throw new BadRequestException("Authenticated user is not an Admin.");
+            throw new BadRequestException("Resource Not Found.");
+    }
+
+    public boolean findCategoryByLinkName(String linkName) {
+        return categoryRepository.existsByCategoryLinkName(linkName);
+    }
+
+
+    private String generateLinkName(String name) {
+        if (name == null) return "";
+
+        String processedName = name.trim().toLowerCase()
+                .replace("ç", "c")
+                .replace("ğ", "g")
+                .replace("ı", "i")
+                .replace("ö", "o")
+                .replace("ş", "s")
+                .replace("ü", "u")
+                .replaceAll("\\s+", "-");
+
+        String finalLinkName = processedName;
+        int counter = 1;
+
+        // Zaten linkName kontrolünü yapan metodunu kullanalım
+        while (findCategoryByLinkName(finalLinkName)) {
+            finalLinkName = processedName + "-" + counter;
+            counter++;
+        }
+
+        return finalLinkName;
     }
 }

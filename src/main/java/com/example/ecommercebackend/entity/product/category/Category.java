@@ -5,6 +5,7 @@ import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -56,28 +57,34 @@ public class Category {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean isSubCategory = true;
 
-    public Category(String categoryName, String categoryDescription, Admin createdBy, Admin updatedBy) {
+    public Category(String categoryName, String categoryDescription) {
         this.categoryName = categoryName;
         this.categoryDescription = categoryDescription;
-        this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
     }
 
     public Category() {
     }
 
     @PrePersist
-    @PreUpdate
-    private void generateProductData() {
-        if (categoryName != null) {
-            this.categoryLinkName = categoryName.trim().toLowerCase()
-                    .replaceAll("\\s+", "-"); // Boşlukları "-" ile değiştir
+    private void generateCategoryData() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Admin admin) {
+            this.createdBy = admin;
+            this.updatedBy = admin;
         }
+        Instant now = Instant.now();
+        this.updatedAt = now;
+        this.createdAt = now;
+    }
 
-        updatedAt = Instant.now();
-//        if (productCode == null || productCode.isEmpty()) {
-//            this.productCode = UUID.randomUUID().toString();
-//        }
+    @PreUpdate
+    private void updateCategoryData() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Admin admin) {
+            this.createdBy = admin;
+            this.updatedBy = admin;
+        }
+        this.updatedAt = Instant.now();
     }
 
     public int getId() {

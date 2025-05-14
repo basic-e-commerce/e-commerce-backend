@@ -1,14 +1,19 @@
 package com.example.ecommercebackend.dto.product.category;
 
+import com.example.ecommercebackend.anotation.NotNullField;
 import org.springframework.web.multipart.MultipartFile;
 
 public class CategoryCreateDto {
-    private String name;
-    private String description;
-    private int parentCategoryId;
+    @NotNullField
+    private final String name;
+    @NotNullField
+    private final String description;
+    @NotNullField
+    private final Integer parentCategoryId;
+
     private MultipartFile image;
 
-    public CategoryCreateDto(String name, String description, int parentCategoryId, MultipartFile image) {
+    public CategoryCreateDto(String name, String description, Integer parentCategoryId, MultipartFile image) {
         this.name = name;
         this.description = description;
         this.parentCategoryId = parentCategoryId;
@@ -23,7 +28,7 @@ public class CategoryCreateDto {
         return description;
     }
 
-    public int getParentCategoryId() {
+    public Integer getParentCategoryId() {
         return parentCategoryId;
     }
 

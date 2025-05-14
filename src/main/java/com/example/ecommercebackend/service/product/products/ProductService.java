@@ -1,7 +1,6 @@
 package com.example.ecommercebackend.service.product.products;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
-import com.example.ecommercebackend.anotation.NotNullParameter;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.file.ImageRequestDto;
 import com.example.ecommercebackend.dto.file.ProductImageRequestDto;
@@ -15,7 +14,6 @@ import com.example.ecommercebackend.entity.product.attribute.ProductAttribute;
 import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.products.ProductType;
-import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
@@ -32,8 +30,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

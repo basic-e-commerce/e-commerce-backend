@@ -33,22 +33,22 @@ public class CategoryController {
     }
 
     @DeleteMapping
-    public ResponseEntity<CategoryDetailDto> deleteCategory(@RequestParam Integer id) {
+    public ResponseEntity<CategoryDetailDto> deleteCategory(@RequestParam(required = false) Integer id) {
         return new ResponseEntity<>(categoryService.deleteCategory(id),HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<CategoryDetailDto> updateCategory(@RequestBody CategoryUpdateDto categoryUpdateDto){
+    public ResponseEntity<CategoryDetailDto> updateCategory(@RequestBody(required = false) CategoryUpdateDto categoryUpdateDto){
         return new ResponseEntity<>(categoryService.updateCategory(categoryUpdateDto),HttpStatus.OK);
     }
 
     @PutMapping("/image")
-    public ResponseEntity<CategoryDetailDto> updateCategoryImage(@RequestParam Integer id, @RequestParam MultipartFile image) {
+    public ResponseEntity<CategoryDetailDto> updateCategoryImage(@RequestParam(required = false) Integer id, @RequestParam(required = false) MultipartFile image) {
         return new ResponseEntity<>(categoryService.updateCategoryImage(id,image),HttpStatus.OK);
     }
 
     @DeleteMapping("/image")
-    public ResponseEntity<String> deleteCategoryImage(@RequestParam Integer id) {
+    public ResponseEntity<String> deleteCategoryImage(@RequestParam(required = false) Integer id) {
         return new ResponseEntity<>(categoryService.deleteCategoryImage(id),HttpStatus.OK);
     }
 
