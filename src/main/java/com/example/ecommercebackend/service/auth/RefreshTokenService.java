@@ -13,14 +13,11 @@ import java.time.LocalDateTime;
 
 @Service
 public class RefreshTokenService {
-    private final UserService userService;
     private final RefreshTokenRepository refreshTokenRepository;
     @Value("${jwt.refreshAge}")
     private int refreshExp;
 
-
-    public RefreshTokenService(UserService userService, RefreshTokenRepository refreshTokenRepository) {
-        this.userService = userService;
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
