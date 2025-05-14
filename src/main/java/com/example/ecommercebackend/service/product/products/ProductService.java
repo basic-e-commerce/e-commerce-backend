@@ -63,8 +63,7 @@ public class ProductService {
         this.attributeService = attributeService;
     }
 
-    @NotNullParameter
-    public ProductAdminDetailDto createSimpleProduct(ProductCreateDto productCreateDto) {
+    public ProductAdminDetailDto createSimpleProduct(@NotNullParam ProductCreateDto productCreateDto) {
 
         if (productCreateDto.getName().isEmpty())
             throw new BadRequestException("Product name cannot be empty");
@@ -128,8 +127,7 @@ public class ProductService {
     }
 
 
-    @NotNullParameter
-    public ProductAdminDetailDto updateSimpleProduct(Integer productId, ProductUpdateDto productUpdateDto){
+    public ProductAdminDetailDto updateSimpleProduct(@NotNullParam Integer productId,@NotNullParam ProductUpdateDto productUpdateDto){
 
         if (productUpdateDto.getName() == null || productUpdateDto.getName().isEmpty())
             throw new BadRequestException("Product name cannot be empty");
@@ -256,7 +254,7 @@ public class ProductService {
 
 
     @Transactional
-    public String updateProductImage(Integer productId, ProductImageUpdateDto productImageUpdateDto) {
+    public String updateProductImage(@NotNullParam Integer productId, ProductImageUpdateDto productImageUpdateDto) {
         if(productImageUpdateDto == null)
             throw new BadRequestException("ProductImageUpdate "+ExceptionMessage.NOT_FOUND.getMessage());
 
@@ -312,13 +310,7 @@ public class ProductService {
     }
 
     @Transactional
-    public String deleteProductImage(Integer productId, Integer productImageId) {
-        if (productId == null)
-            throw new BadRequestException("ProductId Not Null");
-
-        if(productImageId == null){
-            throw new BadRequestException("ProductImageId Not Null");
-        }
+    public String deleteProductImage(@NotNullParam Integer productId,@NotNullParam Integer productImageId) {
 
         System.out.println("deleteProductImage" + productImageId + " prod: " + productId);
         Product product = findProductById(productId);
@@ -343,9 +335,7 @@ public class ProductService {
 
 
     @Transactional
-    public String deleteCoverImage(Integer productId) {
-        if (productId == null)
-            throw new BadRequestException("ProductId Not Null");
+    public String deleteCoverImage(@NotNullParam Integer productId) {
 
         Product product = findProductById(productId);
         if (product.getCoverImage() != null) {
@@ -358,12 +348,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ImageDetailDto updateCoverImage(Integer productId, MultipartFile coverImage) {
-        if (productId == null)
-            throw new BadRequestException("ProductId Not Null");
-
-        if (coverImage == null)
-            throw new BadRequestException("CoverImage Not Null");
+    public ImageDetailDto updateCoverImage(@NotNullParam Integer productId,@NotNullParam MultipartFile coverImage) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
@@ -426,7 +411,7 @@ public class ProductService {
         return productRepository.existsById(productId);
     }
 
-    public List<ProductAdminDetailDto> filterProductsByCategory(ProductFilterRequest filterRequest, Integer page, Integer size) {
+    public List<ProductAdminDetailDto> filterProductsByCategory(@NotNullParam ProductFilterRequest filterRequest,@NotNullParam Integer page,@NotNullParam Integer size) {
         Sort sort = Sort.unsorted();
         if (filterRequest.getSortBy() != null) {
             sort = Sort.by(Sort.Direction.fromString(filterRequest.getSortDirection()), filterRequest.getSortBy());
@@ -439,7 +424,7 @@ public class ProductService {
         return productRepository.findAll(specification,pageable).stream().map(productBuilder::productToProductAdmindetailDto).collect(Collectors.toList());
     }
 
-    public Set<ProductSmallDto> filterProductsByCategorySmall(ProductFilterRequest filterRequest, Integer page, Integer size) {
+    public Set<ProductSmallDto> filterProductsByCategorySmall(@NotNullParam ProductFilterRequest filterRequest,@NotNullParam Integer page,@NotNullParam Integer size) {
         Sort sort = Sort.unsorted();
         if (filterRequest.getSortBy() != null) {
             sort = Sort.by(Sort.Direction.fromString(filterRequest.getSortDirection()), filterRequest.getSortBy());
@@ -521,12 +506,12 @@ public class ProductService {
     }
 
 
-    public ProductDetailDto findProductDetail(String linkName) {
+    public ProductDetailDto findProductDetail(@NotNullParam String linkName) {
         Product product = productRepository.findByProductLinkName(linkName).orElseThrow(()-> new NotFoundException("Product "+ExceptionMessage.NOT_FOUND.getMessage()));
         return productBuilder.productToProductDetailDto(product);
     }
 
-    public Product findProductDetailAdmin(String linkName) {
+    public Product findProductDetailAdmin(@NotNullParam String linkName) {
         return productRepository.findByProductLinkName(linkName).orElseThrow(()-> new NotFoundException("Product "+ExceptionMessage.NOT_FOUND.getMessage()));
     }
 
