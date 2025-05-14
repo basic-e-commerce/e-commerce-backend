@@ -1,6 +1,6 @@
 package com.example.ecommercebackend.service.auth;
 
-import com.example.ecommercebackend.anotation.NotNullMethod;
+import com.example.ecommercebackend.anotation.NotNullParameter;
 import com.example.ecommercebackend.dto.user.authentication.AuthenticationRequestDto;
 import com.example.ecommercebackend.dto.user.authentication.AuthenticationResponseDto;
 import com.example.ecommercebackend.entity.user.Admin;
@@ -12,10 +12,8 @@ import com.example.ecommercebackend.service.mail.MailService;
 import com.example.ecommercebackend.service.redis.RedisService;
 import com.example.ecommercebackend.service.user.AdminService;
 import com.example.ecommercebackend.service.user.CustomerService;
-import com.example.ecommercebackend.service.user.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -62,7 +60,7 @@ public class AuthenticationService {
     }
 
 
-    @NotNullMethod
+    @NotNullParameter
     public AuthenticationResponseDto loginCustomer(AuthenticationRequestDto authenticationRequestDto, HttpServletResponse response) {
 
         /**

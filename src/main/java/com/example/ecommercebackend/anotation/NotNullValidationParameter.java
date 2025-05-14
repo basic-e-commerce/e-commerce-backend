@@ -12,9 +12,9 @@ import java.lang.reflect.Parameter;
 
 @Aspect
 @Component
-public class NotNullValidationMethod {
+public class NotNullValidationParameter {
 
-    @Before("@annotation(com.example.ecommercebackend.anotation.NotNullMethod)")
+    @Before("@annotation(com.example.ecommercebackend.anotation.NotNullParameter)")
     public void validateNotNullParams(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
 

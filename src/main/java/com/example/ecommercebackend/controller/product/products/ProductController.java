@@ -36,7 +36,7 @@ public class ProductController {
     }
 
     @PutMapping
-    public ResponseEntity<ProductAdminDetailDto> updateSimpleProduct(@RequestParam Integer id, @RequestBody ProductUpdateDto productUpdateDto) {
+    public ResponseEntity<ProductAdminDetailDto> updateSimpleProduct(@RequestParam(required = false) Integer id, @RequestBody(required = false) ProductUpdateDto productUpdateDto) {
         return new ResponseEntity<>(productService.updateSimpleProduct(id, productUpdateDto), HttpStatus.OK);
     }
 

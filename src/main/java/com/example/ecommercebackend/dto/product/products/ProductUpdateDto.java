@@ -1,19 +1,32 @@
 package com.example.ecommercebackend.dto.product.products;
 
+import com.example.ecommercebackend.anotation.NotNullField;
+
 import java.math.BigDecimal;
 import java.util.Set;
 
 public class ProductUpdateDto {
+    @NotNullField
     private String name;
+    @NotNullField
     private BigDecimal salePrice;
+    @NotNullField
     private BigDecimal comparePrice;
+    @NotNullField
     private BigDecimal buyingPrice;
+    @NotNullField
     private Integer quantity;
+    @NotNullField
     private String shortDescription;
+    @NotNullField
     private String description;
+    @NotNullField
     private Set<Integer> categoryIds;
+    @NotNullField
     private String productType;
+    @NotNullField
     private Boolean published;
+    @NotNullField
     private Boolean disableOutOfStock;
 
     public ProductUpdateDto(String name, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, String description, Set<Integer> categoryIds, String productType, Boolean published, Boolean disableOutOfStock) {

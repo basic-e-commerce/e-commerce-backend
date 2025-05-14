@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.service.product.products;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
+import com.example.ecommercebackend.anotation.NotNullParameter;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.file.ImageRequestDto;
 import com.example.ecommercebackend.dto.file.ProductImageRequestDto;
@@ -128,6 +129,7 @@ public class ProductService {
     }
 
 
+    @NotNullParameter
     public ProductAdminDetailDto updateSimpleProduct(Integer productId, ProductUpdateDto productUpdateDto){
 
         if (productUpdateDto.getName() == null || productUpdateDto.getName().isEmpty())
