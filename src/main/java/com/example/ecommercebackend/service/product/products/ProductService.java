@@ -286,9 +286,10 @@ public class ProductService {
                         }
                     }
                 }
+                if (!flag)
+                    throw new NotFoundException("ProductImage" + ExceptionMessage.NOT_FOUND.getMessage());
             }
-            if (!flag)
-                throw new NotFoundException("ProductImage" + ExceptionMessage.NOT_FOUND.getMessage());
+
 
             Set<ProductImage> newProductImages = new HashSet<>();
 
