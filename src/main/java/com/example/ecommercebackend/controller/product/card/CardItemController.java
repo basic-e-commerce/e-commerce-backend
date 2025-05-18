@@ -5,10 +5,7 @@ import com.example.ecommercebackend.dto.product.card.CardResponseDetails;
 import com.example.ecommercebackend.service.product.card.CardItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,7 +18,7 @@ public class CardItemController {
         this.cardItemService = cardItemService;
     }
 
-    @GetMapping("/by-ids")
+    @PostMapping("/by-ids")
     public ResponseEntity<List<CardResponseDetails>> getDetails(@RequestBody List<CardProductRequestDto> cardProductRequestDtos){
         return new ResponseEntity<>(cardItemService.getDetails(cardProductRequestDtos), HttpStatus.OK);
     }

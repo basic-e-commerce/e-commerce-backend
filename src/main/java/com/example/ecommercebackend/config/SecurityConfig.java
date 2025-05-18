@@ -78,12 +78,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/v1/customer/address").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/customer/address").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.GET,"/api/v1/customer/address").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/customer/update-password").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/customer/profile").hasAuthority("CUSTOMER")
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/auth/verification/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET,"/api/v1/order/user").hasAuthority("CUSTOMER")
 
                         .requestMatchers(HttpMethod.GET,"/api/v1/card-item/by-ids").permitAll()
+
+                        .requestMatchers(HttpMethod.POST,"/api/v1/coupon").hasAuthority("ADMIN")
 
                         .anyRequest().permitAll())
                 .anonymous(anonymous -> anonymous

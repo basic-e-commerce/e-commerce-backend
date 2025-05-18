@@ -1,9 +1,12 @@
 package com.example.ecommercebackend.service.user;
 
+import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.user.CustomerBuilder;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.dto.user.customer.CustomerCreateDto;
+import com.example.ecommercebackend.dto.user.customer.CustomerUpdateDto;
+import com.example.ecommercebackend.dto.user.customer.PasswordUpdateDto;
 import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.user.*;
@@ -323,7 +326,61 @@ public class CustomerService {
 
     }
 
-    public boolean existByUsername(String username) {
-        return customerRepository.existsByUsername(username);
+    public Customer findById(Integer id){
+        return customerRepository.findById(id).orElse(null);
+    }
+
+    public List<Customer> getAll() {
+        return customerRepository.findAll();
+    }
+
+    public String updatePassword(@NotNullParam PasswordUpdateDto passwordUpdateDto) {
+        if (passwordUpdateDto.getOldPassword().isEmpty() || passwordUpdateDto.getPassword().isEmpty() || passwordUpdateDto.getRePassword().isEmpty())
+            throw new BadRequestException("Lütfen tüm dataları doldurunuz");
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Customer customer){
+
+            if (!passwordEncoder.matches(passwordUpdateDto.getOldPassword(), customer.getPassword()))
+                throw new BadRequestException("Eski Parolanız yanlıştır.");
+
+
+            if (!passwordUpdateDto.getPassword().equals(passwordUpdateDto.getRePassword()))
+                throw new BadRequestException("Parolalarınız eşleşmiyor");
+
+            customer.setPassword(passwordEncoder.encode(passwordUpdateDto.getPassword()));
+            customerRepository.save(customer);
+            return "Password updated";
+        }else
+            throw new BadRequestException("Customer Not Authenticated");
+
+
+    }
+
+    public boolean existByPhoneNo(String phoneNo){
+        return customerRepository.existsByPhoneNumber(phoneNo);
+    }
+
+    public String updateCustomer(@NotNullParam CustomerUpdateDto customerUpdateDto) {
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Customer customer){
+
+            if (customerUpdateDto.getName() != null && !customerUpdateDto.getName().isBlank())
+                customer.setFirstName(customerUpdateDto.getName());
+
+            if (customerUpdateDto.getLastName() != null && !customerUpdateDto.getLastName().isBlank())
+                customer.setLastName(customerUpdateDto.getLastName());
+
+            if (customerUpdateDto.getPhoneNumber() != null && !customerUpdateDto.getPhoneNumber().isBlank())
+                if (!existByPhoneNo(customerUpdateDto.getPhoneNumber()))
+                    customer.setPhoneNumber(customerUpdateDto.getPhoneNumber());
+
+            return "customer updated";
+        }else
+            throw new BadRequestException("Customer Not Authenticated");
+
+
+
     }
 }

@@ -3,6 +3,8 @@ package com.example.ecommercebackend.controller.user;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.dto.user.customer.CustomerCreateDto;
+import com.example.ecommercebackend.dto.user.customer.CustomerUpdateDto;
+import com.example.ecommercebackend.dto.user.customer.PasswordUpdateDto;
 import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.service.user.CustomerService;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -25,6 +28,21 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<Customer> createCustomer(@Valid @RequestBody CustomerCreateDto customerCreateDto) {
         return new ResponseEntity<>(customerService.createCustomer(customerCreateDto), HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Customer>> getAll(){
+        return new ResponseEntity<>(customerService.getAll(),HttpStatus.OK);
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<String> updateCustomer(@RequestBody(required = false) CustomerUpdateDto customerUpdateDto){
+        return new ResponseEntity<>(customerService.updateCustomer(customerUpdateDto),HttpStatus.CREATED);
+    }
+
+    @PutMapping("/update-password")
+    public ResponseEntity<String> updatePassword(@RequestBody(required = false) PasswordUpdateDto passwordUpdateDto){
+        return new ResponseEntity<>(customerService.updatePassword(passwordUpdateDto),HttpStatus.CREATED);
     }
 
     // ----------- address ------------

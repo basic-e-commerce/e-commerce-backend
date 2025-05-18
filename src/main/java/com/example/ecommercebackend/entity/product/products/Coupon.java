@@ -1,8 +1,10 @@
 package com.example.ecommercebackend.entity.product.products;
 
 import com.example.ecommercebackend.entity.user.Admin;
+import com.example.ecommercebackend.entity.user.Customer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -44,6 +46,14 @@ public class Coupon {
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     private Set<Product> products = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "customer_coupon",
+            joinColumns = @JoinColumn(name = "customer_id"),
+            inverseJoinColumns = @JoinColumn(name = "coupon_id")
+    )
+    private Set<Customer> customers = new HashSet<>();
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
@@ -60,26 +70,51 @@ public class Coupon {
     @JoinColumn(name = "updated_by")
     private Admin updatedBy;
 
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = Instant.now();
+
+
+    @PrePersist
+    private void generateCouponData() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Admin admin) {
+            this.createdBy = admin;
+            this.updatedBy = admin;
+        }
+        Instant now = Instant.now();
+        this.updatedAt = now;
+        this.createdAt = now;
     }
+
+    @PreUpdate
+    private void updateCouponData() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Admin admin) {
+            this.createdBy = admin;
+            this.updatedBy = admin;
+        }
+        this.updatedAt = Instant.now();
+    }
+
+    public Set<Customer> getCustomers() {
+        return customers;
+    }
+
+    public void setCustomers(Set<Customer> customers) {
+        this.customers = customers;
+    }
+
 
     public enum DiscountType{
         PERCENTAGE,FIXEDAMOUNT
     }
 
-    public Coupon(String code, BigDecimal discountValue, DiscountType discountType, int timesUsed, Integer maxUsage, BigDecimal orderAmountLimit, Instant couponStartDate, Instant couponEndDate, Admin createdBy, Admin updatedBy) {
+    public Coupon(String code, BigDecimal discountValue, DiscountType discountType, Integer maxUsage, BigDecimal orderAmountLimit, Instant couponStartDate, Instant couponEndDate) {
         this.code = code;
         this.discountValue = discountValue;
         this.discountType = discountType;
-        this.timesUsed = timesUsed;
         this.maxUsage = maxUsage;
         this.orderAmountLimit = orderAmountLimit;
         this.couponStartDate = couponStartDate;
         this.couponEndDate = couponEndDate;
-        this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
     }
 
     public Coupon() {
