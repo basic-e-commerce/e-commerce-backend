@@ -367,15 +367,17 @@ public class CustomerService {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof Customer customer){
 
-            if (customerUpdateDto.getName() != null && !customerUpdateDto.getName().isBlank())
+            if (customerUpdateDto.getName() != null)
                 customer.setFirstName(customerUpdateDto.getName());
 
-            if (customerUpdateDto.getLastName() != null && !customerUpdateDto.getLastName().isBlank())
+            if (customerUpdateDto.getLastName() != null)
                 customer.setLastName(customerUpdateDto.getLastName());
 
-            if (customerUpdateDto.getPhoneNumber() != null && !customerUpdateDto.getPhoneNumber().isBlank())
+            if (customerUpdateDto.getPhoneNumber() != null)
                 if (!existByPhoneNo(customerUpdateDto.getPhoneNumber()))
                     customer.setPhoneNumber(customerUpdateDto.getPhoneNumber());
+
+            customerRepository.save(customer);
 
             return "customer updated";
         }else
