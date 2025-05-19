@@ -85,7 +85,7 @@ public class CardService {
                     throw new BadRequestException("0 ve altında adet olamaz");
 
                 if (cardItemCreateDto.quantity() > productQuantity)
-                    throw new BadRequestException("Yetersiz Ürün Stoğu: "+existingCardItem.getProduct().getProductName());
+                    throw new BadRequestException("Yetersiz Ürün Stoğu: "+cardItemCreateDto.productId());
 
                 // 8. Ürün sepette yoksa, yeni CardItem oluştur ve sepete ekle
                 CardItem newCardItem = cardItemService.create(cardItemCreateDto);

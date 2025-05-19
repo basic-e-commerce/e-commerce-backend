@@ -8,13 +8,15 @@ public class CardResponseDetails {
     private BigDecimal price;
     private BigDecimal comparePrice;
     private String coverImage;
+    private int quantity;
 
-    public CardResponseDetails(int id, String title, BigDecimal price, BigDecimal comparePrice, String coverImage) {
+    public CardResponseDetails(int id, String title, BigDecimal price, BigDecimal comparePrice, String coverImage, int quantity) {
         this.id = id;
         this.title = title;
         this.price = price;
         this.comparePrice = comparePrice;
         this.coverImage = coverImage;
+        this.quantity = quantity;
     }
 
     public int getId() {
@@ -55,5 +57,13 @@ public class CardResponseDetails {
 
     public void setCoverImage(String coverImage) {
         this.coverImage = coverImage;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

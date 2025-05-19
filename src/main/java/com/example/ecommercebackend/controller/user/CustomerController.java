@@ -3,6 +3,7 @@ package com.example.ecommercebackend.controller.user;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.dto.user.customer.CustomerCreateDto;
+import com.example.ecommercebackend.dto.user.customer.CustomerProfileDto;
 import com.example.ecommercebackend.dto.user.customer.CustomerUpdateDto;
 import com.example.ecommercebackend.dto.user.customer.PasswordUpdateDto;
 import com.example.ecommercebackend.entity.user.Address;
@@ -33,6 +34,11 @@ public class CustomerController {
     @GetMapping
     public ResponseEntity<List<Customer>> getAll(){
         return new ResponseEntity<>(customerService.getAll(),HttpStatus.OK);
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<CustomerProfileDto> getProfile(){
+        return new ResponseEntity<>(customerService.getProfile(),HttpStatus.OK);
     }
 
     @PutMapping("/profile")

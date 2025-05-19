@@ -80,6 +80,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/customer/address").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/customer/update-password").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/customer/profile").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/customer/profile").hasAuthority("CUSTOMER")
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/auth/verification/**").permitAll()
 

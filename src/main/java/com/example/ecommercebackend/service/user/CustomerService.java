@@ -5,6 +5,7 @@ import com.example.ecommercebackend.builder.user.CustomerBuilder;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.dto.user.customer.CustomerCreateDto;
+import com.example.ecommercebackend.dto.user.customer.CustomerProfileDto;
 import com.example.ecommercebackend.dto.user.customer.CustomerUpdateDto;
 import com.example.ecommercebackend.dto.user.customer.PasswordUpdateDto;
 import com.example.ecommercebackend.entity.product.card.Card;
@@ -382,5 +383,17 @@ public class CustomerService {
 
 
 
+    }
+
+    public CustomerProfileDto getProfile() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Customer customer){
+            String phone = "";
+            if (customer.getPhoneNumber() != null){
+                phone =customer.getPhoneNumber();
+            }
+            return new CustomerProfileDto(customer.getFirstName(),customer.getLastName(),customer.getUsername(),phone);
+        }else
+            throw new BadRequestException("Customer Not Authenticated");
     }
 }

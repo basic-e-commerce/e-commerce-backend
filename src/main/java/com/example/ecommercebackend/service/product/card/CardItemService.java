@@ -60,7 +60,8 @@ public class CardItemService {
                         x.getProduct().getProductName(),
                         x.getProduct().getSalePrice(),
                         x.getProduct().getComparePrice(),
-                        url);
+                        url,
+                        x.getQuantity());
             }).collect(Collectors.toList());
         }else if (principal instanceof String && principal.equals("anonymousUser")) {
             List<Product> productCollect = cardProductRequestDto.stream().map(x -> productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()))).toList();
@@ -73,7 +74,8 @@ public class CardItemService {
                         x.getProductName(),
                         x.getSalePrice(),
                         x.getComparePrice(),
-                        coverImageUrl);
+                        coverImageUrl,
+                        x.getQuantity());
             }).toList();
         }else
             throw new BadRequestException("Geçersiz Kullanıcı");
