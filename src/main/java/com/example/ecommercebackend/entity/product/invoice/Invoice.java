@@ -26,15 +26,31 @@ public abstract class Invoice {
 
     @Enumerated(EnumType.STRING)
     private InvoiceType invoiceType;
+    private String firstName;
+    private String lastName;
+    private String username;
+    private String countryName;
+    private String city;
+    private String addressLine1;
+    private String postalCode;
+    private String phoneNo;
 
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant createdAt = Instant.now();
 
-    public Invoice(Payment payment, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType) {
+    public Invoice(Payment payment, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType, String firstName, String lastName, String username, String countryName, String city, String addressLine1, String postalCode, String phoneNo) {
         this.payment = payment;
         this.totalAmount = totalAmount;
         this.taxAmount = taxAmount;
         this.invoiceType = invoiceType;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.countryName = countryName;
+        this.city = city;
+        this.addressLine1 = addressLine1;
+        this.postalCode = postalCode;
+        this.phoneNo = phoneNo;
     }
 
     public Payment getPayment() {
@@ -43,6 +59,11 @@ public abstract class Invoice {
 
     public void setPayment(Payment payment) {
         this.payment = payment;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
     }
 
     public enum InvoiceType {
@@ -91,5 +112,69 @@ public abstract class Invoice {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getAddressLine1() {
+        return addressLine1;
+    }
+
+    public void setAddressLine1(String addressLine1) {
+        this.addressLine1 = addressLine1;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
     }
 }

@@ -1,11 +1,15 @@
 package com.example.ecommercebackend.service.product.order;
 
+import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.order.OrderBuilder;
 import com.example.ecommercebackend.dto.product.order.*;
+import com.example.ecommercebackend.dto.user.address.AddressOrderCreateDto;
 import com.example.ecommercebackend.entity.merchant.Merchant;
-import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.card.CardItem;
+import com.example.ecommercebackend.entity.product.invoice.CorporateInvoice;
+import com.example.ecommercebackend.entity.product.invoice.IndividualInvoice;
+import com.example.ecommercebackend.entity.product.invoice.Invoice;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
@@ -18,6 +22,7 @@ import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.order.OrderRepository;
 import com.example.ecommercebackend.repository.user.CustomerRepository;
+import com.example.ecommercebackend.service.invoice.InvoiceService;
 import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.example.ecommercebackend.service.product.products.ProductService;
 import com.example.ecommercebackend.service.user.GuestService;
@@ -38,6 +43,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -54,9 +60,11 @@ public class OrderService {
     private final OrderBuilder orderBuilder;
     private final MerchantService merchantService;
     private final CustomerRepository customerRepository;
+    private final InvoiceService invoiceService;
 
 
-    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService, CustomerRepository customerRepository) {
+
+    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService, CustomerRepository customerRepository, InvoiceService invoiceService) {
         this.orderRepository = orderRepository;
         this.guestService = guestService;
         this.orderStatusService = orderStatusService;
@@ -65,11 +73,12 @@ public class OrderService {
         this.orderBuilder = orderBuilder;
         this.merchantService = merchantService;
         this.customerRepository = customerRepository;
+        this.invoiceService = invoiceService;
     }
 
 
     @Transactional
-    public OrderResponseDto createOrder(OrderCreateDto orderCreateDto) {
+    public OrderResponseDto createOrder(@NotNullParam OrderCreateDto orderCreateDto) {
         // Authentication nesnesini güvenlik bağlamından alıyoruz
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
@@ -83,33 +92,41 @@ public class OrderService {
             Set<OrderItem> savedOrderItems = createOrderItemWithCustomer(customer.getCard());
             BigDecimal orderPrice = orderPrice(savedOrderItems);
             BigDecimal totalPrice = processTotalPrice(orderPrice);
-            return orderBuilder.orderToOrderResponseDto(saveOrder(customer,orderCreateDto,savedOrderItems,orderStatus,totalPrice,orderPrice));
+            BigDecimal totalTax = calculateTax(savedOrderItems);
+            Invoice invoice = getInvoice(totalPrice,totalTax,orderCreateDto);
+            Invoice saveInvoicce = invoiceService.save(invoice);
+            Order order = saveOrder(customer, orderCreateDto.getInvoiceAddress(), savedOrderItems, orderStatus, totalPrice, orderPrice,saveInvoicce);
+
+            return orderBuilder.orderToOrderResponseDto(order);
         }
 
         if (authentication instanceof AnonymousAuthenticationToken) {
-            if (orderCreateDto.orderItemCreateDtos().isEmpty())
+            if (orderCreateDto.getOrderItemCreateDtos().isEmpty())
                 throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
-            for (OrderItemCreateDto item : orderCreateDto.orderItemCreateDtos()) {
+            for (OrderItemCreateDto item : orderCreateDto.getOrderItemCreateDtos()) {
                 if (item.quantity() <= 0) {
                     throw new BadRequestException("Sepette 0 ve altında ürün sayısı bulunamaz");
                 }
             }
 
-            if (customerRepository.findByUsername(orderCreateDto.address().username()).isPresent()){
-                Customer customer = customerRepository.findByUsername(orderCreateDto.address().username()).get();
+            if (customerRepository.findByUsername(orderCreateDto.getAddress().username()).isPresent()){
+                Customer customer = customerRepository.findByUsername(orderCreateDto.getAddress().username()).get();
                 Set<OrderItem> savedOrderItems = createOrderItemWithAnon(orderCreateDto);
 
                 BigDecimal orderPrice = orderPrice(savedOrderItems);
                 BigDecimal totalPrice = processTotalPrice(orderPrice);
-                return orderBuilder.orderToOrderResponseDto(saveOrder(customer,orderCreateDto,savedOrderItems,orderStatus,totalPrice,orderPrice));
+                BigDecimal totalTax = calculateTax(savedOrderItems);
+                Invoice invoice = getInvoice(totalPrice,totalTax,orderCreateDto);
+                Invoice saveInvoicce = invoiceService.save(invoice);
+                return orderBuilder.orderToOrderResponseDto(saveOrder(customer,orderCreateDto.getAddress(),savedOrderItems,orderStatus,totalPrice,orderPrice,saveInvoicce));
 
             }else {
-                Guest guest = guestService.findByUsernameOrNull(orderCreateDto.address().username());
+                Guest guest = guestService.findByUsernameOrNull(orderCreateDto.getAddress().username());
                 if (guest == null){
-                    guest = guestService.save(orderCreateDto.address().firstName(),
-                            orderCreateDto.address().lastName(),
-                            orderCreateDto.address().phoneNo(),
-                            orderCreateDto.address().username(),
+                    guest = guestService.save(orderCreateDto.getAddress().firstName(),
+                            orderCreateDto.getAddress().lastName(),
+                            orderCreateDto.getAddress().phoneNo(),
+                            orderCreateDto.getAddress().username(),
                             false,
                             false);
 
@@ -117,10 +134,40 @@ public class OrderService {
                 Set<OrderItem> savedOrderItems = createOrderItemWithAnon(orderCreateDto);
                 BigDecimal orderPrice = orderPrice(savedOrderItems);
                 BigDecimal totalPrice = processTotalPrice(orderPrice);
-                return orderBuilder.orderToOrderResponseDto(saveOrder(guest,orderCreateDto,savedOrderItems,orderStatus,totalPrice,orderPrice));
+                BigDecimal totalTax = calculateTax(savedOrderItems);
+                Invoice invoice = getInvoice(totalPrice,totalTax,orderCreateDto);
+                Invoice saveInvoicce = invoiceService.save(invoice);
+                return orderBuilder.orderToOrderResponseDto(saveOrder(guest,orderCreateDto.getAddress(),savedOrderItems,orderStatus,totalPrice,orderPrice,saveInvoicce));
             }
         }else
             throw new BadRequestException("Geçersiz Kullanıcı");
+    }
+
+    private BigDecimal calculateTax(Set<OrderItem> savedOrderItems) {
+        BigDecimal totalTaxAmount = BigDecimal.ZERO;
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
+        for (OrderItem item : savedOrderItems) {
+            BigDecimal price = item.getPrice();
+            Integer quantity = item.getQuantity();
+            BigDecimal taxRate = item.getProduct().getTaxRate();
+
+            if (taxRate == null) {
+                taxRate = BigDecimal.ZERO;
+            }
+
+            BigDecimal itemTotal = price.multiply(BigDecimal.valueOf(quantity));
+            BigDecimal itemTax = itemTotal.multiply(taxRate);
+
+            totalAmount = totalAmount.add(itemTotal);
+            totalTaxAmount = totalTaxAmount.add(itemTax);
+        }
+
+        if (totalAmount.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO; // Bölme hatasını önler
+        }
+
+        return totalTaxAmount.divide(totalAmount, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
     }
 
     public BigDecimal orderPrice(Set<OrderItem> orderItems) {
@@ -145,7 +192,7 @@ public class OrderService {
     public Set<OrderItem> createOrderItemWithAnon(OrderCreateDto orderCreateDto) {
         Set<OrderItem> orderItems = new HashSet<>();
 
-        for (OrderItemCreateDto orderItemCreateDto: orderCreateDto.orderItemCreateDtos()){
+        for (OrderItemCreateDto orderItemCreateDto: orderCreateDto.getOrderItemCreateDtos()){
             Product product = productService.findProductById(orderItemCreateDto.productId());
 
             if (product.getQuantity() < orderItemCreateDto.quantity())
@@ -161,23 +208,103 @@ public class OrderService {
 
 
 
-    public Order saveOrder(User user,OrderCreateDto orderCreateDto,Set<OrderItem> orderItems,OrderStatus orderStatus,BigDecimal totalPrice,BigDecimal orderPrice) {
-        Order order = new Order(user,
+    public Order saveOrder(User user, AddressOrderCreateDto addressOrderCreateDto, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal orderPrice,Invoice invoice) {
+        return new Order(user,
                 null,
-                orderCreateDto.address().firstName(),
-                orderCreateDto.address().lastName(),
-                orderCreateDto.address().username(),
-                orderCreateDto.address().countryName(),
-                orderCreateDto.address().city(),
-                orderCreateDto.address().addressLine1(),
-                orderCreateDto.address().postalCode(),
-                orderCreateDto.address().phoneNo(),
+                addressOrderCreateDto.firstName(),
+                addressOrderCreateDto.lastName(),
+                addressOrderCreateDto.username(),
+                addressOrderCreateDto.countryName(),
+                addressOrderCreateDto.city(),
+                addressOrderCreateDto.addressLine1(),
+                addressOrderCreateDto.postalCode(),
+                addressOrderCreateDto.phoneNo(),
                 orderItems,
                 orderStatus,
                 totalPrice,
-                orderPrice);
+                orderPrice,
+                invoice);
 
-        return orderRepository.save(order);
+    }
+
+    public Invoice getInvoice(BigDecimal totalPrice,BigDecimal totalTax,OrderCreateDto orderCreateDto){
+        Invoice invoice;
+        if (Invoice.InvoiceType.CORPORATE == Invoice.InvoiceType.valueOf(orderCreateDto.getInvoiceType())){
+            if (orderCreateDto.getDiffAddress()){
+                if (orderCreateDto.getCorporateInvoice()!= null){
+                    return new CorporateInvoice(
+                            null,
+                            totalPrice,
+                            totalTax,
+                            Invoice.InvoiceType.CORPORATE,
+                            orderCreateDto.getInvoiceAddress().firstName(),
+                            orderCreateDto.getInvoiceAddress().lastName(),
+                            orderCreateDto.getInvoiceAddress().username(),
+                            orderCreateDto.getInvoiceAddress().countryName(),
+                            orderCreateDto.getInvoiceAddress().city(),
+                            orderCreateDto.getInvoiceAddress().addressLine1(),
+                            orderCreateDto.getInvoiceAddress().postalCode(),
+                            orderCreateDto.getInvoiceAddress().phoneNo(),
+                            orderCreateDto.getCorporateInvoice().companyName(),
+                            orderCreateDto.getCorporateInvoice().taxNumber(),
+                            orderCreateDto.getCorporateInvoice().taxOffice());
+                }else
+                    throw new BadRequestException("Farklı address bulunamamaktadır");
+
+            }else{
+                return new CorporateInvoice(
+                        null,
+                        totalPrice,
+                        totalTax,
+                        Invoice.InvoiceType.CORPORATE,
+                        orderCreateDto.getAddress().firstName(),
+                        orderCreateDto.getAddress().lastName(),
+                        orderCreateDto.getAddress().username(),
+                        orderCreateDto.getAddress().countryName(),
+                        orderCreateDto.getAddress().city(),
+                        orderCreateDto.getAddress().addressLine1(),
+                        orderCreateDto.getAddress().postalCode(),
+                        orderCreateDto.getAddress().phoneNo(),
+                        orderCreateDto.getCorporateInvoice().companyName(),
+                        orderCreateDto.getCorporateInvoice().taxNumber(),
+                        orderCreateDto.getCorporateInvoice().taxOffice());
+            }
+
+        } else if (Invoice.InvoiceType.INDIVIDUAL == Invoice.InvoiceType.valueOf(orderCreateDto.getInvoiceType())) {
+            if (orderCreateDto.getDiffAddress()){
+                if (orderCreateDto.getInvoiceAddress() != null){
+                    return new IndividualInvoice(
+                            null,
+                            totalPrice,
+                            totalTax,
+                            Invoice.InvoiceType.INDIVIDUAL,
+                            orderCreateDto.getInvoiceAddress().firstName(),
+                            orderCreateDto.getInvoiceAddress().lastName(),
+                            orderCreateDto.getInvoiceAddress().username(),
+                            orderCreateDto.getInvoiceAddress().countryName(),
+                            orderCreateDto.getInvoiceAddress().city(),
+                            orderCreateDto.getInvoiceAddress().addressLine1(),
+                            orderCreateDto.getInvoiceAddress().postalCode(),
+                            orderCreateDto.getInvoiceAddress().phoneNo());
+                }else
+                    throw new BadRequestException("Farklı address bulunamamaktadır");
+            }else{
+                return new IndividualInvoice(
+                        null,
+                        totalPrice,
+                        totalTax,
+                        Invoice.InvoiceType.INDIVIDUAL,
+                        orderCreateDto.getAddress().firstName(),
+                        orderCreateDto.getAddress().lastName(),
+                        orderCreateDto.getAddress().username(),
+                        orderCreateDto.getAddress().countryName(),
+                        orderCreateDto.getAddress().city(),
+                        orderCreateDto.getAddress().addressLine1(),
+                        orderCreateDto.getAddress().postalCode(),
+                        orderCreateDto.getAddress().phoneNo());
+            }
+        }else
+            throw new BadRequestException("Geçersiz Fatura Tipi");
     }
 
 

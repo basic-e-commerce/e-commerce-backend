@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.entity.product.order;
 
 import com.example.ecommercebackend.entity.payment.Payment;
+import com.example.ecommercebackend.entity.product.invoice.Invoice;
 import com.example.ecommercebackend.entity.product.products.Coupon;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.entity.user.User;
@@ -79,6 +80,9 @@ public class Order {
     @Column(name = "order_delivered_customer_date")
     private Instant orderDeliveredCustomerDate;   // müşteriye teslim
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Invoice invoice;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
@@ -93,7 +97,7 @@ public class Order {
         this.orderCode = UUID.randomUUID().toString();
     }
 
-    public Order(User user, Coupon coupon, String firstName, String lastName, String username, String countryName, String city, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price) {
+    public Order(User user, Coupon coupon, String firstName, String lastName, String username, String countryName, String city, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price, Invoice invoice) {
         this.user = user;
         this.coupon = coupon;
         this.firstName = firstName;
@@ -108,6 +112,7 @@ public class Order {
         this.orderStatus = orderStatus;
         this.totalPrice = totalPrice;
         this.price = price;
+        this.invoice = invoice;
     }
 
     public Order() {
@@ -283,5 +288,13 @@ public class Order {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public Invoice getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
     }
 }

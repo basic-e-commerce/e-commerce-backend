@@ -9,6 +9,7 @@ import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.payment.PaymentRepository;
+import com.example.ecommercebackend.service.invoice.InvoiceService;
 import com.example.ecommercebackend.service.mail.MailService;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import com.example.ecommercebackend.service.product.products.SellService;
@@ -28,12 +29,14 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final SellService sellService;
     private final MailService mailService;
+    private final InvoiceService invoiceService;
 
-    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MailService mailService) {
+    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MailService mailService, InvoiceService invoiceService) {
         this.orderService = orderService;
         this.paymentRepository = paymentRepository;
         this.sellService = sellService;
         this.mailService = mailService;
+        this.invoiceService = invoiceService;
     }
 
     public String processCreditCardPayment(PaymentCreditCardRequestDto paymentCreditCardRequestDto, HttpServletRequest httpServletRequest) {
@@ -140,6 +143,7 @@ public class PaymentService {
             orderService.updateOrderStatus(orderStatus);
 
             System.out.println("save order"+order.getFirstName());
+
 
             // create save
             order.getOrderItems().forEach(sellService::save);
