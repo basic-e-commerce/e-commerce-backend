@@ -76,6 +76,9 @@ public class ProductService {
         if (productCreateDto.getQuantity() < 0)
             throw new BadRequestException("Quantity cannot be less than 0");
 
+        if (productCreateDto.getTaxRate().compareTo(BigDecimal.valueOf(100)) > 0 || productCreateDto.getTaxRate().compareTo(BigDecimal.ZERO) < 0)
+            throw new BadRequestException("Tax rate must be between 0 and 100");
+
         if (productRepository.existsByProductNameEqualsIgnoreCase(productCreateDto.getName()))
             throw new ResourceAlreadyExistException("Product name already exists");
 

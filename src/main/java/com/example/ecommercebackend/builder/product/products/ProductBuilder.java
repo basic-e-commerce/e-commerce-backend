@@ -34,6 +34,7 @@ public class ProductBuilder {
                 productCreateDto.getDescription(),
                 productType,
                 productCreateDto.getPublished(),
+                productCreateDto.getTaxRate(),
                 productCreateDto.getDisableOutOfStock()
         );
     }

@@ -68,6 +68,9 @@ public class Product {
     @OneToMany
     private List<ProductImage> productImages = new ArrayList<>();
 
+    @Column(name = "tax_rate", columnDefinition = "NUMERIC DEFAULT 0.0" ,nullable = false)
+    private BigDecimal taxRate;
+
     @Column(name = "disable_out_of_stock", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean disableOutOfStock;
 
@@ -122,7 +125,7 @@ public class Product {
         this.updatedAt = Instant.now();
     }
 
-    public Product(String productName,String productLinkName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription,Set<Category> categories, String productDescription, ProductType productType, Boolean published, Boolean disableOutOfStock) {
+    public Product(String productName,String productLinkName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription,Set<Category> categories, String productDescription, ProductType productType, Boolean published,BigDecimal taxRate, Boolean disableOutOfStock) {
         this.productName = productName;
         this.productLinkName= productLinkName;
         this.salePrice = salePrice;
@@ -132,6 +135,7 @@ public class Product {
         this.shortDescription = shortDescription;
         this.productDescription = productDescription;
         this.categories = categories;
+        this.taxRate=taxRate;
         this.productType = productType;
         this.published = published;
         this.disableOutOfStock = disableOutOfStock;
@@ -322,5 +326,13 @@ public class Product {
 
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public BigDecimal getTaxRate() {
+        return taxRate;
+    }
+
+    public void setTaxRate(BigDecimal taxRate) {
+        this.taxRate = taxRate;
     }
 }
