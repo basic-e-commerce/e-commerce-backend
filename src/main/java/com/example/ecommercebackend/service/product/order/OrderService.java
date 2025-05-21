@@ -78,7 +78,7 @@ public class OrderService {
 
 
     @Transactional
-    public OrderResponseDto createOrder(@NotNullParam OrderCreateDto orderCreateDto) {
+    public Order createOrder(@NotNullParam OrderCreateDto orderCreateDto) {
         // Authentication nesnesini güvenlik bağlamından alıyoruz
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
@@ -96,8 +96,7 @@ public class OrderService {
             Invoice invoice = getInvoice(totalPrice,totalTax,orderCreateDto);
             Invoice saveInvoicce = invoiceService.save(invoice);
             Order order = saveOrder(customer, orderCreateDto.getInvoiceAddress(), savedOrderItems, orderStatus, totalPrice, orderPrice,saveInvoicce);
-
-            return orderBuilder.orderToOrderResponseDto(order);
+            return orderRepository.save(order);
         }
 
         if (authentication instanceof AnonymousAuthenticationToken) {
@@ -118,7 +117,8 @@ public class OrderService {
                 BigDecimal totalTax = calculateTax(savedOrderItems);
                 Invoice invoice = getInvoice(totalPrice,totalTax,orderCreateDto);
                 Invoice saveInvoicce = invoiceService.save(invoice);
-                return orderBuilder.orderToOrderResponseDto(saveOrder(customer,orderCreateDto.getAddress(),savedOrderItems,orderStatus,totalPrice,orderPrice,saveInvoicce));
+                Order order = saveOrder(customer, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalPrice, orderPrice, saveInvoicce);
+                return orderRepository.save(order);
 
             }else {
                 Guest guest = guestService.findByUsernameOrNull(orderCreateDto.getAddress().username());
@@ -137,7 +137,8 @@ public class OrderService {
                 BigDecimal totalTax = calculateTax(savedOrderItems);
                 Invoice invoice = getInvoice(totalPrice,totalTax,orderCreateDto);
                 Invoice saveInvoicce = invoiceService.save(invoice);
-                return orderBuilder.orderToOrderResponseDto(saveOrder(guest,orderCreateDto.getAddress(),savedOrderItems,orderStatus,totalPrice,orderPrice,saveInvoicce));
+                Order order = saveOrder(guest, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalPrice, orderPrice, saveInvoicce);
+                return orderRepository.save(order);
             }
         }else
             throw new BadRequestException("Geçersiz Kullanıcı");

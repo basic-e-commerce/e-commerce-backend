@@ -27,7 +27,7 @@ jobs:
           username: root
           key: ${{ secrets.ECOMMERCESECRET }}
           script: |
-            cd /home/ubuntu/projects/ecommerce/e-commerce-backend
+            cd /home/projects/ecommerce/e-commerce-backend
             sudo systemctl stop ecommerce || true
             rm -rf target/
             git pull

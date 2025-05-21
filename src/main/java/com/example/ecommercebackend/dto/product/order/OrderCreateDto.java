@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.dto.product.order;
 
 import com.example.ecommercebackend.anotation.NotNullField;
+import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
 import com.example.ecommercebackend.dto.product.invoice.CorporateInvoiceCreateDto;
 import com.example.ecommercebackend.dto.user.address.AddressOrderCreateDto;
 
@@ -19,13 +20,17 @@ public class OrderCreateDto {
     @NotNullField
     private List<OrderItemCreateDto> orderItemCreateDtos;
 
-    public OrderCreateDto(AddressOrderCreateDto address, Boolean diffAddress, AddressOrderCreateDto invoiceAddress, String invoiceType, CorporateInvoiceCreateDto corporateInvoice, List<OrderItemCreateDto> orderItemCreateDtos) {
+    @NotNullField
+    PaymentCreditCardRequestDto paymentCreditCardRequestDto;
+
+    public OrderCreateDto(AddressOrderCreateDto address, Boolean diffAddress, AddressOrderCreateDto invoiceAddress, String invoiceType, CorporateInvoiceCreateDto corporateInvoice, List<OrderItemCreateDto> orderItemCreateDtos, PaymentCreditCardRequestDto paymentCreditCardRequestDto) {
         this.address = address;
         this.diffAddress = diffAddress;
         this.invoiceAddress = invoiceAddress;
         this.invoiceType = invoiceType;
         this.corporateInvoice = corporateInvoice;
         this.orderItemCreateDtos = orderItemCreateDtos;
+        this.paymentCreditCardRequestDto = paymentCreditCardRequestDto;
     }
 
     public AddressOrderCreateDto getAddress() {
@@ -74,5 +79,13 @@ public class OrderCreateDto {
 
     public void setOrderItemCreateDtos(List<OrderItemCreateDto> orderItemCreateDtos) {
         this.orderItemCreateDtos = orderItemCreateDtos;
+    }
+
+    public PaymentCreditCardRequestDto getPaymentCreditCardRequestDto() {
+        return paymentCreditCardRequestDto;
+    }
+
+    public void setPaymentCreditCardRequestDto(PaymentCreditCardRequestDto paymentCreditCardRequestDto) {
+        this.paymentCreditCardRequestDto = paymentCreditCardRequestDto;
     }
 }

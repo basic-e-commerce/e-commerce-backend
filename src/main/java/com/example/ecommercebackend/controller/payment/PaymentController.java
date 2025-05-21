@@ -2,6 +2,7 @@ package com.example.ecommercebackend.controller.payment;
 
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.response.InstallmentInfoDto;
+import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
 import com.example.ecommercebackend.service.payment.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,9 +24,9 @@ public class PaymentController {
     }
 
     @PostMapping
-    public ResponseEntity<String> processCreditCardPayment(@RequestBody PaymentCreditCardRequestDto paymentCreditCardRequestDto,
+    public ResponseEntity<String> processCreditCardPayment(@RequestBody OrderCreateDto orderCreateDto,
                                                            HttpServletRequest httpServletRequest) {
-        return new ResponseEntity<>(paymentService.processCreditCardPayment(paymentCreditCardRequestDto,httpServletRequest), HttpStatus.OK);
+        return new ResponseEntity<>(paymentService.processCreditCardPayment(orderCreateDto,httpServletRequest), HttpStatus.OK);
     }
 
 

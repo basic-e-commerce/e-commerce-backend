@@ -24,10 +24,12 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+    /*
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderCreateDto orderCreateDto) {
         return new ResponseEntity<>(orderService.createOrder(orderCreateDto), HttpStatus.CREATED);
     }
+*/
 
     @PostMapping("/filter")
     public ResponseEntity<List<OrderDetailDto>> filter(@RequestBody OrderFilterRequest orderFilterRequest,

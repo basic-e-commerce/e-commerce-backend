@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.payment;
 
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.response.*;
+import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
@@ -39,8 +40,8 @@ public class PaymentService {
         this.invoiceService = invoiceService;
     }
 
-    public String processCreditCardPayment(PaymentCreditCardRequestDto paymentCreditCardRequestDto, HttpServletRequest httpServletRequest) {
-        Order order = orderService.findByOrderCode(paymentCreditCardRequestDto.getOrderCode());
+    public String processCreditCardPayment(OrderCreateDto orderCreateDto, HttpServletRequest httpServletRequest) {
+        Order order = orderService.createOrder(orderCreateDto);
 
         System.out.println(order.getPayments().size() + "    order.getPayments().size()");
         if (order.getPayments() != null){
@@ -64,23 +65,23 @@ public class PaymentService {
                 order.getCountry(),
                 order.getCity(),
                 order.getPostalCode(),
-                paymentCreditCardRequestDto.getCreditCardRequestDto().getCardHolderName(),
+                orderCreateDto.getPaymentCreditCardRequestDto().getCreditCardRequestDto().getCardHolderName(),
                 conversationId,
                 "İslem Baslatılıyor",
                 BigDecimal.ONE,
-                paymentCreditCardRequestDto.getInstallmentNumber(),
+                orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber(),
                 order
         );
         Payment savePayment = paymentRepository.save(payment);
         order.getPayments().add(savePayment);
 
-        PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod(paymentCreditCardRequestDto.getPaymentMethod());
+        PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod(orderCreateDto.getPaymentCreditCardRequestDto().getPaymentMethod());
         BigDecimal totalPrice = order.getTotalPrice();
-        String binNumber = paymentCreditCardRequestDto.getCreditCardRequestDto().getCardNumber().substring(0, 6);
+        String binNumber = orderCreateDto.getPaymentCreditCardRequestDto().getCreditCardRequestDto().getCardNumber().substring(0, 6);
 
-        if (paymentCreditCardRequestDto.getInstallmentNumber() > 1){
+        if (orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber() > 1){
             InstallmentInfoDto bin = getBin(binNumber, totalPrice);
-            InstallmentPriceDto installmentPrice = getInstallmentPrice(binNumber, bin, paymentCreditCardRequestDto.getInstallmentNumber());
+            InstallmentPriceDto installmentPrice = getInstallmentPrice(binNumber, bin, orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber());
             totalPrice = installmentPrice.getTotalPrice();
             order.setTotalPrice(totalPrice);
             orderService.save(order);
@@ -92,7 +93,7 @@ public class PaymentService {
         System.out.println("------------------ finalTotal price: "+finalTotalPrice);
         System.out.println(19);
         Future<ProcessCreditCardDto> future = executor.submit(() ->
-                paymentStrategy.processCreditCardPayment(order, paymentCreditCardRequestDto, conversationId,httpServletRequest)
+                paymentStrategy.processCreditCardPayment(order, orderCreateDto.getPaymentCreditCardRequestDto(), conversationId,httpServletRequest)
         );
 
         try {
