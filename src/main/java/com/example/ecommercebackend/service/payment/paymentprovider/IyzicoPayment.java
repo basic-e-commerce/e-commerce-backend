@@ -197,7 +197,7 @@ public class IyzicoPayment implements PaymentStrategy {
         request.setBasketId(order.getOrderCode());
         request.setPaymentChannel(PaymentChannel.WEB.name());
         request.setPaymentGroup(PaymentGroup.PRODUCT.name());
-        request.setCallbackUrl("http://localhost:8083/api/v1/payment/payCallBack");
+        request.setCallbackUrl("https://litysofttest1.site/api/v1/payment/payCallBack");
         return request;
     }
 
