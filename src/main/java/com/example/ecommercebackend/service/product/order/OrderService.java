@@ -210,7 +210,7 @@ public class OrderService {
 
 
     public Order saveOrder(User user, AddressOrderCreateDto addressOrderCreateDto, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal orderPrice,Invoice invoice) {
-        return new Order(user,
+        Order order = new Order(user,
                 null,
                 addressOrderCreateDto.firstName(),
                 addressOrderCreateDto.lastName(),
@@ -225,6 +225,8 @@ public class OrderService {
                 totalPrice,
                 orderPrice,
                 invoice);
+        order.setPayments(new HashSet<>());
+        return order;
 
     }
 
