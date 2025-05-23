@@ -25,6 +25,7 @@ public class ProductController {
         this.productService = productService;
     }
 
+
     @GetMapping("/test")
     public String test(){
         return "test";
