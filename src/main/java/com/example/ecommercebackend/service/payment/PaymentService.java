@@ -43,7 +43,6 @@ public class PaymentService {
     public String processCreditCardPayment(OrderCreateDto orderCreateDto, HttpServletRequest httpServletRequest) {
         Order order = orderService.createOrder(orderCreateDto);
 
-        System.out.println(order.getPayments().size() + "    order.getPayments().size()");
         if (order.getPayments() != null){
             System.out.println("------------------------------");
             System.out.println(order.getPayments().stream().map(payment -> payment.getPaymentStatus().name()));
