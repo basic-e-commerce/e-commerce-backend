@@ -32,7 +32,7 @@ logging:
 
 upload:
   file:
-    dir: /var/www/upload/ecommerce/
+    dir: /var/www/html/projects/ecommerce/images/
     url: https://litysofttest1.site/api/v1/upload/
     product:
       size: 10485760
