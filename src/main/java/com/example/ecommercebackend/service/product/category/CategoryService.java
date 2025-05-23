@@ -9,6 +9,7 @@ import com.example.ecommercebackend.dto.product.category.CategoryDetailDto;
 import com.example.ecommercebackend.dto.product.category.CategoryUpdateDto;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.product.category.Category;
+import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
@@ -17,6 +18,10 @@ import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.product.category.CategoryRepository;
 import com.example.ecommercebackend.service.file.CategoryImageService;
 import com.example.ecommercebackend.service.file.CoverImageService;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -46,7 +51,7 @@ public class CategoryService {
             throw new BadRequestException("Category name is required.");
         }
 
-        if (categoryRepository.existsByCategoryNameEqualsIgnoreCase(categoryCreateDto.getName())){
+        if (findByCategoryNameEqualIgnore(categoryCreateDto.getName()) != null){
             throw new ResourceAlreadyExistException("Category "+ExceptionMessage.ALREADY_EXISTS.getMessage());
         }
 
@@ -87,6 +92,9 @@ public class CategoryService {
 
     public Category findCategoryById(int id) {
         return categoryRepository.findById(id).orElseThrow(()-> new NotFoundException("Category " +ExceptionMessage.NOT_FOUND.getMessage()));
+    }
+    public Category findByCategoryNameEqualIgnore(String name){
+        return categoryRepository.findOne(Specification.where(hasNameEqualIgnoreCase(name))).orElse(null);
     }
 
     public CategoryDetailDto deleteCategory(@NotNullParam Integer id) {
@@ -171,6 +179,12 @@ public class CategoryService {
 
     public boolean findCategoryByLinkName(String linkName) {
         return categoryRepository.existsByCategoryLinkName(linkName);
+    }
+
+    public Specification<Category> hasNameEqualIgnoreCase(String name) {
+        return (Root<Category> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                name == null ? null :
+                        cb.equal(cb.lower(root.get("categoryName")), name.toLowerCase());
     }
 
 
