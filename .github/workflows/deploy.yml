@@ -23,7 +23,7 @@ jobs:
       - name: Setup SSH Key for Server
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 89.213.248.57
+          host: 185.240.104.6
           username: root
           key: ${{ secrets.ECOMMERCESECRET }}
           script: |

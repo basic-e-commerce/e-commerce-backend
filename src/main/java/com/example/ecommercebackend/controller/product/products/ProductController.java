@@ -25,6 +25,11 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @GetMapping("/test")
+    public String test(){
+        return "test";
+    }
+
     @PostMapping("/simple")
     public ResponseEntity<ProductAdminDetailDto> createSimpleProduct(@ModelAttribute ProductCreateDto productCreateDto) {
         return new ResponseEntity<>(productService.createSimpleProduct(productCreateDto), HttpStatus.CREATED);
