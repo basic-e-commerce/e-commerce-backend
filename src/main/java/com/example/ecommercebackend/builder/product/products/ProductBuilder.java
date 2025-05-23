@@ -98,7 +98,8 @@ public class ProductBuilder {
                 product.getComparePrice(),
                 coverImage,
                 productImages,
-                product.getQuantity()/2
+                product.getQuantity()/2,
+                product.getTaxRate()
         );
     }
 
@@ -152,7 +153,8 @@ public class ProductBuilder {
                 product.getTags().stream().map(tag->{
                     return new TagDetailDto(tag.getId(), tag.getTagName());
                 }).collect(Collectors.toSet()),
-                product.isDeleted()
+                product.isDeleted(),
+                product.getTaxRate()
                 );
     }
 

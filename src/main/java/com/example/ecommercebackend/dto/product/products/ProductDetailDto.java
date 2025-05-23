@@ -16,8 +16,9 @@ public class ProductDetailDto {
     private ImageDetailDto coverImage;
     private List<ImageDetailDto> productImage;
     private int quantity;
+    private BigDecimal taxRate;
 
-    public ProductDetailDto(int id, String name, String linkName, String shortDescription, String description, BigDecimal salePrice, BigDecimal comparePrice, ImageDetailDto coverImage, List<ImageDetailDto> productImage, int quantity) {
+    public ProductDetailDto(int id, String name, String linkName, String shortDescription, String description, BigDecimal salePrice, BigDecimal comparePrice, ImageDetailDto coverImage, List<ImageDetailDto> productImage, int quantity, BigDecimal taxRate) {
         this.id = id;
         this.name = name;
         this.linkName = linkName;
@@ -28,6 +29,7 @@ public class ProductDetailDto {
         this.coverImage = coverImage;
         this.productImage = productImage;
         this.quantity = quantity;
+        this.taxRate = taxRate;
     }
 
     public int getId() {
@@ -108,5 +110,13 @@ public class ProductDetailDto {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public BigDecimal getTaxRate() {
+        return taxRate;
+    }
+
+    public void setTaxRate(BigDecimal taxRate) {
+        this.taxRate = taxRate;
     }
 }

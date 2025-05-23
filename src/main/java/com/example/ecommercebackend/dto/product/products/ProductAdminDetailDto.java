@@ -26,8 +26,9 @@ public class ProductAdminDetailDto {
     private Set<SupplierDetailDto> supplier;
     private Set<TagDetailDto> tag;
     private Boolean isDeleted;
+    private BigDecimal taxRate;
 
-    public ProductAdminDetailDto(int id, String name, String linkName, String shortDescription, String description, BigDecimal buyingPrice, BigDecimal salePrice, BigDecimal comparePrice, ImageDetailDto coverImage, List<ImageDetailDto> productImage, int quantity, Set<SupplierDetailDto> supplier, Set<TagDetailDto> tag, Boolean isDeleted) {
+    public ProductAdminDetailDto(int id, String name, String linkName, String shortDescription, String description, BigDecimal buyingPrice, BigDecimal salePrice, BigDecimal comparePrice, ImageDetailDto coverImage, List<ImageDetailDto> productImage, int quantity, Set<SupplierDetailDto> supplier, Set<TagDetailDto> tag, Boolean isDeleted, BigDecimal taxRate) {
         this.id = id;
         this.name = name;
         this.linkName = linkName;
@@ -42,6 +43,7 @@ public class ProductAdminDetailDto {
         this.supplier = supplier;
         this.tag = tag;
         this.isDeleted = isDeleted;
+        this.taxRate = taxRate;
     }
 
     public int getId() {
@@ -154,5 +156,13 @@ public class ProductAdminDetailDto {
 
     public void setDeleted(Boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public BigDecimal getTaxRate() {
+        return taxRate;
+    }
+
+    public void setTaxRate(BigDecimal taxRate) {
+        this.taxRate = taxRate;
     }
 }
