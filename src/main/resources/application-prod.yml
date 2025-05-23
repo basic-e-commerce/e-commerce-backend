@@ -33,7 +33,7 @@ logging:
 upload:
   file:
     dir: /var/www/upload/ecommerce/
-    url: https://litysofttest.site/api/v1/upload/
+    url: https://litysofttest1.site/api/v1/upload/
     product:
       size: 10485760
 
@@ -62,7 +62,7 @@ payment:
     callBack: /api/v1/payment/payCallBack
 
 domain:
-  test: https://litysofttest.site
+  test: https://litysofttest1.site
 
 server:
   port: 8083
