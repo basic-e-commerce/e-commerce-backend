@@ -9,16 +9,11 @@ INSERT INTO roles (id,role_name) VALUES (2,'CUSTOMER');
 INSERT INTO roles (id,role_name) VALUES (3,'GUEST');
 SELECT setval('role_seq', (SELECT MAX(id) FROM roles));
 
-
 INSERT INTO admins (id,first_name, last_name, phone_number, username, password, enabled, account_non_locked, created_at, updated_at) VALUES (1,'admin', 'admin', '5551234567', 'admin@gmail.com', '{bcrypt}$2a$10$UQBrvOiT/MP9Ywa/mM1J6.uzK4q1IayeuI6Gdthiij2nThiGrqJJi', TRUE, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO customer (id,first_name, last_name, phone_number, username, password, enabled, account_non_locked, created_at, updated_at) VALUES (2,'customer', 'customer', '5551234568', 'customer@gmail.com', '{bcrypt}$2a$10$/THi9PwabnkH/wEOq6PttuW6Jxg7PUO2CDiB.lXevXwCng8NOAINi', TRUE, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 SELECT setval('user_seq', (SELECT MAX(id) FROM admins));
 
 INSERT INTO user_roles (role_id,user_id) VALUES (1,1);
-
-INSERT INTO categories (id,category_name,category_link_name,category_description,cover_image_id,created_at,updated_at,created_by,updated_by,parent_id,is_sub_category) VALUES (1,'Kadın','Kadın','acıklama',null,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1,null,true);
-INSERT INTO categories (id,category_name,category_link_name,category_description,cover_image_id,created_at,updated_at,created_by,updated_by,parent_id,is_sub_category) VALUES (2,'Erkek','Erkek','acıklama',null,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,1,null,true);
-SELECT setval('category_seq', (SELECT MAX(id) FROM categories));
 
 INSERT INTO cards(id,customer_id) VALUES (1,2);
 SELECT setval('card_seq', (SELECT MAX(id) FROM cards));
