@@ -10,6 +10,13 @@ spring:
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: HikariPool
+      maximum-pool-size: 20        # Aynı anda en fazla 20 aktif bağlantı
+      minimum-idle: 5              # Her zaman 5 hazır bağlantı beklesin
+      idle-timeout: 30000          # 30 saniye boşta kalan bağlantı kapansın
+      max-lifetime: 600000         # 10 dakika sonra bağlantı yenilensin
+      connection-timeout: 30000    # 30 saniyeden uzun sürede cevap alınmazsa hata ver
 
   # JPA Hibernate Configuration
   jpa:
@@ -69,3 +76,13 @@ server:
   port: 8083
 mail:
   from: fatihgs133@gmail.com
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /api/actuator
+  endpoint:
+    health:
+      show-details: "always"
