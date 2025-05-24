@@ -41,7 +41,7 @@ logging:
 
 upload:
   file:
-    dir: /var/www/upload/ecommerce/
+    dir: /var/www/html/projects/ecommerce/images/
     url: http://localhost:8083/api/v1/upload/
     product:
       size: 10485760
@@ -84,6 +84,4 @@ management:
       exposure:
         include: "*"
       base-path: /api/actuator
-  endpoint:
-    health:
-      show-details: "always"
+

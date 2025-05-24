@@ -14,7 +14,7 @@ public class WebHandler implements WebMvcConfigurer {
         // /upload/** yolunu /var/www/uploads/ dizinine yönlendir
         System.out.println("addResourceHandlers");
         registry.addResourceHandler("/api/v1/upload/**")
-                .addResourceLocations("file:/var/www/html/projects/ecommerce/images/")
+                .addResourceLocations("file:"+uploadFileDir)
                 .setCachePeriod(3600)
                 .resourceChain(true);
     }
