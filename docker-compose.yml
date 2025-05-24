@@ -10,6 +10,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database-e-commerce:5432/ecommercebackend
+      - REDIS_HOST=redis-e-commerce
+      - REDIS_PORT=6379
     ports:
       - "8083:8083"
     volumes:
@@ -43,6 +45,8 @@ services:
       - "6379:6379"
     networks:
       - mynetwork
+
+
 
 #
 #  prometheus:

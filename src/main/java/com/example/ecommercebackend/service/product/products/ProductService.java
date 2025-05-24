@@ -180,6 +180,7 @@ public class ProductService {
 
         product.getCategories().removeAll(categoriesToRemove);
         product.getCategories().addAll(categoriesToAdd);
+
         product.setSalePrice(productUpdateDto.getSalePrice());
         product.setComparePrice(productUpdateDto.getComparePrice());
         product.setBuyingPrice(productUpdateDto.getBuyingPrice());
