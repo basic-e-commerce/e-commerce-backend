@@ -118,118 +118,97 @@ public class ProductService {
 
 
     public ProductAdminDetailDto updateSimpleProduct(@NotNullParam Integer productId,@NotNullParam ProductUpdateDto productUpdateDto){
+        System.out.println(1);
 
         if (productUpdateDto.getName() == null || productUpdateDto.getName().isEmpty())
             throw new BadRequestException("Product name cannot be empty");
+        System.out.println(2);
 
         if (productUpdateDto.getShortDescription() == null || productUpdateDto.getShortDescription().length() > 165)
             throw new BadRequestException("ShortDescription cannot be longer than 165 characters");
-
+        System.out.println(3);
         if (productUpdateDto.getDescription() == null || productUpdateDto.getDescription().isEmpty())
             throw new BadRequestException("Product description cannot be empty");
-
+        System.out.println(4);
         if ((productUpdateDto.getComparePrice() == null)
                 || (productUpdateDto.getComparePrice().doubleValue() < 0)
                 || productUpdateDto.getComparePrice().compareTo(productUpdateDto.getSalePrice()) > 0){
             throw new BadRequestException("ComparePrice cannot be greater than SalePrice");
         }
+        System.out.println(5);
 
         if (productUpdateDto.getQuantity() < 0)
             throw new BadRequestException("Quantity cannot be less than 0");
+        System.out.println(6);
+        if (productUpdateDto.getTaxRate().compareTo(BigDecimal.valueOf(100)) > 0 || productUpdateDto.getTaxRate().compareTo(BigDecimal.ZERO) < 0)
+            throw new BadRequestException("Tax rate must be between 0 and 100");
+        System.out.println(7);
+        if (productRepository.existsByProductNameEqualsIgnoreCase(productUpdateDto.getName()))
+            throw new ResourceAlreadyExistException("Product name already exists");
 
+        System.out.println(8);
 
         Product product = findProductById(productId);
-
-        boolean isUpdated = false;  // Değişiklik olup olmadığını kontrol eden flag
-
+        System.out.println(9);
         // Mevcut kategorileri al
         Set<Integer> existCategoryIds = product.getCategories().stream().map(Category::getId).collect(Collectors.toSet());
         Set<Category> existCategory = new HashSet<>(product.getCategories());
-
+        System.out.println(10);
         // Yeni gelen kategori ID'lerini al
         Set<Integer> newCategoryIds = new HashSet<>(productUpdateDto.getCategoryIds());
-
+        System.out.println(11);
         // Yeni eklenmesi gereken kategorileri bul
         Set<Category> categoriesToAdd = new HashSet<>();
         for (Integer categoryId : newCategoryIds) {
+            System.out.println(12);
             if (!existCategoryIds.contains(categoryId)){
                 Category category = categoryService.findCategoryById(categoryId);
                 if (category.isSubCategory()){
                     categoriesToAdd.add(category);
-                    isUpdated = true; // Kategori değişti
                 } else {
                     throw new BadRequestException("Category is not a sub category");
                 }
             }
         }
-
+        System.out.println(13);
         // Çıkarılması gereken kategorileri bul
         Set<Category> categoriesToRemove = existCategory.stream()
                 .filter(c -> !newCategoryIds.contains(c.getId()))
                 .collect(Collectors.toSet());
 
-        if (!categoriesToRemove.isEmpty() || !categoriesToAdd.isEmpty()) {
-            product.getCategories().removeAll(categoriesToRemove);
-            product.getCategories().addAll(categoriesToAdd);
-            isUpdated = true;
-        }
+        System.out.println(14);
+        product.getCategories().removeAll(categoriesToRemove);
+        System.out.println(15);
+        product.getCategories().addAll(categoriesToAdd);
+        System.out.println(16);
+        product.setProductName(productUpdateDto.getName());
+        System.out.println(17);
+        product.setProductLinkName(generateLinkName(product.getProductName()));
+        System.out.println(18);
+        product.setSalePrice(productUpdateDto.getSalePrice());
+        System.out.println(19);
+        product.setComparePrice(productUpdateDto.getComparePrice());
+        System.out.println(20);
+        product.setBuyingPrice(productUpdateDto.getBuyingPrice());
+        System.out.println(21);
+        product.setQuantity(productUpdateDto.getQuantity());
+        System.out.println(22);
+        product.setShortDescription(productUpdateDto.getShortDescription());
+        System.out.println(23);
+        product.setProductDescription(productUpdateDto.getDescription());
+        System.out.println(24);
+        ProductType productType = ProductType.valueOf(productUpdateDto.getProductType());
+        System.out.println(25);
+        product.setProductType(productType);
+        System.out.println(26);
+        product.setPublished(productUpdateDto.getPublished());
+        System.out.println(27);
+        product.setDisableOutOfStock(productUpdateDto.getDisableOutOfStock());
+        System.out.println(28);
+        product.setTaxRate(productUpdateDto.getTaxRate());
+        System.out.println(29);
 
-        if (!Objects.equals(product.getProductName(), productUpdateDto.getName())) {
-            product.setProductName(productUpdateDto.getName());
-            product.setProductLinkName(generateLinkName(product.getProductName()));
-            isUpdated = true;
-        }
-
-        if (!Objects.equals(product.getSalePrice(), productUpdateDto.getSalePrice())) {
-            product.setSalePrice(productUpdateDto.getSalePrice());
-            isUpdated = true;
-        }
-
-        if (!Objects.equals(product.getComparePrice(), productUpdateDto.getComparePrice())) {
-            product.setComparePrice(productUpdateDto.getComparePrice());
-            isUpdated = true;
-        }
-
-        if (!Objects.equals(product.getBuyingPrice(), productUpdateDto.getBuyingPrice())) {
-            product.setBuyingPrice(productUpdateDto.getBuyingPrice());
-            isUpdated = true;
-        }
-
-        if (!Objects.equals(product.getQuantity(), productUpdateDto.getQuantity())) {
-            product.setQuantity(productUpdateDto.getQuantity());
-            isUpdated = true;
-        }
-
-        if (!Objects.equals(product.getShortDescription(), productUpdateDto.getShortDescription())) {
-            product.setShortDescription(productUpdateDto.getShortDescription());
-            isUpdated = true;
-        }
-
-        if (!Objects.equals(product.getProductDescription(), productUpdateDto.getDescription())) {
-            product.setProductDescription(productUpdateDto.getDescription());
-            isUpdated = true;
-        }
-
-        if (!Objects.equals(product.getProductType().name(), productUpdateDto.getProductType())) {
-            ProductType productType = ProductType.valueOf(productUpdateDto.getProductType());
-            product.setProductType(productType);
-            isUpdated = true;
-        }
-
-        if (!Objects.equals(product.getPublished(), productUpdateDto.getPublished())) {
-            product.setPublished(productUpdateDto.getPublished());
-            isUpdated = true;
-        }
-
-        if (!Objects.equals(product.getDisableOutOfStock(), productUpdateDto.getDisableOutOfStock())) {
-            product.setDisableOutOfStock(productUpdateDto.getDisableOutOfStock());
-            isUpdated = true;
-        }
-
-        if (!isUpdated) {
-            return productBuilder.productToProductAdmindetailDto(product); // Değişiklik yoksa, gereksiz `save` çağrısı yapma
-        }
-        return productBuilder.productToProductAdmindetailDto(productRepository.save(product));
+        return productBuilder.productToProductAdmindetailDto(productRepository.save(product)); // Değişiklik yoksa, gereksiz `save` çağrısı yapma
 
     }
 
@@ -344,13 +323,13 @@ public class ProductService {
 
     }
 
-    public ProductAttribute createProductAttribute(Integer productId,Integer attributeId) {
-        Attribute attribute = attributeService.findAttributeById(attributeId);
-        Product product = findProductById(productId);
-
-        ProductAttribute productAttribute = new ProductAttribute(product,attribute);
-        return productAttributeRepository.save(productAttribute);
-    }
+//    public ProductAttribute createProductAttribute(Integer productId,Integer attributeId) {
+//        Attribute attribute = attributeService.findAttributeById(attributeId);
+//        Product product = findProductById(productId);
+//
+//        ProductAttribute productAttribute = new ProductAttribute(product,attribute);
+//        return productAttributeRepository.save(productAttribute);
+//    }
 
     // ------------- list product ------------------
 
@@ -406,6 +385,14 @@ public class ProductService {
                 .and(hasProductType(ProductType.SIMPLE))
                 .and(isPublished(true))
                 .and(isDeleted(false));
+    }
+
+    public Product findByLinkName(String linkName){
+        return productRepository.findOne(findByLinkNameSpecification(linkName)).orElse(null);
+    }
+
+    public Specification<Product> findByLinkNameSpecification(String linkName){
+        return Specification.where(hasLinkName(linkName));
     }
 
     public Product findProductByLinkName(String linkName) {
@@ -491,8 +478,10 @@ public class ProductService {
         int counter = 1;
 
         // Zaten linkName kontrolünü yapan metodunu kullanalım
-        while (findProductByLinkName(finalLinkName) != null) {
+        while (findByLinkName(finalLinkName) != null) {
+            System.out.println("asd");
             finalLinkName = processedName + "-" + counter;
+            System.out.println("finalLink: "+finalLinkName);
             counter++;
         }
 

@@ -23,10 +23,10 @@ public class Product {
     @SequenceGenerator(name = "product_seq", sequenceName = "product_seq", allocationSize = 1)
     private int id;
 
-    @Column(name = "product_name", nullable = false)
+    @Column(name = "product_name", nullable = false,unique = true)
     private String productName;
 
-    @Column(name = "product_link_name")
+    @Column(name = "product_link_name",unique = true)
     private String productLinkName;
 
     @Column(name = "sale_price", nullable = false, columnDefinition = "NUMERIC DEFAULT 0")
