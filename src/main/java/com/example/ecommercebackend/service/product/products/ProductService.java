@@ -145,10 +145,11 @@ public class ProductService {
         if(!product.getProductName().equals(productUpdateDto.getName())){
             if (productRepository.existsByProductNameEqualsIgnoreCase(productUpdateDto.getName()))
                 throw new ResourceAlreadyExistException("Product name already exists");
+            else{
+                product.setProductName(productUpdateDto.getName());
+                product.setProductLinkName(generateLinkName(product.getProductName()));
+            }
         }
-
-
-
 
 
         // Mevcut kategorileri al
@@ -179,8 +180,6 @@ public class ProductService {
 
         product.getCategories().removeAll(categoriesToRemove);
         product.getCategories().addAll(categoriesToAdd);
-        product.setProductName(productUpdateDto.getName());
-        product.setProductLinkName(generateLinkName(product.getProductName()));
         product.setSalePrice(productUpdateDto.getSalePrice());
         product.setComparePrice(productUpdateDto.getComparePrice());
         product.setBuyingPrice(productUpdateDto.getBuyingPrice());
