@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.controller.product.card;
 
 import com.example.ecommercebackend.dto.product.card.CardProductRequestDto;
+import com.example.ecommercebackend.dto.product.card.CardResponseDetail;
 import com.example.ecommercebackend.dto.product.card.CardResponseDetails;
 import com.example.ecommercebackend.service.product.card.CardItemService;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class CardItemController {
     }
 
     @PostMapping("/by-ids")
-    public ResponseEntity<List<CardResponseDetails>> getDetails(@RequestBody List<CardProductRequestDto> cardProductRequestDtos){
+    public ResponseEntity<CardResponseDetail> getDetails(@RequestBody List<CardProductRequestDto> cardProductRequestDtos){
         return new ResponseEntity<>(cardItemService.getDetails(cardProductRequestDtos), HttpStatus.OK);
     }
 
