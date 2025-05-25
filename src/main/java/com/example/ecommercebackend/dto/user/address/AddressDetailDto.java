@@ -39,11 +39,10 @@ public class AddressDetailDto {
         this.title = title;
     }
 
-    public String getCountry() {
+    public String getCountryName() {
         return countryName;
     }
-
-    public void setCountry(String countryName) {
+    public void setCountryName(String countryName) {
         this.countryName = countryName;
     }
 
