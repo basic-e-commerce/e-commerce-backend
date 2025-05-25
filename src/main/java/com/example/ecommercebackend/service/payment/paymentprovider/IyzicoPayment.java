@@ -19,6 +19,7 @@ import com.iyzipay.model.Currency;
 import com.iyzipay.model.Locale;
 import com.iyzipay.request.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -41,6 +42,7 @@ public class IyzicoPayment implements PaymentStrategy {
     @Value("${payment.iyzico.baseUrl}")
     private String apiUrl = "https://sandbox-api.iyzipay.com";
 
+    @Transactional
     @Retryable(
             value = {IOException.class, TimeoutException.class},
             maxAttempts = 3,
