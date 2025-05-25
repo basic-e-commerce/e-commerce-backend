@@ -260,8 +260,10 @@ public class IyzicoPayment implements PaymentStrategy {
     }
 
     private List<BasketItem> getBasketItems(Order order) {
+        System.out.println("basket 1");
         List<BasketItem> basketItems = new ArrayList<>();
         for (OrderItem orderItems : order.getOrderItems()) {
+            System.out.println("basket 2");
             BasketItem basketItem = getBasketItem(orderItems);
             basketItems.add(basketItem);
         }
@@ -269,20 +271,20 @@ public class IyzicoPayment implements PaymentStrategy {
     }
 
     private BasketItem getBasketItem(OrderItem orderItem) {
-        String categoryName = "";
-        if (orderItem.getProduct().getCategories() != null) {
-            for (Category category : orderItem.getProduct().getCategories()) {
-                if (category.getCategoryName()!=null) {
-                    categoryName = category.getCategoryName();
-                    break;
-                }
-            }
-        }
+        System.out.println("basket 3");
         BasketItem basketItem = new BasketItem();
         basketItem.setId(String.valueOf(orderItem.getId()));
+        System.out.println("basket 4");
+
         basketItem.setName(orderItem.getProduct().getProductName());
-        basketItem.setCategory1(categoryName);
+        System.out.println("basket 5");
+
+        basketItem.setCategory1("categoryName");
+        System.out.println("basket 6");
+
         basketItem.setItemType(BasketItemType.PHYSICAL.name());
+        System.out.println("basket 7");
+
         basketItem.setPrice(orderItem.getPrice());
 
         System.out.println("ürün fiyatları toplamı :    "+BigDecimal.valueOf(orderItem.getQuantity()).multiply(orderItem.getPrice()));
