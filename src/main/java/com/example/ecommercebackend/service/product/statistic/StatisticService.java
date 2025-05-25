@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.service.product.statistic;
 
 import com.example.ecommercebackend.dto.product.sell.ProductSellDto;
+import com.example.ecommercebackend.dto.product.sell.SellDetailDto;
 import com.example.ecommercebackend.dto.product.sell.SellDetailRequestDto;
 import com.example.ecommercebackend.dto.product.statistic.StatisticDetailDto;
 import com.example.ecommercebackend.entity.product.products.Product;

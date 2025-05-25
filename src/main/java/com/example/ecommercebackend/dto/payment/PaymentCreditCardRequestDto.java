@@ -4,14 +4,12 @@ import java.math.BigDecimal;
 
 public class PaymentCreditCardRequestDto {
     private String paymentMethod;
-    private String orderCode;
     private CreditCardRequestDto creditCardRequestDto;
     private Integer installmentNumber;
 
 
-    public PaymentCreditCardRequestDto(String paymentMethod, String orderCode, CreditCardRequestDto creditCardRequestDto, Integer installmentNumber) {
+    public PaymentCreditCardRequestDto(String paymentMethod, CreditCardRequestDto creditCardRequestDto, Integer installmentNumber) {
         this.paymentMethod = paymentMethod;
-        this.orderCode = orderCode;
         this.creditCardRequestDto = creditCardRequestDto;
         this.installmentNumber = installmentNumber;
     }
@@ -24,13 +22,6 @@ public class PaymentCreditCardRequestDto {
         this.paymentMethod = paymentMethod;
     }
 
-    public String getOrderCode() {
-        return orderCode;
-    }
-
-    public void setOrderCode(String orderCode) {
-        this.orderCode = orderCode;
-    }
 
     public CreditCardRequestDto getCreditCardRequestDto() {
         return creditCardRequestDto;
