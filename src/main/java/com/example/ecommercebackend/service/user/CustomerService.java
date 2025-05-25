@@ -257,7 +257,7 @@ public class CustomerService {
             Address address = addressService.createAddress(addressCreateDto);
             customer1.getAddresses().add(address);
             customerRepository.save(customer1);
-            return new AddressDetailDto(address.getId(),address.getTitle(),address.getFirstName(),address.getLastName(),address.getCountry().getName(),address.getCity(),address.getPostalCode(),address.getPhoneNo(),address.getAddressLine1());
+            return new AddressDetailDto(address.getId(),address.getTitle(),address.getFirstName(),address.getLastName(),address.getCountry().getUpperName(),address.getCity(),address.getPostalCode(),address.getPhoneNo(),address.getAddressLine1());
         }else
             throw new BadRequestException("Customer Not Authenticated");
     }
@@ -272,7 +272,7 @@ public class CustomerService {
                 return new AddressDetailDto(x.getId(),
                         x.getTitle(),
                         x.getFirstName(),x.getLastName(),
-                        x.getCountry().getName(),
+                        x.getCountry().getUpperName(),
                         x.getCity(),
                         x.getPostalCode(),
                         x.getPhoneNo(),
@@ -306,7 +306,7 @@ public class CustomerService {
                 customer1.getAddresses().add(targetAddress);
 
             Address updateAddress = addressService.updateAddressById(addressId, addressCreateDto);
-            return new AddressDetailDto(updateAddress.getId(),updateAddress.getTitle(),updateAddress.getFirstName(),updateAddress.getLastName(),updateAddress.getCountry().getName(),updateAddress.getCity(),updateAddress.getPostalCode(),updateAddress.getPhoneNo(),updateAddress.getAddressLine1());
+            return new AddressDetailDto(updateAddress.getId(),updateAddress.getTitle(),updateAddress.getFirstName(),updateAddress.getLastName(),updateAddress.getCountry().getUpperName(),updateAddress.getCity(),updateAddress.getPostalCode(),updateAddress.getPhoneNo(),updateAddress.getAddressLine1());
         }else
             throw new BadRequestException("Customer Not Authenticated");
     }
