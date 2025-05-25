@@ -3,16 +3,20 @@ package com.example.ecommercebackend.dto.user.address;
 public class AddressDetailDto {
     private int id;
     private String title;
-    private String country;
+    private String firstName;
+    private String lastName;
+    private String countryName;
     private String city;
     private String postalCode;
     private String phoneNo;
     private String addressLine1;
 
-    public AddressDetailDto(int id, String title, String country, String city, String postalCode, String phoneNo, String addressLine1) {
+    public AddressDetailDto(int id, String title, String firstName, String lastName, String countryName, String city, String postalCode, String phoneNo, String addressLine1) {
         this.id = id;
         this.title = title;
-        this.country = country;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.countryName = countryName;
         this.city = city;
         this.postalCode = postalCode;
         this.phoneNo = phoneNo;
@@ -36,11 +40,11 @@ public class AddressDetailDto {
     }
 
     public String getCountry() {
-        return country;
+        return countryName;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setCountry(String countryName) {
+        this.countryName = countryName;
     }
 
     public String getCity() {
@@ -73,5 +77,21 @@ public class AddressDetailDto {
 
     public void setAddressLine1(String addressLine1) {
         this.addressLine1 = addressLine1;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }
