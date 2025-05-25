@@ -14,7 +14,7 @@ public class CardBuilder {
         return new CardResponseDto(card.getId(),
                 card.getCustomer().getFirstName()+" "+card.getCustomer().getLastName(),
                 card.getItems().stream().map(x->{
-                    return new CardItemResponseDto(x.getId(),x.getProduct().getProductName(),x.getProduct().getComparePrice(),x.getQuantity());
+                    return new CardItemResponseDto(x.getProduct().getId(),x.getProduct().getProductName(),x.getProduct().getComparePrice(),x.getQuantity());
                 }).toList()
         );
     }
