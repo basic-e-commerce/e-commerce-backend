@@ -21,4 +21,8 @@ public class CountryService {
     public Country findCountryByIso3(String iso3) {
         return countryRepository.findByIso3(iso3).orElseThrow(()-> new NotFoundException("Country "+ ExceptionMessage.NOT_FOUND.getMessage()));
     }
+
+    public Country findCountryByUpperName(String upperName) {
+        return countryRepository.findByUpperName(upperName).orElseThrow(()-> new NotFoundException("Country "+ ExceptionMessage.NOT_FOUND.getMessage()));
+    }
 }

@@ -25,7 +25,7 @@ public class AddressService {
     }
 
     public Address createAddress(AddressCreateDto addressCreateDto) {
-        Country country = countryService.findCountryByIso3(addressCreateDto.getCountryName());
+        Country country = countryService.findCountryByUpperName(addressCreateDto.getCountryName());
         Address address = addressBuilder.addressCreateDtoToAddress(addressCreateDto,country);
         return addressRepository.save(address);
     }
@@ -42,7 +42,7 @@ public class AddressService {
 
     public Address updateAddressById(Integer id, AddressCreateDto addressCreateDto) {
         Address address = findAddressById(id);
-        Country country = countryService.findCountryByIso3(addressCreateDto.getCountryName());
+        Country country = countryService.findCountryByUpperName(addressCreateDto.getCountryName());
 
         boolean isUpdated = false;
 

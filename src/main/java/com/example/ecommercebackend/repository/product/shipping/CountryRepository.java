@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface CountryRepository extends JpaRepository<Country, Integer> {
     Optional<Country> findByIso3(String iso3);
+    Optional<Country> findByUpperName(String upperName);
 }
