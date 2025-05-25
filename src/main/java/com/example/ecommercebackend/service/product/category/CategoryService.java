@@ -93,6 +93,9 @@ public class CategoryService {
     public Category findCategoryById(int id) {
         return categoryRepository.findById(id).orElseThrow(()-> new NotFoundException("Category " +ExceptionMessage.NOT_FOUND.getMessage()));
     }
+    public Category findCategoryByLinkName(String linkName){
+        return categoryRepository.findByCategoryLinkName(linkName).orElseThrow(()-> new NotFoundException("Category " +ExceptionMessage.NOT_FOUND.getMessage()));
+    }
     public Category findByCategoryNameEqualIgnore(String name){
         return categoryRepository.findOne(Specification.where(hasNameEqualIgnoreCase(name))).orElse(null);
     }
@@ -177,7 +180,7 @@ public class CategoryService {
             throw new BadRequestException("Resource Not Found.");
     }
 
-    public boolean findCategoryByLinkName(String linkName) {
+    public boolean existCategoryByLinkName(String linkName) {
         return categoryRepository.existsByCategoryLinkName(linkName);
     }
 
@@ -204,7 +207,7 @@ public class CategoryService {
         int counter = 1;
 
         // Zaten linkName kontrolünü yapan metodunu kullanalım
-        while (findCategoryByLinkName(finalLinkName)) {
+        while (existCategoryByLinkName(finalLinkName)) {
             finalLinkName = processedName + "-" + counter;
             counter++;
         }

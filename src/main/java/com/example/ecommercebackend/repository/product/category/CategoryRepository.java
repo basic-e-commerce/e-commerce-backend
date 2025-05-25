@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<Category, Integer>, JpaSpecificationExecutor<Category> {
     boolean existsByCategoryNameEqualsIgnoreCase(String name);
@@ -23,5 +24,6 @@ public interface CategoryRepository extends JpaRepository<Category, Integer>, Jp
     void updateCategoryId(@Param("oldCategoryId") Integer oldCategoryId, @Param("newCategoryId") Integer newCategoryId);
 
     Boolean existsByCategoryLinkName(String categoryLinkName);
+    Optional<Category> findByCategoryLinkName(String categoryLinkName);
 
 }

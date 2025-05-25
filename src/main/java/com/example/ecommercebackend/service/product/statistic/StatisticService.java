@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.service.product.statistic;
 
 import com.example.ecommercebackend.dto.product.sell.ProductSellDto;
+import com.example.ecommercebackend.dto.product.sell.SellDetailRequestDto;
 import com.example.ecommercebackend.dto.product.statistic.StatisticDetailDto;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.service.product.order.OrderService;
@@ -24,6 +25,10 @@ public class StatisticService {
     }
 
     public StatisticDetailDto filter(){
+        return null;
+    }
+
+    public SellDetailDto getSellDetail(SellDetailRequestDto sellDetailRequestDto){
         return null;
     }
 }

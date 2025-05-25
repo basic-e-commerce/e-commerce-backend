@@ -326,9 +326,6 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public boolean isExistProductById(Integer productId) {
-        return productRepository.existsById(productId);
-    }
 
     public List<ProductAdminDetailDto> filterProductsByCategory(@NotNullParam ProductFilterRequest filterRequest,@NotNullParam Integer page,@NotNullParam Integer size) {
         Sort sort = Sort.unsorted();
@@ -343,12 +340,29 @@ public class ProductService {
         return productRepository.findAll(specification,pageable).stream().map(productBuilder::productToProductAdmindetailDto).collect(Collectors.toList());
     }
 
-    public Set<ProductSmallDto> filterProductsByCategorySmall(@NotNullParam ProductFilterRequest filterRequest,@NotNullParam Integer page,@NotNullParam Integer size) {
+    public Set<ProductSmallDto> filterProductsByCategoryLinkNameSmall(ProductFilterLinkNameRequest filterRequest, Integer page, Integer size) {
         Sort sort = Sort.unsorted();
         if (filterRequest.getSortBy() != null) {
             sort = Sort.by(Sort.Direction.fromString(filterRequest.getSortDirection()), filterRequest.getSortBy());
         }
 
+        Set<Integer> subCategories = null;
+        if (filterRequest.getLinkName() != null) {
+            Category category = categoryService.findCategoryByLinkName(filterRequest.getLinkName());
+            subCategories = categoryService.getLeafCategories(category).stream().map(Category::getId).collect(Collectors.toSet());
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Specification<Product> specification = filterProducts(subCategories,filterRequest.getMinPrice(),filterRequest.getMaxPrice());
+        return productRepository.findAll(specification,pageable).stream().map(productBuilder::productToProductSmallDto).collect(Collectors.toSet());
+
+    }
+
+
+    public Set<ProductSmallDto> filterProductsByCategorySmall(@NotNullParam ProductFilterRequest filterRequest,@NotNullParam Integer page,@NotNullParam Integer size) {
+        Sort sort = Sort.unsorted();
+        if (filterRequest.getSortBy() != null) {
+            sort = Sort.by(Sort.Direction.fromString(filterRequest.getSortDirection()), filterRequest.getSortBy());
+        }
 
         Set<Integer> subCategories = null;
         if (filterRequest.getCategoryId() != null) {
@@ -472,4 +486,6 @@ public class ProductService {
 
         return finalLinkName;
     }
+
+
 }

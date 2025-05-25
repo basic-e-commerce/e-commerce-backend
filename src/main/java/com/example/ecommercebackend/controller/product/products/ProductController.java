@@ -74,6 +74,13 @@ public class ProductController {
     }
 
 
+    @PostMapping("/filter/small/link-name")
+    public ResponseEntity<Set<ProductSmallDto>> filterSmallLinkName(@RequestBody(required = false) ProductFilterLinkNameRequest filterRequest,
+                                                            @RequestParam(defaultValue = "0",required = false) Integer page,
+                                                            @RequestParam(defaultValue = "10",required = false) Integer size){
+        return new ResponseEntity<>(productService.filterProductsByCategoryLinkNameSmall(filterRequest,page,size),HttpStatus.OK);
+    }
+
     @PostMapping("/filter/small")
     public ResponseEntity<Set<ProductSmallDto>> filterSmall(@RequestBody(required = false) ProductFilterRequest filterRequest,
                                                             @RequestParam(defaultValue = "0",required = false) Integer page,
