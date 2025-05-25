@@ -11,6 +11,8 @@ public class AddressBuilder {
         return new Address(
                 addressCreateDto.getTitle(),
                 country,
+                addressCreateDto.getFirstName(),
+                addressCreateDto.getLastName(),
                 addressCreateDto.getCity(),
                 addressCreateDto.getAddressLine1(),
                 addressCreateDto.getPostalCode(),

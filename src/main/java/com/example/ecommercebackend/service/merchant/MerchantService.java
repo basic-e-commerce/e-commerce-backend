@@ -32,7 +32,7 @@ public class MerchantService {
         this.merchantImageService = merchantImageService;
     }
     public MerchantResponseDto createMerchant(MerchantCreateDto merchantCreateDto) {
-        AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(), merchantCreateDto.getCountryId(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
+        AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(),merchantCreateDto.getFirstName(),merchantCreateDto.getLastName(),merchantCreateDto.getCountryName(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
         Address address = addressService.createAddress(addressCreateDto);
 
         Merchant merchant = merchantBuilder.merchantCreateDtoToMerchant(merchantCreateDto, address);
@@ -46,7 +46,7 @@ public class MerchantService {
 
     public MerchantResponseDto updateMerchant(MerchantUpdateDto merchantCreateDto) {
         Merchant merchant= getMerchant();
-        AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(), merchantCreateDto.getCountryId(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
+        AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(),merchantCreateDto.getFirstName(),merchantCreateDto.getLastName(), merchantCreateDto.getCountryName(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
         Address address = addressService.updateAddressById(merchant.getAddress().getId(),addressCreateDto);
         merchant.setAddress(address);
         merchant.setName(merchantCreateDto.getName());

@@ -4,24 +4,26 @@ import java.math.BigDecimal;
 
 public class MerchantUpdateDto {
     private String name;
+    private String firstName;
+    private String lastName;
     private String title;
-    private Integer countryId;
+    private String countryName;
     private String city;
     private String addressLine1;
-    private String addressLine2;
     private String postalCode;
     private String phoneNo;
     private String email;
     private BigDecimal minOrderAmount;
     private BigDecimal shippingFee;
 
-    public MerchantUpdateDto(String name, String title, Integer countryId, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo, String email, BigDecimal minOrderAmount, BigDecimal shippingFee) {
+    public MerchantUpdateDto(String name, String firstName, String lastName, String title, String countryName, String city, String addressLine1 , String postalCode, String phoneNo, String email, BigDecimal minOrderAmount, BigDecimal shippingFee) {
         this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.title = title;
-        this.countryId = countryId;
+        this.countryName = countryName;
         this.city = city;
         this.addressLine1 = addressLine1;
-        this.addressLine2 = addressLine2;
         this.postalCode = postalCode;
         this.phoneNo = phoneNo;
         this.email = email;
@@ -37,20 +39,12 @@ public class MerchantUpdateDto {
         return title;
     }
 
-    public Integer getCountryId() {
-        return countryId;
-    }
-
     public String getCity() {
         return city;
     }
 
     public String getAddressLine1() {
         return addressLine1;
-    }
-
-    public String getAddressLine2() {
-        return addressLine2;
     }
 
     public String getPostalCode() {
@@ -71,5 +65,17 @@ public class MerchantUpdateDto {
 
     public BigDecimal getShippingFee() {
         return shippingFee;
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 }

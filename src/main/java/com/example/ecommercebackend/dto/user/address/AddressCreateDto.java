@@ -6,15 +6,19 @@ import jakarta.persistence.ManyToOne;
 
 public class AddressCreateDto {
     private String title;
-    private Integer countryId;
+    private String firstName;
+    private String lastName;
+    private String countryName;
     private String city;
     private String addressLine1;
     private String postalCode;
     private String phoneNo;
 
-    public AddressCreateDto(String title, Integer countryId, String city, String addressLine1 , String postalCode, String phoneNo) {
+    public AddressCreateDto(String title, String firstName, String lastName, String countryName, String city, String addressLine1 , String postalCode, String phoneNo) {
         this.title = title;
-        this.countryId = countryId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.countryName = countryName;
         this.city = city;
         this.addressLine1 = addressLine1;
         this.postalCode = postalCode;
@@ -23,10 +27,6 @@ public class AddressCreateDto {
 
     public String getTitle() {
         return title;
-    }
-
-    public Integer getCountryId() {
-        return countryId;
     }
 
     public String getCity() {
@@ -43,5 +43,21 @@ public class AddressCreateDto {
 
     public String getPhoneNo() {
         return phoneNo;
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 }

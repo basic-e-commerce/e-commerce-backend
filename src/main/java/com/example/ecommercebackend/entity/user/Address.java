@@ -18,6 +18,8 @@ public class Address {
     @ManyToOne
     @JoinColumn(name = "country_id",nullable = false)
     private Country country;
+    private String firstName;
+    private String lastName;
 
     private String city;
     private String addressLine1;
@@ -32,9 +34,11 @@ public class Address {
         updatedAt = Instant.now();
     }
 
-    public Address(String title, Country country, String city, String addressLine1, String postalCode, String phoneNo) {
+    public Address(String title, Country country, String firstName, String lastName, String city, String addressLine1, String postalCode, String phoneNo) {
         this.title = title;
         this.country = country;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.city = city;
         this.addressLine1 = addressLine1;
         this.postalCode = postalCode;
@@ -114,5 +118,21 @@ public class Address {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

@@ -7,8 +7,10 @@ import java.math.BigDecimal;
 
 public class MerchantCreateDto {
     private String name;
+    private String firstName;
+    private String lastName;
     private String title;
-    private Integer countryId;
+    private String countryName;
     private String city;
     private String addressLine1;
     private String addressLine2;
@@ -19,10 +21,12 @@ public class MerchantCreateDto {
     private BigDecimal minOrderAmount;
     private BigDecimal shippingFee;
 
-    public MerchantCreateDto(String name, String title, Integer countryId, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo, MultipartFile image, String email, BigDecimal minOrderAmount, BigDecimal shippingFee) {
+    public MerchantCreateDto(String name, String firstName, String lastName, String title, String countryName, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo, MultipartFile image, String email, BigDecimal minOrderAmount, BigDecimal shippingFee) {
         this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.title = title;
-        this.countryId = countryId;
+        this.countryName = countryName;
         this.city = city;
         this.addressLine1 = addressLine1;
         this.addressLine2 = addressLine2;
@@ -40,10 +44,6 @@ public class MerchantCreateDto {
 
     public String getTitle() {
         return title;
-    }
-
-    public Integer getCountryId() {
-        return countryId;
     }
 
     public String getCity() {
@@ -80,5 +80,17 @@ public class MerchantCreateDto {
 
     public BigDecimal getShippingFee() {
         return shippingFee;
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 }
