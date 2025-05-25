@@ -72,6 +72,7 @@ public class SellService {
                 .and(hasEndDate(productSellFilterRequestDto.getEndDate()));
     }
 
+
     public Specification<Sell> hasProducts(Integer productId) {
         return (Root<Sell> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             if (productId == null || productId == 0)

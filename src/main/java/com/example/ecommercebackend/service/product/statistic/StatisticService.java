@@ -1,15 +1,19 @@
 package com.example.ecommercebackend.service.product.statistic;
 
 import com.example.ecommercebackend.dto.product.sell.ProductSellDto;
+import com.example.ecommercebackend.dto.product.sell.ProductSellFilterRequestDto;
 import com.example.ecommercebackend.dto.product.sell.SellDetailDto;
 import com.example.ecommercebackend.dto.product.sell.SellDetailRequestDto;
 import com.example.ecommercebackend.dto.product.statistic.StatisticDetailDto;
 import com.example.ecommercebackend.entity.product.products.Product;
+import com.example.ecommercebackend.entity.product.products.Sell;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import com.example.ecommercebackend.service.product.products.ProductService;
 import com.example.ecommercebackend.service.product.products.SellService;
 import com.example.ecommercebackend.service.user.CustomerService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class StatisticService {
@@ -29,7 +33,9 @@ public class StatisticService {
         return null;
     }
 
-    public SellDetailDto getSellDetail(SellDetailRequestDto sellDetailRequestDto){
+
+
+    public List<Sell> getSellList(ProductSellFilterRequestDto productSellFilterRequestDto){
         return null;
     }
 }

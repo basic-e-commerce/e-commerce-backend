@@ -8,6 +8,7 @@ import com.example.ecommercebackend.dto.payment.response.InstallmentInfoDto;
 import com.example.ecommercebackend.dto.payment.response.InstallmentPriceDto;
 import com.example.ecommercebackend.dto.payment.response.PayCallBackDto;
 import com.example.ecommercebackend.dto.payment.response.ProcessCreditCardDto;
+import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.exception.BadRequestException;
@@ -266,10 +267,19 @@ public class IyzicoPayment implements PaymentStrategy {
     }
 
     private BasketItem getBasketItem(OrderItem orderItem) {
+        String categoryName = "";
+        if (orderItem.getProduct().getCategories() != null) {
+            for (Category category : orderItem.getProduct().getCategories()) {
+                if (category.getCategoryName()!=null) {
+                    categoryName = category.getCategoryName();
+                    break;
+                }
+            }
+        }
         BasketItem basketItem = new BasketItem();
         basketItem.setId(String.valueOf(orderItem.getId()));
         basketItem.setName(orderItem.getProduct().getProductName());
-        basketItem.setCategory1(Objects.requireNonNull((orderItem.getProduct().getCategories().stream().findFirst()).orElse(null)).getCategoryName());
+        basketItem.setCategory1(categoryName);
         basketItem.setItemType(BasketItemType.PHYSICAL.name());
         basketItem.setPrice(orderItem.getPrice());
 
