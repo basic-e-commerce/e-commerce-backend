@@ -54,6 +54,11 @@ public class OrderController {
         return new ResponseEntity<>(orderService.getAll(),HttpStatus.OK);
     }
 
+    @GetMapping("/by-order-code")
+    public ResponseEntity<OrderDetailDto> findByOrderCode(@RequestParam String orderCode) {
+        return new ResponseEntity<>(orderService.findOrderDetailByOrderCode(orderCode),HttpStatus.OK);
+    }
+
 
 
 

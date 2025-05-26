@@ -431,4 +431,8 @@ public class OrderService {
     public List<OrderDetailDto> getAll() {
         return orderRepository.findAll().stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
     }
+
+    public OrderDetailDto findOrderDetailByOrderCode(String orderCode) {
+        return orderBuilder.orderToOrderDetailDto(findByOrderCode(orderCode));
+    }
 }
