@@ -220,15 +220,22 @@ public class IyzicoPayment implements PaymentStrategy {
         String ip = httpServletRequest.getHeader("X-Forwarded-For");
         if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = httpServletRequest.getRemoteAddr();
+            System.out.println("------ ip: "+ip);
         }else
             ip="84.17.86.74";
 
+        String username;
+        if (order.getUser() != null){
+            username = order.getUser().getUsername();
+        }else
+            username = order.getUsername();
+
         Buyer buyer = new Buyer();
-        buyer.setId("BY789");
+        buyer.setId(order.getOrderCode());
         buyer.setName(order.getFirstName());
         buyer.setSurname(order.getLastName());
         buyer.setGsmNumber(order.getPhoneNumber());
-        buyer.setEmail("fatihgs13@gmail.com");
+        buyer.setEmail(username);
         buyer.setIdentityNumber("11111111111");
         buyer.setRegistrationAddress(order.getAddressLine1());
         buyer.setIp(ip);
@@ -251,19 +258,36 @@ public class IyzicoPayment implements PaymentStrategy {
 
     public Address getBillingAddress(Order order) {
         Address billingAddress = new Address();
-        billingAddress.setContactName(order.getFirstName() + " " + order.getLastName());
-        billingAddress.setCity(order.getCity());
-        billingAddress.setCountry(order.getCountry());
-        billingAddress.setAddress(order.getAddressLine1());
-        billingAddress.setZipCode(order.getPostalCode());
+        String constactName = order.getFirstName() + " " + order.getLastName();
+        String city;
+        String country;
+        String address;
+        String zip;
+
+        if (order.getInvoice() != null){
+            city = order.getInvoice().getCity();
+            country = order.getInvoice().getCountryName();
+            address = order.getInvoice().getAddressLine1();
+            zip = order.getInvoice().getPostalCode();
+        }else {
+            city = order.getCity();
+            country = order.getCountry();
+            address = order.getAddressLine1();
+            zip = order.getPostalCode();
+        }
+
+        billingAddress.setContactName(constactName);
+        billingAddress.setCity(city);
+        billingAddress.setCountry(country);
+        billingAddress.setAddress(address);
+        billingAddress.setZipCode(zip);
         return billingAddress;
     }
 
     private List<BasketItem> getBasketItems(Order order) {
-        System.out.println("basket 1");
+
         List<BasketItem> basketItems = new ArrayList<>();
         for (OrderItem orderItems : order.getOrderItems()) {
-            System.out.println("basket 2");
             BasketItem basketItem = getBasketItem(orderItems);
             basketItems.add(basketItem);
         }
@@ -271,23 +295,12 @@ public class IyzicoPayment implements PaymentStrategy {
     }
 
     private BasketItem getBasketItem(OrderItem orderItem) {
-        System.out.println("basket 3");
         BasketItem basketItem = new BasketItem();
         basketItem.setId(String.valueOf(orderItem.getId()));
-        System.out.println("basket 4");
-
         basketItem.setName(orderItem.getProduct().getProductName());
-        System.out.println("basket 5");
-
         basketItem.setCategory1("categoryName");
-        System.out.println("basket 6");
-
         basketItem.setItemType(BasketItemType.PHYSICAL.name());
-        System.out.println("basket 7");
-
         basketItem.setPrice(orderItem.getPrice());
-
-        System.out.println("ürün fiyatları toplamı :    "+BigDecimal.valueOf(orderItem.getQuantity()).multiply(orderItem.getPrice()));
         return basketItem;
     }
 }

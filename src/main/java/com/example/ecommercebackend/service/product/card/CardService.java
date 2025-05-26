@@ -7,6 +7,7 @@ import com.example.ecommercebackend.entity.product.card.CardItem;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
+import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.card.CardRepository;
 import com.example.ecommercebackend.service.product.products.ProductService;
 import com.example.ecommercebackend.service.user.CustomerService;
@@ -99,12 +100,11 @@ public class CardService {
     }
 
 
+    public Card findByCustomer(Customer customer) {
+        return cardRepository.findByCustomer(customer).orElseThrow(()-> new NotFoundException("Geçerli Kullanıcı sepeti bulunamadı"));
+    }
 
-
-
-
-
-
-
-
+    public void save(Card card) {
+        cardRepository.save(card);
+    }
 }

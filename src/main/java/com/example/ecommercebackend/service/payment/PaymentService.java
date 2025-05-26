@@ -4,14 +4,17 @@ import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.response.*;
 import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
 import com.example.ecommercebackend.entity.payment.Payment;
+import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
+import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.payment.PaymentRepository;
 import com.example.ecommercebackend.service.invoice.InvoiceService;
 import com.example.ecommercebackend.service.mail.MailService;
+import com.example.ecommercebackend.service.product.card.CardService;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import com.example.ecommercebackend.service.product.products.SellService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -31,13 +35,15 @@ public class PaymentService {
     private final SellService sellService;
     private final MailService mailService;
     private final InvoiceService invoiceService;
+    private final CardService cardService;
 
-    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MailService mailService, InvoiceService invoiceService) {
+    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MailService mailService, InvoiceService invoiceService, CardService cardService) {
         this.orderService = orderService;
         this.paymentRepository = paymentRepository;
         this.sellService = sellService;
         this.mailService = mailService;
         this.invoiceService = invoiceService;
+        this.cardService = cardService;
     }
 
     public String processCreditCardPayment(OrderCreateDto orderCreateDto, HttpServletRequest httpServletRequest) {
@@ -144,7 +150,13 @@ public class PaymentService {
 
             System.out.println("save order"+order.getFirstName());
 
-
+            if (order.getUser() != null){
+                if (order.getUser() instanceof Customer customer){
+                    Card card = cardService.findByCustomer(customer);
+                    card.setItems(new ArrayList<>());
+                    cardService.save(card);
+                }
+            }
             // create save
             order.getOrderItems().forEach(sellService::save);
             String redirectUrl = "https://litysofttest1.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
