@@ -228,7 +228,7 @@ public class IyzicoPayment implements PaymentStrategy {
         buyer.setName(order.getFirstName());
         buyer.setSurname(order.getLastName());
         buyer.setGsmNumber(order.getPhoneNumber());
-        buyer.setEmail(order.getUsername());
+        buyer.setEmail("fatihgs13@gmail.com");
         buyer.setIdentityNumber("11111111111");
         buyer.setRegistrationAddress(order.getAddressLine1());
         buyer.setIp(ip);
