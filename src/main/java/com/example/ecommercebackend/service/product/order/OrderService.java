@@ -95,7 +95,7 @@ public class OrderService {
             BigDecimal totalTax = calculateTax(savedOrderItems);
             Invoice invoice = getInvoice(totalPrice,totalTax,orderCreateDto);
             Invoice saveInvoicce = invoiceService.save(invoice);
-            Order order = saveOrder(customer, orderCreateDto.getInvoiceAddress(), savedOrderItems, orderStatus, totalPrice, orderPrice,saveInvoicce);
+            Order order = saveOrder(customer, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalPrice, orderPrice,saveInvoicce);
             return orderRepository.save(order);
         }
 
