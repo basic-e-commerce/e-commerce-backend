@@ -17,7 +17,7 @@ public class OrderCreateDto {
     @NotNullField
     private String invoiceType;
     private CorporateInvoiceCreateDto corporateInvoice;
-    @NotNullField
+
     private List<OrderItemCreateDto> orderItemCreateDtos;
 
     @NotNullField
