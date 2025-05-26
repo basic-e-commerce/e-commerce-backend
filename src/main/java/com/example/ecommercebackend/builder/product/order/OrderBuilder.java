@@ -16,7 +16,11 @@ public class OrderBuilder {
                 order.getOrderCode(),
                 order.getTotalPrice(),
                 order.getOrderItems().stream().map(x-> {
-                    return new OrderItemResponseDto(x.getProduct().getId(),x.getProduct().getProductName(),x.getQuantity());
+                    String coverImage = "";
+                    if (x.getProduct().getCoverImage() != null) {
+                        coverImage = x.getProduct().getCoverImage().getUrl();
+                    }
+                    return new OrderItemResponseDto(x.getProduct().getId(),x.getProduct().getProductName(),x.getQuantity(),coverImage);
                 }).toList()
         );
     }
@@ -45,7 +49,12 @@ public class OrderBuilder {
                         order.getAddressLine1()
                 ),
                 order.getOrderItems().stream().map(orderItem -> {
-                    return new OrderItemResponseDto(orderItem.getProduct().getId(),orderItem.getProduct().getProductName(),orderItem.getQuantity());
+
+                    String coverImage = "";
+                    if (orderItem.getProduct().getCoverImage() != null) {
+                        coverImage = orderItem.getProduct().getCoverImage().getUrl();
+                    }
+                    return new OrderItemResponseDto(orderItem.getProduct().getId(),orderItem.getProduct().getProductName(),orderItem.getQuantity(),coverImage);
                 }).toList(),
                 installment,
                 order.getOrderStatus().getStatus().name()
