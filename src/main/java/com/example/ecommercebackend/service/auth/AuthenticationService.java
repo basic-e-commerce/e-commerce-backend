@@ -12,6 +12,7 @@ import com.example.ecommercebackend.service.mail.MailService;
 import com.example.ecommercebackend.service.redis.RedisService;
 import com.example.ecommercebackend.service.user.AdminService;
 import com.example.ecommercebackend.service.user.CustomerService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -169,11 +170,20 @@ public class AuthenticationService {
             throw new TokenExpiredException(ExceptionMessage.TRY_LOGIN.getMessage());
     }
 
-    public String logout(String refreshToken) {
+    public String logout(String refreshToken, HttpServletResponse response) {
         RefreshToken refresh = refreshTokenService.getRefreshTokenHash(refreshToken);
         refresh.setActive(false);
         refresh.setExpirationTime(LocalDateTime.now());
         refreshTokenService.save(refresh);
+
+        // Cookie silme
+        Cookie cookie = new Cookie("refreshToken", null); // aynı isim
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true); // HTTPS kullanıyorsanız
+        cookie.setPath("/"); // Cookie'nin scope'u
+        cookie.setMaxAge(0); // hemen silinsin
+        response.addCookie(cookie);
+
         return "Successfully logged out";
     }
 

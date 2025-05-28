@@ -33,8 +33,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh/logout")
-    public ResponseEntity<String> logout(@CookieValue(name = "refresh_token")String refreshToken){
-        return new ResponseEntity<>(authenticationService.logout(refreshToken),HttpStatus.OK);
+    public ResponseEntity<String> logout(@CookieValue(name = "refresh_token")String refreshToken,HttpServletResponse response){
+        return new ResponseEntity<>(authenticationService.logout(refreshToken,response),HttpStatus.OK);
     }
 
     @GetMapping("/is-auth")
