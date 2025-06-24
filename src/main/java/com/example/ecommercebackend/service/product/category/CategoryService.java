@@ -214,4 +214,8 @@ public class CategoryService {
 
         return finalLinkName;
     }
+
+    public CategoryDetailDto getCategoryByLinkName(String linkName) {
+        return categoryBuilder.categoryToCategoryDetailDto(findCategoryByLinkName(linkName));
+    }
 }

@@ -31,6 +31,10 @@ public class CategoryController {
     public ResponseEntity<List<Category>> getCategoryParent() {
         return new ResponseEntity<>(categoryService.findParentCategories(), HttpStatus.OK);
     }
+    @GetMapping("/by-link-name")
+    public ResponseEntity<CategoryDetailDto> getCategoryByLinkName(@RequestParam("linkName") String linkName) {
+        return new ResponseEntity<>(categoryService.getCategoryByLinkName(linkName),HttpStatus.OK);
+    }
 
     @DeleteMapping
     public ResponseEntity<CategoryDetailDto> deleteCategory(@RequestParam(required = false) Integer id) {
