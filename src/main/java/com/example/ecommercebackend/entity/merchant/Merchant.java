@@ -14,7 +14,7 @@ public class Merchant {
     @SequenceGenerator(name = "merchant_seq", sequenceName = "merchant_seq", allocationSize = 1)
     private int id;
     private String name;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Address address;
 
     @OneToOne
