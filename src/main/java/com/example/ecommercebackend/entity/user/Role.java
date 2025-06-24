@@ -22,10 +22,6 @@ public class Role implements GrantedAuthority {
     @Column(name = "role_name", nullable = false, unique = true)
     private String roleName;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "roles",fetch = FetchType.LAZY)
-    private Set<User> users = new HashSet<>();
-
     public Role(int id, String roleName) {
         this.id = id;
         this.roleName = roleName;
@@ -48,15 +44,6 @@ public class Role implements GrantedAuthority {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
-    }
-
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
     }
 
     @Override
