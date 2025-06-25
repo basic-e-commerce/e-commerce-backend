@@ -15,7 +15,8 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> , JpaSpecificationExecutor<Order> {
     Optional<Order> findByOrderCode(String orderCode);
-    Optional<Order> findByPaymentsContaining(Payment payment);
+
+    Optional<Order> findByPayments(Payment payments);
     @Query("SELECT SUM(o.totalPrice) FROM Order o JOIN o.orderStatus s WHERE s.status = :status AND o.createdAt BETWEEN :start AND :end")
     BigDecimal findSuccessTotalPriceBetweenDates(@Param("status") OrderStatus.Status status, @Param("start") Instant startDate, @Param("end") Instant endDate);
 

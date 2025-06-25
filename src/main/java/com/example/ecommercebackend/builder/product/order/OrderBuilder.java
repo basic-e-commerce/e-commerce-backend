@@ -35,11 +35,11 @@ public class OrderBuilder {
 
     public OrderDetailDto orderToOrderDetailDto(Order order) {
         int installment = 1;
-        for (Payment payment : order.getPayments()) {
-            if (payment.getPaymentStatus() == Payment.PaymentStatus.SUCCESS){
-                installment = payment.getInstallment();
+
+            if (order.getPayments().getPaymentStatus() == Payment.PaymentStatus.SUCCESS){
+                installment = order.getPayments().getInstallment();
             }
-        }
+
 
         OrderDetailDto orderDetailDto = new OrderDetailDto(
                 order.getId(),
