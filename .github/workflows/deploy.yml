@@ -23,14 +23,14 @@ jobs:
       - name: Setup SSH Key for Server
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 185.240.104.6
+          host: 141.11.109.132
           username: root
           key: ${{ secrets.ECOMMERCESECRET }}
           script: |
-            cd /home/projects/ecommerce/e-commerce-backend
-            sudo systemctl stop ecommerce || true
+            cd /home/ecommerce/proje1/e-commerce-backend
+            sudo systemctl stop proje1.service || true
             rm -rf target/
             git pull
             mvn clean package -DskipTests
-            sudo systemctl start ecommerce.service
-            sudo systemctl status ecommerce.service
+            sudo systemctl start proje1.service
+            sudo systemctl status proje1.service
