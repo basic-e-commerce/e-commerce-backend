@@ -1,7 +1,6 @@
 package com.example.ecommercebackend.entity.product.category;
 
 import com.example.ecommercebackend.entity.file.CoverImage;
-import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

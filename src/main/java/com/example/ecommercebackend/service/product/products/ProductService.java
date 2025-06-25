@@ -303,6 +303,7 @@ public class ProductService {
     public ProductAdminDetailDto deleteProduct(@NotNullParam Integer productId) {
 
         Product product = findProductById(productId);
+        product.setCategories(new HashSet<>());
         product.setDeleted(true);
         return productBuilder.productToProductAdmindetailDto(productRepository.save(product));
 

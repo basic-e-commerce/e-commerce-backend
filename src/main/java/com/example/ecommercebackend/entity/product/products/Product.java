@@ -47,7 +47,7 @@ public class Product {
     @Column(name = "product_description", nullable = false)
     private String productDescription;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "product_categories",
             joinColumns = @JoinColumn(name = "product_id"),
