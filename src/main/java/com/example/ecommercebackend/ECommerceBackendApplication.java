@@ -64,7 +64,8 @@ public class ECommerceBackendApplication {
 						"5098765432",
 						"email@gmail.com",
 						BigDecimal.valueOf(100),
-						BigDecimal.valueOf(75)
+						BigDecimal.valueOf(75),
+						""
 				);
 				merchantRepository.save(merchant);
 			}

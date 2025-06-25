@@ -34,15 +34,13 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final SellService sellService;
     private final MailService mailService;
-    private final InvoiceService invoiceService;
     private final CardService cardService;
 
-    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MailService mailService, InvoiceService invoiceService, CardService cardService) {
+    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MailService mailService, CardService cardService) {
         this.orderService = orderService;
         this.paymentRepository = paymentRepository;
         this.sellService = sellService;
         this.mailService = mailService;
-        this.invoiceService = invoiceService;
         this.cardService = cardService;
     }
 

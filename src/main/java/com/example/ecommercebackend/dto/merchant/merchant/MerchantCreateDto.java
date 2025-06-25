@@ -20,8 +20,9 @@ public class MerchantCreateDto {
     private String email;
     private BigDecimal minOrderAmount;
     private BigDecimal shippingFee;
+    private String emailPassword;
 
-    public MerchantCreateDto(String name, String firstName, String lastName, String title, String countryName, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo, MultipartFile image, String email, BigDecimal minOrderAmount, BigDecimal shippingFee) {
+    public MerchantCreateDto(String name, String firstName, String lastName, String title, String countryName, String city, String addressLine1, String addressLine2, String postalCode, String phoneNo, MultipartFile image, String email, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword) {
         this.name = name;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -36,6 +37,7 @@ public class MerchantCreateDto {
         this.email = email;
         this.minOrderAmount = minOrderAmount;
         this.shippingFee = shippingFee;
+        this.emailPassword = emailPassword;
     }
 
     public String getName() {
@@ -92,5 +94,13 @@ public class MerchantCreateDto {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public String getEmailPassword() {
+        return emailPassword;
+    }
+
+    public void setEmailPassword(String emailPassword) {
+        this.emailPassword = emailPassword;
     }
 }
