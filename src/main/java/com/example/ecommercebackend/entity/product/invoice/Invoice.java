@@ -138,7 +138,7 @@ public abstract class Invoice {
         this.username = username;
     }
 
-    public String getCountry() {
+    public String getCountryName() {
         return countryName;
     }
 
