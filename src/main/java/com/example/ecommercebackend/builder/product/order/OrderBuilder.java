@@ -86,6 +86,7 @@ public class OrderBuilder {
         System.out.println("asd: "+clazz.getSimpleName());
 
         if (order.getInvoice() instanceof CorporateInvoice corporateInvoice) {
+            System.out.println("corporateInvoice bu --------------------------------------");
             CorporateInvoiceResponseDto corporateInvoiceResponseDto = new CorporateInvoiceResponseDto(
                     corporateInvoice.getCompanyName(),
                     corporateInvoice.getTaxNumber(),
