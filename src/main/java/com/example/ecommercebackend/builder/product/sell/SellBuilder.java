@@ -4,6 +4,9 @@ import com.example.ecommercebackend.dto.product.sell.ProductSellDto;
 import com.example.ecommercebackend.entity.product.products.Sell;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 @Component
 public class SellBuilder {
 
@@ -17,7 +20,9 @@ public class SellBuilder {
                 sell.getProduct().getProductName(),
                 sell.getPrice(),
                 sell.getQuantity(),
-                url
+                url,
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                        .withZone(ZoneId.of("Europe/Istanbul")).format(sell.getSellDate())
         );
     }
 }
