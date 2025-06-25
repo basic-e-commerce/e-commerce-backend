@@ -102,7 +102,7 @@ public class SellService {
             productDaySells.add(productDaySell);
         }
 
-        return productDaySells.stream().sorted(Comparator.comparing(ProductDaySell::getDate)).collect(Collectors.toList());
+        return productDaySells;
     }
 
     private Specification<Sell> getSellProductsFilter(ProductSellFilterRequestDto productSellFilterRequestDto) {
