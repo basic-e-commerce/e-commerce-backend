@@ -10,6 +10,7 @@ import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.invoice.CorporateInvoice;
 import com.example.ecommercebackend.entity.product.invoice.Invoice;
 import com.example.ecommercebackend.entity.product.order.Order;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -81,7 +82,9 @@ public class OrderBuilder {
                 "oluşturulma tarihi"
                 );
 
-        System.out.println(order.getInvoice().getClass().getSimpleName());
+        Class<?> clazz = Hibernate.getClass(order.getInvoice());
+        System.out.println("asd: "+clazz.getSimpleName());
+
         if (order.getInvoice() instanceof CorporateInvoice corporateInvoice) {
             CorporateInvoiceResponseDto corporateInvoiceResponseDto = new CorporateInvoiceResponseDto(
                     corporateInvoice.getCompanyName(),
