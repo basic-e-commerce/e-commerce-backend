@@ -113,6 +113,10 @@ public class CategoryService {
         }
 
         categoryRepository.deleteById(category.getId());
+        Category parentCategory = category.getParentCategory();
+        parentCategory.setSubCategory(true);
+        categoryRepository.save(parentCategory);
+
         return categoryBuilder.categoryToCategoryDetailDto(category);
     }
 
@@ -146,6 +150,9 @@ public class CategoryService {
     public CategoryDetailDto updateCategory(@NotNullParam CategoryUpdateDto categoryUpdateDto) {
         Category category = findCategoryById(categoryUpdateDto.getId());
         category.setCategoryName(categoryUpdateDto.getName());
+        if (!category.getCategoryName().equals(categoryUpdateDto.getName())) {
+            category.setCategoryLinkName(generateLinkName(categoryUpdateDto.getName()));
+        }
         category.setCategoryDescription(categoryUpdateDto.getDescription());
 
         return categoryBuilder.categoryToCategoryDetailDto(categoryRepository.save(category));
