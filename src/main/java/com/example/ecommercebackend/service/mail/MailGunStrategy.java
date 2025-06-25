@@ -17,7 +17,7 @@ public class MailGunStrategy implements IMailStrategy{
     }
 
     @Override
-    public String send(String from, String to, String subject, String body) {
+    public String send(String to, String subject, String body) {
         HttpResponse<JsonNode> request = Unirest.post("https://api.mailgun.net/v3/sandbox2cf166902f604b1faf1b778a78e47606.mailgun.org/messages")
                 .basicAuth("api", apiKey)
                 .queryString("from", "Mailgun Sandbox <postmaster@sandbox2cf166902f604b1faf1b778a78e47606.mailgun.org>")

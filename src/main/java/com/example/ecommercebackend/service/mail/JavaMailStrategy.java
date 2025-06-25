@@ -6,9 +6,11 @@ import com.example.ecommercebackend.service.merchant.MerchantService;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.stereotype.Service;
 
 import java.util.Properties;
 
+@Service
 public class JavaMailStrategy implements IMailStrategy {
 
     private final MerchantService merchantService;
@@ -18,11 +20,13 @@ public class JavaMailStrategy implements IMailStrategy {
     }
 
     @Override
-    public String send(String from, String to, String subject, String body) {
+    public String send(String to, String subject, String body) {
         try {
-            JavaMailSender mailSender = createJavaMailSender();
+            Merchant merchant = merchantService.getMerchant();
+
+            JavaMailSender mailSender = createJavaMailSender(merchant);
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(from);
+            message.setFrom(merchant.getEmail());
             message.setTo(to);
             message.setSubject(subject);
             message.setText(body);
@@ -34,8 +38,7 @@ public class JavaMailStrategy implements IMailStrategy {
         }
     }
 
-    public JavaMailSender createJavaMailSender() {
-        Merchant merchant = merchantService.getMerchant();
+    public JavaMailSender createJavaMailSender(Merchant merchant) {
         String email = merchant.getEmail();
         String mailPassword = merchant.getEmailPassword();
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();

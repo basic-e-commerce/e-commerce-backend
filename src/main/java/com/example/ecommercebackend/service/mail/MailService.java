@@ -7,15 +7,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class MailService {
 
-    @Value("${mail.from}")
-    private String from;
-
     private final IMailStrategy mailStrategy;
 
-    public MailService(@Qualifier("twilioStrategy") IMailStrategy mailStrategy) {
+    public MailService(@Qualifier("javaMailStrategy") IMailStrategy mailStrategy) {
         this.mailStrategy = mailStrategy;
     }
+
     public String send(String to, String subject, String body) {
-        return mailStrategy.send(from, to, subject, body);
+        return mailStrategy.send(to, subject, body);
     }
 }

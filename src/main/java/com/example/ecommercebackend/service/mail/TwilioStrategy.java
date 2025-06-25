@@ -1,5 +1,7 @@
 package com.example.ecommercebackend.service.mail;
 
+import com.example.ecommercebackend.entity.merchant.Merchant;
+import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -16,16 +18,18 @@ import java.io.IOException;
 public class TwilioStrategy implements IMailStrategy{
 
     private String apiKey;
-    public TwilioStrategy() {
+    private final MerchantService merchantService;
+    public TwilioStrategy(MerchantService merchantService) {
+        this.merchantService = merchantService;
         Dotenv dotenv = Dotenv.load(); // .env dosyasını otomatik bulur
         this.apiKey = dotenv.get("SENDGRID_API_KEY");
 
     }
 
     @Override
-    public String send(String from, String to,String subject,String body) {
-
-        Email from1 = new Email(from);
+    public String send(String to,String subject,String body) {
+        Merchant merchant = merchantService.getMerchant();
+        Email from1 = new Email(merchant.getEmail());
         Email to1 = new Email(to);
         Content content = new Content("text/html", body);
         Mail mail = new Mail(from1, subject, to1, content);
