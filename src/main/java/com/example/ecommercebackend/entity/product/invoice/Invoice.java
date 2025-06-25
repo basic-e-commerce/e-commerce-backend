@@ -15,7 +15,7 @@ public abstract class Invoice {
     @SequenceGenerator(name = "billing_seq", sequenceName = "billing_seq", allocationSize = 1)
     private int id;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private Payment payment;
 
     @Column(nullable = false,name = "total_amount")

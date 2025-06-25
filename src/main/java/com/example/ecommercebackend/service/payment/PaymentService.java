@@ -5,6 +5,7 @@ import com.example.ecommercebackend.dto.payment.response.*;
 import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.card.Card;
+import com.example.ecommercebackend.entity.product.invoice.Invoice;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import com.example.ecommercebackend.entity.user.Customer;
@@ -138,6 +139,8 @@ public class PaymentService {
 
             // update orderstatus approved,green
             Order order = payment.getOrder();
+            Invoice invoice = order.getInvoice();
+            invoice.setPayment(payment);
             System.out.println("order firstname: "+order.getFirstName());
 
             OrderStatus orderStatus = order.getOrderStatus();
