@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.product.products;
 
 import com.example.ecommercebackend.builder.product.sell.SellBuilder;
 import com.example.ecommercebackend.dto.product.sell.ProductDaySell;
+import com.example.ecommercebackend.dto.product.sell.ProductSellDayFilterRequestDto;
 import com.example.ecommercebackend.dto.product.sell.ProductSellDto;
 import com.example.ecommercebackend.dto.product.sell.ProductSellFilterRequestDto;
 import com.example.ecommercebackend.entity.product.order.Order;
@@ -74,11 +75,8 @@ public class SellService {
         return sellRepository.findAll(specification,pageable).stream().map(sellBuilder::sellToProductSellDto).collect(Collectors.toList());
     }
 
-    public List<ProductDaySell> getSellProductsDaySell(ProductSellFilterRequestDto productSellFilterRequestDto, int page, int size) {
-        Sort sort = Sort.unsorted();
-        if (productSellFilterRequestDto.getSortBy() != null) {
-            sort = Sort.by(Sort.Direction.fromString(productSellFilterRequestDto.getSortDirection()), productSellFilterRequestDto.getSortBy());
-        }
+    public List<ProductDaySell> getSellProductsDaySell(ProductSellDayFilterRequestDto productSellFilterRequestDto) {
+
         List<ProductDaySell> productDaySells = new ArrayList<>();
         ZoneId zoneId = ZoneId.of("Europe/Istanbul");
 
