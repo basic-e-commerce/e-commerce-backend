@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.dto.product.order;
 
+import com.example.ecommercebackend.dto.product.invoice.InvoiceResponseDto;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 
@@ -16,6 +17,7 @@ public class OrderDetailDto {
     private List<OrderItemResponseDto> orderItemResponseDtos;
     private int installment;
     private String orderStatus;
+    private InvoiceResponseDto invoiceResponseDto;
 
     public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, int installment, String orderStatus) {
         this.id = id;
@@ -99,5 +101,13 @@ public class OrderDetailDto {
 
     public void setOrderStatus(String orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public InvoiceResponseDto getInvoiceResponseDto() {
+        return invoiceResponseDto;
+    }
+
+    public void setInvoiceResponseDto(InvoiceResponseDto invoiceResponseDto) {
+        this.invoiceResponseDto = invoiceResponseDto;
     }
 }

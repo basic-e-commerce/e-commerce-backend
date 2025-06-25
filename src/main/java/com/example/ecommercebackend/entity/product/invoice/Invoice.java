@@ -138,7 +138,7 @@ public abstract class Invoice {
         this.username = username;
     }
 
-    public String getCountryName() {
+    public String getCountry() {
         return countryName;
     }
 
@@ -170,7 +170,7 @@ public abstract class Invoice {
         this.postalCode = postalCode;
     }
 
-    public String getPhoneNo() {
+    public String getPhoneNumber() {
         return phoneNo;
     }
 
