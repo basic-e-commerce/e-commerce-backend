@@ -82,11 +82,9 @@ public class OrderBuilder {
                 "oluşturulma tarihi"
                 );
 
-        Class<?> clazz = Hibernate.getClass(order.getInvoice());
-        System.out.println("asd: "+clazz.getSimpleName());
+        Invoice invoice = (Invoice) Hibernate.unproxy(order.getInvoice());
 
-        if (order.getInvoice() instanceof CorporateInvoice corporateInvoice) {
-            System.out.println("corporateInvoice bu --------------------------------------");
+        if (invoice instanceof CorporateInvoice corporateInvoice) {
             CorporateInvoiceResponseDto corporateInvoiceResponseDto = new CorporateInvoiceResponseDto(
                     corporateInvoice.getCompanyName(),
                     corporateInvoice.getTaxNumber(),
