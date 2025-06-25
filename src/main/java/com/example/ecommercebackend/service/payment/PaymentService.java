@@ -48,18 +48,6 @@ public class PaymentService {
     public String processCreditCardPayment(OrderCreateDto orderCreateDto, HttpServletRequest httpServletRequest) {
         Order order = orderService.createOrder(orderCreateDto);
 
-        if (order.getPayments() != null){
-            System.out.println("------------------------------");
-            System.out.println(order.getPayments().stream().map(payment -> payment.getPaymentStatus().name()));
-            System.out.println("------------------------------");
-
-            if (order.getPayments().stream().anyMatch(payment -> payment.getPaymentStatus() == Payment.PaymentStatus.SUCCESS))
-                throw new ResourceAlreadyExistException("payment is successful in order");
-
-            if (order.getPayments().stream().anyMatch(payment -> payment.getPaymentStatus() != Payment.PaymentStatus.PROCESS))
-                throw new ResourceAlreadyExistException("Geçerli bir sipariş bulunamadı");
-        }
-
         String conversationId = UUID.randomUUID().toString();
         Payment payment = new Payment(
                 order.getFirstName(),
@@ -72,12 +60,12 @@ public class PaymentService {
                 orderCreateDto.getPaymentCreditCardRequestDto().getCreditCardRequestDto().getCardHolderName(),
                 conversationId,
                 "İslem Baslatılıyor",
-                BigDecimal.ONE,
+                BigDecimal.ZERO,
                 orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber(),
                 order
         );
         Payment savePayment = paymentRepository.save(payment);
-        order.getPayments().add(savePayment);
+        order.setPayments(savePayment);
 
         PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod(orderCreateDto.getPaymentCreditCardRequestDto().getPaymentMethod());
         BigDecimal totalPrice = order.getTotalPrice();
@@ -96,6 +84,7 @@ public class PaymentService {
         BigDecimal finalTotalPrice = totalPrice;
         System.out.println("------------------ finalTotal price: "+finalTotalPrice);
         System.out.println(19);
+
         Future<ProcessCreditCardDto> future = executor.submit(() ->
                 paymentStrategy.processCreditCardPayment(order, orderCreateDto.getPaymentCreditCardRequestDto(), conversationId,httpServletRequest)
         );

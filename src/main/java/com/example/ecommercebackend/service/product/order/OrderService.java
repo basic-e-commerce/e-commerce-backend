@@ -225,7 +225,7 @@ public class OrderService {
                 totalPrice,
                 orderPrice,
                 invoice);
-        order.setPayments(new HashSet<>());
+        order.setPayments(null);
         return order;
 
     }

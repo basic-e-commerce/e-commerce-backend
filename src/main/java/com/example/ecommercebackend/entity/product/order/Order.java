@@ -68,8 +68,8 @@ public class Order {
     @Column(name = "price")
     private BigDecimal price;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private Set<Payment> payments;
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private Payment payments;
 
     @Column(name = "order_approved_at")
     private Instant orderApprovedAt;   // siparişin onaylanış tarihi
@@ -262,11 +262,11 @@ public class Order {
         this.totalPrice = totalPrice;
     }
 
-    public Set<Payment> getPayments() {
+    public Payment getPayments() {
         return payments;
     }
 
-    public void setPayments(Set<Payment> payments) {
+    public void setPayments(Payment payments) {
         this.payments = payments;
     }
 
