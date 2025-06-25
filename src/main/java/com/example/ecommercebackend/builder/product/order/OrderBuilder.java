@@ -81,6 +81,7 @@ public class OrderBuilder {
                 "oluşturulma tarihi"
                 );
 
+        System.out.println(order.getInvoice().getClass().getSimpleName());
         if (order.getInvoice() instanceof CorporateInvoice corporateInvoice) {
             CorporateInvoiceResponseDto corporateInvoiceResponseDto = new CorporateInvoiceResponseDto(
                     corporateInvoice.getCompanyName(),

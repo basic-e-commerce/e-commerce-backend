@@ -163,7 +163,7 @@ public class PaymentService {
         }else{
             Payment payment = findByConversationId(payCallBackDto.getConversationId());
             payment.setPaymentStatus(Payment.PaymentStatus.FAILED);
-            String redirectUrl = "https://litysofttest1.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
+            String redirectUrl = "https://litysofttest1.site/failed-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
             httpServletResponse.sendRedirect(redirectUrl);
         }
     }
