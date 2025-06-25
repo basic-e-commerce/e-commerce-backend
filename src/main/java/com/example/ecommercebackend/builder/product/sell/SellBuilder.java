@@ -21,6 +21,8 @@ public class SellBuilder {
                 sell.getPrice(),
                 sell.getQuantity(),
                 url,
+                DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        .withZone(ZoneId.of("Europe/Istanbul")).format(sell.getSellDate()),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                         .withZone(ZoneId.of("Europe/Istanbul")).format(sell.getSellDate())
         );

@@ -9,14 +9,16 @@ public class ProductSellDto {
     private int quantity;
     private String coverImage;
     private String date;
+    private String dateTime;
 
-    public ProductSellDto(int id, String name, BigDecimal sellPrice, int quantity, String coverImage, String date) {
+    public ProductSellDto(int id, String name, BigDecimal sellPrice, int quantity, String coverImage, String date, String dateTime) {
         this.id = id;
         this.name = name;
         this.sellPrice = sellPrice;
         this.quantity = quantity;
         this.coverImage = coverImage;
         this.date = date;
+        this.dateTime = dateTime;
     }
 
     public int getId() {
@@ -65,5 +67,13 @@ public class ProductSellDto {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
     }
 }

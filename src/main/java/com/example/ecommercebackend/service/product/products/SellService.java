@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.service.product.products;
 
 import com.example.ecommercebackend.builder.product.sell.SellBuilder;
+import com.example.ecommercebackend.dto.product.sell.ProductDaySell;
 import com.example.ecommercebackend.dto.product.sell.ProductSellDto;
 import com.example.ecommercebackend.dto.product.sell.ProductSellFilterRequestDto;
 import com.example.ecommercebackend.entity.product.order.Order;
@@ -19,7 +20,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,6 +74,39 @@ public class SellService {
         return sellRepository.findAll(specification,pageable).stream().map(sellBuilder::sellToProductSellDto).collect(Collectors.toList());
     }
 
+    public List<ProductDaySell> getSellProductsDaySell(ProductSellFilterRequestDto productSellFilterRequestDto, int page, int size) {
+        Sort sort = Sort.unsorted();
+        if (productSellFilterRequestDto.getSortBy() != null) {
+            sort = Sort.by(Sort.Direction.fromString(productSellFilterRequestDto.getSortDirection()), productSellFilterRequestDto.getSortBy());
+        }
+        List<ProductDaySell> productDaySells = new ArrayList<>();
+        ZoneId zoneId = ZoneId.of("Europe/Istanbul");
+
+        LocalDate start = productSellFilterRequestDto.getStartDate().atZone(zoneId).toLocalDate();
+        LocalDate end = productSellFilterRequestDto.getEndDate().atZone(zoneId).toLocalDate();
+
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            List<Sell> sells = sellRepository.findAll(hasDate(date));
+
+            BigDecimal totalAmount = sells.stream()
+                    .map(sell -> sell.getPrice().multiply(BigDecimal.valueOf(sell.getQuantity())))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            Integer totalQuantity = sells.stream()
+                    .map(Sell::getQuantity)
+                    .reduce(0, Integer::sum);
+
+            ProductDaySell productDaySell = new ProductDaySell(
+                   totalAmount,
+                    totalQuantity,
+                    date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+            );
+            productDaySells.add(productDaySell);
+        }
+
+        return productDaySells.stream().sorted(Comparator.comparing(ProductDaySell::getDate)).collect(Collectors.toList());
+    }
+
     private Specification<Sell> getSellProductsFilter(ProductSellFilterRequestDto productSellFilterRequestDto) {
         return Specification.where(hasProducts(productSellFilterRequestDto.getProductId()))
                 .and(hasStartDate(productSellFilterRequestDto.getStartDate()))
@@ -90,6 +131,24 @@ public class SellService {
         return (Root<Sell> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 endDate == null ? null : cb.lessThanOrEqualTo(root.get("sellDate"), endDate);
     }
+
+    public Specification<Sell> hasDate(LocalDate date) {
+        return (Root<Sell> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            if (date == null) {
+                return null;
+            }
+
+            ZoneId zoneId = ZoneId.of("Europe/Istanbul");
+
+            Instant startOfDay = date.atStartOfDay(zoneId).toInstant();
+            Instant endOfDay = date.plusDays(1).atStartOfDay(zoneId).toInstant();
+
+            return cb.between(root.get("sellDate"), startOfDay, endOfDay);
+        };
+    }
+
+
+
 
 
 }

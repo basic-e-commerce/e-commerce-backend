@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.controller.product.sell;
 
 
+import com.example.ecommercebackend.dto.product.sell.ProductDaySell;
 import com.example.ecommercebackend.dto.product.sell.ProductSellDto;
 import com.example.ecommercebackend.dto.product.sell.ProductSellFilterRequestDto;
 import com.example.ecommercebackend.service.product.products.SellService;
@@ -25,4 +26,13 @@ public class SellController {
                                                                 @RequestParam(defaultValue = "10") int size) {
         return new ResponseEntity<>(sellService.getSellProducts(productSellFilterRequestDto,page,size), HttpStatus.OK);
     }
+
+    @PostMapping("/day-sell")
+    public ResponseEntity<List<ProductDaySell>> getSellProductsDaySell(@RequestBody ProductSellFilterRequestDto productSellFilterRequestDto,
+                                                                       @RequestParam(defaultValue = "0") int page,
+                                                                       @RequestParam(defaultValue = "10") int size) {
+        return new ResponseEntity<>(sellService.getSellProductsDaySell(productSellFilterRequestDto,page,size), HttpStatus.OK);
+    }
+
+
 }
