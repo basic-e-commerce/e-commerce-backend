@@ -5,10 +5,14 @@ import java.time.Instant;
 public class ProductSellDayFilterRequestDto {
     private Instant startDate;
     private Instant endDate;
+    private Integer productId;
+    private String periodType; // DAY, WEEK, MONTH, YEAR
 
-    public ProductSellDayFilterRequestDto(Instant startDate, Instant endDate) {
+    public ProductSellDayFilterRequestDto(Instant startDate, Instant endDate, Integer productId, String periodType) {
         this.startDate = startDate;
         this.endDate = endDate;
+        this.productId = productId;
+        this.periodType = periodType;
     }
 
     public Instant getStartDate() {
@@ -25,5 +29,21 @@ public class ProductSellDayFilterRequestDto {
 
     public void setEndDate(Instant endDate) {
         this.endDate = endDate;
+    }
+
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
+
+    public String getPeriodType() {
+        return periodType;
+    }
+
+    public void setPeriodType(String periodType) {
+        this.periodType = periodType;
     }
 }

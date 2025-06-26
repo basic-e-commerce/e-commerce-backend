@@ -10,9 +10,11 @@ import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.products.Sell;
+import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.repository.product.products.SellRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.PageRequest;
@@ -24,12 +26,13 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.time.temporal.TemporalAmount;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,35 +78,71 @@ public class SellService {
         return sellRepository.findAll(specification,pageable).stream().map(sellBuilder::sellToProductSellDto).collect(Collectors.toList());
     }
 
-    public List<ProductDaySell> getSellProductsDaySell(ProductSellDayFilterRequestDto productSellFilterRequestDto) {
-
-        List<ProductDaySell> productDaySells = new ArrayList<>();
+    public List<ProductDaySell> getSellProductsDaySell(ProductSellDayFilterRequestDto filter) {
         ZoneId zoneId = ZoneId.of("Europe/Istanbul");
 
-        LocalDate start = productSellFilterRequestDto.getStartDate().atZone(zoneId).toLocalDate();
-        LocalDate end = productSellFilterRequestDto.getEndDate().atZone(zoneId).toLocalDate();
+        LocalDate startDate = filter.getStartDate().atZone(zoneId).toLocalDate();
+        LocalDate endDate = filter.getEndDate().atZone(zoneId).toLocalDate();
 
-        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
-            List<Sell> sells = sellRepository.findAll(hasDate(date));
+        // Instant tarih aralığı oluştur (günün başlangıcı ve bitişi)
+        Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
+        Instant endInstant = endDate.plusDays(1).atStartOfDay(zoneId).toInstant().minusMillis(1);
 
-            BigDecimal totalAmount = sells.stream()
+        // Tüm satışları tek sorguda çek
+        List<Sell> sells = sellRepository.findAll(Specification.where(
+                hasDateBetween(startInstant, endInstant).and(hasProducts(filter.getProductId())))
+        );
+
+        Map<String, List<Sell>> sellsByPeriod = sells.stream()
+                .collect(Collectors.groupingBy(sell -> {
+                    LocalDate date = sell.getSellDate().atZone(zoneId).toLocalDate();
+
+                    return switch (filter.getPeriodType().toUpperCase()) {
+                        case "DAY" -> date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+                        case "WEEK" -> date.getYear() + "-W" + String.format("%02d", date.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
+                        case "MONTH" -> date.getYear() + "-" + String.format("%02d", date.getMonthValue());
+                        case "YEAR" -> String.valueOf(date.getYear());
+                        default -> throw new IllegalArgumentException("Invalid period type. Use DAY, WEEK, MONTH, or YEAR.");
+                    };
+                }));
+
+
+        List<ProductDaySell> report = new ArrayList<>();
+
+        TemporalAmount step = switch (filter.getPeriodType().toUpperCase()) {
+            case "DAY" -> Period.ofDays(1);
+            case "WEEK" -> Period.ofWeeks(1);
+            case "MONTH" -> Period.ofMonths(1);
+            case "YEAR" -> Period.ofYears(1);
+            default -> throw new BadRequestException("Invalid period type. Use DAY, WEEK, MONTH, or YEAR.");
+        };
+
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plus(step)) {
+            String label = switch (filter.getPeriodType().toUpperCase()) {
+                case "DAY" -> date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+                case "WEEK" -> date.getYear() + "-W" + String.format("%02d", date.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
+                case "MONTH" -> date.getYear() + "-" + String.format("%02d", date.getMonthValue());
+                case "YEAR" -> String.valueOf(date.getYear());
+                default -> throw new IllegalArgumentException("Invalid period type.");
+            };
+
+            List<Sell> periodSells = sellsByPeriod.getOrDefault(label, Collections.emptyList());
+
+            BigDecimal totalAmount = periodSells.stream()
                     .map(sell -> sell.getPrice().multiply(BigDecimal.valueOf(sell.getQuantity())))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            Integer totalQuantity = sells.stream()
-                    .map(Sell::getQuantity)
-                    .reduce(0, Integer::sum);
+            int totalQuantity = periodSells.stream()
+                    .mapToInt(Sell::getQuantity)
+                    .sum();
 
-            ProductDaySell productDaySell = new ProductDaySell(
-                   totalAmount,
-                    totalQuantity,
-                    date.format(DateTimeFormatter.ISO_LOCAL_DATE)
-            );
-            productDaySells.add(productDaySell);
+            report.add(new ProductDaySell(totalAmount, totalQuantity, label));
         }
+        return report;
 
-        return productDaySells;
     }
+
+
 
     private Specification<Sell> getSellProductsFilter(ProductSellFilterRequestDto productSellFilterRequestDto) {
         return Specification.where(hasProducts(productSellFilterRequestDto.getProductId()))
@@ -129,6 +168,20 @@ public class SellService {
         return (Root<Sell> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 endDate == null ? null : cb.lessThanOrEqualTo(root.get("sellDate"), endDate);
     }
+
+    public static Specification<Sell> hasDateBetween(Instant start, Instant end) {
+        return (Root<Sell> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Predicate predicate = cb.conjunction();
+            if (start != null) {
+                predicate = cb.and(predicate, cb.greaterThanOrEqualTo(root.get("sellDate"), start));
+            }
+            if (end != null) {
+                predicate = cb.and(predicate, cb.lessThanOrEqualTo(root.get("sellDate"), end));
+            }
+            return predicate;
+        };
+    }
+
 
     public Specification<Sell> hasDate(LocalDate date) {
         return (Root<Sell> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
