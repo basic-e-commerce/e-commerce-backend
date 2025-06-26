@@ -68,6 +68,9 @@ public class Order {
     @Column(name = "price")
     private BigDecimal price;
 
+    @Column(name = "customer_price")
+    private BigDecimal customerPrice;
+
     @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Payment payments;
 
@@ -296,5 +299,13 @@ public class Order {
 
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
+    }
+
+    public BigDecimal getCustomerPrice() {
+        return customerPrice;
+    }
+
+    public void setCustomerPrice(BigDecimal customerPrice) {
+        this.customerPrice = customerPrice;
     }
 }

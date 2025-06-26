@@ -185,7 +185,7 @@ public class IyzicoPayment implements PaymentStrategy {
 
     public CreatePaymentRequest getCreatePaymentRequest(Order order,String conversationId,PaymentCreditCardRequestDto paymentCreditCardRequestDto) {
         CreatePaymentRequest request = new CreatePaymentRequest();
-        BigDecimal paidPrice = order.getTotalPrice();
+        BigDecimal paidPrice = order.getCustomerPrice();
 
         System.out.println("------------------------- last paid price: "+paidPrice);
 

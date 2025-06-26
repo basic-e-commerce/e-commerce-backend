@@ -74,11 +74,11 @@ public class PaymentService {
         BigDecimal totalPrice = order.getTotalPrice();
         String binNumber = orderCreateDto.getPaymentCreditCardRequestDto().getCreditCardRequestDto().getCardNumber().substring(0, 6);
 
-        if (orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber() > 1){
+        if (orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber() >= 1){
             InstallmentInfoDto bin = getBin(binNumber, totalPrice);
             InstallmentPriceDto installmentPrice = getInstallmentPrice(binNumber, bin, orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber());
             totalPrice = installmentPrice.getTotalPrice();
-            order.setTotalPrice(totalPrice);
+            order.setCustomerPrice(totalPrice);
             orderService.save(order);
         }
 
