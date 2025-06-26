@@ -71,7 +71,7 @@ public class Product {
     @Column(name = "tax_rate", columnDefinition = "NUMERIC DEFAULT 0.0" ,nullable = false)
     private BigDecimal taxRate;
 
-    @Column(name = "disable_out_of_stock", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "disable_out_of_stock", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean disableOutOfStock;
 
     @ManyToMany(mappedBy = "products")

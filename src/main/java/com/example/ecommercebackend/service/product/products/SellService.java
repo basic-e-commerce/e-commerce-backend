@@ -55,6 +55,9 @@ public class SellService {
         System.out.println("kalan quantity: " + (product.getQuantity() - orderItem.getQuantity()));
 
         product.setQuantity(product.getQuantity() - orderItem.getQuantity());
+        if (product.getQuantity() <= 0) {
+            product.setDisableOutOfStock(true);
+        }
         Product save = productService.save(product);
 
         Sell sell = new Sell(

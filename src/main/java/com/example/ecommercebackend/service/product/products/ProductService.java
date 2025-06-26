@@ -337,7 +337,16 @@ public class ProductService {
         Set<Integer> subCategories = categoryService.getLeafCategories(category).stream().map(Category::getId).collect(Collectors.toSet());
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        Specification<Product> specification = filterProducts(subCategories,filterRequest.getMinPrice(),filterRequest.getMaxPrice());
+
+        Specification<Product> specification = Specification
+                .where(hasCategories(subCategories))
+                .and(hasMinPrice(filterRequest.getMinPrice()))
+                .and(hasMaxPrice(filterRequest.getMaxPrice()))
+                .and(hasMinQuantity(0))
+                .and(hasProductType(ProductType.SIMPLE))
+                .and(isPublished(true))
+                .and(isDeleted(false));
+
         return productRepository.findAll(specification,pageable).stream().map(productBuilder::productToProductAdmindetailDto).collect(Collectors.toList());
     }
 
@@ -353,7 +362,17 @@ public class ProductService {
             subCategories = categoryService.getLeafCategories(category).stream().map(Category::getId).collect(Collectors.toSet());
         }
         Pageable pageable = PageRequest.of(page, size, sort);
-        Specification<Product> specification = filterProducts(subCategories,filterRequest.getMinPrice(),filterRequest.getMaxPrice());
+
+        Specification<Product> specification = Specification
+                .where(hasCategories(subCategories))
+                .and(hasMinPrice(filterRequest.getMinPrice()))
+                .and(hasMaxPrice(filterRequest.getMaxPrice()))
+                .and(isDisableOutOfStock(false))
+                .and(hasMinQuantity(0))
+                .and(hasProductType(ProductType.SIMPLE))
+                .and(isPublished(true))
+                .and(isDeleted(false));
+
         return productRepository.findAll(specification,pageable).stream().map(productBuilder::productToProductSmallDto).collect(Collectors.toSet());
 
     }
@@ -371,21 +390,19 @@ public class ProductService {
             subCategories = categoryService.getLeafCategories(category).stream().map(Category::getId).collect(Collectors.toSet());
         }
         Pageable pageable = PageRequest.of(page, size, sort);
-        Specification<Product> specification = filterProducts(subCategories,filterRequest.getMinPrice(),filterRequest.getMaxPrice());
-        return productRepository.findAll(specification,pageable).stream().map(productBuilder::productToProductSmallDto).collect(Collectors.toSet());
-    }
-
-    public Specification<Product> filterProducts(Set<Integer> categoriesId, BigDecimal minPrice, BigDecimal maxPrice) {
-        return Specification
-                .where(hasCategories(categoriesId))
-                .and(hasMinPrice(minPrice))
-                .and(hasMaxPrice(maxPrice))
-                .and(isDisableOutOfStock(true))
+        Specification<Product> specification = Specification
+                .where(hasCategories(subCategories))
+                .and(hasMinPrice(filterRequest.getMinPrice()))
+                .and(hasMaxPrice(filterRequest.getMaxPrice()))
+                .and(isDisableOutOfStock(false))
                 .and(hasMinQuantity(0))
                 .and(hasProductType(ProductType.SIMPLE))
                 .and(isPublished(true))
                 .and(isDeleted(false));
+        return productRepository.findAll(specification,pageable).stream().map(productBuilder::productToProductSmallDto).collect(Collectors.toSet());
     }
+
+
 
     public Product findByLinkName(String linkName){
         return productRepository.findOne(findByLinkNameSpecification(linkName)).orElse(null);
