@@ -1,10 +1,7 @@
 package com.example.ecommercebackend.controller.product.sell;
 
 
-import com.example.ecommercebackend.dto.product.sell.ProductDaySell;
-import com.example.ecommercebackend.dto.product.sell.ProductSellDayFilterRequestDto;
-import com.example.ecommercebackend.dto.product.sell.ProductSellDto;
-import com.example.ecommercebackend.dto.product.sell.ProductSellFilterRequestDto;
+import com.example.ecommercebackend.dto.product.sell.*;
 import com.example.ecommercebackend.service.product.products.SellService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +26,7 @@ public class SellController {
     }
 
     @PostMapping("/day-sell")
-    public ResponseEntity<List<ProductDaySell>> getSellProductsDaySell(@RequestBody ProductSellDayFilterRequestDto productSellFilterRequestDto) {
+    public ResponseEntity<ProductDaySellAdmin> getSellProductsDaySell(@RequestBody ProductSellDayFilterRequestDto productSellFilterRequestDto) {
         return new ResponseEntity<>(sellService.getSellProductsDaySell(productSellFilterRequestDto), HttpStatus.OK);
     }
 

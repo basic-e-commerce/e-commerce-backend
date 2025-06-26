@@ -1,10 +1,7 @@
 package com.example.ecommercebackend.service.product.products;
 
 import com.example.ecommercebackend.builder.product.sell.SellBuilder;
-import com.example.ecommercebackend.dto.product.sell.ProductDaySell;
-import com.example.ecommercebackend.dto.product.sell.ProductSellDayFilterRequestDto;
-import com.example.ecommercebackend.dto.product.sell.ProductSellDto;
-import com.example.ecommercebackend.dto.product.sell.ProductSellFilterRequestDto;
+import com.example.ecommercebackend.dto.product.sell.*;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
@@ -12,10 +9,8 @@ import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.products.Sell;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.repository.product.products.SellRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import com.example.ecommercebackend.service.product.order.OrderService;
+import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +19,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
@@ -38,11 +34,13 @@ public class SellService {
     private final SellRepository sellRepository;
     private final ProductService productService;
     private final SellBuilder sellBuilder;
+    private final OrderService orderService;
 
-    public SellService(SellRepository sellRepository, ProductService productService, SellBuilder sellBuilder) {
+    public SellService(SellRepository sellRepository, ProductService productService, SellBuilder sellBuilder, OrderService orderService) {
         this.sellRepository = sellRepository;
         this.productService = productService;
         this.sellBuilder = sellBuilder;
+        this.orderService = orderService;
     }
 
     @Transactional
@@ -79,7 +77,7 @@ public class SellService {
         return sellRepository.findAll(specification,pageable).stream().map(sellBuilder::sellToProductSellDto).collect(Collectors.toList());
     }
 
-    public List<ProductDaySell> getSellProductsDaySell(ProductSellDayFilterRequestDto filter) {
+    public ProductDaySellAdmin getSellProductsDaySell(ProductSellDayFilterRequestDto filter) {
         ZoneId zoneId = ZoneId.of("Europe/Istanbul");
 
         LocalDate startDate = filter.getStartDate().atZone(zoneId).toLocalDate();
@@ -172,8 +170,16 @@ public class SellService {
 
             report.add(new ProductDaySell(totalAmount, totalQuantity, label));
         }
+        Integer totalQuantity = report.stream().map(ProductDaySell::getQuantity).reduce(Integer::sum).get();
+        BigDecimal totalPrice = report.stream().map(ProductDaySell::getPrice).reduce(BigDecimal::add).get();
+        Instant startDateOrder = startDate.atStartOfDay(zoneId).toInstant();
+        Instant endDateOrder = endDate.atStartOfDay(zoneId).toInstant();
 
-        return report;
+        List<Order> orders = orderService.findSuccessOrderBetweenDates(startDateOrder,endDateOrder);
+        int totalSuccessOrder = orders.size();
+        BigDecimal averageOrderAmount = totalPrice.divide(BigDecimal.valueOf(totalSuccessOrder),2, RoundingMode.HALF_UP);
+
+        return new ProductDaySellAdmin(report.stream().sorted(Comparator.comparing(ProductDaySell::getDate)).toList(), totalQuantity, totalPrice,totalSuccessOrder,averageOrderAmount);
     }
 
 

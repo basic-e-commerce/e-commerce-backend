@@ -404,6 +404,12 @@ public class OrderService {
 
     }
 
+    public List<Order> findSuccessOrderBetweenDates(Instant startDate, Instant endDate) {
+        Sort sort = Sort.by(Sort.Direction.DESC,"createdAt");
+        Specification<Order> where = Specification.where(hasStatus(OrderStatus.Status.APPROVED).and(hasDateBetween(startDate, endDate)));
+        return orderRepository.findAll(where, sort);
+    }
+
 
 
 
@@ -431,6 +437,22 @@ public class OrderService {
     public List<OrderDetailDto> getAll() {
         return orderRepository.findAll().stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
     }
+
+    public Specification<Order> hasDateBetween(Instant startDate, Instant endDate) {
+        return (Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            if (startDate == null && endDate == null) {
+                return null;
+            }
+            if (startDate != null && endDate != null) {
+                return cb.between(root.get("createdAt"), startDate, endDate);
+            }
+            if (startDate != null) {
+                return cb.greaterThanOrEqualTo(root.get("createdAt"), startDate);
+            }
+            return cb.lessThanOrEqualTo(root.get("createdAt"), endDate);
+        };
+    }
+
 
     public OrderDetailDto findOrderDetailByOrderCode(String orderCode) {
         return orderBuilder.orderToOrderDetailDto(findByOrderCode(orderCode));
