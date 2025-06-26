@@ -32,7 +32,7 @@ public class SellController {
         return new ResponseEntity<>(sellService.getOrderProductsDaySell(productSellFilterRequestDto), HttpStatus.OK);
     }
 
-    @GetMapping("/customer-register")
+    @PostMapping("/customer-register")
     public ResponseEntity<Integer> newCustomerRegister(@RequestBody TimeDto timeDto){
         return new ResponseEntity<>(sellService.newCustomerRegister(timeDto), HttpStatus.OK);
 
