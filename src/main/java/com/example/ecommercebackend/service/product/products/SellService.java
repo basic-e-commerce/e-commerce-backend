@@ -84,13 +84,13 @@ public class SellService {
 
         LocalDate startDate = filter.getStartDate().atZone(zoneId).toLocalDate();
         LocalDate endDate = filter.getEndDate().atZone(zoneId).toLocalDate();
+        if (endDate.isAfter(LocalDate.now())) {
+            endDate = LocalDate.now();
+        }
 
         Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
         Instant endInstant = endDate.plusDays(1).atStartOfDay(zoneId).toInstant().minusMillis(1);
 
-        if (endInstant.isAfter(Instant.now())) {
-            endInstant = Instant.now();
-        }
 
         // Minimum tarih kontrolü (opsiyonel)
         LocalDate minDate = LocalDate.of(2025, 6, 1);
