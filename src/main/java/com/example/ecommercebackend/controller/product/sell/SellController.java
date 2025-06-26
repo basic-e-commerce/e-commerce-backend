@@ -2,11 +2,13 @@ package com.example.ecommercebackend.controller.product.sell;
 
 
 import com.example.ecommercebackend.dto.product.sell.*;
+import com.example.ecommercebackend.dto.user.TimeDto;
 import com.example.ecommercebackend.service.product.products.SellService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -28,6 +30,12 @@ public class SellController {
     @PostMapping("/day-sell")
     public ResponseEntity<ProductDaySellAdmin> getSellProductsDaySell(@RequestBody ProductSellDayFilterRequestDto productSellFilterRequestDto) {
         return new ResponseEntity<>(sellService.getOrderProductsDaySell(productSellFilterRequestDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/customer-register")
+    public ResponseEntity<Integer> newCustomerRegister(@RequestBody TimeDto timeDto){
+        return new ResponseEntity<>(sellService.newCustomerRegister(timeDto), HttpStatus.OK);
+
     }
 
 

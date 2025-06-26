@@ -10,6 +10,8 @@ import com.example.ecommercebackend.dto.user.customer.CustomerUpdateDto;
 import com.example.ecommercebackend.dto.user.customer.PasswordUpdateDto;
 import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.order.Order;
+import com.example.ecommercebackend.entity.product.products.Product;
+import com.example.ecommercebackend.entity.product.products.Sell;
 import com.example.ecommercebackend.entity.user.*;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
@@ -20,13 +22,20 @@ import com.example.ecommercebackend.repository.user.CustomerRepository;
 import com.example.ecommercebackend.service.mail.MailService;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import com.example.ecommercebackend.service.redis.RedisService;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -338,5 +347,29 @@ public class CustomerService {
             return new CustomerProfileDto(customer.getFirstName(),customer.getLastName(),customer.getUsername(),phone);
         }else
             throw new BadRequestException("Customer Not Authenticated");
+    }
+
+    public static Specification<Customer> hasDateBetween(Instant start, Instant end) {
+        return (Root<Customer> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Predicate predicate = cb.conjunction();
+            if (start != null) {
+                predicate = cb.and(predicate, cb.greaterThanOrEqualTo(root.get("createdAt"), start));
+            }
+            if (end != null) {
+                predicate = cb.and(predicate, cb.lessThanOrEqualTo(root.get("createdAt"), end));
+            }
+            return predicate;
+        };
+    }
+
+    public List<Customer> getAllBetweenAddress(Instant startDate, Instant endDate) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
+        Specification<Customer> where = Specification.where(hasDateBetween(startDate, endDate)).and(isEnable(true));
+        return customerRepository.findAll(where,sort);
+    }
+
+    public Specification<Customer> isEnable(Boolean isEnable) {
+        return (Root<Customer> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                cb.equal(root.get("enabled"), isEnable);
     }
 }

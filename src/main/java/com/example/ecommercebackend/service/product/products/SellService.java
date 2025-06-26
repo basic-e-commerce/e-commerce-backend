@@ -1,17 +1,21 @@
 package com.example.ecommercebackend.service.product.products;
 
+import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.sell.SellBuilder;
 import com.example.ecommercebackend.dto.product.sell.*;
+import com.example.ecommercebackend.dto.user.TimeDto;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.products.Sell;
+import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.repository.product.products.SellRepository;
 import com.example.ecommercebackend.service.payment.PaymentService;
 import com.example.ecommercebackend.service.product.order.OrderService;
+import com.example.ecommercebackend.service.user.CustomerService;
 import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.PageRequest;
@@ -33,12 +37,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class SellService {
+    private final CustomerService customerService;
     private final SellRepository sellRepository;
     private final ProductService productService;
     private final SellBuilder sellBuilder;
     private final OrderService orderService;
 
-    public SellService(SellRepository sellRepository, ProductService productService, SellBuilder sellBuilder, OrderService orderService) {
+    public SellService(CustomerService customerService, SellRepository sellRepository, ProductService productService, SellBuilder sellBuilder, OrderService orderService) {
+        this.customerService = customerService;
         this.sellRepository = sellRepository;
         this.productService = productService;
         this.sellBuilder = sellBuilder;
@@ -192,6 +198,11 @@ public class SellService {
         );
     }
 
+    public Integer newCustomerRegister(@NotNullParam TimeDto timeDto) {
+        List<Customer> customers = customerService.getAllBetweenAddress(timeDto.getStartDate(),timeDto.getEndDate());
+        return customers.size();
+    }
+
 
 
 
@@ -233,24 +244,6 @@ public class SellService {
             return predicate;
         };
     }
-
-
-    public Specification<Sell> hasDate(LocalDate date) {
-        return (Root<Sell> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            if (date == null) {
-                return null;
-            }
-
-            ZoneId zoneId = ZoneId.of("Europe/Istanbul");
-
-            Instant startOfDay = date.atStartOfDay(zoneId).toInstant();
-            Instant endOfDay = date.plusDays(1).atStartOfDay(zoneId).toInstant();
-
-            return cb.between(root.get("sellDate"), startOfDay, endOfDay);
-        };
-    }
-
-
 
 
 
