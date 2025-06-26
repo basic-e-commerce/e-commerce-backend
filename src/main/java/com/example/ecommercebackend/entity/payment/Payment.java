@@ -1,10 +1,12 @@
 package com.example.ecommercebackend.entity.payment;
 
 import com.example.ecommercebackend.entity.product.order.Order;
+import com.example.ecommercebackend.entity.product.products.Sell;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
 @Table(name = "payment")
@@ -25,6 +27,9 @@ public class Payment {
     private String paymentUniqId;
     private BigDecimal totalAmount;
     private int installment;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Sell> sells;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus = PaymentStatus.PROCESS;
@@ -171,6 +176,14 @@ public class Payment {
 
     public void setInstallment(int installment) {
         this.installment = installment;
+    }
+
+    public Set<Sell> getSells() {
+        return sells;
+    }
+
+    public void setSells(Set<Sell> sells) {
+        this.sells = sells;
     }
 
     public enum PaymentStatus {

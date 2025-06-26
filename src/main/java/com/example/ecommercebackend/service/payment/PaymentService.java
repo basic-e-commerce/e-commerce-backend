@@ -8,6 +8,7 @@ import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.invoice.Invoice;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
+import com.example.ecommercebackend.entity.product.products.Sell;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.NotFoundException;
@@ -26,8 +27,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -128,6 +131,10 @@ public class PaymentService {
 
             // update orderstatus approved,green
             Order order = payment.getOrder();
+
+            Set<Sell> collect = order.getOrderItems().stream().map(sellService::save).collect(Collectors.toSet());
+            payment.setSells(collect);
+
             Invoice invoice = order.getInvoice();
             invoice.setPayment(payment);
             System.out.println("order firstname: "+order.getFirstName());
@@ -148,7 +155,6 @@ public class PaymentService {
                 }
             }
             // create save
-            order.getOrderItems().forEach(sellService::save);
             String redirectUrl = "https://litysofttest1.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
             //mailService.send(order.getUsername(),"Siparişiniz onaylandı","Order code: "+ order.getOrderCode());
             httpServletResponse.sendRedirect(redirectUrl);
