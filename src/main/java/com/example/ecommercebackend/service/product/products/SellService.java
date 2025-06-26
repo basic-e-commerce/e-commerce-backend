@@ -93,8 +93,9 @@ public class SellService {
                 hasDateBetween(startInstant, endInstant).and(hasProducts(filter.getProductId())))
         );
         LocalDate minDate = LocalDate.of(2025, 6, 1);
+        Instant minInstant = minDate.atStartOfDay(zoneId).toInstant();
 
-        Map<String, List<Sell>> sellsByPeriod = sells.stream().filter(sell -> !sell.getSellDate().isBefore(minDate.atStartOfDay(zoneId).toInstant()))
+        Map<String, List<Sell>> sellsByPeriod = sells.stream().filter(sell -> !sell.getSellDate().isBefore(minInstant))
                 .collect(Collectors.groupingBy(sell -> {
                     LocalDate date = sell.getSellDate().atZone(zoneId).toLocalDate();
 
@@ -117,6 +118,12 @@ public class SellService {
             case "YEAR" -> Period.ofYears(1);
             default -> throw new BadRequestException("Invalid period type. Use DAY, WEEK, MONTH, or YEAR.");
         };
+
+        LocalDate minInstantToLocalDate = minInstant.atZone(zoneId).toLocalDate();
+
+        if (minInstantToLocalDate.isBefore(startDate)) {
+            startDate = minInstantToLocalDate;
+        }
 
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plus(step)) {
             String label = switch (filter.getPeriodType().toUpperCase()) {
