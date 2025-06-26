@@ -121,7 +121,7 @@ public class SellService {
 
         LocalDate minInstantToLocalDate = minInstant.atZone(zoneId).toLocalDate();
 
-        if (minInstantToLocalDate.isBefore(startDate)) {
+        if (minInstantToLocalDate.isAfter(startDate)) {
             startDate = minInstantToLocalDate;
         }
 
