@@ -33,9 +33,14 @@ public class SellController {
     }
 
     @PostMapping("/customer-register")
-    public ResponseEntity<Integer> newCustomerRegister(@RequestBody TimeDto timeDto){
+    public ResponseEntity<Integer> newCustomerRegister(@RequestBody(required = false) TimeDto timeDto){
         return new ResponseEntity<>(sellService.newCustomerRegister(timeDto), HttpStatus.OK);
 
+    }
+
+    @PostMapping("/sell-product")
+    public ResponseEntity<List<ProductSmallSellDto>> getSellProduct(@RequestBody(required = false) TimeDto timeDto) {
+        return new ResponseEntity<>(sellService.getSellProduct(timeDto), HttpStatus.OK);
     }
 
 

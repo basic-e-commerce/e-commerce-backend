@@ -2,6 +2,8 @@ package com.example.ecommercebackend.service.product.products;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.sell.SellBuilder;
+import com.example.ecommercebackend.dto.file.ImageDetailDto;
+import com.example.ecommercebackend.dto.product.products.ProductSmallDto;
 import com.example.ecommercebackend.dto.product.sell.*;
 import com.example.ecommercebackend.dto.user.TimeDto;
 import com.example.ecommercebackend.entity.payment.Payment;
@@ -203,7 +205,43 @@ public class SellService {
         return customers.size();
     }
 
+    public List<ProductSmallSellDto> getSellProduct(@NotNullParam TimeDto timeDto) {
+        List<Sell> sells = sellRepository.findAll(
+                hasDateBetween(timeDto.getStartDate(), timeDto.getEndDate())
+        );
 
+        // Ürünleri productId'ye göre gruplandır
+        Map<Integer, ProductSmallSellDto> productMap = new HashMap<>();
+
+        for (Sell sell : sells) {
+            Integer productId = sell.getProduct().getId();
+            ProductSmallSellDto dto = productMap.get(productId);
+
+            if (dto == null) {
+                dto = new ProductSmallSellDto(
+                        productId,
+                        sell.getProduct().getProductName(),
+                        new ImageDetailDto(
+                                sell.getProduct().getCoverImage().getId(),
+                                sell.getProduct().getCoverImage().getName(),
+                                sell.getProduct().getCoverImage().getResolution(),
+                                sell.getProduct().getCoverImage().getName(),
+                                sell.getProduct().getCoverImage().getUrl(),
+                                0
+                        ),
+                        sell.getQuantity()
+                );
+                productMap.put(productId, dto);
+            } else {
+                dto.setQuantity(dto.getQuantity() + sell.getQuantity());
+            }
+        }
+
+        return new ArrayList<>(productMap.values())
+                .stream()
+                .sorted(Comparator.comparing(ProductSmallSellDto::getQuantity).reversed()) // Azalan sırada
+                .collect(Collectors.toList());
+    }
 
 
 
