@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.product.products;
 
 import com.example.ecommercebackend.builder.product.sell.SellBuilder;
 import com.example.ecommercebackend.dto.product.sell.*;
+import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
@@ -9,6 +10,7 @@ import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.products.Sell;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.repository.product.products.SellRepository;
+import com.example.ecommercebackend.service.payment.PaymentService;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
@@ -77,110 +79,115 @@ public class SellService {
         return sellRepository.findAll(specification,pageable).stream().map(sellBuilder::sellToProductSellDto).collect(Collectors.toList());
     }
 
-    public ProductDaySellAdmin getSellProductsDaySell(ProductSellDayFilterRequestDto filter) {
+    public ProductDaySellAdmin getOrderProductsDaySell(ProductSellDayFilterRequestDto filter) {
         ZoneId zoneId = ZoneId.of("Europe/Istanbul");
 
         LocalDate startDate = filter.getStartDate().atZone(zoneId).toLocalDate();
         LocalDate endDate = filter.getEndDate().atZone(zoneId).toLocalDate();
 
-        // Instant tarih aralığı oluştur (günün başlangıcı ve bitişi)
         Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
         Instant endInstant = endDate.plusDays(1).atStartOfDay(zoneId).toInstant().minusMillis(1);
 
-        // Tüm satışları tek sorguda çek
-        List<Sell> sells = sellRepository.findAll(Specification.where(
-                hasDateBetween(startInstant, endInstant).and(hasProducts(filter.getProductId())))
-        );
-
-        // Örnek minimum tarih (bunu ihtiyaç halinde dışarıdan parametre yapabilirsin)
+        // Minimum tarih kontrolü (opsiyonel)
         LocalDate minDate = LocalDate.of(2025, 6, 1);
         Instant minInstant = minDate.atStartOfDay(zoneId).toInstant();
 
-        // Filtrelenmiş ve periyoda göre gruplanmış satışlar
-        Map<String, List<Sell>> sellsByPeriod = sells.stream()
-                .filter(sell -> !sell.getSellDate().isBefore(minInstant))
-                .collect(Collectors.groupingBy(sell -> {
-                    LocalDate date = sell.getSellDate().atZone(zoneId).toLocalDate();
+        if (startInstant.isBefore(minInstant)) {
+            startInstant = minInstant;
+        }
+
+        // Orderları getir
+        List<Order> orders = orderService.findSuccessOrderBetweenDates(startInstant, endInstant);
+
+        // Periyoda göre gruplama
+        Map<String, List<Order>> ordersByPeriod = orders.stream()
+                .filter(order -> !order.getCreatedAt().isBefore(minInstant))
+                .collect(Collectors.groupingBy(order -> {
+                    LocalDate date = order.getCreatedAt().atZone(zoneId).toLocalDate();
                     String periodType = filter.getPeriodType().toUpperCase();
 
-                    // Burada da gruplama yaparken label hala periyodun başlangıç tarihine göre
-                    // O yüzden label’ı son güne çevireceğiz, aynısı döngüde de olacak
                     return switch (periodType) {
                         case "DAY" -> date.format(DateTimeFormatter.ISO_LOCAL_DATE);
-                        case "WEEK" -> {
-                            LocalDate endOfWeek = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-                            yield endOfWeek.format(DateTimeFormatter.ISO_LOCAL_DATE);
-                        }
-                        case "MONTH" -> {
-                            LocalDate endOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
-                            yield endOfMonth.format(DateTimeFormatter.ISO_LOCAL_DATE);
-                        }
-                        case "YEAR" -> {
-                            LocalDate endOfYear = date.with(TemporalAdjusters.lastDayOfYear());
-                            yield endOfYear.format(DateTimeFormatter.ISO_LOCAL_DATE);
-                        }
-                        default -> throw new IllegalArgumentException("Invalid period type. Use DAY, WEEK, MONTH, or YEAR.");
+                        case "WEEK" -> date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+                                .format(DateTimeFormatter.ISO_LOCAL_DATE);
+                        case "MONTH" -> date.with(TemporalAdjusters.lastDayOfMonth())
+                                .format(DateTimeFormatter.ISO_LOCAL_DATE);
+                        case "YEAR" -> date.with(TemporalAdjusters.lastDayOfYear())
+                                .format(DateTimeFormatter.ISO_LOCAL_DATE);
+                        default -> throw new IllegalArgumentException("Invalid period type.");
                     };
                 }));
 
-        List<ProductDaySell> report = new ArrayList<>();
-
+        // Step belirleme
         TemporalAmount step = switch (filter.getPeriodType().toUpperCase()) {
             case "DAY" -> Period.ofDays(1);
             case "WEEK" -> Period.ofWeeks(1);
             case "MONTH" -> Period.ofMonths(1);
             case "YEAR" -> Period.ofYears(1);
-            default -> throw new BadRequestException("Invalid period type. Use DAY, WEEK, MONTH, or YEAR.");
+            default -> throw new BadRequestException("Invalid period type.");
         };
 
-        // minInstant’in LocalDate karşılığı
+        // Başlangıç tarih güncelleme (min kontrolü)
         LocalDate minInstantToLocalDate = minInstant.atZone(zoneId).toLocalDate();
-
         if (minInstantToLocalDate.isAfter(startDate)) {
             startDate = minInstantToLocalDate;
         }
 
+        List<ProductDaySell> report = new ArrayList<>();
+
+        // Periyodlara göre rapor oluşturma
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plus(step)) {
             String label = switch (filter.getPeriodType().toUpperCase()) {
                 case "DAY" -> date.format(DateTimeFormatter.ISO_LOCAL_DATE);
-                case "WEEK" -> {
-                    LocalDate endOfWeek = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-                    yield endOfWeek.format(DateTimeFormatter.ISO_LOCAL_DATE);
-                }
-                case "MONTH" -> {
-                    LocalDate endOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
-                    yield endOfMonth.format(DateTimeFormatter.ISO_LOCAL_DATE);
-                }
-                case "YEAR" -> {
-                    LocalDate endOfYear = date.with(TemporalAdjusters.lastDayOfYear());
-                    yield endOfYear.format(DateTimeFormatter.ISO_LOCAL_DATE);
-                }
+                case "WEEK" -> date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE);
+                case "MONTH" -> date.with(TemporalAdjusters.lastDayOfMonth())
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE);
+                case "YEAR" -> date.with(TemporalAdjusters.lastDayOfYear())
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE);
                 default -> throw new IllegalArgumentException("Invalid period type.");
             };
 
-            List<Sell> periodSells = sellsByPeriod.getOrDefault(label, Collections.emptyList());
+            List<Order> periodOrders = ordersByPeriod.getOrDefault(label, Collections.emptyList());
 
-            BigDecimal totalAmount = periodSells.stream()
-                    .map(sell -> sell.getPrice().multiply(BigDecimal.valueOf(sell.getQuantity())))
+            BigDecimal totalAmount = periodOrders.stream()
+                    .map(Order::getTotalPrice)
+                    .filter(Objects::nonNull)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            int totalQuantity = periodSells.stream()
-                    .mapToInt(Sell::getQuantity)
+            int totalQuantity = periodOrders.stream()
+                    .mapToInt(order -> order.getOrderItems().stream()
+                            .mapToInt(OrderItem::getQuantity)
+                            .sum())
                     .sum();
 
             report.add(new ProductDaySell(totalAmount, totalQuantity, label));
         }
-        Integer totalQuantity = report.stream().map(ProductDaySell::getQuantity).reduce(Integer::sum).get();
-        BigDecimal totalPrice = report.stream().map(ProductDaySell::getPrice).reduce(BigDecimal::add).get();
-        Instant startDateOrder = startDate.atStartOfDay(zoneId).toInstant();
-        Instant endDateOrder = endDate.atStartOfDay(zoneId).toInstant();
 
-        List<Order> orders = orderService.findSuccessOrderBetweenDates(startDateOrder,endDateOrder);
+        // Genel toplamlar
+        int totalQuantity = report.stream()
+                .map(ProductDaySell::getQuantity)
+                .reduce(0, Integer::sum);
+
+        BigDecimal totalPrice = report.stream()
+                .map(ProductDaySell::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Ortalama sepet tutarı
         int totalSuccessOrder = orders.size();
-        BigDecimal averageOrderAmount = totalPrice.divide(BigDecimal.valueOf(totalSuccessOrder),2, RoundingMode.HALF_UP);
+        BigDecimal averageOrderAmount = totalSuccessOrder == 0
+                ? BigDecimal.ZERO
+                : totalPrice.divide(BigDecimal.valueOf(totalSuccessOrder), 2, RoundingMode.HALF_UP);
 
-        return new ProductDaySellAdmin(report.stream().sorted(Comparator.comparing(ProductDaySell::getDate)).toList(), totalQuantity, totalPrice,totalSuccessOrder,averageOrderAmount);
+        return new ProductDaySellAdmin(
+                report.stream().sorted(Comparator.comparing(ProductDaySell::getDate)).toList(),
+                totalQuantity,
+                totalPrice,
+                totalSuccessOrder,
+                averageOrderAmount
+        );
     }
+
 
 
 

@@ -27,7 +27,7 @@ public class SellController {
 
     @PostMapping("/day-sell")
     public ResponseEntity<ProductDaySellAdmin> getSellProductsDaySell(@RequestBody ProductSellDayFilterRequestDto productSellFilterRequestDto) {
-        return new ResponseEntity<>(sellService.getSellProductsDaySell(productSellFilterRequestDto), HttpStatus.OK);
+        return new ResponseEntity<>(sellService.getOrderProductsDaySell(productSellFilterRequestDto), HttpStatus.OK);
     }
 
 

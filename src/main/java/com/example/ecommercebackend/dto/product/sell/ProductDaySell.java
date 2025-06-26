@@ -3,9 +3,9 @@ package com.example.ecommercebackend.dto.product.sell;
 import java.math.BigDecimal;
 
 public class ProductDaySell {
-    private BigDecimal price;
-    private int quantity;
-    private String date;
+    private BigDecimal price;  //toplam fiyat
+    private int quantity;   // toplam sipariş sayısı
+    private String date;  //günün tarihi
 
     public ProductDaySell(BigDecimal price, int quantity, String date) {
         this.price = price;
