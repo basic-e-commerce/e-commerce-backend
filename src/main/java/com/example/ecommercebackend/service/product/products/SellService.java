@@ -24,13 +24,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.TemporalAmount;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -92,22 +90,37 @@ public class SellService {
         List<Sell> sells = sellRepository.findAll(Specification.where(
                 hasDateBetween(startInstant, endInstant).and(hasProducts(filter.getProductId())))
         );
+
+        // Örnek minimum tarih (bunu ihtiyaç halinde dışarıdan parametre yapabilirsin)
         LocalDate minDate = LocalDate.of(2025, 6, 1);
         Instant minInstant = minDate.atStartOfDay(zoneId).toInstant();
 
-        Map<String, List<Sell>> sellsByPeriod = sells.stream().filter(sell -> !sell.getSellDate().isBefore(minInstant))
+        // Filtrelenmiş ve periyoda göre gruplanmış satışlar
+        Map<String, List<Sell>> sellsByPeriod = sells.stream()
+                .filter(sell -> !sell.getSellDate().isBefore(minInstant))
                 .collect(Collectors.groupingBy(sell -> {
                     LocalDate date = sell.getSellDate().atZone(zoneId).toLocalDate();
+                    String periodType = filter.getPeriodType().toUpperCase();
 
-                    return switch (filter.getPeriodType().toUpperCase()) {
+                    // Burada da gruplama yaparken label hala periyodun başlangıç tarihine göre
+                    // O yüzden label’ı son güne çevireceğiz, aynısı döngüde de olacak
+                    return switch (periodType) {
                         case "DAY" -> date.format(DateTimeFormatter.ISO_LOCAL_DATE);
-                        case "WEEK" -> date.getYear() + "-W" + String.format("%02d", date.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
-                        case "MONTH" -> date.getYear() + "-" + String.format("%02d", date.getMonthValue());
-                        case "YEAR" -> String.valueOf(date.getYear());
+                        case "WEEK" -> {
+                            LocalDate endOfWeek = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+                            yield endOfWeek.format(DateTimeFormatter.ISO_LOCAL_DATE);
+                        }
+                        case "MONTH" -> {
+                            LocalDate endOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
+                            yield endOfMonth.format(DateTimeFormatter.ISO_LOCAL_DATE);
+                        }
+                        case "YEAR" -> {
+                            LocalDate endOfYear = date.with(TemporalAdjusters.lastDayOfYear());
+                            yield endOfYear.format(DateTimeFormatter.ISO_LOCAL_DATE);
+                        }
                         default -> throw new IllegalArgumentException("Invalid period type. Use DAY, WEEK, MONTH, or YEAR.");
                     };
                 }));
-
 
         List<ProductDaySell> report = new ArrayList<>();
 
@@ -119,6 +132,7 @@ public class SellService {
             default -> throw new BadRequestException("Invalid period type. Use DAY, WEEK, MONTH, or YEAR.");
         };
 
+        // minInstant’in LocalDate karşılığı
         LocalDate minInstantToLocalDate = minInstant.atZone(zoneId).toLocalDate();
 
         if (minInstantToLocalDate.isAfter(startDate)) {
@@ -128,9 +142,18 @@ public class SellService {
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plus(step)) {
             String label = switch (filter.getPeriodType().toUpperCase()) {
                 case "DAY" -> date.format(DateTimeFormatter.ISO_LOCAL_DATE);
-                case "WEEK" -> date.getYear() + "-W" + String.format("%02d", date.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
-                case "MONTH" -> date.getYear() + "-" + String.format("%02d", date.getMonthValue());
-                case "YEAR" -> String.valueOf(date.getYear());
+                case "WEEK" -> {
+                    LocalDate endOfWeek = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+                    yield endOfWeek.format(DateTimeFormatter.ISO_LOCAL_DATE);
+                }
+                case "MONTH" -> {
+                    LocalDate endOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
+                    yield endOfMonth.format(DateTimeFormatter.ISO_LOCAL_DATE);
+                }
+                case "YEAR" -> {
+                    LocalDate endOfYear = date.with(TemporalAdjusters.lastDayOfYear());
+                    yield endOfYear.format(DateTimeFormatter.ISO_LOCAL_DATE);
+                }
                 default -> throw new IllegalArgumentException("Invalid period type.");
             };
 
@@ -146,9 +169,10 @@ public class SellService {
 
             report.add(new ProductDaySell(totalAmount, totalQuantity, label));
         }
-        return report;
 
+        return report;
     }
+
 
 
 
