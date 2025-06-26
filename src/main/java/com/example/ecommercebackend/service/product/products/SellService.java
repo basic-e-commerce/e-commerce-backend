@@ -92,8 +92,9 @@ public class SellService {
         List<Sell> sells = sellRepository.findAll(Specification.where(
                 hasDateBetween(startInstant, endInstant).and(hasProducts(filter.getProductId())))
         );
+        LocalDate minDate = LocalDate.of(2025, 6, 1);
 
-        Map<String, List<Sell>> sellsByPeriod = sells.stream()
+        Map<String, List<Sell>> sellsByPeriod = sells.stream().filter(sell -> !sell.getSellDate().isBefore(minDate.atStartOfDay(zoneId).toInstant()))
                 .collect(Collectors.groupingBy(sell -> {
                     LocalDate date = sell.getSellDate().atZone(zoneId).toLocalDate();
 
