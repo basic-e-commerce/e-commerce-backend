@@ -13,18 +13,20 @@ public class OrderDetailDto {
     private String firstName;
     private String lastName;
     private BigDecimal totalPrice;
+    private BigDecimal customerPrice;
     private AddressOrderDetailDto address;
     private List<OrderItemResponseDto> orderItemResponseDtos;
     private int installment;
     private String orderStatus;
     private InvoiceResponseDto invoiceResponseDto;
 
-    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, int installment, String orderStatus) {
+    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, int installment, String orderStatus) {
         this.id = id;
         this.orderCode = orderCode;
         this.firstName = firstName;
         this.lastName = lastName;
         this.totalPrice = totalPrice;
+        this.customerPrice = customerPrice;
         this.address = address;
         this.orderItemResponseDtos = orderItemResponseDtos;
         this.installment = installment;
@@ -109,5 +111,13 @@ public class OrderDetailDto {
 
     public void setInvoiceResponseDto(InvoiceResponseDto invoiceResponseDto) {
         this.invoiceResponseDto = invoiceResponseDto;
+    }
+
+    public BigDecimal getCustomerPrice() {
+        return customerPrice;
+    }
+
+    public void setCustomerPrice(BigDecimal customerPrice) {
+        this.customerPrice = customerPrice;
     }
 }

@@ -47,6 +47,7 @@ public class OrderBuilder {
                 order.getUser().getFirstName(),
                 order.getUser().getLastName(),
                 order.getTotalPrice(),
+                order.getCustomerPrice(),
                 new AddressOrderDetailDto(
                         order.getInvoice().getFirstName(),
                         order.getInvoice().getLastName(),
