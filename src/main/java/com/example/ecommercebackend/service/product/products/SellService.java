@@ -34,10 +34,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.TemporalAmount;
+import java.time.temporal.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -105,47 +102,23 @@ public class SellService {
         Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
         Instant endInstant = endDate.plusDays(1).atStartOfDay(zoneId).toInstant().minusMillis(1);
 
-
-        // Minimum tarih kontrolü (opsiyonel)
         LocalDate minDate = LocalDate.of(2025, 6, 1);
         Instant minInstant = minDate.atStartOfDay(zoneId).toInstant();
-
         if (startInstant.isBefore(minInstant)) {
             startInstant = minInstant;
         }
 
-        // Orderları getir
         List<Order> orders = orderService.findSuccessOrderBetweenDates(startInstant, endInstant);
 
-        // Periyoda göre gruplama
         Map<String, List<Order>> ordersByPeriod = orders.stream()
                 .filter(order -> !order.getCreatedAt().isBefore(minInstant))
                 .collect(Collectors.groupingBy(order -> {
                     LocalDate date = order.getCreatedAt().atZone(zoneId).toLocalDate();
-                    String periodType = filter.getPeriodType().toUpperCase();
-
-                    return switch (periodType) {
-                        case "DAY" -> date.format(DateTimeFormatter.ISO_LOCAL_DATE);
-                        case "WEEK" -> date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-                                .format(DateTimeFormatter.ISO_LOCAL_DATE);
-                        case "MONTH" -> date.with(TemporalAdjusters.lastDayOfMonth())
-                                .format(DateTimeFormatter.ISO_LOCAL_DATE);
-                        case "YEAR" -> date.with(TemporalAdjusters.lastDayOfYear())
-                                .format(DateTimeFormatter.ISO_LOCAL_DATE);
-                        default -> throw new IllegalArgumentException("Invalid period type.");
-                    };
+                    return getLabelForDate(date, filter.getPeriodType());
                 }));
 
-        // Step belirleme
-        TemporalAmount step = switch (filter.getPeriodType().toUpperCase()) {
-            case "DAY" -> Period.ofDays(1);
-            case "WEEK" -> Period.ofWeeks(1);
-            case "MONTH" -> Period.ofMonths(1);
-            case "YEAR" -> Period.ofYears(1);
-            default -> throw new BadRequestException("Invalid period type.");
-        };
+        TemporalAmount step = getStep(filter.getPeriodType());
 
-        // Başlangıç tarih güncelleme (min kontrolü)
         LocalDate minInstantToLocalDate = minInstant.atZone(zoneId).toLocalDate();
         if (minInstantToLocalDate.isAfter(startDate)) {
             startDate = minInstantToLocalDate;
@@ -153,18 +126,8 @@ public class SellService {
 
         List<ProductDaySell> report = new ArrayList<>();
 
-        // Periyodlara göre rapor oluşturma
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plus(step)) {
-            String label = switch (filter.getPeriodType().toUpperCase()) {
-                case "DAY" -> date.format(DateTimeFormatter.ISO_LOCAL_DATE);
-                case "WEEK" -> date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-                        .format(DateTimeFormatter.ISO_LOCAL_DATE);
-                case "MONTH" -> date.with(TemporalAdjusters.lastDayOfMonth())
-                        .format(DateTimeFormatter.ISO_LOCAL_DATE);
-                case "YEAR" -> date.with(TemporalAdjusters.lastDayOfYear())
-                        .format(DateTimeFormatter.ISO_LOCAL_DATE);
-                default -> throw new IllegalArgumentException("Invalid period type.");
-            };
+            String label = getLabelForDate(date, filter.getPeriodType());
 
             List<Order> periodOrders = ordersByPeriod.getOrDefault(label, Collections.emptyList());
 
@@ -182,7 +145,6 @@ public class SellService {
             report.add(new ProductDaySell(totalAmount, totalQuantity, label));
         }
 
-        // Genel toplamlar
         int totalQuantity = report.stream()
                 .map(ProductDaySell::getQuantity)
                 .reduce(0, Integer::sum);
@@ -191,7 +153,6 @@ public class SellService {
                 .map(ProductDaySell::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Ortalama sepet tutarı
         int totalSuccessOrder = orders.size();
         BigDecimal averageOrderAmount = totalSuccessOrder == 0
                 ? BigDecimal.ZERO
@@ -205,6 +166,33 @@ public class SellService {
                 averageOrderAmount
         );
     }
+
+    private TemporalAmount getStep(String periodType) {
+        return switch (periodType.toUpperCase()) {
+            case "DAY" -> Period.ofDays(1);
+            case "WEEK" -> Period.ofWeeks(1);
+            case "MONTH" -> Period.ofMonths(1);
+            case "YEAR" -> Period.ofYears(1);
+            default -> throw new BadRequestException("Invalid period type.");
+        };
+    }
+    private String getLabelForDate(LocalDate date, String periodType) {
+        periodType = periodType.toUpperCase();
+        return switch (periodType) {
+            case "DAY" -> date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+            case "WEEK" -> {
+                WeekFields weekFields = WeekFields.of(Locale.getDefault());
+                int weekNumber = date.get(weekFields.weekOfWeekBasedYear());
+                int year = date.get(weekFields.weekBasedYear());
+                yield year + "-W" + String.format("%02d", weekNumber);
+            }
+            case "MONTH" -> date.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+            case "YEAR" -> String.valueOf(date.getYear());
+            default -> throw new IllegalArgumentException("Invalid period type.");
+        };
+    }
+
+
 
     public Integer newCustomerRegister(@NotNullParam TimeDto timeDto) {
         List<Customer> customers = customerService.getAllBetweenAddress(timeDto.getStartDate(),timeDto.getEndDate());
