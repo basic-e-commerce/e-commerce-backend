@@ -236,11 +236,13 @@ public class CardItemService {
     }
 
 
-
-
-
+    public List<CardItem> findAll() {
+        return cardItemRepository.findAll();
+    }
 
     public Merchant getMerchant() {
         return merchantService.getMerchant();
     }
+
+
 }

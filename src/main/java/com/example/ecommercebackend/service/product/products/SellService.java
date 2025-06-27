@@ -3,10 +3,12 @@ package com.example.ecommercebackend.service.product.products;
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.sell.SellBuilder;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
+import com.example.ecommercebackend.dto.product.card.ProductCardItemDto;
 import com.example.ecommercebackend.dto.product.products.ProductSmallDto;
 import com.example.ecommercebackend.dto.product.sell.*;
 import com.example.ecommercebackend.dto.user.TimeDto;
 import com.example.ecommercebackend.entity.payment.Payment;
+import com.example.ecommercebackend.entity.product.card.CardItem;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
@@ -16,6 +18,8 @@ import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.repository.product.products.SellRepository;
 import com.example.ecommercebackend.service.payment.PaymentService;
+import com.example.ecommercebackend.service.product.card.CardItemService;
+import com.example.ecommercebackend.service.product.card.CardService;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import com.example.ecommercebackend.service.user.CustomerService;
 import jakarta.persistence.criteria.*;
@@ -44,13 +48,15 @@ public class SellService {
     private final ProductService productService;
     private final SellBuilder sellBuilder;
     private final OrderService orderService;
+    private final CardItemService cardItemService;
 
-    public SellService(CustomerService customerService, SellRepository sellRepository, ProductService productService, SellBuilder sellBuilder, OrderService orderService) {
+    public SellService(CustomerService customerService, SellRepository sellRepository, ProductService productService, SellBuilder sellBuilder, OrderService orderService, CardItemService cardItemService) {
         this.customerService = customerService;
         this.sellRepository = sellRepository;
         this.productService = productService;
         this.sellBuilder = sellBuilder;
         this.orderService = orderService;
+        this.cardItemService = cardItemService;
     }
 
     @Transactional
@@ -243,6 +249,40 @@ public class SellService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductCardItemDto> cardItemContainsProduct() {
+        List<CardItem> cardItems = cardItemService.findAll();
+
+        Map<Product,ProductCardItemDto> productListMap = new HashMap<>();
+
+        for (CardItem cardItem : cardItems) {
+            Product product = cardItem.getProduct();
+            ProductCardItemDto productCardItemDto = productListMap.get(product);
+
+            if (productCardItemDto == null) {
+                ProductCardItemDto dto = new ProductCardItemDto(
+                        cardItem.getProduct().getId(),
+                        cardItem.getProduct().getProductName(),
+                        new ImageDetailDto(
+                                cardItem.getProduct().getCoverImage().getId(),
+                                cardItem.getProduct().getCoverImage().getName(),
+                                cardItem.getProduct().getCoverImage().getResolution(),
+                                cardItem.getProduct().getCoverImage().getName(),
+                                cardItem.getProduct().getCoverImage().getUrl(),
+                                0
+                        ),
+                        cardItem.getQuantity()
+                );
+                productListMap.put(product, dto);
+            }else {
+                productCardItemDto.setQuantity(productCardItemDto.getQuantity() + cardItem.getQuantity());
+            }
+        }
+        return new ArrayList<>(productListMap.values())
+                .stream()
+                .sorted(Comparator.comparing(ProductCardItemDto::getQuantity))
+                .collect(Collectors.toList());
+    }
+
 
 
     private Specification<Sell> getSellProductsFilter(ProductSellFilterRequestDto productSellFilterRequestDto) {
@@ -250,6 +290,8 @@ public class SellService {
                 .and(hasStartDate(productSellFilterRequestDto.getStartDate()))
                 .and(hasEndDate(productSellFilterRequestDto.getEndDate()));
     }
+
+
 
 
     public Specification<Sell> hasProducts(Integer productId) {
@@ -270,7 +312,7 @@ public class SellService {
                 endDate == null ? null : cb.lessThanOrEqualTo(root.get("sellDate"), endDate);
     }
 
-    public static Specification<Sell> hasDateBetween(Instant start, Instant end) {
+    public Specification<Sell> hasDateBetween(Instant start, Instant end) {
         return (Root<Sell> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             Predicate predicate = cb.conjunction();
             if (start != null) {
@@ -282,7 +324,6 @@ public class SellService {
             return predicate;
         };
     }
-
 
 
 }

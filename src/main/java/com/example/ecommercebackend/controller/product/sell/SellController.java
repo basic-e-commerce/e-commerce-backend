@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.controller.product.sell;
 
 
+import com.example.ecommercebackend.dto.product.card.ProductCardItemDto;
 import com.example.ecommercebackend.dto.product.sell.*;
 import com.example.ecommercebackend.dto.user.TimeDto;
 import com.example.ecommercebackend.service.product.products.SellService;
@@ -42,6 +43,13 @@ public class SellController {
     public ResponseEntity<List<ProductSmallSellDto>> getSellProduct(@RequestBody(required = false) TimeDto timeDto) {
         return new ResponseEntity<>(sellService.getSellProduct(timeDto), HttpStatus.OK);
     }
+
+
+    @GetMapping("/card-contain-product")
+    public ResponseEntity<List<ProductCardItemDto>> cardItemContainsProduct(){
+        return new ResponseEntity<>(sellService.cardItemContainsProduct(), HttpStatus.OK);
+    }
+
 
 
 }
