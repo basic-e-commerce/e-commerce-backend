@@ -20,6 +20,12 @@ public class CategoryCreateDto {
         this.image = image;
     }
 
+    public CategoryCreateDto(String name, String description, Integer parentCategoryId) {
+        this.name = name;
+        this.description = description;
+        this.parentCategoryId = parentCategoryId;
+    }
+
     public String getName() {
         return name;
     }

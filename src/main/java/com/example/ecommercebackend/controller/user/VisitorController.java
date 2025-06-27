@@ -1,10 +1,13 @@
 package com.example.ecommercebackend.controller.user;
 
 import com.example.ecommercebackend.service.user.VisitorService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/visitors")
@@ -59,5 +62,10 @@ public class VisitorController {
     ) {
         LocalDate localDate = LocalDate.parse(date);
         return ResponseEntity.ok(visitorService.getDailyVisitor(localDate));
+    }
+
+    @GetMapping("/last-ten")
+    public ResponseEntity<Map<LocalDate,Long>> getLastTenVisitor() {
+        return new ResponseEntity<>(visitorService.getLastTenVisitor(), HttpStatus.OK);
     }
 }

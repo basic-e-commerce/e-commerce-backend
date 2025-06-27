@@ -1,0 +1,85 @@
+spring:
+  application:
+    name: e-commerce-basic
+
+  # http://localhost:8080/oauth2/authorization/google
+  # Datasource Configuration (Veritabanı Bağlantısı)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: HikariPool
+      maximum-pool-size: 20        # Aynı anda en fazla 20 aktif bağlantı
+      minimum-idle: 5              # Her zaman 5 hazır bağlantı beklesin
+      idle-timeout: 30000          # 30 saniye boşta kalan bağlantı kapansın
+      max-lifetime: 600000         # 10 dakika sonra bağlantı yenilensin
+      connection-timeout: 30000    # 30 saniyeden uzun sürede cevap alınmazsa hata ver
+
+  # JPA Hibernate Configuration
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      database: 0
+
+logging:
+  pattern:
+    console: ${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
+  level:
+    org.springframework:
+      security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
+      web: DEBUG
+
+upload:
+  file:
+    dir: /var/www/html/projects/ecommerce/images/
+    url: http://localhost:8083/api/v1/upload/
+    product:
+      size: 10485760
+
+cookie:
+  refreshTokenCookie:
+    secure: false
+    refreshmaxAge: 604800
+    sameSite: None
+    path: /api/v1/auth
+
+jwt:
+  accessExp: 900000
+  refreshAge: 604800000
+  secret: C2VB987vxNVXvn543xVvxmVX7BCVM432NxvbvbnVXncm
+  jwtheader: Authorization
+
+regex:
+  email: ".*"
+  password: ".*"
+
+payment:
+  iyzico:
+    apiKey: sandbox-JbYzNd3TVSGRKgrKKFiM5Ha7MJP7YZSo
+    secretKey: sandbox-mvXUSAUVAUhj7pNFFsbrKvWjGL5cEaUP
+    baseUrl: https://sandbox-api.iyzipay.com
+    callBack: /api/v1/payment/payCallBack
+
+domain:
+  test: http://localhost:8083
+server:
+  port: 8083
+
+mail:
+  from: fatihgs133@gmail.com
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /api/actuator

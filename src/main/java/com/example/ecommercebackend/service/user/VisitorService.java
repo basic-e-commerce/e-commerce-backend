@@ -10,6 +10,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Service
 public class VisitorService {
@@ -49,4 +51,16 @@ public class VisitorService {
         String xfHeader = request.getHeader("X-Forwarded-For");
         return xfHeader == null ? request.getRemoteAddr() : xfHeader.split(",")[0];
     }
+
+    public Map<LocalDate, Long> getLastTenVisitor() {
+        Map<LocalDate, Long> visitorsMap = new LinkedHashMap<>(); // sırayı korumak için LinkedHashMap kullanalım
+        LocalDate today = LocalDate.now();
+
+        for (int i = 9; i >= 0; i--) {  // 9'dan 0'a, son 10 gün (bugün dahil)
+            LocalDate date = today.minusDays(i);
+            Long count = redisService.getDailyVisitorCount(date);
+            visitorsMap.put(date, count != null ? count : 0L); // count null ise 0 koy
+        }
+
+        return visitorsMap;    }
 }
