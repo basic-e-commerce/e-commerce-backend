@@ -34,7 +34,7 @@ public class JavaMailStrategy implements IMailStrategy {
 
             return "Mail Gönderildi!";
         }catch (Exception e) {
-            throw new BadRequestException("Mail Gönderilemedi!");
+            throw new BadRequestException("Mail Gönderilemedi!"+e.getMessage());
         }
     }
 
