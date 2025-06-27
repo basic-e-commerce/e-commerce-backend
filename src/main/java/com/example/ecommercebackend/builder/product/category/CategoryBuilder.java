@@ -15,18 +15,22 @@ public class CategoryBuilder {
     }
 
     public CategoryDetailDto categoryToCategoryDetailDto(Category category) {
+        ImageDetailDto imageDetailDto = null;
+        if (category.getCoverImage() != null) {
+            imageDetailDto=new ImageDetailDto(
+                    category.getCoverImage().getId(),
+                    category.getCoverImage().getName(),
+                    category.getCoverImage().getResolution(),
+                    category.getCoverImage().getName(),
+                    category.getCoverImage().getUrl(),
+                    0);
+        }
         return new CategoryDetailDto(
                 category.getId(),
                 category.getCategoryName(),
                 category.getCategoryLinkName(),
                 category.getCategoryDescription(),
-                new ImageDetailDto(
-                        category.getCoverImage().getId(),
-                        category.getCoverImage().getName(),
-                        category.getCoverImage().getResolution(),
-                        category.getCoverImage().getName(),
-                        category.getCoverImage().getUrl(),
-                        0),
+                imageDetailDto,
                 category.isSubCategory()
         );
     }

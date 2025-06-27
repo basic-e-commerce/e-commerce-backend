@@ -1,5 +1,8 @@
 package com.example.ecommercebackend.service.user;
 
+import com.example.ecommercebackend.anotation.NotNullParam;
+import com.example.ecommercebackend.dto.user.TimeDto;
+import com.example.ecommercebackend.dto.user.visitor.VisitorDto;
 import com.example.ecommercebackend.service.redis.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -62,5 +66,22 @@ public class VisitorService {
             visitorsMap.put(date, count != null ? count : 0L); // count null ise 0 koy
         }
 
-        return visitorsMap;    }
+        return visitorsMap;
+    }
+
+    public VisitorDto getDailyVisitor(@NotNullParam TimeDto timeDto) {
+        Map<LocalDate, Long> visitorsMap = new LinkedHashMap<>();
+        ZoneId zoneId = ZoneId.of("Europe/Istanbul");
+
+        LocalDate startDate = timeDto.getStartDate().atZone(zoneId).toLocalDate();
+        LocalDate endDate = timeDto.getEndDate().atZone(zoneId).toLocalDate();
+        Long totalVisitor = 0L;
+
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            Long dailyVisitorCount = redisService.getDailyVisitorCount(date);
+            visitorsMap.put(date, dailyVisitorCount);
+            totalVisitor+=dailyVisitorCount;
+        }
+        return new VisitorDto(visitorsMap,totalVisitor);
+    }
 }

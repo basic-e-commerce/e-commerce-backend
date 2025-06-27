@@ -1,5 +1,8 @@
 package com.example.ecommercebackend.controller.user;
 
+import com.example.ecommercebackend.anotation.NotNullParam;
+import com.example.ecommercebackend.dto.user.TimeDto;
+import com.example.ecommercebackend.dto.user.visitor.VisitorDto;
 import com.example.ecommercebackend.service.user.VisitorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,5 +70,10 @@ public class VisitorController {
     @GetMapping("/last-ten")
     public ResponseEntity<Map<LocalDate,Long>> getLastTenVisitor() {
         return new ResponseEntity<>(visitorService.getLastTenVisitor(), HttpStatus.OK);
+    }
+
+    @PostMapping("/between-visitor")
+    public ResponseEntity<VisitorDto> getDailyVisitor(@RequestBody(required = false) TimeDto timeDto){
+        return new ResponseEntity<>(visitorService.getDailyVisitor(timeDto), HttpStatus.OK);
     }
 }

@@ -68,4 +68,12 @@ public class AdminService {
     public Admin findByUsername(String username) {
         return adminRepository.findByUsername(username).orElseThrow(()-> new NotFoundException("Admin "+ExceptionMessage.NOT_FOUND.getMessage()));
     }
+
+    public Admin findByUsernameNull(String username) {
+        return adminRepository.findByUsername(username).orElse(null);
+    }
+
+    public void save(Admin admin) {
+        adminRepository.save(admin);
+    }
 }

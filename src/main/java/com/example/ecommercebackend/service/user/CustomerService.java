@@ -79,6 +79,10 @@ public class CustomerService {
         return customerRepository.findByUsername(username).orElseThrow(()-> new NotFoundException("Customer "+ExceptionMessage.NOT_FOUND.getMessage()));
     }
 
+    public Customer findByUsernameNull(String username) {
+        return customerRepository.findByUsername(username).orElse(null);
+    }
+
     public Customer createCustomer(CustomerCreateDto customerCreateDto){
         User user = userService.getUserByUsernameOrNull(customerCreateDto.getUsername());
 
