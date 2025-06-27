@@ -270,11 +270,11 @@ public class SellService {
                                 cardItem.getProduct().getCoverImage().getUrl(),
                                 0
                         ),
-                        cardItem.getQuantity()
+                        1
                 );
                 productListMap.put(product, dto);
             }else {
-                productCardItemDto.setQuantity(productCardItemDto.getQuantity() + cardItem.getQuantity());
+                productCardItemDto.setQuantity(productCardItemDto.getQuantity() + 1);
             }
         }
         return new ArrayList<>(productListMap.values())
