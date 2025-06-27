@@ -67,10 +67,10 @@ public class ECommerceBackendApplication {
 								),
 						null,
 						"5098765432",
-						"email@gmail.com",
+						"feminizmturkiye2000@gmail.com",
 						BigDecimal.valueOf(1000),
 						BigDecimal.valueOf(75),
-						""
+						"izcb abhl kkto upek"
 				);
 				merchantRepository.save(merchant);
 			}
