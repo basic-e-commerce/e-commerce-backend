@@ -36,6 +36,11 @@ public class ECommerceBackendApplication {
 				roleRepository.save(customer);
 			}
 
+			if (!roleRepository.existsByRoleNameEqualsIgnoreCase("GUEST")) {
+				Role customer = new Role("GUEST");
+				roleRepository.save(customer);
+			}
+
 			if(countryRepository.findByUpperName("TURKIYE").isEmpty()){
 				Country turkey = new Country();
 				turkey.setIso("TR");
@@ -63,7 +68,7 @@ public class ECommerceBackendApplication {
 						null,
 						"5098765432",
 						"email@gmail.com",
-						BigDecimal.valueOf(100),
+						BigDecimal.valueOf(1000),
 						BigDecimal.valueOf(75),
 						""
 				);
