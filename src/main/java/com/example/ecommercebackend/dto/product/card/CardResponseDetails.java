@@ -5,14 +5,16 @@ import java.math.BigDecimal;
 public class CardResponseDetails {
     private int id;
     private String title;
+    private String productLinkName;
     private BigDecimal price;
     private BigDecimal comparePrice;
     private String coverImage;
     private int quantity;
 
-    public CardResponseDetails(int id, String title, BigDecimal price, BigDecimal comparePrice, String coverImage, int quantity) {
+    public CardResponseDetails(int id, String title, String productLinkName, BigDecimal price, BigDecimal comparePrice, String coverImage, int quantity) {
         this.id = id;
         this.title = title;
+        this.productLinkName = productLinkName;
         this.price = price;
         this.comparePrice = comparePrice;
         this.coverImage = coverImage;
@@ -65,5 +67,13 @@ public class CardResponseDetails {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public String getProductLinkName() {
+        return productLinkName;
+    }
+
+    public void setProductLinkName(String productLinkName) {
+        this.productLinkName = productLinkName;
     }
 }

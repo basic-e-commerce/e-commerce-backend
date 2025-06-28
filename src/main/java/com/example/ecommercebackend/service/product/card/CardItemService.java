@@ -67,6 +67,7 @@ public class CardItemService {
 
                 return new CardResponseDetails(x.getProduct().getId(),
                         x.getProduct().getProductName(),
+                        x.getProduct().getProductLinkName(),
                         x.getProduct().getSalePrice(),
                         x.getProduct().getComparePrice(),
                         url,
@@ -111,6 +112,7 @@ public class CardItemService {
                 }
                 return new CardResponseDetails(x.getProduct().getId(),
                         x.getProduct().getProductName(),
+                        x.getProduct().getProductLinkName(),
                         x.getProduct().getSalePrice(),
                         x.getProduct().getComparePrice(),
                         coverImageUrl,

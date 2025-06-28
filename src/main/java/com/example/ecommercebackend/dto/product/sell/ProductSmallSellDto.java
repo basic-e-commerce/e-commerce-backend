@@ -5,12 +5,14 @@ import com.example.ecommercebackend.dto.file.ImageDetailDto;
 public class ProductSmallSellDto {
     private int productId;
     private String productName;
+    private String productLinkName;
     private ImageDetailDto coverImage;
     private Integer quantity;
 
-    public ProductSmallSellDto(int productId, String productName, ImageDetailDto coverImage, Integer quantity) {
+    public ProductSmallSellDto(int productId, String productName, String productLinkName, ImageDetailDto coverImage, Integer quantity) {
         this.productId = productId;
         this.productName = productName;
+        this.productLinkName = productLinkName;
         this.coverImage = coverImage;
         this.quantity = quantity;
     }
@@ -45,5 +47,13 @@ public class ProductSmallSellDto {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public String getProductLinkName() {
+        return productLinkName;
+    }
+
+    public void setProductLinkName(String productLinkName) {
+        this.productLinkName = productLinkName;
     }
 }

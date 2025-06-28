@@ -215,6 +215,7 @@ public class SellService {
                 dto = new ProductSmallSellDto(
                         productId,
                         sell.getProduct().getProductName(),
+                        sell.getProduct().getProductLinkName(),
                         new ImageDetailDto(
                                 sell.getProduct().getCoverImage().getId(),
                                 sell.getProduct().getCoverImage().getName(),
