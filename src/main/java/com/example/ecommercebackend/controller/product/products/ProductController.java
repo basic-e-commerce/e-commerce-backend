@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.controller.product.products;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
+import com.example.ecommercebackend.anotation.RateLimit;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.file.productimage.ProductImageUpdateDto;
 import com.example.ecommercebackend.dto.product.products.*;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/v1/product")
@@ -81,6 +83,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.filterProductsByCategoryLinkNameSmall(filterRequest,page,size),HttpStatus.OK);
     }
 
+    @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
     @PostMapping("/filter/small")
     public ResponseEntity<Set<ProductSmallDto>> filterSmall(@RequestBody(required = false) ProductFilterRequest filterRequest,
                                                             @RequestParam(defaultValue = "0",required = false) Integer page,

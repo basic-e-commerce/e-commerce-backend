@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class RedisService {
@@ -62,4 +63,58 @@ public class RedisService {
         String key = DAILY_VISITOR_PREFIX + date;
         return redisTemplate.opsForSet().size(key);
     }
+
+
+    // =====================================
+    // 🔥 🔥 IP Bazlı Rate Limiting 🔥 🔥
+    // =====================================
+
+    /**
+     * Rate Limiting Kontrolü
+     * @param ip - Client IP
+     * @param method - HTTP Method (GET, POST...)
+     * @param endpoint - URI (örneğin /api/products)
+     * @param limit - İzin verilen maksimum istek
+     * @param duration - Süre (örneğin Duration.ofMinutes(1))
+     * @return true → izin verildi, false → limit aşıldı
+     */
+    public boolean isIpRequestAllowed(String ip, String method, String endpoint, int limit, Duration duration) {
+        String key = String.format("rate:ip:%s:%s:%s", ip, method, endpoint);
+
+        Long count = redisTemplate.opsForValue().increment(key);
+
+        if (count == 1) {
+            redisTemplate.expire(key, duration);
+        }
+
+        return count <= limit;
+    }
+
+    /**
+     * Şu anki istek sayısını getirir
+     */
+    public Long getCurrentIpRequestCount(String ip, String method, String endpoint) {
+        String key = String.format("rate:ip:%s:%s:%s", ip, method, endpoint);
+        String value = redisTemplate.opsForValue().get(key);
+        return value == null ? 0L : Long.parseLong(value);
+    }
+
+    /**
+     * Kalan süreyi getirir
+     */
+    public Long getIpRequestRemainingTime(String ip, String method, String endpoint) {
+        String key = String.format("rate:ip:%s:%s:%s", ip, method, endpoint);
+        return redisTemplate.getExpire(key, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Limiti sıfırlar
+     */
+    public void resetIpLimit(String ip, String method, String endpoint) {
+        String key = String.format("rate:ip:%s:%s:%s", ip, method, endpoint);
+        redisTemplate.delete(key);
+    }
+
+
+
 }

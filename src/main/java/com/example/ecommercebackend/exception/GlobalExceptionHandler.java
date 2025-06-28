@@ -11,6 +11,12 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler({RateLimitExceededException.class})
+    public ResponseEntity<?> RateLimitExceeded(RateLimitExceededException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.TOO_MANY_REQUESTS);
+    }
+
     @ExceptionHandler({BadRequestException.class})
     public ResponseEntity<?> BadRequestException(BadRequestException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
