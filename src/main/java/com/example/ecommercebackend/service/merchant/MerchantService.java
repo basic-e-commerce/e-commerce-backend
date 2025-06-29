@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.merchant;
 
 import com.example.ecommercebackend.builder.merchant.MerchantBuilder;
 import com.example.ecommercebackend.dto.file.CoverImageRequestDto;
+import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantResponseDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
@@ -15,6 +16,7 @@ import com.example.ecommercebackend.repository.merchant.MerchantRepository;
 import com.example.ecommercebackend.service.file.MerchantImageService;
 import com.example.ecommercebackend.service.user.AddressService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -70,5 +72,26 @@ public class MerchantService {
     }
     public List<Merchant> getMerchants() {
         return merchantRepository.findAll();
+    }
+
+    public ImageDetailDto updateCoverImage(MultipartFile file) {
+        Merchant merchant = getMerchant();
+        if (merchant.getCoverImage() != null) {
+            merchantImageService.delete(merchant.getCoverImage().getId());
+            merchant.setCoverImage(null);
+            merchantRepository.save(merchant);
+        }
+        CoverImageRequestDto coverImageRequestDto = new CoverImageRequestDto(file);
+        CoverImage coverImage = merchantImageService.save(coverImageRequestDto, merchant.getId());
+        merchant.setCoverImage(coverImage);
+        merchantRepository.save(merchant);
+        return new ImageDetailDto(
+                coverImage.getId(),
+                coverImage.getName(),
+                coverImage.getResolution(),
+                coverImage.getName(),
+                coverImage.getUrl(),
+                0
+        );
     }
 }
