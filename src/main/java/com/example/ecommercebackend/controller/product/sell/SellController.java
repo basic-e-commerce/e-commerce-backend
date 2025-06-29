@@ -2,6 +2,7 @@ package com.example.ecommercebackend.controller.product.sell;
 
 
 import com.example.ecommercebackend.dto.product.card.ProductCardItemDto;
+import com.example.ecommercebackend.dto.product.products.ProductAdminDetailDto;
 import com.example.ecommercebackend.dto.product.sell.*;
 import com.example.ecommercebackend.dto.user.TimeDto;
 import com.example.ecommercebackend.service.product.products.SellService;
@@ -48,6 +49,11 @@ public class SellController {
     @GetMapping("/card-contain-product")
     public ResponseEntity<List<ProductCardItemDto>> cardItemContainsProduct(){
         return new ResponseEntity<>(sellService.cardItemContainsProduct(), HttpStatus.OK);
+    }
+
+    @GetMapping("/low-product")
+    public ResponseEntity<List<ProductAdminDetailDto>> getLowProduct(){
+        return new ResponseEntity<>(sellService.lowStock(), HttpStatus.OK);
     }
 
 

@@ -45,17 +45,13 @@ public class ProductService {
     private final ProductImageService productImageService;
     private final ProductBuilder productBuilder;
     private final CategoryService categoryService;
-    private final ProductAttributeRepository productAttributeRepository;
-    private final AttributeService attributeService;
 
-    public ProductService(ProductRepository productRepository, CoverImageService coverImageService, ProductImageService productImageService, ProductBuilder productBuilder, CategoryService categoryService, ProductAttributeRepository productAttributeRepository, AttributeService attributeService) {
+    public ProductService(ProductRepository productRepository, CoverImageService coverImageService, ProductImageService productImageService, ProductBuilder productBuilder, CategoryService categoryService) {
         this.productRepository = productRepository;
         this.coverImageService = coverImageService;
         this.productImageService = productImageService;
         this.productBuilder = productBuilder;
         this.categoryService = categoryService;
-        this.productAttributeRepository = productAttributeRepository;
-        this.attributeService = attributeService;
     }
 
     public ProductAdminDetailDto createSimpleProduct(@NotNullParam ProductCreateDto productCreateDto) {
@@ -192,6 +188,7 @@ public class ProductService {
         product.setPublished(productUpdateDto.getPublished());
         product.setDisableOutOfStock(productUpdateDto.getDisableOutOfStock());
         product.setTaxRate(productUpdateDto.getTaxRate());
+        product.setStockNotification(productUpdateDto.getStockNotification());
 
         return productBuilder.productToProductAdmindetailDto(productRepository.save(product)); // Değişiklik yoksa, gereksiz `save` çağrısı yapma
 
@@ -506,4 +503,7 @@ public class ProductService {
     }
 
 
+    public List<ProductAdminDetailDto> productToProductAdminDetailDto(List<Product> stockNotificationProducts) {
+        return stockNotificationProducts.stream().map(productBuilder::productToProductAdmindetailDto).collect(Collectors.toList());
+    }
 }

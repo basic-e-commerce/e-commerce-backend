@@ -4,6 +4,8 @@ import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.sell.SellBuilder;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.product.card.ProductCardItemDto;
+import com.example.ecommercebackend.dto.product.products.LowStockNotification;
+import com.example.ecommercebackend.dto.product.products.ProductAdminDetailDto;
 import com.example.ecommercebackend.dto.product.products.ProductSmallDto;
 import com.example.ecommercebackend.dto.product.sell.*;
 import com.example.ecommercebackend.dto.user.TimeDto;
@@ -270,6 +272,17 @@ public class SellService {
                 .stream()
                 .sorted(Comparator.comparing(ProductCardItemDto::getQuantity))
                 .collect(Collectors.toList());
+    }
+
+    public List<ProductAdminDetailDto> lowStock(){
+        List<Product> products = productService.findAll();
+        List<Product> stockNotificationProducts = new ArrayList<>();
+        for (Product product : products) {
+            if (product.getQuantity()<= product.getStockNotification()){
+                stockNotificationProducts.add(product);
+            }
+        }
+        return productService.productToProductAdminDetailDto(stockNotificationProducts);
     }
 
 

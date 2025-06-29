@@ -74,6 +74,9 @@ public class Product {
     @Column(name = "disable_out_of_stock", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean disableOutOfStock;
 
+    @Column(name = "stock_notification", nullable = false,columnDefinition = "INTEGER DEFAULT 10")
+    private Integer stockNotification;
+
     @ManyToMany(mappedBy = "products")
     private Set<Coupon> coupons = new HashSet<>();
 
@@ -125,7 +128,7 @@ public class Product {
         this.updatedAt = Instant.now();
     }
 
-    public Product(String productName,String productLinkName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription,Set<Category> categories, String productDescription, ProductType productType, Boolean published,BigDecimal taxRate, Boolean disableOutOfStock) {
+    public Product(String productName, String productLinkName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, Set<Category> categories, String productDescription, ProductType productType, Boolean published, BigDecimal taxRate, Boolean disableOutOfStock, Integer stockNotification) {
         this.productName = productName;
         this.productLinkName= productLinkName;
         this.salePrice = salePrice;
@@ -139,6 +142,7 @@ public class Product {
         this.productType = productType;
         this.published = published;
         this.disableOutOfStock = disableOutOfStock;
+        this.stockNotification = stockNotification;
     }
 
     public Product() {
@@ -334,5 +338,13 @@ public class Product {
 
     public void setTaxRate(BigDecimal taxRate) {
         this.taxRate = taxRate;
+    }
+
+    public Integer getStockNotification() {
+        return stockNotification;
+    }
+
+    public void setStockNotification(Integer stockNotification) {
+        this.stockNotification = stockNotification;
     }
 }

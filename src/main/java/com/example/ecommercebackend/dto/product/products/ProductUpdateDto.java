@@ -30,8 +30,10 @@ public class ProductUpdateDto {
     private Boolean disableOutOfStock;
     @NotNullField
     private BigDecimal taxRate;
+    @NotNullField
+    private Integer stockNotification;
 
-    public ProductUpdateDto(String name, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, String description, Set<Integer> categoryIds, String productType, Boolean published, Boolean disableOutOfStock, BigDecimal taxRate) {
+    public ProductUpdateDto(String name, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, String description, Set<Integer> categoryIds, String productType, Boolean published, Boolean disableOutOfStock, BigDecimal taxRate, Integer stockNotification) {
         this.name = name;
         this.salePrice = salePrice;
         this.comparePrice = comparePrice;
@@ -44,6 +46,7 @@ public class ProductUpdateDto {
         this.published = published;
         this.disableOutOfStock = disableOutOfStock;
         this.taxRate = taxRate;
+        this.stockNotification = stockNotification;
     }
 
     public String getName() {
@@ -96,5 +99,13 @@ public class ProductUpdateDto {
 
     public void setTaxRate(BigDecimal taxRate) {
         this.taxRate = taxRate;
+    }
+
+    public Integer getStockNotification() {
+        return stockNotification;
+    }
+
+    public void setStockNotification(Integer stockNotification) {
+        this.stockNotification = stockNotification;
     }
 }
