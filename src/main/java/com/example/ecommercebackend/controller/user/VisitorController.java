@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.controller.user;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
+import com.example.ecommercebackend.anotation.RateLimit;
 import com.example.ecommercebackend.dto.user.TimeDto;
 import com.example.ecommercebackend.dto.user.visitor.VisitorDto;
 import com.example.ecommercebackend.service.user.VisitorService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/v1/visitors")
@@ -26,6 +28,7 @@ public class VisitorController {
      * ✔️ Ziyaretçi kaydı (bu endpoint çağrıldığında kayıt yapılır)
      */
     @PostMapping("/visit")
+    @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
     public ResponseEntity<String> visit() {
         visitorService.visit();
         return ResponseEntity.ok("Visitor counted successfully.");
@@ -35,6 +38,7 @@ public class VisitorController {
      * ✔️ Toplam ziyaretçi sayısı
      */
     @GetMapping("/total")
+    @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
     public ResponseEntity<Long> getTotalVisitor() {
         return ResponseEntity.ok(visitorService.getTotalVisitor());
     }
@@ -43,6 +47,7 @@ public class VisitorController {
      * ✔️ Benzersiz ziyaretçi sayısı
      */
     @GetMapping("/unique")
+    @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
     public ResponseEntity<Long> getUniqueVisitor() {
         return ResponseEntity.ok(visitorService.getUniqueVisitor());
     }
@@ -51,6 +56,7 @@ public class VisitorController {
      * ✔️ Bugünün ziyaretçi sayısı
      */
     @GetMapping("/today")
+    @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
     public ResponseEntity<Long> getTodayVisitor() {
         return ResponseEntity.ok(visitorService.getTodayVisitor());
     }
@@ -60,6 +66,7 @@ public class VisitorController {
      * Format: yyyy-MM-dd
      */
     @GetMapping("/daily")
+    @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
     public ResponseEntity<Long> getDailyVisitor(
             @RequestParam("date") String date
     ) {
@@ -68,11 +75,13 @@ public class VisitorController {
     }
 
     @GetMapping("/last-ten")
+    @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
     public ResponseEntity<Map<LocalDate,Long>> getLastTenVisitor() {
         return new ResponseEntity<>(visitorService.getLastTenVisitor(), HttpStatus.OK);
     }
 
     @PostMapping("/between-visitor")
+    @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
     public ResponseEntity<VisitorDto> getDailyVisitor(@RequestBody(required = false) TimeDto timeDto){
         return new ResponseEntity<>(visitorService.getDailyVisitor(timeDto), HttpStatus.OK);
     }

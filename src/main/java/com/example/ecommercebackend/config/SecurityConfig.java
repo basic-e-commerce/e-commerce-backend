@@ -4,6 +4,7 @@ import com.example.ecommercebackend.config.emailpassword.AdminUserDetailsService
 import com.example.ecommercebackend.config.emailpassword.CustomerUserDetailsService;
 import com.example.ecommercebackend.config.emailpassword.UsernamePasswordAuthenticationProvider;
 import com.example.ecommercebackend.filter.JwtValidationFilter;
+import org.apache.http.protocol.HTTP;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -46,20 +47,31 @@ public class SecurityConfig {
                 .sessionManagement(x->x.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(x->x
                         .requestMatchers(HttpMethod.POST,"/api/v1/category").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/category/parent").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/category/by-link-name").permitAll()
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/category").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/category").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/category/image").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/category/image").hasAuthority("ADMIN")
 
+                        .requestMatchers(HttpMethod.POST,"/api/v1/mail").hasAuthority("ADMIN")
+
                         .requestMatchers(HttpMethod.POST,"/api/v1/supplier").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/supplier").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/supplier/id").permitAll()
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/tag").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/tag").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/tag/id").permitAll()
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/attribute").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/attribute/id").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/attribute").permitAll()
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/attribute-value").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/attribute-value/id").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/attribute-value").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/attribute-value/attribute").permitAll()
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/product/simple").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/product").hasAuthority("ADMIN")
@@ -70,9 +82,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/product/cover-image").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/product/name/admin/{name}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/product/filter").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/product/filter/small/link-name").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/product/filter/small/").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/product/name/{linkName}").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/product/name/admin/{linkName}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/product").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/merchant").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/merchant").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/merchant").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/merchant/image").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/customer/address").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/customer/address").hasAuthority("CUSTOMER")
@@ -81,14 +100,54 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/v1/customer/update-password").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/customer/profile").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.GET,"/api/v1/customer/profile").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/customer").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/customer").hasAuthority("ADMIN")
 
-                        .requestMatchers(HttpMethod.GET, "/api/v1/auth/verification/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/auth/verification/{code}").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/c-login").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/a-login").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/refresh").hasAnyAuthority("ADMIN","CUSTOMER")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/refresh/logout").hasAnyAuthority("ADMIN","CUSTOMER")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/auth/is-auth").hasAnyAuthority("ADMIN","CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/auth/reset-password").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/auth/verification-password").permitAll()
+
 
                         .requestMatchers(HttpMethod.GET,"/api/v1/order/user").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order/filter").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/order/total-price").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/order").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/order/by-order-code").permitAll()
+
+
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/card").hasAuthority("CUSTOMER")
 
                         .requestMatchers(HttpMethod.GET,"/api/v1/card-item/by-ids").permitAll()
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/coupon").hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.POST,"/api/v1/payment").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/payment/payCallBack").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/payment/bin").permitAll()
+
+                        .requestMatchers(HttpMethod.POST,"/api/v1/sell").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/sell/day-sell").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/sell/customer-register").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/sell/sell-product").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/sell/card-contain-product").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/sell/low-product").hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.POST,"/api/v1/admin").permitAll()
+
+                        .requestMatchers(HttpMethod.POST,"/api/v1/visitors/visit").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/visitors/total").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/visitors/unique").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/visitors/today").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/visitors/daily").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/visitors/last-ten").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/visitors/between-visitor").hasAuthority("ADMIN")
+
+
 
                         .anyRequest().permitAll())
                 .anonymous(anonymous -> anonymous
