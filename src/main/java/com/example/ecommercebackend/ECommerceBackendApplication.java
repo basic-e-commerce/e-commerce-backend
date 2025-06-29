@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
+import java.util.List;
 
 @SpringBootApplication
 public class ECommerceBackendApplication {
@@ -55,7 +56,7 @@ public class ECommerceBackendApplication {
 			}
 
 			if (merchantRepository.findAll().isEmpty()) {
-				LinkedList<OpenCloseHour> openCloseHours = new LinkedList<>();
+				List<OpenCloseHour> openCloseHours = new LinkedList<>();
 				OpenCloseHour pazartesi = new OpenCloseHour("pazartesi","09:00","18:00");
 				OpenCloseHour sali = new OpenCloseHour("sali","09:00","18:00");
 				OpenCloseHour carsamba = new OpenCloseHour("çarşamba","09:00","18:00");

@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.util.LinkedList;
 import java.util.Set;
 
 
@@ -67,13 +68,22 @@ public class TestDataInitializer {
                                 "34000",
                                 "5559876758"
                         ),
-                        null,
-                        "5098765432",
-                        "feminizmturkiye2000@gmail.com",
-                        BigDecimal.valueOf(1000),
-                        BigDecimal.valueOf(75),
-                        "izcb abhl kkto upek"
+                        "addresslink",   // addressLink
+                        null,            // CoverImage
+                        "5098765432",    // phoneNo
+                        "tel:5098765432",// phoneNoLink
+                        "feminizmturkiye2000@gmail.com", // email
+                        "mailto:feminizmturkiye2000@gmail.com", // emailLink
+                        BigDecimal.valueOf(1000),    // minOrderAmount
+                        BigDecimal.valueOf(75),      // shippingFee
+                        "izcb abhl kkto upek",       // emailPassword
+                        "instagram",                 // instagram
+                        "instagram link",            // instagramLink
+                        "wplink",                   // wpLink
+                        "footerdesc",               // footerDescription
+                        new LinkedList<>()          // openCloseHours
                 ));
+
             }
 
             if (customerRepository.findByUsername("customer@gmail.com").isEmpty()) {
