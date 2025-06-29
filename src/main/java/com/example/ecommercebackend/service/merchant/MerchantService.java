@@ -51,9 +51,17 @@ public class MerchantService {
         merchant.setAddress(address);
         merchant.setName(merchantCreateDto.getName());
         merchant.setPhoneNo(merchantCreateDto.getPhoneNo());
+        merchant.setPhoneNoLink(merchantCreateDto.getPhoneNoLink());
         merchant.setEmail(merchantCreateDto.getEmail());
+        merchant.setEmailLink(merchantCreateDto.getEmailLink());
+        merchant.setEmailPassword(merchantCreateDto.getEmailPassword());
         merchant.setMinOrderAmount(merchantCreateDto.getMinOrderAmount());
         merchant.setShippingFee(merchantCreateDto.getShippingFee());
+        merchant.setInstagram(merchantCreateDto.getInstagram());
+        merchant.setInstagramLink(merchantCreateDto.getInstagramLink());
+        merchant.setWpLink(merchantCreateDto.getWpLink());
+        merchant.setFooterDescription(merchantCreateDto.getFooterDescription());
+        merchant.setOpenCloseHours(merchantCreateDto.getOpenCloseHours());
         return merchantBuilder.merchantToMerchantResponseDto(merchantRepository.save(merchant));
     }
 

@@ -15,12 +15,20 @@ public class MerchantBuilder {
         return new Merchant(
                 merchantCreateDto.getName(),
                 address,
+                merchantCreateDto.getAddressLink(),
                 null,
                 merchantCreateDto.getPhoneNo(),
+                merchantCreateDto.getPhoneNoLink(),
                 merchantCreateDto.getEmail(),
+                merchantCreateDto.getEmailLink(),
                 merchantCreateDto.getMinOrderAmount(),
                 merchantCreateDto.getShippingFee(),
-                merchantCreateDto.getEmailPassword()
+                merchantCreateDto.getEmailPassword(),
+                merchantCreateDto.getInstagram(),
+                merchantCreateDto.getInstagramLink(),
+                merchantCreateDto.getWpLink(),
+                merchantCreateDto.getFooterDescription(),
+                merchantCreateDto.getOpenCloseHours()
         );
     }
 
@@ -28,20 +36,33 @@ public class MerchantBuilder {
         return new MerchantResponseDto(
                 merchant.getId(),
                 merchant.getName(),
-                merchant.getAddress().getAddressLine1()+" "+merchant.getAddress().getCity()+"/"+merchant.getAddress().getCountry().getName(),
-                new ImageDetailDto(
+                merchant.getAddress() != null ? merchant.getAddress().getCountry().getName() : null,
+                merchant.getAddress() != null ? merchant.getAddress().getCity() : null,
+                merchant.getAddress() != null ? merchant.getAddress().getAddressLine1() : null,
+                merchant.getAddress() != null ? merchant.getAddress().getPostalCode() : null,
+                merchant.getAddressLink(),
+                merchant.getPhoneNo(),
+                merchant.getPhoneNoLink(),
+                merchant.getEmail(),
+                merchant.getEmailLink(),
+                merchant.getMinOrderAmount(),
+                merchant.getShippingFee(),
+                merchant.getEmailPassword(),
+                merchant.getInstagram(),
+                merchant.getInstagramLink(),
+                merchant.getWpLink(),
+                merchant.getFooterDescription(),
+                merchant.getOpenCloseHours(),
+                merchant.getCoverImage() != null ? new ImageDetailDto(
                         merchant.getCoverImage().getId(),
                         merchant.getCoverImage().getName(),
                         merchant.getCoverImage().getResolution(),
                         merchant.getCoverImage().getName(),
                         merchant.getCoverImage().getUrl(),
                         0
-                        ),
-                merchant.getPhoneNo(),
-                merchant.getEmail(),
-                merchant.getMinOrderAmount(),
-                merchant.getShippingFee()
+                ) : null
         );
+
     }
 
 }
