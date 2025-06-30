@@ -1,5 +1,13 @@
 package com.example.ecommercebackend.dto.user.address;
 
-public record AddressOrderCreateDto(String firstName, String lastName, String username, String countryName,
-                                    String city, String addressLine1, String postalCode,String phoneNo) {
+import com.example.ecommercebackend.anotation.NotNullField;
+
+public record AddressOrderCreateDto(@NotNullField String firstName,
+                                    @NotNullField String lastName,
+                                    @NotNullField String username,
+                                    @NotNullField String countryName,
+                                    @NotNullField String city,
+                                    @NotNullField String addressLine1,
+                                    @NotNullField String postalCode,
+                                    @NotNullField String phoneNo) {
 }

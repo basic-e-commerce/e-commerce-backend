@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.service.payment;
 
+import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.response.*;
 import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
@@ -48,7 +49,7 @@ public class PaymentService {
         this.cardService = cardService;
     }
 
-    public String processCreditCardPayment(OrderCreateDto orderCreateDto, HttpServletRequest httpServletRequest) {
+    public String processCreditCardPayment(@NotNullParam OrderCreateDto orderCreateDto,@NotNullParam HttpServletRequest httpServletRequest) {
         Order order = orderService.createOrder(orderCreateDto);
 
         String conversationId = UUID.randomUUID().toString();

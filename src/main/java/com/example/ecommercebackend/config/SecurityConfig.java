@@ -106,7 +106,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/auth/verification/{code}").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v1/auth/c-login").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v1/auth/a-login").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/refresh").hasAnyAuthority("ADMIN","CUSTOMER")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v1/auth/refresh/logout").hasAnyAuthority("ADMIN","CUSTOMER")
                         .requestMatchers(HttpMethod.GET,"/api/v1/auth/is-auth").hasAnyAuthority("ADMIN","CUSTOMER")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/auth/reset-password").permitAll()

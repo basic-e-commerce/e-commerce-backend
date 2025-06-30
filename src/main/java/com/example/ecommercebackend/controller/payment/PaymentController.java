@@ -27,7 +27,7 @@ public class PaymentController {
 
     @PostMapping
     @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)
-    public ResponseEntity<String> processCreditCardPayment(@RequestBody OrderCreateDto orderCreateDto,
+    public ResponseEntity<String> processCreditCardPayment(@RequestBody(required = false) OrderCreateDto orderCreateDto,
                                                            HttpServletRequest httpServletRequest) {
         return new ResponseEntity<>(paymentService.processCreditCardPayment(orderCreateDto,httpServletRequest), HttpStatus.OK);
     }

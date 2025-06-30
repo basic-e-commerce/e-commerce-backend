@@ -1,4 +1,8 @@
 package com.example.ecommercebackend.dto.product.order;
 
-public record OrderItemCreateDto(int productId, int quantity) {
+import com.example.ecommercebackend.anotation.NotNullField;
+
+public record OrderItemCreateDto(
+        @NotNullField int productId,
+        @NotNullField int quantity) {
 }

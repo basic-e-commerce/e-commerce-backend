@@ -1,10 +1,15 @@
 package com.example.ecommercebackend.dto.payment;
 
+import com.example.ecommercebackend.anotation.NotNullField;
+
 import java.math.BigDecimal;
 
 public class PaymentCreditCardRequestDto {
+    @NotNullField
     private String paymentMethod;
+    @NotNullField
     private CreditCardRequestDto creditCardRequestDto;
+    @NotNullField
     private Integer installmentNumber;
 
 

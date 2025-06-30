@@ -1,10 +1,17 @@
 package com.example.ecommercebackend.dto.payment;
 
+import com.example.ecommercebackend.anotation.NotNullField;
+
 public class CreditCardRequestDto {
+    @NotNullField
     private String cardNumber;
+    @NotNullField
     private String cardHolderName;
+    @NotNullField
     private String expirationMonth;
+    @NotNullField
     private String expirationYear;
+    @NotNullField
     private String cvv;
 
     public CreditCardRequestDto(String cardNumber, String cardHolderName, String expirationMonth, String expirationYear, String cvv) {
