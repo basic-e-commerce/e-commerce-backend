@@ -114,7 +114,7 @@ public class SecurityConfig {
 
 
                         .requestMatchers(HttpMethod.GET,"/api/v1/order/user").hasAuthority("CUSTOMER")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/order/filter").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order/filter").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/order/total-price").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/order").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/order/by-order-code").permitAll()
