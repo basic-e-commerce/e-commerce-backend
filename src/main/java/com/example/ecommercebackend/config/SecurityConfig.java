@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(x->x.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(x->x
+                        .requestMatchers("error").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v1/category").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/category/parent").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/category/by-link-name").permitAll()
