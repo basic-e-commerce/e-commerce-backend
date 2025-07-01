@@ -23,7 +23,9 @@ public class OrderCreateDto {
     @NotNullField
     PaymentCreditCardRequestDto paymentCreditCardRequestDto;
 
-    public OrderCreateDto(AddressOrderCreateDto address, Boolean diffAddress, AddressOrderCreateDto invoiceAddress, String invoiceType, CorporateInvoiceCreateDto corporateInvoice, List<OrderItemCreateDto> orderItemCreateDtos, PaymentCreditCardRequestDto paymentCreditCardRequestDto) {
+    private String code;
+
+    public OrderCreateDto(AddressOrderCreateDto address, Boolean diffAddress, AddressOrderCreateDto invoiceAddress, String invoiceType, CorporateInvoiceCreateDto corporateInvoice, List<OrderItemCreateDto> orderItemCreateDtos, PaymentCreditCardRequestDto paymentCreditCardRequestDto, String code) {
         this.address = address;
         this.diffAddress = diffAddress;
         this.invoiceAddress = invoiceAddress;
@@ -31,6 +33,7 @@ public class OrderCreateDto {
         this.corporateInvoice = corporateInvoice;
         this.orderItemCreateDtos = orderItemCreateDtos;
         this.paymentCreditCardRequestDto = paymentCreditCardRequestDto;
+        this.code = code;
     }
 
     public AddressOrderCreateDto getAddress() {
@@ -87,5 +90,13 @@ public class OrderCreateDto {
 
     public void setPaymentCreditCardRequestDto(PaymentCreditCardRequestDto paymentCreditCardRequestDto) {
         this.paymentCreditCardRequestDto = paymentCreditCardRequestDto;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

@@ -35,7 +35,7 @@ public class TagService {
             Tag tag = new Tag(tagCreateDto.getTagName(), admin,admin);
             return tagRepository.save(tag);
         }else
-            throw new IllegalArgumentException("Authenticated user is not an Admin.");
+            throw new BadRequestException("Authenticated user is not an Admin.");
     }
 
 

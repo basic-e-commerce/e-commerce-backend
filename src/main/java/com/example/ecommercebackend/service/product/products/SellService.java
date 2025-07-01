@@ -190,7 +190,7 @@ public class SellService {
             }
             case "MONTH" -> date.format(DateTimeFormatter.ofPattern("yyyy-MM"));
             case "YEAR" -> String.valueOf(date.getYear());
-            default -> throw new IllegalArgumentException("Invalid period type.");
+            default -> throw new BadRequestException("Invalid period type.");
         };
     }
 

@@ -22,21 +22,26 @@ public class Coupon {
 
     @Column(nullable = false, unique = true, length = 50)
     private String code;
+    private String description;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private DiscountType discountType; // Örn: "percentage" yüzde veya "fixed_amount" sabit miktar
 
     private BigDecimal discountValue;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private DiscountType discountType; // Örn: "percentage" veya "fixed_amount"
-
-    @Column(nullable = false)
     private int timesUsed = 0;
 
-    private Integer maxUsage;
-    private BigDecimal orderAmountLimit;
+    private Integer totalUsageLimit; // Genel kullanım limiti (opsiyonel)
+
+    private BigDecimal minOrderAmountLimit;
 
     private Instant couponStartDate;
     private Instant couponEndDate;
+
+    private Boolean isPublic;
+    private Boolean isActive;
 
     @JsonIgnore
     @ManyToMany
@@ -102,19 +107,39 @@ public class Coupon {
         this.customers = customers;
     }
 
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
 
     public enum DiscountType{
         PERCENTAGE,FIXEDAMOUNT
     }
 
-    public Coupon(String code, BigDecimal discountValue, DiscountType discountType, Integer maxUsage, BigDecimal orderAmountLimit, Instant couponStartDate, Instant couponEndDate) {
+
+    public Coupon(String code, String description, BigDecimal discountValue, DiscountType discountType, Integer totalUsageLimit, BigDecimal minOrderAmountLimit, Instant couponStartDate, Instant couponEndDate, Boolean isPublic, Boolean isActive) {
         this.code = code;
+        this.description = description;
         this.discountValue = discountValue;
         this.discountType = discountType;
-        this.maxUsage = maxUsage;
-        this.orderAmountLimit = orderAmountLimit;
+        this.totalUsageLimit = totalUsageLimit;
+        this.minOrderAmountLimit = minOrderAmountLimit;
         this.couponStartDate = couponStartDate;
         this.couponEndDate = couponEndDate;
+        this.isPublic = isPublic;
+        this.isActive = isActive;
     }
 
     public Coupon() {
@@ -136,12 +161,12 @@ public class Coupon {
         this.code = code;
     }
 
-    public BigDecimal getDiscountValue() {
-        return discountValue;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDiscountValue(BigDecimal discountValue) {
-        this.discountValue = discountValue;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public DiscountType getDiscountType() {
@@ -152,6 +177,14 @@ public class Coupon {
         this.discountType = discountType;
     }
 
+    public BigDecimal getDiscountValue() {
+        return discountValue;
+    }
+
+    public void setDiscountValue(BigDecimal discountValue) {
+        this.discountValue = discountValue;
+    }
+
     public int getTimesUsed() {
         return timesUsed;
     }
@@ -160,20 +193,20 @@ public class Coupon {
         this.timesUsed = timesUsed;
     }
 
-    public Integer getMaxUsage() {
-        return maxUsage;
+    public Integer getTotalUsageLimit() {
+        return totalUsageLimit;
     }
 
-    public void setMaxUsage(Integer maxUsage) {
-        this.maxUsage = maxUsage;
+    public void setTotalUsageLimit(Integer totalUsageLimit) {
+        this.totalUsageLimit = totalUsageLimit;
     }
 
-    public BigDecimal getOrderAmountLimit() {
-        return orderAmountLimit;
+    public BigDecimal getMinOrderAmountLimit() {
+        return minOrderAmountLimit;
     }
 
-    public void setOrderAmountLimit(BigDecimal orderAmountLimit) {
-        this.orderAmountLimit = orderAmountLimit;
+    public void setMinOrderAmountLimit(BigDecimal minOrderAmountLimit) {
+        this.minOrderAmountLimit = minOrderAmountLimit;
     }
 
     public Instant getCouponStartDate() {
@@ -190,6 +223,14 @@ public class Coupon {
 
     public void setCouponEndDate(Instant couponEndDate) {
         this.couponEndDate = couponEndDate;
+    }
+
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
     }
 
     public Instant getCreatedAt() {
@@ -222,14 +263,6 @@ public class Coupon {
 
     public void setUpdatedBy(Admin updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    public Set<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(Set<Product> products) {
-        this.products = products;
     }
 }
 

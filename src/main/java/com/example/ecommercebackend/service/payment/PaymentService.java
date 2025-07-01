@@ -22,6 +22,7 @@ import com.example.ecommercebackend.service.product.order.OrderService;
 import com.example.ecommercebackend.service.product.products.SellService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -49,6 +50,7 @@ public class PaymentService {
         this.cardService = cardService;
     }
 
+    @Transactional
     public String processCreditCardPayment(@NotNullParam OrderCreateDto orderCreateDto,@NotNullParam HttpServletRequest httpServletRequest) {
         Order order = orderService.createOrder(orderCreateDto);
 
@@ -121,6 +123,7 @@ public class PaymentService {
 
     }
 
+    @Transactional
     public void payCallBack(Map<String, String> collections, HttpServletResponse httpServletResponse) throws IOException {
         PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
         PayCallBackDto payCallBackDto = paymentStrategy.payCallBack(collections);
@@ -132,7 +135,9 @@ public class PaymentService {
 
             // update orderstatus approved,green
             Order order = payment.getOrder();
-
+            if (order.getCoupon() != null) {
+                order.getCoupon().setTimesUsed(order.getCoupon().getTimesUsed() + 1);
+            }
             Set<Sell> collect = order.getOrderItems().stream().map(sellService::save).collect(Collectors.toSet());
             payment.setSells(collect);
 
