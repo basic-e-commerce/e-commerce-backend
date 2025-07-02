@@ -192,8 +192,8 @@ public class IyzicoPayment implements PaymentStrategy {
         request.setLocale(Locale.TR.getValue());
         request.setConversationId(conversationId);
         // sepette ürün fiyatları toplamı bu olmalı
-        request.setPrice(order.getPrice());
-        System.out.println("--------------createPaymentRequest : "+ order.getPrice());
+        request.setPrice(order.getTotalPrice());
+        System.out.println("--------------createPaymentRequest : "+ order.getTotalPrice());
         // komisyon cart curt vade farkı hesaplanmış ve postan geçecek olan miktar
         request.setPaidPrice(paidPrice);
         request.setCurrency(Currency.TRY.name());
