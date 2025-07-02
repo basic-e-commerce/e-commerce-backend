@@ -21,6 +21,9 @@ public class OrderItem {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
+    @Column(name = "discount_price")
+    private BigDecimal discountPrice;
+
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
@@ -63,5 +66,13 @@ public class OrderItem {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public BigDecimal getDiscountPrice() {
+        return discountPrice;
+    }
+
+    public void setDiscountPrice(BigDecimal discountPrice) {
+        this.discountPrice = discountPrice;
     }
 }

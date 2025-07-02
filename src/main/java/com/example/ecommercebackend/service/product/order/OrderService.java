@@ -188,7 +188,7 @@ public class OrderService {
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (OrderItem item : savedOrderItems) {
-            BigDecimal price = item.getPrice();
+            BigDecimal price = item.getDiscountPrice();
             Integer quantity = item.getQuantity();
             BigDecimal taxRate = item.getProduct().getTaxRate();
 
@@ -360,7 +360,7 @@ public class OrderService {
         BigDecimal minPrice = merchant.getMinOrderAmount();
         BigDecimal totalPrice = BigDecimal.valueOf(0);
 
-        Set<OrderItem> newOrderItems = new HashSet<>();
+        //Set<OrderItem> newOrderItems = new HashSet<>();
 
         if (customerCoupon != null) {
             System.out.println("kupon 1");
@@ -381,14 +381,11 @@ public class OrderService {
                     if (isProductInCoupon) {
                         System.out.println("fiçeride");
                         BigDecimal divide = orderItem.getPrice().subtract(orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100)));
-                        OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),divide, orderItem.getQuantity());
                         totalPrice = totalPrice.add(divide);
-                        System.out.println("divide: " + divide);
-                        newOrderItems.add(newOrderItem);
+                        orderItem.setDiscountPrice(divide);
                     } else {
-                        OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),orderItem.getPrice(), orderItem.getQuantity());
                         totalPrice = totalPrice.add(orderItem.getPrice());
-                        newOrderItems.add(newOrderItem);
+                        orderItem.setDiscountPrice(orderItem.getPrice());
                     }
                 }
 
@@ -404,7 +401,7 @@ public class OrderService {
 
                 System.out.println("kupon 5");
                 System.out.println("totalPriceKupon: "+totalPrice);
-                return new TotalProcessDto(totalPrice,newOrderItems);
+                return new TotalProcessDto(totalPrice,savedOrderItems);
 
 
 
@@ -418,13 +415,11 @@ public class OrderService {
                 for (OrderItem orderItem: savedOrderItems) {
                     if (customerCoupon.getCoupon().getProducts().contains(orderItem.getProduct())) {
                         BigDecimal subtract = orderItem.getPrice().subtract(discountValue.multiply(BigDecimal.valueOf(orderItem.getQuantity())));
-                        OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),subtract, orderItem.getQuantity());
                         totalPrice = totalPrice.add(subtract);
-                        newOrderItems.add(newOrderItem);
+                        orderItem.setDiscountPrice(subtract);
                     }else{
-                        OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),orderItem.getPrice(), orderItem.getQuantity());
                         totalPrice = totalPrice.add(orderItem.getPrice());
-                        newOrderItems.add(newOrderItem);
+                        orderItem.setDiscountPrice(orderItem.getPrice());
                     }
                 }
 
@@ -436,21 +431,20 @@ public class OrderService {
                 if (totalPrice.compareTo(minPrice) < 0) {
                     totalPrice = totalPrice.add(kargoPrice);
                 }
-                return new TotalProcessDto(totalPrice,newOrderItems);
+                return new TotalProcessDto(totalPrice,savedOrderItems);
 
             }else
                 throw new BadRequestException("Geçersiz İndirim Tipi");
         }else{
             System.out.println("Kupon yok");
             for (OrderItem orderItem: savedOrderItems) {
-                OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),orderItem.getPrice(), orderItem.getQuantity());
                 totalPrice = totalPrice.add(orderItem.getPrice());
-                newOrderItems.add(newOrderItem);
+                orderItem.setDiscountPrice(orderItem.getPrice());
             }
             if (totalPrice.compareTo(minPrice) < 0) {
                 totalPrice = totalPrice.add(kargoPrice);
             }
-            return new TotalProcessDto(totalPrice,newOrderItems);
+            return new TotalProcessDto(totalPrice,savedOrderItems);
         }
     }
 
