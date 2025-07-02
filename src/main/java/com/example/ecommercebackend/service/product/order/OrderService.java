@@ -377,7 +377,7 @@ public class OrderService {
                 for (OrderItem orderItem: savedOrderItems) {
                     System.out.println("orderItemId: " + orderItem.getId());
                     if (customerCoupon.getCoupon().getProducts().contains(orderItem.getProduct())) {
-                        System.out.println("içeride");
+                        System.out.println("fiçeride");
                         BigDecimal divide = orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100));
                         totalPrice = totalPrice.add(divide);
                         System.out.println("divide: "+divide);

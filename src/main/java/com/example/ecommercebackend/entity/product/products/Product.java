@@ -128,6 +128,13 @@ public class Product {
         this.updatedAt = Instant.now();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Product product)) return false;
+        return Objects.equals(getId(), product.getId());
+    }
+
     public Product(String productName, String productLinkName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, Set<Category> categories, String productDescription, ProductType productType, Boolean published, BigDecimal taxRate, Boolean disableOutOfStock, Integer stockNotification) {
         this.productName = productName;
         this.productLinkName= productLinkName;
