@@ -378,6 +378,7 @@ public class OrderService {
                     if (customerCoupon.getCoupon().getProducts().contains(orderItem.getProduct())) {
                         BigDecimal divide = orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100));
                         totalPrice = totalPrice.add(divide);
+                        System.out.println("divide: "+divide);
                         orderItem.setPrice(divide);
                     }else{
                         totalPrice = totalPrice.add(orderItem.getPrice());
