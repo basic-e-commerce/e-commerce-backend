@@ -98,6 +98,7 @@ public class OrderService {
             if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
                 customerCoupon = customerCouponService.findCouponByCodeAndActive(orderCreateDto.getCode(), customer);
             }
+            System.out.println("code::::::::::"+customerCoupon.getCoupon().getCode());
             System.out.println("order 1");
 
             if (customer.getCard().getItems().isEmpty())
@@ -362,15 +363,17 @@ public class OrderService {
         //Set<OrderItem> newOrderItems = new HashSet<>();
 
         if (customerCoupon != null) {
+            System.out.println("kupon 1");
             isCouponValidation(customerCoupon);
+            System.out.println("kupon 2");
 
             if (customerCoupon.getCoupon().getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
                 BigDecimal discountValue = customerCoupon.getCoupon().getDiscountValue(); // Örneğin %10 ise 10 gelir
-
+                System.out.println("kupon 3");
                 if (discountValue == null) {
                     throw new BadRequestException("İndirim yüzdesi belirtilmemiş!");
                 }
-
+                System.out.println("kupon 4");
                 for (OrderItem orderItem: savedOrderItems) {
                     if (customerCoupon.getCoupon().getProducts().contains(orderItem.getProduct())) {
                         BigDecimal divide = orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100));
@@ -392,6 +395,8 @@ public class OrderService {
                     totalPrice = totalPrice.add(kargoPrice);
                 }
 
+                System.out.println("kupon 5");
+                System.out.println("totalPriceKupon: "+totalPrice);
                 return new TotalProcessDto(totalPrice,savedOrderItems);
 
 
@@ -427,6 +432,7 @@ public class OrderService {
             }else
                 throw new BadRequestException("Geçersiz İndirim Tipi");
         }else{
+            System.out.println("Kupon yok");
             for (OrderItem orderItem: savedOrderItems) {
                 totalPrice = totalPrice.add(orderItem.getPrice());
                 orderItem.setPrice(orderItem.getPrice());
