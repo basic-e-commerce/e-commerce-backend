@@ -374,15 +374,17 @@ public class OrderService {
                     throw new BadRequestException("İndirim yüzdesi belirtilmemiş!");
                 }
                 System.out.println("kupon 4");
-                for (OrderItem orderItem: savedOrderItems) {
-                    System.out.println("orderItemId: " + orderItem.getId());
-                    if (customerCoupon.getCoupon().getProducts().contains(orderItem.getProduct())) {
+                for (OrderItem orderItem : savedOrderItems) {
+                    boolean isProductInCoupon = customerCoupon.getCoupon().getProducts().stream()
+                            .anyMatch(product -> product.equals(orderItem.getProduct()));
+
+                    if (isProductInCoupon) {
                         System.out.println("fiçeride");
                         BigDecimal divide = orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100));
                         totalPrice = totalPrice.add(divide);
-                        System.out.println("divide: "+divide);
+                        System.out.println("divide: " + divide);
                         orderItem.setPrice(divide);
-                    }else{
+                    } else {
                         System.out.println("asd");
                         totalPrice = totalPrice.add(orderItem.getPrice());
                         orderItem.setPrice(orderItem.getPrice());
