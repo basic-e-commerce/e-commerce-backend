@@ -137,7 +137,7 @@ public class CouponService {
     }
 
     public Coupon findCouponByCodeAndActive(String code, boolean active) {
-        return couponRepository.findOne(Specification.where(hasCode(code).and(hasCode(code)))).orElse(null);
+        return couponRepository.findOne(Specification.where(hasCode(code).and(isActive(active)))).orElse(null);
     }
 
     public Boolean existByCode(String code){
