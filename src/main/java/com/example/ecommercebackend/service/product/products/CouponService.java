@@ -107,7 +107,7 @@ public class CouponService {
 
         Set<Product> products = new HashSet<>();
 
-        if (couponCreateDto.getProductIds() == null){
+        if (couponCreateDto.getProductIds() == null || couponCreateDto.getProductIds().isEmpty()){
             products.addAll(productService.findAll());
         }else{
             for (Integer productId : couponCreateDto.getProductIds()){
