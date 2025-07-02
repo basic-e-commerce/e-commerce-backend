@@ -424,7 +424,7 @@ public class OrderService {
 
         System.out.println("customerCoupon.getCoupon().getTimesUsed():"+customerCoupon.getCoupon().getTimesUsed());
         System.out.println("customerCoupon.getCoupon().getTotalUsageLimit(): "+customerCoupon.getCoupon().getTotalUsageLimit());
-        if (customerCoupon.getCoupon().getTimesUsed() <= customerCoupon.getCoupon().getTotalUsageLimit())
+        if (customerCoupon.getCoupon().getTimesUsed() >= customerCoupon.getCoupon().getTotalUsageLimit())
             throw new BadRequestException("Kuponun Kullanım Limiti Dolmuştur");
 
         Instant now = Instant.now();
