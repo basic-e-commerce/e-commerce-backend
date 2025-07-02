@@ -422,6 +422,8 @@ public class OrderService {
         if (!customerCoupon.getCoupon().getActive())
             throw new BadRequestException("Kullanılan Kupon Aktif değildir!");
 
+        System.out.println("customerCoupon.getCoupon().getTimesUsed():"+customerCoupon.getCoupon().getTimesUsed());
+        System.out.println("customerCoupon.getCoupon().getTotalUsageLimit(): "+customerCoupon.getCoupon().getTotalUsageLimit());
         if (customerCoupon.getCoupon().getTimesUsed() <= customerCoupon.getCoupon().getTotalUsageLimit())
             throw new BadRequestException("Kuponun Kullanım Limiti Dolmuştur");
 
