@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
@@ -135,8 +136,10 @@ public class PaymentService {
 
             // update orderstatus approved,green
             Order order = payment.getOrder();
-            if (order.getCoupon() != null) {
-                order.getCoupon().setTimesUsed(order.getCoupon().getTimesUsed() + 1);
+            if (order.getCustomerCoupon() != null) {
+                order.getCustomerCoupon().setUsed(true);
+                order.getCustomerCoupon().setUsedAt(Instant.now());
+                order.getCustomerCoupon().getCoupon().setTimesUsed(order.getCustomerCoupon().getCoupon().getTimesUsed()+1);
             }
             Set<Sell> collect = order.getOrderItems().stream().map(sellService::save).collect(Collectors.toSet());
             payment.setSells(collect);

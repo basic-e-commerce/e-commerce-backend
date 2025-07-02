@@ -1,10 +1,9 @@
 package com.example.ecommercebackend.service.product.products;
 
-import com.example.ecommercebackend.anotation.NotNullField;
 import com.example.ecommercebackend.anotation.NotNullParam;
-import com.example.ecommercebackend.builder.product.products.coupon.CouponBuilder;
 import com.example.ecommercebackend.dto.product.products.coupon.CouponCreateDto;
 import com.example.ecommercebackend.entity.product.products.Coupon;
+import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -30,11 +30,13 @@ public class CouponService {
     private final CouponRepository couponRepository;
     private final CustomerRepository customerRepository;
     private final ProductService productService;
+    private final CustomerCouponService customerCouponService;
 
-    public CouponService(CouponRepository couponRepository,  CustomerRepository customerRepository, ProductService productService) {
+    public CouponService(CouponRepository couponRepository, CustomerRepository customerRepository, ProductService productService, CustomerCouponService customerCouponService) {
         this.couponRepository = couponRepository;
         this.customerRepository = customerRepository;
         this.productService = productService;
+        this.customerCouponService = customerCouponService;
     }
 
     @Transactional
@@ -103,24 +105,6 @@ public class CouponService {
 
         coupon.setActive(couponCreateDto.getActive());
 
-        if (!couponCreateDto.getPublic()){
-            coupon.setPublic(false);
-
-            if (!couponCreateDto.getCustomerIds().isEmpty() && couponCreateDto.getCustomerIds() != null){
-                Set<Customer> customers = new HashSet<>();
-                for (Integer customerId : couponCreateDto.getCustomerIds()){
-                    Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new NotFoundException("Seçtiğiniz Müşteri bulunamamıştır!: "+ customerId));
-                    customers.add(customer);
-                }
-                coupon.setCustomers(customers);
-            }else
-                throw new BadRequestException("Kupon kayıtlı kullanıcılara özelse lütfen kullanıcı bilgilerini giriniz!");
-
-        }else{
-            coupon.setPublic(true);
-            coupon.setCustomers(null);
-        }
-
         Set<Product> products = new HashSet<>();
 
         if (couponCreateDto.getProductIds() == null && couponCreateDto.getProductIds().isEmpty()){
@@ -132,6 +116,37 @@ public class CouponService {
             }
         }
         coupon.setProducts(products);
+        Coupon saveCoupon = couponRepository.save(coupon);
+
+        if (!couponCreateDto.getPublic()){
+            saveCoupon.setPublic(false);
+
+            if (!couponCreateDto.getCustomerIds().isEmpty() && couponCreateDto.getCustomerIds() != null){
+                Set<CustomerCoupon> customerCoupons = new HashSet<>();
+                Instant create = Instant.now();
+                for (Integer customerId : couponCreateDto.getCustomerIds()){
+                    Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new NotFoundException("Seçtiğiniz Müşteri bulunamamıştır!: "+ customerId));
+                    CustomerCoupon customerCoupon = new CustomerCoupon(customer,saveCoupon,create);
+                    CustomerCoupon saveCustomerCoupon = customerCouponService.save(customerCoupon);
+                    customerCoupons.add(saveCustomerCoupon);
+                }
+                coupon.setCustomerCoupons(customerCoupons);
+            }else{
+                Set<CustomerCoupon> customerCoupons = new HashSet<>();
+                List<Customer> customers = customerRepository.findAll();
+                Instant create = Instant.now();
+                for (Customer customer : customers){
+                    CustomerCoupon customerCoupon = new CustomerCoupon(customer,saveCoupon,create);
+                    CustomerCoupon saveCustomerCoupon = customerCouponService.save(customerCoupon);
+                    customerCoupons.add(saveCustomerCoupon);
+                }
+                coupon.setCustomerCoupons(customerCoupons);
+            }
+
+        }else{
+            coupon.setPublic(true);
+            coupon.setCustomerCoupons(null);
+        }
 
         return couponRepository.save(coupon);
     }

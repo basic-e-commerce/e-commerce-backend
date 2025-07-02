@@ -3,6 +3,7 @@ package com.example.ecommercebackend.entity.user;
 import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.products.Coupon;
+import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -20,8 +21,8 @@ public class Customer extends User {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Address> addresses = new HashSet<>();
 
-    @ManyToMany
-    private Set<Coupon> coupons = new HashSet<>();
+    @OneToMany
+    private Set<CustomerCoupon> customerCoupons = new HashSet<>();
 
 
     public Customer(int id, String firstName, String lastName, String username, String password, Set<Role> roles, boolean enabled, boolean accountNonLocked) {
@@ -51,11 +52,11 @@ public class Customer extends User {
         this.addresses = addresses;
     }
 
-    public Set<Coupon> getCoupons() {
-        return coupons;
+    public Set<CustomerCoupon> getCustomerCoupons() {
+        return customerCoupons;
     }
 
-    public void setCoupons(Set<Coupon> coupons) {
-        this.coupons = coupons;
+    public void setCustomerCoupons(Set<CustomerCoupon> customerCoupons) {
+        this.customerCoupons = customerCoupons;
     }
 }

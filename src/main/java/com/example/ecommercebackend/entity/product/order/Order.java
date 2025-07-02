@@ -3,6 +3,7 @@ package com.example.ecommercebackend.entity.product.order;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.invoice.Invoice;
 import com.example.ecommercebackend.entity.product.products.Coupon;
+import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,9 +26,9 @@ public class Order {
     @JoinColumn(name = "user_id",referencedColumnName = "id")
     private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "coupon_id", referencedColumnName = "id")
-    private Coupon coupon;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_coupon_id", referencedColumnName = "id")
+    private CustomerCoupon customerCoupon;
 
     private String orderCode;
 
@@ -100,9 +101,9 @@ public class Order {
         this.orderCode = UUID.randomUUID().toString();
     }
 
-    public Order(User user, Coupon coupon, String firstName, String lastName, String username, String countryName, String city, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price, Invoice invoice) {
+    public Order(User user, CustomerCoupon customerCoupon, String firstName, String lastName, String username, String countryName, String city, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price, Invoice invoice) {
         this.user = user;
-        this.coupon = coupon;
+        this.customerCoupon = customerCoupon;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -129,12 +130,24 @@ public class Order {
         this.id = id;
     }
 
-    public Coupon getCoupon() {
-        return coupon;
+    public CustomerCoupon getCustomerCoupon() {
+        return customerCoupon;
     }
 
-    public void setCoupon(Coupon coupon) {
-        this.coupon = coupon;
+    public void setCustomerCoupon(CustomerCoupon customerCoupon) {
+        this.customerCoupon = customerCoupon;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
     }
 
     public OrderStatus getOrderStatus() {

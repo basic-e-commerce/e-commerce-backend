@@ -51,13 +51,8 @@ public class Coupon {
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     private Set<Product> products = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "customer_coupon",
-            joinColumns = @JoinColumn(name = "customer_id"),
-            inverseJoinColumns = @JoinColumn(name = "coupon_id")
-    )
-    private Set<Customer> customers = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<CustomerCoupon> customerCoupons = new HashSet<>();
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
@@ -99,12 +94,13 @@ public class Coupon {
         this.updatedAt = Instant.now();
     }
 
-    public Set<Customer> getCustomers() {
-        return customers;
+
+    public Set<CustomerCoupon> getCustomerCoupons() {
+        return customerCoupons;
     }
 
-    public void setCustomers(Set<Customer> customers) {
-        this.customers = customers;
+    public void setCustomerCoupons(Set<CustomerCoupon> customerCoupons) {
+        this.customerCoupons = customerCoupons;
     }
 
     public Boolean getPublic() {
