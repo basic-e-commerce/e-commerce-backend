@@ -109,7 +109,7 @@ public class OrderService {
             System.out.println("order 3");
 
             BigDecimal orderPrice = orderPrice(savedOrderItems,customerCoupon);
-            System.out.println("order 4");
+            System.out.println("order 4: "+orderPrice);
 
             TotalProcessDto totalPriceDto = processTotalPrice(savedOrderItems,customerCoupon);
             System.out.println("order 5");
