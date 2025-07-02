@@ -100,7 +100,7 @@ public class CategoryServiceTest {
 
         SecurityTestHelper.loginAsAdmin();
         // Arrange
-        CategoryCreateDto dto = new CategoryCreateDto("Electronics","açıklama",0);
+        CategoryCreateDto dto = new CategoryCreateDto("Electronics","açıklama",0,null);
         CategoryDetailDto created = categoryService.createCategory(dto);
 
         Assertions.assertNotNull(created);
