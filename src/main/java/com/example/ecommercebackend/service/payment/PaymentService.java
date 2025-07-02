@@ -55,6 +55,7 @@ public class PaymentService {
     public String processCreditCardPayment(@NotNullParam OrderCreateDto orderCreateDto,@NotNullParam HttpServletRequest httpServletRequest) {
         Order order = orderService.createOrder(orderCreateDto);
 
+        System.out.println("payment 10");
         String conversationId = UUID.randomUUID().toString();
         Payment payment = new Payment(
                 order.getFirstName(),
@@ -71,12 +72,21 @@ public class PaymentService {
                 orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber(),
                 order
         );
+        System.out.println("payment 11");
+
         Payment savePayment = paymentRepository.save(payment);
+        System.out.println("payment 12");
+
+
         order.setPayments(savePayment);
+        System.out.println("payment 13");
 
         PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod(orderCreateDto.getPaymentCreditCardRequestDto().getPaymentMethod());
+        System.out.println("payment 14");
+
         BigDecimal totalPrice = order.getTotalPrice();
         String binNumber = orderCreateDto.getPaymentCreditCardRequestDto().getCreditCardRequestDto().getCardNumber().substring(0, 6);
+        System.out.println("payment 15");
 
         if (orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber() >= 1){
             InstallmentInfoDto bin = getBin(binNumber, totalPrice);
@@ -85,6 +95,8 @@ public class PaymentService {
             order.setCustomerPrice(totalPrice);
             orderService.save(order);
         }
+        System.out.println("payment 16");
+
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         System.out.println(18);
