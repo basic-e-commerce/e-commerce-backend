@@ -107,7 +107,7 @@ public class CouponService {
 
         Set<Product> products = new HashSet<>();
 
-        if (couponCreateDto.getProductIds() == null && couponCreateDto.getProductIds().isEmpty()){
+        if (couponCreateDto.getProductIds() == null){
             products.addAll(productService.findAll());
         }else{
             for (Integer productId : couponCreateDto.getProductIds()){
@@ -116,17 +116,16 @@ public class CouponService {
             }
         }
         coupon.setProducts(products);
-        Coupon saveCoupon = couponRepository.save(coupon);
 
         if (!couponCreateDto.getPublic()){
-            saveCoupon.setPublic(false);
+            coupon.setPublic(false);
 
-            if (!couponCreateDto.getCustomerIds().isEmpty() && couponCreateDto.getCustomerIds() != null){
+            if (couponCreateDto.getCustomerIds() != null && !couponCreateDto.getCustomerIds().isEmpty()){
                 Set<CustomerCoupon> customerCoupons = new HashSet<>();
                 Instant create = Instant.now();
                 for (Integer customerId : couponCreateDto.getCustomerIds()){
                     Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new NotFoundException("Seçtiğiniz Müşteri bulunamamıştır!: "+ customerId));
-                    CustomerCoupon customerCoupon = new CustomerCoupon(customer,saveCoupon,create);
+                    CustomerCoupon customerCoupon = new CustomerCoupon(customer,coupon,create);
                     CustomerCoupon saveCustomerCoupon = customerCouponService.save(customerCoupon);
                     customerCoupons.add(saveCustomerCoupon);
                 }
@@ -136,7 +135,7 @@ public class CouponService {
                 List<Customer> customers = customerRepository.findAll();
                 Instant create = Instant.now();
                 for (Customer customer : customers){
-                    CustomerCoupon customerCoupon = new CustomerCoupon(customer,saveCoupon,create);
+                    CustomerCoupon customerCoupon = new CustomerCoupon(customer,coupon,create);
                     CustomerCoupon saveCustomerCoupon = customerCouponService.save(customerCoupon);
                     customerCoupons.add(saveCustomerCoupon);
                 }
