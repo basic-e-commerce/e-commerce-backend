@@ -360,7 +360,7 @@ public class OrderService {
         BigDecimal minPrice = merchant.getMinOrderAmount();
         BigDecimal totalPrice = BigDecimal.valueOf(0);
 
-        //Set<OrderItem> newOrderItems = new HashSet<>();
+        Set<OrderItem> newOrderItems = new HashSet<>();
 
         if (customerCoupon != null) {
             System.out.println("kupon 1");
@@ -380,14 +380,15 @@ public class OrderService {
 
                     if (isProductInCoupon) {
                         System.out.println("fiçeride");
-                        BigDecimal divide = orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100));
+                        BigDecimal divide = orderItem.getPrice().subtract(orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100)));
+                        OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),divide, orderItem.getQuantity());
                         totalPrice = totalPrice.add(divide);
                         System.out.println("divide: " + divide);
-                        orderItem.setPrice(divide);
+                        newOrderItems.add(newOrderItem);
                     } else {
-                        System.out.println("asd");
+                        OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),orderItem.getPrice(), orderItem.getQuantity());
                         totalPrice = totalPrice.add(orderItem.getPrice());
-                        orderItem.setPrice(orderItem.getPrice());
+                        newOrderItems.add(newOrderItem);
                     }
                 }
 
@@ -403,7 +404,7 @@ public class OrderService {
 
                 System.out.println("kupon 5");
                 System.out.println("totalPriceKupon: "+totalPrice);
-                return new TotalProcessDto(totalPrice,savedOrderItems);
+                return new TotalProcessDto(totalPrice,newOrderItems);
 
 
 
@@ -417,11 +418,13 @@ public class OrderService {
                 for (OrderItem orderItem: savedOrderItems) {
                     if (customerCoupon.getCoupon().getProducts().contains(orderItem.getProduct())) {
                         BigDecimal subtract = orderItem.getPrice().subtract(discountValue.multiply(BigDecimal.valueOf(orderItem.getQuantity())));
+                        OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),subtract, orderItem.getQuantity());
                         totalPrice = totalPrice.add(subtract);
-                        orderItem.setPrice(subtract);
+                        newOrderItems.add(newOrderItem);
                     }else{
+                        OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),orderItem.getPrice(), orderItem.getQuantity());
                         totalPrice = totalPrice.add(orderItem.getPrice());
-                        orderItem.setPrice(orderItem.getPrice());
+                        newOrderItems.add(newOrderItem);
                     }
                 }
 
@@ -433,20 +436,21 @@ public class OrderService {
                 if (totalPrice.compareTo(minPrice) < 0) {
                     totalPrice = totalPrice.add(kargoPrice);
                 }
-                return new TotalProcessDto(totalPrice,savedOrderItems);
+                return new TotalProcessDto(totalPrice,newOrderItems);
 
             }else
                 throw new BadRequestException("Geçersiz İndirim Tipi");
         }else{
             System.out.println("Kupon yok");
             for (OrderItem orderItem: savedOrderItems) {
+                OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),orderItem.getPrice(), orderItem.getQuantity());
                 totalPrice = totalPrice.add(orderItem.getPrice());
-                orderItem.setPrice(orderItem.getPrice());
+                newOrderItems.add(newOrderItem);
             }
             if (totalPrice.compareTo(minPrice) < 0) {
                 totalPrice = totalPrice.add(kargoPrice);
             }
-            return new TotalProcessDto(totalPrice,savedOrderItems);
+            return new TotalProcessDto(totalPrice,newOrderItems);
         }
     }
 
