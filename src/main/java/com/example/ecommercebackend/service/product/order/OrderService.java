@@ -95,7 +95,7 @@ public class OrderService {
         if (principal instanceof Customer customer) {
 
             CustomerCoupon customerCoupon = null;
-            if (!orderCreateDto.getCode().isEmpty() && orderCreateDto.getCode() != null) {
+            if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
                 customerCoupon = customerCouponService.findCouponByCodeAndActive(orderCreateDto.getCode(), customer);
             }
 
