@@ -98,17 +98,42 @@ public class OrderService {
             if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
                 customerCoupon = customerCouponService.findCouponByCodeAndActive(orderCreateDto.getCode(), customer);
             }
+            System.out.println("order 1");
 
             if (customer.getCard().getItems().isEmpty())
                 throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
+            System.out.println("order 2");
 
             Set<OrderItem> savedOrderItems = createOrderItemWithCustomer(customer.getCard());
+            System.out.println("order 3");
+
             BigDecimal orderPrice = orderPrice(savedOrderItems);
+            System.out.println("order 4");
+
             TotalProcessDto totalPriceDto = processTotalPrice(savedOrderItems,customerCoupon);
+            System.out.println("order 5");
+
             BigDecimal totalTax = calculateTax(totalPriceDto.getSavedOrderItems());
+            System.out.println("order 6");
+
             Invoice invoice = getInvoice(totalPriceDto.getTotalPrice(),totalTax,orderCreateDto);
+            System.out.println("order 7");
+
             Invoice saveInvoicce = invoiceService.save(invoice);
-            Order order = saveOrder(customer, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalPriceDto.getTotalPrice(), orderPrice,saveInvoicce,customerCoupon);
+            System.out.println("order 8");
+
+            Order order = saveOrder(customer,
+                    orderCreateDto.getAddress(),
+                    totalPriceDto.getSavedOrderItems(),
+                    orderStatus,
+                    totalPriceDto.getTotalPrice(),
+                    orderPrice,
+                    saveInvoicce,
+                    customerCoupon
+            );
+            System.out.println("order 9");
+            System.out.println("ordertotalprice:"+order.getTotalPrice());
+
             return orderRepository.save(order);
         }
 
