@@ -359,7 +359,7 @@ public class OrderService {
         BigDecimal minPrice = merchant.getMinOrderAmount();
         BigDecimal totalPrice = BigDecimal.valueOf(0);
 
-        Set<OrderItem> newOrderItems = new HashSet<>();
+        //Set<OrderItem> newOrderItems = new HashSet<>();
 
         if (customerCoupon != null) {
             isCouponValidation(customerCoupon);
@@ -374,13 +374,11 @@ public class OrderService {
                 for (OrderItem orderItem: savedOrderItems) {
                     if (customerCoupon.getCoupon().getProducts().contains(orderItem.getProduct())) {
                         BigDecimal divide = orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100));
-                        OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),divide,orderItem.getQuantity());
                         totalPrice = totalPrice.add(divide);
-                        newOrderItems.add(newOrderItem);
+                        orderItem.setPrice(divide);
                     }else{
-                        OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),orderItem.getPrice(),orderItem.getQuantity());
                         totalPrice = totalPrice.add(orderItem.getPrice());
-                        newOrderItems.add(newOrderItem);
+                        orderItem.setPrice(orderItem.getPrice());
                     }
                 }
 
@@ -394,7 +392,7 @@ public class OrderService {
                     totalPrice = totalPrice.add(kargoPrice);
                 }
 
-                return new TotalProcessDto(totalPrice,newOrderItems);
+                return new TotalProcessDto(totalPrice,savedOrderItems);
 
 
 
@@ -408,13 +406,11 @@ public class OrderService {
                 for (OrderItem orderItem: savedOrderItems) {
                     if (customerCoupon.getCoupon().getProducts().contains(orderItem.getProduct())) {
                         BigDecimal subtract = orderItem.getPrice().subtract(discountValue.multiply(BigDecimal.valueOf(orderItem.getQuantity())));
-                        OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),subtract,orderItem.getQuantity());
                         totalPrice = totalPrice.add(subtract);
-                        newOrderItems.add(newOrderItem);
+                        orderItem.setPrice(subtract);
                     }else{
-                        OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),orderItem.getPrice(),orderItem.getQuantity());
                         totalPrice = totalPrice.add(orderItem.getPrice());
-                        newOrderItems.add(newOrderItem);
+                        orderItem.setPrice(orderItem.getPrice());
                     }
                 }
 
@@ -426,15 +422,14 @@ public class OrderService {
                 if (totalPrice.compareTo(minPrice) < 0) {
                     totalPrice = totalPrice.add(kargoPrice);
                 }
-                return new TotalProcessDto(totalPrice,newOrderItems);
+                return new TotalProcessDto(totalPrice,savedOrderItems);
 
             }else
                 throw new BadRequestException("Geçersiz İndirim Tipi");
         }else{
             for (OrderItem orderItem: savedOrderItems) {
-                OrderItem newOrderItem = new OrderItem(orderItem.getProduct(),orderItem.getPrice(),orderItem.getQuantity());
                 totalPrice = totalPrice.add(orderItem.getPrice());
-                newOrderItems.add(newOrderItem);
+                orderItem.setPrice(orderItem.getPrice());
             }
             if (totalPrice.compareTo(minPrice) < 0) {
                 totalPrice = totalPrice.add(kargoPrice);
