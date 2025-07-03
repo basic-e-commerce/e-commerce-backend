@@ -25,4 +25,17 @@ public class CardController {
     public ResponseEntity<CardResponseDto> updateCard(@RequestBody CardCreateDto cardCreateDto) {
         return new ResponseEntity<>(cardService.updateCard(cardCreateDto), HttpStatus.OK);
     }
+
+    @PutMapping("/add-coupon")
+    @RateLimit(limit = 10, duration = 1, unit = TimeUnit.SECONDS)
+    public ResponseEntity<String> addCoupon(@RequestParam String code) {
+        return new ResponseEntity<>(cardService.addCoupon(code),HttpStatus.OK);
+    }
+
+    @PutMapping("/remove-coupon")
+    @RateLimit(limit = 10, duration = 1, unit = TimeUnit.SECONDS)
+    public ResponseEntity<String> removeCoupon() {
+        return new ResponseEntity<>(cardService.removeCoupon(),HttpStatus.OK);
+    }
+
 }

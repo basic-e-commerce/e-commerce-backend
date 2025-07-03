@@ -122,6 +122,8 @@ public class SecurityConfig {
 
 
                         .requestMatchers(HttpMethod.PUT,"/api/v1/card").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/card/add-coupon").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/card/remove-coupon").hasAuthority("CUSTOMER")
 
                         .requestMatchers(HttpMethod.GET,"/api/v1/card-item/by-ids").permitAll()
 

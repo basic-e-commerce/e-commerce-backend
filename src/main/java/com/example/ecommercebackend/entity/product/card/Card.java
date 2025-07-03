@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.entity.product.card;
 
 
+import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
 import com.example.ecommercebackend.entity.user.Customer;
 import jakarta.persistence.*;
 
@@ -21,6 +22,10 @@ public class Card {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<CardItem> items = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_coupon_id", referencedColumnName = "id")
+    private CustomerCoupon customerCoupon;
 
     public Card(Customer customer) {
         this.customer = customer;
@@ -51,5 +56,13 @@ public class Card {
 
     public void setItems(List<CardItem> items) {
         this.items = items;
+    }
+
+    public CustomerCoupon getCustomerCoupon() {
+        return customerCoupon;
+    }
+
+    public void setCustomerCoupon(CustomerCoupon customerCoupon) {
+        this.customerCoupon = customerCoupon;
     }
 }

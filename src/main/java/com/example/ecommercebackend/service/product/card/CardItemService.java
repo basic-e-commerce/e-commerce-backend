@@ -4,6 +4,8 @@ import com.example.ecommercebackend.dto.product.card.*;
 import com.example.ecommercebackend.dto.product.products.ProductQuantityDto;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.product.card.CardItem;
+import com.example.ecommercebackend.entity.product.products.Coupon;
+import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,21 +61,94 @@ public class CardItemService {
         if (principal instanceof Customer customer) {
             List<ProductQuantityDto> cardProduct = new ArrayList<>();
 
-            List<CardResponseDetails> productDetails = customer.getCard().getItems().stream().map(x -> {
-                String url = "";
-                if (x.getProduct().getCoverImage() != null) {
-                    url = x.getProduct().getCoverImage().getUrl();
-                }
-                cardProduct.add(new ProductQuantityDto(x.getProduct(), x.getQuantity()));
+            CustomerCoupon customerCoupon = customer.getCard().getCustomerCoupon();
+            List<CardResponseDetails> productDetails = new ArrayList<>();
 
-                return new CardResponseDetails(x.getProduct().getId(),
-                        x.getProduct().getProductName(),
-                        x.getProduct().getProductLinkName(),
-                        x.getProduct().getSalePrice(),
-                        x.getProduct().getComparePrice(),
-                        url,
-                        x.getQuantity());
-            }).toList();
+            if (customerCoupon != null) {
+                isCouponValidation(customerCoupon);
+                if (customerCoupon.getCoupon().getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)){
+                    productDetails = customer.getCard().getItems().stream().map(x -> {
+                        String url = "";
+                        if (x.getProduct().getCoverImage() != null) {
+                            url = x.getProduct().getCoverImage().getUrl();
+                        }
+                        cardProduct.add(new ProductQuantityDto(x.getProduct(), x.getQuantity()));
+
+                        boolean isProductInCoupon = customerCoupon.getCoupon().getProducts().stream()
+                                .anyMatch(product -> product.equals(x.getProduct()));
+
+                        BigDecimal comparePrice = x.getProduct().getComparePrice();
+                        if (isProductInCoupon)
+                            comparePrice = comparePrice.subtract(comparePrice.multiply(customerCoupon.getCoupon().getDiscountValue()).divide(BigDecimal.valueOf(100)));
+
+                        return new CardResponseDetails(x.getProduct().getId(),
+                                x.getProduct().getProductName(),
+                                x.getProduct().getProductLinkName(),
+                                x.getProduct().getSalePrice(),
+                                comparePrice,
+                                url,
+                                x.getQuantity());
+                    }).toList();
+                }else if (customerCoupon.getCoupon().getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)){
+                    productDetails = customer.getCard().getItems().stream().map(x -> {
+                        String url = "";
+                        if (x.getProduct().getCoverImage() != null) {
+                            url = x.getProduct().getCoverImage().getUrl();
+                        }
+                        cardProduct.add(new ProductQuantityDto(x.getProduct(), x.getQuantity()));
+
+                        boolean isProductInCoupon = customerCoupon.getCoupon().getProducts().stream()
+                                .anyMatch(product -> product.equals(x.getProduct()));
+
+                        BigDecimal comparePrice = x.getProduct().getComparePrice();
+                        if (isProductInCoupon)
+                            comparePrice = comparePrice.subtract(customerCoupon.getCoupon().getDiscountValue());
+
+                        return new CardResponseDetails(x.getProduct().getId(),
+                                x.getProduct().getProductName(),
+                                x.getProduct().getProductLinkName(),
+                                x.getProduct().getSalePrice(),
+                                comparePrice,
+                                url,
+                                x.getQuantity());
+                    }).toList();
+
+                }else {
+                    productDetails = customer.getCard().getItems().stream().map(x -> {
+                        String url = "";
+                        if (x.getProduct().getCoverImage() != null) {
+                            url = x.getProduct().getCoverImage().getUrl();
+                        }
+                        cardProduct.add(new ProductQuantityDto(x.getProduct(), x.getQuantity()));
+
+                        return new CardResponseDetails(x.getProduct().getId(),
+                                x.getProduct().getProductName(),
+                                x.getProduct().getProductLinkName(),
+                                x.getProduct().getSalePrice(),
+                                x.getProduct().getComparePrice(),
+                                url,
+                                x.getQuantity());
+                    }).toList();
+                }
+
+
+            }else {
+                productDetails = customer.getCard().getItems().stream().map(x -> {
+                    String url = "";
+                    if (x.getProduct().getCoverImage() != null) {
+                        url = x.getProduct().getCoverImage().getUrl();
+                    }
+                    cardProduct.add(new ProductQuantityDto(x.getProduct(), x.getQuantity()));
+
+                    return new CardResponseDetails(x.getProduct().getId(),
+                            x.getProduct().getProductName(),
+                            x.getProduct().getProductLinkName(),
+                            x.getProduct().getSalePrice(),
+                            x.getProduct().getComparePrice(),
+                            url,
+                            x.getQuantity());
+                }).toList();
+            }
 
             BigDecimal totalWithOutTax = getTotalWithOutTax(cardProduct);
             BigDecimal totalTax = getTotalTaxAmount(cardProduct);
@@ -144,6 +220,25 @@ public class CardItemService {
             throw new BadRequestException("Geçersiz Kullanıcı");
     }
 
+    private void isCouponValidation(CustomerCoupon customerCoupon) {
+        if (!customerCoupon.getCoupon().getActive())
+            throw new BadRequestException("Kullanılan Kupon Aktif değildir!");
+
+        System.out.println("customerCoupon.getCoupon().getTimesUsed():"+customerCoupon.getCoupon().getTimesUsed());
+        System.out.println("customerCoupon.getCoupon().getTotalUsageLimit(): "+customerCoupon.getCoupon().getTotalUsageLimit());
+        if (customerCoupon.getCoupon().getTimesUsed() >= customerCoupon.getCoupon().getTotalUsageLimit())
+            throw new BadRequestException("Kuponun Kullanım Limiti Dolmuştur");
+
+        Instant now = Instant.now();
+
+        if (customerCoupon.getCoupon().getCouponStartDate() != null && now.isBefore(customerCoupon.getCoupon().getCouponStartDate())) {
+            throw new BadRequestException("Kupon henüz geçerli değildir!");
+        }
+
+        if (customerCoupon.getCoupon().getCouponEndDate() != null && now.isAfter(customerCoupon.getCoupon().getCouponEndDate())) {
+            throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
+        }
+    }
 
 
     public BigDecimal getTotalWithOutTax(List<ProductQuantityDto> productQuantityDtos) {

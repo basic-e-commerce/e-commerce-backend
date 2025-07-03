@@ -4,11 +4,14 @@ import com.example.ecommercebackend.builder.product.card.CardBuilder;
 import com.example.ecommercebackend.dto.product.card.*;
 import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.card.CardItem;
+import com.example.ecommercebackend.entity.product.products.Coupon;
+import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.card.CardRepository;
+import com.example.ecommercebackend.service.product.products.CustomerCouponService;
 import com.example.ecommercebackend.service.product.products.ProductService;
 import com.example.ecommercebackend.service.user.CustomerService;
 import org.springframework.security.core.Authentication;
@@ -23,12 +26,14 @@ public class CardService {
     private final CardItemService cardItemService;
     private final CardBuilder cardBuilder;
     private final ProductService productService;
+    private final CustomerCouponService customerCouponService;
 
-    public CardService(CardRepository cardRepository, CardItemService cardItemService, CardBuilder cardBuilder, ProductService productService) {
+    public CardService(CardRepository cardRepository, CardItemService cardItemService, CardBuilder cardBuilder, ProductService productService, CustomerCouponService customerCouponService) {
         this.cardRepository = cardRepository;
         this.cardItemService = cardItemService;
         this.cardBuilder = cardBuilder;
         this.productService = productService;
+        this.customerCouponService = customerCouponService;
     }
 
     /*
@@ -106,5 +111,26 @@ public class CardService {
 
     public void save(Card card) {
         cardRepository.save(card);
+    }
+
+    public String addCoupon(String code) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Customer customer) {
+            CustomerCoupon customerCoupon = customerCouponService.findCouponByCodeAndActive(code,customer);
+            customer.getCard().setCustomerCoupon(customerCoupon);
+            cardRepository.save(customer.getCard());
+            return "Kupon Eklendi!";
+        }else
+            throw new BadRequestException("Lütfen giriş yapınız!");
+    }
+
+    public String removeCoupon() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Customer customer) {
+            customer.getCard().setCustomerCoupon(null);
+            cardRepository.save(customer.getCard());
+            return "Kupon Kaldırıldı!";
+        }else
+            throw new BadRequestException("Lütfen giriş yapınız!");
     }
 }
