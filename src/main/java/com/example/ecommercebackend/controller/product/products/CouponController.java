@@ -25,7 +25,7 @@ public class CouponController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CouponAdminResponseDto>> getAll(@RequestParam(required = false,defaultValue = "0") Integer page,@RequestParam(required = false,defaultValue = "0") Integer size){
+    public ResponseEntity<List<CouponAdminResponseDto>> getAll(@RequestParam(required = false,defaultValue = "0") Integer page,@RequestParam(required = false,defaultValue = "10") Integer size){
         return new ResponseEntity<>(couponService.getAll(page,size),HttpStatus.OK);
     }
 }
