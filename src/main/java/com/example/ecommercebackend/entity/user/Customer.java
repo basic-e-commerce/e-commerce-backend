@@ -21,7 +21,7 @@ public class Customer extends User {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Address> addresses = new HashSet<>();
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private Set<CustomerCoupon> customerCoupons = new HashSet<>();
 
 
