@@ -14,6 +14,7 @@ import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.card.CardItemRepository;
 import com.example.ecommercebackend.repository.product.products.ProductRepository;
 import com.example.ecommercebackend.service.merchant.MerchantService;
+import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,7 @@ public class CardItemService {
         cardItemRepository.delete(cardItem);
     }
 
+    @Transactional
     public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequestDto){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         System.out.println(principal);

@@ -23,7 +23,7 @@ public class Card {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<CardItem> items = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne
     @JoinColumn(name = "customer_coupon_id", referencedColumnName = "id")
     private CustomerCoupon customerCoupon;
 
