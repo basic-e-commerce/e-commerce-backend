@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -117,6 +118,7 @@ public class CardService {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof Customer customer) {
             CustomerCoupon customerCoupon = customerCouponService.findCouponByCodeAndActive(code,customer);
+            isCouponValidation(customerCoupon);
             customer.getCard().setCustomerCoupon(customerCoupon);
             cardRepository.save(customer.getCard());
             return "Kupon Eklendi!";
@@ -132,5 +134,25 @@ public class CardService {
             return "Kupon Kaldırıldı!";
         }else
             throw new BadRequestException("Lütfen giriş yapınız!");
+    }
+    public void isCouponValidation(CustomerCoupon customerCoupon) {
+        if (!customerCoupon.getCoupon().getActive())
+            throw new BadRequestException("Kullanılan Kupon Aktif değildir!");
+
+        System.out.println("customerCoupon.getCoupon().getTimesUsed():"+customerCoupon.getCoupon().getTimesUsed());
+        System.out.println("customerCoupon.getCoupon().getTotalUsageLimit(): "+customerCoupon.getCoupon().getTotalUsageLimit());
+        if (customerCoupon.getCoupon().getTimesUsed() >= customerCoupon.getCoupon().getTotalUsageLimit())
+            throw new BadRequestException("Kuponun Kullanım Limiti Dolmuştur");
+
+        Instant now = Instant.now();
+
+        if (customerCoupon.getCoupon().getCouponStartDate() != null && now.isBefore(customerCoupon.getCoupon().getCouponStartDate())) {
+            throw new BadRequestException("Kupon henüz geçerli değildir!");
+        }
+
+        if (customerCoupon.getCoupon().getCouponEndDate() != null && now.isAfter(customerCoupon.getCoupon().getCouponEndDate())) {
+            throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
+        }
+
     }
 }
