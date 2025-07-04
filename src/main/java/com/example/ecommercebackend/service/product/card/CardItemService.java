@@ -13,6 +13,7 @@ import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.card.CardItemRepository;
 import com.example.ecommercebackend.repository.product.products.ProductRepository;
+import com.example.ecommercebackend.repository.user.CustomerRepository;
 import com.example.ecommercebackend.service.merchant.MerchantService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -32,11 +33,13 @@ public class CardItemService {
     private final CardItemRepository cardItemRepository;
     private final ProductRepository productRepository;
     private final MerchantService merchantService;
+    private final CustomerRepository customerRepository;
 
-    public CardItemService(CardItemRepository cardItemRepository, ProductRepository productRepository, MerchantService merchantService) {
+    public CardItemService(CardItemRepository cardItemRepository, ProductRepository productRepository, MerchantService merchantService, CustomerRepository customerRepository) {
         this.cardItemRepository = cardItemRepository;
         this.productRepository = productRepository;
         this.merchantService = merchantService;
+        this.customerRepository = customerRepository;
     }
 
     public CardItem create(CardItemCreateDto cardItemCreateDto) {
@@ -55,12 +58,13 @@ public class CardItemService {
         cardItemRepository.delete(cardItem);
     }
 
-    @Transactional
+
     public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequestDto){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         System.out.println(principal);
 
-        if (principal instanceof Customer customer) {
+        if (principal instanceof Customer customer1) {
+            Customer customer = customerRepository.findById(customer1.getId()).get();
             List<ProductQuantityDto> cardProduct = new ArrayList<>();
 
             CustomerCoupon customerCoupon = customer.getCard().getCustomerCoupon();
