@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.dto.product.card;
 
+import com.example.ecommercebackend.dto.product.coupon.CouponCustomerResponseDto;
 import com.example.ecommercebackend.dto.product.coupon.CouponResponseDto;
 
 import java.math.BigDecimal;
@@ -12,16 +13,16 @@ public class CardResponseDetail {
     private BigDecimal totalPrice;
     private float shippingCostRate;
     List<CardResponseDetails> details;
-    private CouponResponseDto couponResponseDto;
+    private CouponCustomerResponseDto couponCustomerResponseDto;
 
-    public CardResponseDetail(BigDecimal totalWithOutTax, BigDecimal totalTax, BigDecimal shippingCost, BigDecimal totalPrice, float shippingCostRate, List<CardResponseDetails> details, CouponResponseDto couponResponseDto) {
+    public CardResponseDetail(BigDecimal totalWithOutTax, BigDecimal totalTax, BigDecimal shippingCost, BigDecimal totalPrice, float shippingCostRate, List<CardResponseDetails> details, CouponCustomerResponseDto couponCustomerResponseDto) {
         this.totalWithOutTax = totalWithOutTax;
         this.totalTax = totalTax;
         this.shippingCost = shippingCost;
         this.totalPrice = totalPrice;
         this.shippingCostRate = shippingCostRate;
         this.details = details;
-        this.couponResponseDto = couponResponseDto;
+        this.couponCustomerResponseDto = couponCustomerResponseDto;
     }
 
     public BigDecimal getTotalWithOutTax() {
@@ -72,11 +73,12 @@ public class CardResponseDetail {
         this.details = details;
     }
 
-    public CouponResponseDto getCouponResponseDto() {
-        return couponResponseDto;
+
+    public CouponCustomerResponseDto getCouponCustomerResponseDto() {
+        return couponCustomerResponseDto;
     }
 
-    public void setCouponResponseDto(CouponResponseDto couponResponseDto) {
-        this.couponResponseDto = couponResponseDto;
+    public void setCouponCustomerResponseDto(CouponCustomerResponseDto couponCustomerResponseDto) {
+        this.couponCustomerResponseDto = couponCustomerResponseDto;
     }
 }

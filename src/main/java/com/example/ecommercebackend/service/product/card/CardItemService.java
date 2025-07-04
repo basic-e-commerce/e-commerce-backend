@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.service.product.card;
 
 import com.example.ecommercebackend.dto.product.card.*;
+import com.example.ecommercebackend.dto.product.coupon.CouponCustomerResponseDto;
 import com.example.ecommercebackend.dto.product.coupon.CouponResponseDto;
 import com.example.ecommercebackend.dto.product.products.ProductQuantityDto;
 import com.example.ecommercebackend.entity.merchant.Merchant;
@@ -72,7 +73,7 @@ public class CardItemService {
             CustomerCoupon customerCoupon = customer.getCard().getCustomerCoupon();
             List<CardResponseDetails> productDetails = new ArrayList<>();
 
-            CouponResponseDto couponResponseDto = null;
+            CouponCustomerResponseDto couponResponseDto = null;
             if (customerCoupon != null) {
                 isCouponValidation(customerCoupon);
                 if (customerCoupon.getCoupon().getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)){
@@ -141,7 +142,7 @@ public class CardItemService {
                                 x.getQuantity());
                     }).toList();
                 }
-                couponResponseDto = new CouponResponseDto(customerCoupon.getCoupon().getCode(),
+                couponResponseDto = new CouponCustomerResponseDto(customerCoupon.getCoupon().getCode(),
                         customerCoupon.getCoupon().getDescription(),
                         customerCoupon.getCoupon().getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
                         customerCoupon.getCoupon().getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
