@@ -1,5 +1,7 @@
 package com.example.ecommercebackend.dto.product.card;
 
+import com.example.ecommercebackend.dto.product.coupon.CouponResponseDto;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -10,14 +12,16 @@ public class CardResponseDetail {
     private BigDecimal totalPrice;
     private float shippingCostRate;
     List<CardResponseDetails> details;
+    private CouponResponseDto couponResponseDto;
 
-    public CardResponseDetail(BigDecimal totalWithOutTax, BigDecimal totalTax, BigDecimal shippingCost, BigDecimal totalPrice, float shippingCostRate, List<CardResponseDetails> details) {
+    public CardResponseDetail(BigDecimal totalWithOutTax, BigDecimal totalTax, BigDecimal shippingCost, BigDecimal totalPrice, float shippingCostRate, List<CardResponseDetails> details, CouponResponseDto couponResponseDto) {
         this.totalWithOutTax = totalWithOutTax;
         this.totalTax = totalTax;
         this.shippingCost = shippingCost;
         this.totalPrice = totalPrice;
         this.shippingCostRate = shippingCostRate;
         this.details = details;
+        this.couponResponseDto = couponResponseDto;
     }
 
     public BigDecimal getTotalWithOutTax() {
@@ -66,5 +70,13 @@ public class CardResponseDetail {
 
     public void setDetails(List<CardResponseDetails> details) {
         this.details = details;
+    }
+
+    public CouponResponseDto getCouponResponseDto() {
+        return couponResponseDto;
+    }
+
+    public void setCouponResponseDto(CouponResponseDto couponResponseDto) {
+        this.couponResponseDto = couponResponseDto;
     }
 }
