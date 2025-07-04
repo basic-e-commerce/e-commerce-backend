@@ -11,9 +11,11 @@ import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.card.CardRepository;
+import com.example.ecommercebackend.service.product.products.CouponService;
 import com.example.ecommercebackend.service.product.products.CustomerCouponService;
 import com.example.ecommercebackend.service.product.products.ProductService;
 import com.example.ecommercebackend.service.user.CustomerService;
+import org.hibernate.annotations.NotFound;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,13 +30,15 @@ public class CardService {
     private final CardBuilder cardBuilder;
     private final ProductService productService;
     private final CustomerCouponService customerCouponService;
+    private final CouponService couponService;
 
-    public CardService(CardRepository cardRepository, CardItemService cardItemService, CardBuilder cardBuilder, ProductService productService, CustomerCouponService customerCouponService) {
+    public CardService(CardRepository cardRepository, CardItemService cardItemService, CardBuilder cardBuilder, ProductService productService, CustomerCouponService customerCouponService, CouponService couponService) {
         this.cardRepository = cardRepository;
         this.cardItemService = cardItemService;
         this.cardBuilder = cardBuilder;
         this.productService = productService;
         this.customerCouponService = customerCouponService;
+        this.couponService = couponService;
     }
 
     /*
@@ -117,8 +121,17 @@ public class CardService {
     public String addCoupon(String code) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof Customer customer) {
-            CustomerCoupon customerCoupon = customerCouponService.findCouponByCodeAndActive(code,customer);
-            isCouponValidation(customerCoupon);
+            Coupon coupon = couponService.findByCode(code);
+            CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
+
+            if (customerCoupon == null && !coupon.getPublic())
+                throw new NotFoundException("Tanımlanabilecek bir kupon bulunamadı!");
+
+            if (customerCoupon == null && coupon.getPublic()) {
+                CustomerCoupon newCustomerCoupon = new CustomerCoupon(customer,coupon,Instant.now());
+                customerCoupon = customerCouponService.save(newCustomerCoupon);
+            }
+            isCouponValidation(coupon);
             customer.getCard().setCustomerCoupon(customerCoupon);
             cardRepository.save(customer.getCard());
             return "Kupon Eklendi!";
@@ -135,22 +148,22 @@ public class CardService {
         }else
             throw new BadRequestException("Lütfen giriş yapınız!");
     }
-    public void isCouponValidation(CustomerCoupon customerCoupon) {
-        if (!customerCoupon.getCoupon().getActive())
+    public void isCouponValidation(Coupon coupon) {
+        if (!coupon.getActive())
             throw new BadRequestException("Kullanılan Kupon Aktif değildir!");
 
-        System.out.println("customerCoupon.getCoupon().getTimesUsed():"+customerCoupon.getCoupon().getTimesUsed());
-        System.out.println("customerCoupon.getCoupon().getTotalUsageLimit(): "+customerCoupon.getCoupon().getTotalUsageLimit());
-        if (customerCoupon.getCoupon().getTimesUsed() >= customerCoupon.getCoupon().getTotalUsageLimit())
+        System.out.println("couponcoupon.getTimesUsed():"+coupon.getTimesUsed());
+        System.out.println("coupon.getTotalUsageLimit(): "+coupon.getTotalUsageLimit());
+        if (coupon.getTimesUsed() >= coupon.getTotalUsageLimit())
             throw new BadRequestException("Kuponun Kullanım Limiti Dolmuştur");
 
         Instant now = Instant.now();
 
-        if (customerCoupon.getCoupon().getCouponStartDate() != null && now.isBefore(customerCoupon.getCoupon().getCouponStartDate())) {
+        if (coupon.getCouponStartDate() != null && now.isBefore(coupon.getCouponStartDate())) {
             throw new BadRequestException("Kupon henüz geçerli değildir!");
         }
 
-        if (customerCoupon.getCoupon().getCouponEndDate() != null && now.isAfter(customerCoupon.getCoupon().getCouponEndDate())) {
+        if (coupon.getCouponEndDate() != null && now.isAfter(coupon.getCouponEndDate())) {
             throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
         }
 

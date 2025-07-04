@@ -103,25 +103,18 @@ public class OrderService {
 
             if (customer.getCard().getItems().isEmpty())
                 throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
-            System.out.println("order 2");
 
             Set<OrderItem> savedOrderItems = createOrderItemWithCustomer(customer.getCard());
-            System.out.println("order 3");
 
             BigDecimal orderPrice = orderPrice(savedOrderItems,customerCoupon);
-            System.out.println("order 4: "+orderPrice);
 
             TotalProcessDto totalPriceDto = processTotalPrice(savedOrderItems,customerCoupon);
-            System.out.println("order 5");
 
             BigDecimal totalTax = calculateTax(totalPriceDto.getSavedOrderItems());
-            System.out.println("order 6");
 
             Invoice invoice = getInvoice(totalPriceDto.getTotalPrice(),totalTax,orderCreateDto);
-            System.out.println("order 7");
 
             Invoice saveInvoicce = invoiceService.save(invoice);
-            System.out.println("order 8");
 
             Order order = saveOrder(customer,
                     orderCreateDto.getAddress(),

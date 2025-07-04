@@ -11,7 +11,6 @@ import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.product.products.CouponRepository;
 import com.example.ecommercebackend.repository.user.CustomerRepository;
-import com.example.ecommercebackend.service.user.CustomerService;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -144,7 +143,7 @@ public class CouponService {
 
         }else{
             coupon.setPublic(true);
-            coupon.setCustomerCoupons(null);
+            coupon.setCustomerCoupons(new HashSet<>());
         }
 
         return couponRepository.save(coupon);
@@ -170,7 +169,7 @@ public class CouponService {
     }
 
 
-
-
-
+    public Coupon findByCode(String code) {
+        return couponRepository.findOne(Specification.where(hasCode(code).and(isActive(true)))).orElse(null);
+    }
 }

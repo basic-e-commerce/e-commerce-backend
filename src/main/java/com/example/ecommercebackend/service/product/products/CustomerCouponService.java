@@ -24,7 +24,11 @@ public class CustomerCouponService {
     }
 
     public CustomerCoupon findCouponByCodeAndActive(String code, Customer customer) {
-        return customerCouponRepository.findOne(Specification.where(hasCouponCode(code).and(hasCustomer(customer)))).orElseThrow(()-> new NotFoundException("Kullanıcının kuponu bulunamadı"));
+        return customerCouponRepository.findOne(Specification.where(hasCouponCode(code).and(hasCustomer(customer)))).orElse(null);
+    }
+
+    public CustomerCoupon findCouponAndCustomer(Coupon coupon, Customer customer) {
+        return customerCouponRepository.findOne(Specification.where(hasCoupon(coupon).and(hasCustomer(customer)))).orElse(null);
     }
 
     public Specification<CustomerCoupon> hasCustomer(Customer customer) {
