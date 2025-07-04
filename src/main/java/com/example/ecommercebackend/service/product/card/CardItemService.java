@@ -78,7 +78,6 @@ public class CardItemService {
                         if (x.getProduct().getCoverImage() != null) {
                             url = x.getProduct().getCoverImage().getUrl();
                         }
-                        cardProduct.add(new ProductQuantityDto(x.getProduct(), x.getQuantity()));
 
                         boolean isProductInCoupon = customerCoupon.getCoupon().getProducts().stream()
                                 .anyMatch(product -> product.equals(x.getProduct()));
@@ -86,6 +85,8 @@ public class CardItemService {
                         BigDecimal comparePrice = x.getProduct().getComparePrice();
                         if (isProductInCoupon)
                             comparePrice = comparePrice.subtract(comparePrice.multiply(customerCoupon.getCoupon().getDiscountValue()).divide(BigDecimal.valueOf(100)));
+
+                        cardProduct.add(new ProductQuantityDto(comparePrice,x.getProduct().getTaxRate(), x.getQuantity()));
 
                         return new CardResponseDetails(x.getProduct().getId(),
                                 x.getProduct().getProductName(),
@@ -101,7 +102,6 @@ public class CardItemService {
                         if (x.getProduct().getCoverImage() != null) {
                             url = x.getProduct().getCoverImage().getUrl();
                         }
-                        cardProduct.add(new ProductQuantityDto(x.getProduct(), x.getQuantity()));
 
                         boolean isProductInCoupon = customerCoupon.getCoupon().getProducts().stream()
                                 .anyMatch(product -> product.equals(x.getProduct()));
@@ -109,6 +109,8 @@ public class CardItemService {
                         BigDecimal comparePrice = x.getProduct().getComparePrice();
                         if (isProductInCoupon)
                             comparePrice = comparePrice.subtract(customerCoupon.getCoupon().getDiscountValue());
+
+                        cardProduct.add(new ProductQuantityDto(comparePrice,x.getProduct().getTaxRate(), x.getQuantity()));
 
                         return new CardResponseDetails(x.getProduct().getId(),
                                 x.getProduct().getProductName(),
@@ -125,7 +127,7 @@ public class CardItemService {
                         if (x.getProduct().getCoverImage() != null) {
                             url = x.getProduct().getCoverImage().getUrl();
                         }
-                        cardProduct.add(new ProductQuantityDto(x.getProduct(), x.getQuantity()));
+                        cardProduct.add(new ProductQuantityDto(x.getProduct().getComparePrice(),x.getProduct().getTaxRate(), x.getQuantity()));
 
                         return new CardResponseDetails(x.getProduct().getId(),
                                 x.getProduct().getProductName(),
@@ -144,7 +146,7 @@ public class CardItemService {
                     if (x.getProduct().getCoverImage() != null) {
                         url = x.getProduct().getCoverImage().getUrl();
                     }
-                    cardProduct.add(new ProductQuantityDto(x.getProduct(), x.getQuantity()));
+                    cardProduct.add(new ProductQuantityDto(x.getProduct().getComparePrice(),x.getProduct().getTaxRate(), x.getQuantity()));
 
                     return new CardResponseDetails(x.getProduct().getId(),
                             x.getProduct().getProductName(),
@@ -184,19 +186,21 @@ public class CardItemService {
             List<ProductQuantityDto> productCollect = cardProductRequestDto.stream().map(x -> {
                 Product product =productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
                 int quantity = x.getQuantity();
-                return new ProductQuantityDto(product,quantity);
+                return new ProductQuantityDto(product.getComparePrice(),product.getTaxRate(),quantity);
             }).toList();
 
-            List<CardResponseDetails> productDetails = productCollect.stream().map(x -> {
+            List<CardResponseDetails> productDetails = cardProductRequestDto.stream().map(x -> {
+                Product product = productRepository.findById(x.getProductId())
+                        .orElseThrow(() -> new NotFoundException("Product not found"));
                 String coverImageUrl = "";
-                if (x.getProduct().getCoverImage() != null) {
-                    coverImageUrl = x.getProduct().getCoverImage().getUrl();
+                if (product.getCoverImage() != null) {
+                    coverImageUrl = product.getCoverImage().getUrl();
                 }
-                return new CardResponseDetails(x.getProduct().getId(),
-                        x.getProduct().getProductName(),
-                        x.getProduct().getProductLinkName(),
-                        x.getProduct().getSalePrice(),
-                        x.getProduct().getComparePrice(),
+                return new CardResponseDetails(product.getId(),
+                        product.getProductName(),
+                        product.getProductLinkName(),
+                        product.getSalePrice(),
+                        product.getComparePrice(),
                         coverImageUrl,
                         x.getQuantity());
             }).toList();
@@ -251,11 +255,10 @@ public class CardItemService {
         BigDecimal totalWithOutTax = BigDecimal.ZERO;
 
         for (ProductQuantityDto pq : productQuantityDtos) {
-            Product product = pq.getProduct();
             int quantity = pq.getQuantity();
 
-            BigDecimal comparePrice = product.getComparePrice(); // Vergili fiyat
-            BigDecimal taxRate = product.getTaxRate(); // Örn: 18
+            BigDecimal comparePrice = pq.getComparePrice(); // Vergili fiyat
+            BigDecimal taxRate = pq.getTaxRate(); // Örn: 18
 
             // Vergisiz fiyat = Vergili fiyat / (1 + vergiOranı / 100)
             BigDecimal divisor = BigDecimal.ONE.add(taxRate.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP));
@@ -274,11 +277,11 @@ public class CardItemService {
         BigDecimal totalTax = BigDecimal.ZERO;
 
         for (ProductQuantityDto pq : productQuantityDtos) {
-            Product product = pq.getProduct();
+
             int quantity = pq.getQuantity();
 
-            BigDecimal comparePrice = product.getComparePrice(); // Vergili fiyat
-            BigDecimal taxRate = product.getTaxRate(); // Örn: 18
+            BigDecimal comparePrice = pq.getComparePrice(); // Vergili fiyat
+            BigDecimal taxRate = pq.getTaxRate(); // Örn: 18
 
             BigDecimal divisor = BigDecimal.ONE.add(taxRate.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP));
             BigDecimal priceExcludingTax = comparePrice.divide(divisor, 2, RoundingMode.HALF_UP);
@@ -297,10 +300,9 @@ public class CardItemService {
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (ProductQuantityDto pq : productQuantityDtos) {
-            Product product = pq.getProduct();
             int quantity = pq.getQuantity();
 
-            BigDecimal totalForProduct = product.getComparePrice().multiply(BigDecimal.valueOf(quantity));
+            BigDecimal totalForProduct = pq.getComparePrice().multiply(BigDecimal.valueOf(quantity));
             totalAmount = totalAmount.add(totalForProduct);
         }
 
@@ -312,10 +314,9 @@ public class CardItemService {
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (ProductQuantityDto pq : productQuantityDtos) {
-            Product product = pq.getProduct();
             int quantity = pq.getQuantity();
 
-            BigDecimal totalForProduct = product.getComparePrice().multiply(BigDecimal.valueOf(quantity));
+            BigDecimal totalForProduct = pq.getComparePrice().multiply(BigDecimal.valueOf(quantity));
             totalAmount = totalAmount.add(totalForProduct);
         }
 
