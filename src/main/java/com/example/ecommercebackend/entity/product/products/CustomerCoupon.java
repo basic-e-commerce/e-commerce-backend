@@ -6,7 +6,10 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "customer_coupons")
+@Table(
+        name = "customer_coupons",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"customer_id", "coupon_id"})
+)
 public class CustomerCoupon {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_coupon_seq")

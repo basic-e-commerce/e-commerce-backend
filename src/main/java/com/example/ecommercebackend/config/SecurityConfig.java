@@ -152,6 +152,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/visitors/between-visitor").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.GET,"/api/v1/customer-coupon").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/customer-coupon/customer").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/customer-coupon/coupon").hasAuthority("ADMIN")
+
 
 
                         .anyRequest().permitAll())

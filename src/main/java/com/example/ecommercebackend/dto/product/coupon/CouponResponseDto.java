@@ -3,60 +3,12 @@ package com.example.ecommercebackend.dto.product.coupon;
 import java.time.LocalDateTime;
 
 public class CouponResponseDto {
-    private String code;
-    private String description;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private Boolean isActive;
     private Boolean isUsed;
+    private LocalDateTime usedTime;
 
-    public CouponResponseDto(String code, String description, LocalDateTime startDate, LocalDateTime endDate, Boolean isActive, Boolean isUsed) {
-        this.code = code;
-        this.description = description;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.isActive = isActive;
+    public CouponResponseDto(Boolean isUsed, LocalDateTime usedTime) {
         this.isUsed = isUsed;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
-
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
+        this.usedTime = usedTime;
     }
 
     public Boolean getUsed() {
@@ -65,5 +17,13 @@ public class CouponResponseDto {
 
     public void setUsed(Boolean used) {
         isUsed = used;
+    }
+
+    public LocalDateTime getUsedTime() {
+        return usedTime;
+    }
+
+    public void setUsedTime(LocalDateTime usedTime) {
+        this.usedTime = usedTime;
     }
 }
