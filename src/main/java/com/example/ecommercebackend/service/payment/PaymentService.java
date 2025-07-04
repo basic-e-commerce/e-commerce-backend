@@ -172,9 +172,11 @@ public class PaymentService {
                 if (order.getUser() instanceof Customer customer){
                     Card card = cardService.findByCustomer(customer);
                     card.setItems(new ArrayList<>());
+                    card.setCustomerCoupon(null);
                     cardService.save(card);
                 }
             }
+
             // create save
             String redirectUrl = "https://litysofttest1.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
             //mailService.send(order.getUsername(),"Siparişiniz onaylandı","Order code: "+ order.getOrderCode());
