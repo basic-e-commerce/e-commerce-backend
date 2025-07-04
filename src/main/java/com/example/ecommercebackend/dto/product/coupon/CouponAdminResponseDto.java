@@ -5,6 +5,7 @@ import com.example.ecommercebackend.dto.user.customer.CustomerProfileDto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CouponAdminResponseDto {
@@ -18,15 +19,13 @@ public class CouponAdminResponseDto {
 
     private BigDecimal minOrderAmountLimit;
 
-    private Instant couponStartDate;
-    private Instant couponEndDate;
+    private LocalDateTime couponStartDate;
+    private LocalDateTime couponEndDate;
 
     private Boolean isPublic;
     private Boolean isActive;
-    private List<ProductSmallDto> products;
-    private List<CustomerProfileDto> customerProfileDtos;
 
-    public CouponAdminResponseDto(Integer id, String code, String description, String discountType, BigDecimal discountValue, Integer timesUsed, Integer totalUsageLimit, BigDecimal minOrderAmountLimit, Instant couponStartDate, Instant couponEndDate, Boolean isPublic, Boolean isActive, List<ProductSmallDto> products, List<CustomerProfileDto> customerProfileDtos) {
+    public CouponAdminResponseDto(Integer id, String code, String description, String discountType, BigDecimal discountValue, Integer timesUsed, Integer totalUsageLimit, BigDecimal minOrderAmountLimit, LocalDateTime couponStartDate, LocalDateTime couponEndDate, Boolean isPublic, Boolean isActive) {
         this.id = id;
         this.code = code;
         this.description = description;
@@ -39,8 +38,6 @@ public class CouponAdminResponseDto {
         this.couponEndDate = couponEndDate;
         this.isPublic = isPublic;
         this.isActive = isActive;
-        this.products = products;
-        this.customerProfileDtos = customerProfileDtos;
     }
 
     public Integer getId() {
@@ -107,19 +104,19 @@ public class CouponAdminResponseDto {
         this.minOrderAmountLimit = minOrderAmountLimit;
     }
 
-    public Instant getCouponStartDate() {
+    public LocalDateTime getCouponStartDate() {
         return couponStartDate;
     }
 
-    public void setCouponStartDate(Instant couponStartDate) {
+    public void setCouponStartDate(LocalDateTime couponStartDate) {
         this.couponStartDate = couponStartDate;
     }
 
-    public Instant getCouponEndDate() {
+    public LocalDateTime getCouponEndDate() {
         return couponEndDate;
     }
 
-    public void setCouponEndDate(Instant couponEndDate) {
+    public void setCouponEndDate(LocalDateTime couponEndDate) {
         this.couponEndDate = couponEndDate;
     }
 
@@ -137,21 +134,5 @@ public class CouponAdminResponseDto {
 
     public void setActive(Boolean active) {
         isActive = active;
-    }
-
-    public List<ProductSmallDto> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<ProductSmallDto> products) {
-        this.products = products;
-    }
-
-    public List<CustomerProfileDto> getCustomerProfileDtos() {
-        return customerProfileDtos;
-    }
-
-    public void setCustomerProfileDtos(List<CustomerProfileDto> customerProfileDtos) {
-        this.customerProfileDtos = customerProfileDtos;
     }
 }

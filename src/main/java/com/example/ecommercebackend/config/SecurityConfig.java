@@ -128,6 +128,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/card-item/by-ids").permitAll()
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/coupon").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/coupon").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/payment").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v1/payment/payCallBack").permitAll()

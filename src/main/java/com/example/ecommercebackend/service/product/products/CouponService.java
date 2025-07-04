@@ -1,6 +1,8 @@
 package com.example.ecommercebackend.service.product.products;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
+import com.example.ecommercebackend.builder.product.products.coupon.CouponBuilder;
+import com.example.ecommercebackend.dto.product.coupon.CouponAdminResponseDto;
 import com.example.ecommercebackend.dto.product.products.coupon.CouponCreateDto;
 import com.example.ecommercebackend.entity.product.products.Coupon;
 import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
@@ -15,6 +17,9 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +28,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CouponService {
@@ -30,16 +36,18 @@ public class CouponService {
     private final CustomerRepository customerRepository;
     private final ProductService productService;
     private final CustomerCouponService customerCouponService;
+    private final CouponBuilder couponBuilder;
 
-    public CouponService(CouponRepository couponRepository, CustomerRepository customerRepository, ProductService productService, CustomerCouponService customerCouponService) {
+    public CouponService(CouponRepository couponRepository, CustomerRepository customerRepository, ProductService productService, CustomerCouponService customerCouponService, CouponBuilder couponBuilder) {
         this.couponRepository = couponRepository;
         this.customerRepository = customerRepository;
         this.productService = productService;
         this.customerCouponService = customerCouponService;
+        this.couponBuilder = couponBuilder;
     }
 
     @Transactional
-    public Coupon createCoupon(@NotNullParam CouponCreateDto couponCreateDto){
+    public CouponAdminResponseDto createCoupon(@NotNullParam CouponCreateDto couponCreateDto){
         if (existByCode(couponCreateDto.getCode()))
             throw new ResourceAlreadyExistException("Bu kupon kodu kullanılmaktadır.");
 
@@ -146,7 +154,13 @@ public class CouponService {
             coupon.setCustomerCoupons(new HashSet<>());
         }
 
-        return couponRepository.save(coupon);
+        return couponBuilder.couponToCouponAdminResponseDto(couponRepository.save(coupon));
+    }
+
+    public List<CouponAdminResponseDto> getAll(Integer page, Integer size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return couponRepository.findAll(pageable).stream().map(couponBuilder::couponToCouponAdminResponseDto).collect(Collectors.toList());
     }
 
     public Coupon findCouponByCodeAndActive(String code, boolean active) {
@@ -172,4 +186,6 @@ public class CouponService {
     public Coupon findByCode(String code) {
         return couponRepository.findOne(Specification.where(hasCode(code).and(isActive(true)))).orElse(null);
     }
+
+
 }
