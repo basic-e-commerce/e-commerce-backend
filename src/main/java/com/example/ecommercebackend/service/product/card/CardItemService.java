@@ -144,7 +144,9 @@ public class CardItemService {
                 couponResponseDto = new CouponResponseDto(customerCoupon.getCoupon().getCode(),
                         customerCoupon.getCoupon().getDescription(),
                         customerCoupon.getCoupon().getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
-                        customerCoupon.getCoupon().getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime()
+                        customerCoupon.getCoupon().getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
+                        customerCoupon.getCoupon().getActive(),
+                        customerCoupon.getUsed()
                         );
 
 

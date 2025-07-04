@@ -150,6 +150,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/visitors/last-ten").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/visitors/between-visitor").hasAuthority("ADMIN")
 
+                        .requestMatchers(HttpMethod.GET,"/api/v1/customer-coupon").hasAuthority("CUSTOMER")
 
 
                         .anyRequest().permitAll())

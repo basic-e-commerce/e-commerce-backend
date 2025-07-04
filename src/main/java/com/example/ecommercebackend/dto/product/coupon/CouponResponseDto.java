@@ -7,12 +7,16 @@ public class CouponResponseDto {
     private String description;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private Boolean isActive;
+    private Boolean isUsed;
 
-    public CouponResponseDto(String code, String description, LocalDateTime startDate, LocalDateTime endDate) {
+    public CouponResponseDto(String code, String description, LocalDateTime startDate, LocalDateTime endDate, Boolean isActive, Boolean isUsed) {
         this.code = code;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.isActive = isActive;
+        this.isUsed = isUsed;
     }
 
     public String getCode() {
@@ -45,5 +49,21 @@ public class CouponResponseDto {
 
     public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public Boolean getUsed() {
+        return isUsed;
+    }
+
+    public void setUsed(Boolean used) {
+        isUsed = used;
     }
 }
