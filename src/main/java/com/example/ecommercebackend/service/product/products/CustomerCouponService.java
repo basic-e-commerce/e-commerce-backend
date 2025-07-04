@@ -34,7 +34,7 @@ public class CustomerCouponService {
     public List<CouponResponseDto> customerHasCoupon(){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof Customer customer) {
-            Sort sort = Sort.by(Sort.Direction.ASC, "createAt");
+            Sort sort = Sort.by(Sort.Direction.DESC, "createAt");
             return customerCouponRepository.findAll(Specification.where(hasCustomer(customer)),sort).stream().map(customerCoupon -> {
                 return new CouponResponseDto(
                         customerCoupon.getCoupon().getCode(),
