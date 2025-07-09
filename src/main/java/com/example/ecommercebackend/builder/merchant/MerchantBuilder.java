@@ -8,14 +8,17 @@ import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.user.Address;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class MerchantBuilder {
 
-    public Merchant merchantCreateDtoToMerchant(MerchantCreateDto merchantCreateDto, Address address) {
+    public Merchant merchantCreateDtoToMerchant(MerchantCreateDto merchantCreateDto, Address address, List<Address> sendingAddresses) {
         return new Merchant(
                 merchantCreateDto.getName(),
                 address,
                 merchantCreateDto.getAddressLink(),
+                sendingAddresses,
                 null,
                 merchantCreateDto.getPhoneNo(),
                 merchantCreateDto.getPhoneNoLink(),

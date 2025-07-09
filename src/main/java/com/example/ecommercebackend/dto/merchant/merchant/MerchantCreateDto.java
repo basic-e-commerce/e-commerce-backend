@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.dto.merchant.merchant;
 
+import com.example.ecommercebackend.dto.product.shipping.AddressApiDto;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.entity.merchant.OpenCloseHour;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,8 +32,9 @@ public class MerchantCreateDto {
     private String wpLink;
     private String footerDescription;
     private LinkedList<OpenCloseHour> openCloseHours;
+    private List<AddressApiDto> sendAddresses;
 
-    public MerchantCreateDto(String name, String firstName, String lastName, String title, String countryName, String city, String addressLine1, String postalCode, String addressLink, String phoneNo, String phoneNoLink, MultipartFile image, String email, String emailLink, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword, String instagram, String instagramLink, String wpLink, String footerDescription, LinkedList<OpenCloseHour> openCloseHours) {
+    public MerchantCreateDto(String name, String firstName, String lastName, String title, String countryName, String city, String addressLine1, String postalCode, String addressLink, String phoneNo, String phoneNoLink, MultipartFile image, String email, String emailLink, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword, String instagram, String instagramLink, String wpLink, String footerDescription, LinkedList<OpenCloseHour> openCloseHours, List<AddressApiDto> sendAddresses) {
         this.name = name;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -55,6 +57,7 @@ public class MerchantCreateDto {
         this.wpLink = wpLink;
         this.footerDescription = footerDescription;
         this.openCloseHours = openCloseHours;
+        this.sendAddresses = sendAddresses;
     }
 
     public String getName() {
@@ -147,5 +150,13 @@ public class MerchantCreateDto {
 
     public LinkedList<OpenCloseHour> getOpenCloseHours() {
         return openCloseHours;
+    }
+
+    public List<AddressApiDto> getSendAddresses() {
+        return sendAddresses;
+    }
+
+    public void setSendAddresses(List<AddressApiDto> sendAddresses) {
+        this.sendAddresses = sendAddresses;
     }
 }

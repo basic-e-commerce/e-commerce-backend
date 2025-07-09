@@ -1,6 +1,8 @@
 package com.example.ecommercebackend.service.user;
 
 import com.example.ecommercebackend.builder.user.AddressBuilder;
+import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
+import com.example.ecommercebackend.dto.product.shipping.AddressApiDto;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.entity.product.shipping.Country;
 import com.example.ecommercebackend.entity.user.Address;
@@ -27,6 +29,12 @@ public class AddressService {
     public Address createAddress(AddressCreateDto addressCreateDto) {
         Country country = countryService.findCountryByUpperName(addressCreateDto.getCountryName());
         Address address = addressBuilder.addressCreateDtoToAddress(addressCreateDto,country);
+        return addressRepository.save(address);
+    }
+
+    public Address createAddress(AddressApiDto addressApiDto, MerchantCreateDto merchantCreateDto) {
+        Country country = countryService.findCountryByUpperName("TURKIYE");
+        Address address = addressBuilder.addressApiDtoToAddress(addressApiDto,country,merchantCreateDto);
         return addressRepository.save(address);
     }
 

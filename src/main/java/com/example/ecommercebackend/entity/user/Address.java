@@ -22,6 +22,8 @@ public class Address {
     private String lastName;
 
     private String city;
+    private String cityId;
+    private String districtID;
     private String addressLine1;
     private String postalCode;
     private String phoneNo;
@@ -134,5 +136,21 @@ public class Address {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(String cityId) {
+        this.cityId = cityId;
+    }
+
+    public String getDistrictID() {
+        return districtID;
+    }
+
+    public void setDistrictID(String districtID) {
+        this.districtID = districtID;
     }
 }

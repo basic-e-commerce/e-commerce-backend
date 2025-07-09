@@ -15,6 +15,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,6 +74,19 @@ public class ECommerceBackendApplication {
 				openCloseHours.add(cumartesi);
 				openCloseHours.add(pazar);
 
+				List<Address> sendingAddress = new ArrayList<>();
+				Address address = new Address(
+						"Mağaza Adresi",
+						countryRepository.findByUpperName("TURKIYE").get(),
+						"demo",
+						"demo",
+						"istanbul",
+						"address line 1",
+						"34000",
+						"5559876758"
+				);
+				sendingAddress.add(address);
+
 				Merchant merchant = new Merchant(
 						"demo",
 						new Address(
@@ -85,6 +100,7 @@ public class ECommerceBackendApplication {
 								"5559876758"
 								),
 						"addresslink",
+						sendingAddress,
 						null,
 						"5098765432",
 						"tel:5098765432",

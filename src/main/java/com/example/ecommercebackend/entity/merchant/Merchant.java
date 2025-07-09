@@ -20,6 +20,9 @@ public class Merchant {
     private Address address;
     private String addressLink;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Address> sendingAddresses;
+
     @OneToOne
     private CoverImage coverImage;
     private String phoneNo;
@@ -41,6 +44,7 @@ public class Merchant {
             String name,
             Address address,
             String addressLink,
+            List<Address> sendingAddresses,
             CoverImage coverImage,
             String phoneNo,
             String phoneNoLink,
@@ -56,6 +60,7 @@ public class Merchant {
             List<OpenCloseHour> openCloseHours) {
         this.name = name;
         this.address = address;
+        this.sendingAddresses = sendingAddresses;
         this.coverImage = coverImage;
         this.phoneNo = phoneNo;
         this.phoneNoLink = phoneNoLink;
@@ -207,5 +212,13 @@ public class Merchant {
 
     public void setFooterDescription(String footerDescription) {
         this.footerDescription = footerDescription;
+    }
+
+    public List<Address> getSendingAddresses() {
+        return sendingAddresses;
+    }
+
+    public void setSendingAddresses(List<Address> sendingAddresses) {
+        this.sendingAddresses = sendingAddresses;
     }
 }
