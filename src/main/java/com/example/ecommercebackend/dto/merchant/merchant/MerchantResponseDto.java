@@ -12,6 +12,7 @@ public class MerchantResponseDto {
     private String name;
     private String countryName;
     private String city;
+    private String district;
     private String addressLine1;
     private String postalCode;
     private String addressLink;
@@ -29,11 +30,12 @@ public class MerchantResponseDto {
     private List<OpenCloseHour> openCloseHours;
     private ImageDetailDto coverImage;
 
-    public MerchantResponseDto(int id, String name, String countryName, String city, String addressLine1, String postalCode, String addressLink, String phoneNo, String phoneNoLink, String email, String emailLink, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword, String instagram, String instagramLink, String wpLink, String footerDescription, List<OpenCloseHour> openCloseHours, ImageDetailDto coverImage) {
+    public MerchantResponseDto(int id, String name, String countryName, String city, String district, String addressLine1, String postalCode, String addressLink, String phoneNo, String phoneNoLink, String email, String emailLink, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword, String instagram, String instagramLink, String wpLink, String footerDescription, List<OpenCloseHour> openCloseHours, ImageDetailDto coverImage) {
         this.id = id;
         this.name = name;
         this.countryName = countryName;
         this.city = city;
+        this.district = district;
         this.addressLine1 = addressLine1;
         this.postalCode = postalCode;
         this.addressLink = addressLink;
@@ -210,5 +212,13 @@ public class MerchantResponseDto {
 
     public void setCoverImage(ImageDetailDto coverImage) {
         this.coverImage = coverImage;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
     }
 }

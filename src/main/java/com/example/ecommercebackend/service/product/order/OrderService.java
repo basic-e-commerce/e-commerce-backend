@@ -89,8 +89,6 @@ public class OrderService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
-
-
         OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
         if (principal instanceof Customer customer) {
 
@@ -98,8 +96,6 @@ public class OrderService {
             if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
                 customerCoupon = customerCouponService.findCouponByCodeAndActive(orderCreateDto.getCode(), customer);
             }
-            System.out.println("code::::::::::"+customerCoupon.getCoupon().getCode());
-            System.out.println("order 1");
 
             if (customer.getCard().getItems().isEmpty())
                 throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
@@ -321,6 +317,7 @@ public class OrderService {
                 addressOrderCreateDto.username(),
                 addressOrderCreateDto.countryName(),
                 addressOrderCreateDto.city(),
+                addressOrderCreateDto.district(),
                 addressOrderCreateDto.addressLine1(),
                 addressOrderCreateDto.postalCode(),
                 addressOrderCreateDto.phoneNo(),
@@ -349,6 +346,9 @@ public class OrderService {
                             orderCreateDto.getInvoiceAddress().username(),
                             orderCreateDto.getInvoiceAddress().countryName(),
                             orderCreateDto.getInvoiceAddress().city(),
+                            orderCreateDto.getInvoiceAddress().cityCode(),
+                            orderCreateDto.getInvoiceAddress().district(),
+                            orderCreateDto.getInvoiceAddress().districtId(),
                             orderCreateDto.getInvoiceAddress().addressLine1(),
                             orderCreateDto.getInvoiceAddress().postalCode(),
                             orderCreateDto.getInvoiceAddress().phoneNo(),
@@ -368,7 +368,10 @@ public class OrderService {
                         orderCreateDto.getAddress().lastName(),
                         orderCreateDto.getAddress().username(),
                         orderCreateDto.getAddress().countryName(),
-                        orderCreateDto.getAddress().city(),
+                        orderCreateDto.getInvoiceAddress().city(),
+                        orderCreateDto.getInvoiceAddress().cityCode(),
+                        orderCreateDto.getInvoiceAddress().district(),
+                        orderCreateDto.getInvoiceAddress().districtId(),
                         orderCreateDto.getAddress().addressLine1(),
                         orderCreateDto.getAddress().postalCode(),
                         orderCreateDto.getAddress().phoneNo(),
@@ -390,6 +393,9 @@ public class OrderService {
                             orderCreateDto.getInvoiceAddress().username(),
                             orderCreateDto.getInvoiceAddress().countryName(),
                             orderCreateDto.getInvoiceAddress().city(),
+                            orderCreateDto.getInvoiceAddress().cityCode(),
+                            orderCreateDto.getInvoiceAddress().district(),
+                            orderCreateDto.getInvoiceAddress().districtId(),
                             orderCreateDto.getInvoiceAddress().addressLine1(),
                             orderCreateDto.getInvoiceAddress().postalCode(),
                             orderCreateDto.getInvoiceAddress().phoneNo());
@@ -405,7 +411,10 @@ public class OrderService {
                         orderCreateDto.getAddress().lastName(),
                         orderCreateDto.getAddress().username(),
                         orderCreateDto.getAddress().countryName(),
-                        orderCreateDto.getAddress().city(),
+                        orderCreateDto.getInvoiceAddress().city(),
+                        orderCreateDto.getInvoiceAddress().cityCode(),
+                        orderCreateDto.getInvoiceAddress().district(),
+                        orderCreateDto.getInvoiceAddress().districtId(),
                         orderCreateDto.getAddress().addressLine1(),
                         orderCreateDto.getAddress().postalCode(),
                         orderCreateDto.getAddress().phoneNo());

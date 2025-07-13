@@ -155,6 +155,31 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/customer-coupon/customer").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/customer-coupon/coupon").hasAuthority("ADMIN")
 
+                        .requestMatchers(HttpMethod.POST,"/api/v1/district").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/district/district-id").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/district").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/district/city-code").permitAll()
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/district/district-id").hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/city").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/city").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/city/code").permitAll()
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/city/code").hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.POST,"/api/v1/shipping-template").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/shipping-template").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/shipping-template").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/shipping-template/balance").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/shipping-template/offer").hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/shipping-address/city").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/shipping-address/district").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/shipping-address/create-sending-address").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/shipping-address/create-receipt-address").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/shipping-address/get-all").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/shipping-address/{id}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/shipping-address/get/{id}").hasAuthority("ADMIN")
+
 
 
                         .anyRequest().permitAll())

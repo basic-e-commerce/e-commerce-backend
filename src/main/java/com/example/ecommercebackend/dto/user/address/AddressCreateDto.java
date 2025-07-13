@@ -9,17 +9,19 @@ public class AddressCreateDto {
     private String firstName;
     private String lastName;
     private String countryName;
-    private String city;
+    private String cityCode;
+    private Integer districtId;
     private String addressLine1;
     private String postalCode;
     private String phoneNo;
 
-    public AddressCreateDto(String title, String firstName, String lastName, String countryName, String city, String addressLine1 , String postalCode, String phoneNo) {
+    public AddressCreateDto(String title, String firstName, String lastName, String countryName, String cityCode, Integer districtId, String addressLine1, String postalCode, String phoneNo) {
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;
         this.countryName = countryName;
-        this.city = city;
+        this.cityCode = cityCode;
+        this.districtId = districtId;
         this.addressLine1 = addressLine1;
         this.postalCode = postalCode;
         this.phoneNo = phoneNo;
@@ -29,20 +31,24 @@ public class AddressCreateDto {
         return title;
     }
 
-    public String getCity() {
-        return city;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getAddressLine1() {
-        return addressLine1;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public String getPostalCode() {
-        return postalCode;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getPhoneNo() {
-        return phoneNo;
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getCountryName() {
@@ -53,11 +59,43 @@ public class AddressCreateDto {
         this.countryName = countryName;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getCityCode() {
+        return cityCode;
     }
 
-    public String getLastName() {
-        return lastName;
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    public Integer getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Integer districtId) {
+        this.districtId = districtId;
+    }
+
+    public String getAddressLine1() {
+        return addressLine1;
+    }
+
+    public void setAddressLine1(String addressLine1) {
+        this.addressLine1 = addressLine1;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
     }
 }

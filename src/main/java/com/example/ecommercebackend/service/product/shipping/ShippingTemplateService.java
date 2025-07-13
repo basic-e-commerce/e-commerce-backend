@@ -1,9 +1,7 @@
 package com.example.ecommercebackend.service.product.shipping;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
-import com.example.ecommercebackend.dto.product.shipping.ShippingTemplateCreateDto;
-import com.example.ecommercebackend.dto.product.shipping.ShippingTemplateDto;
-import com.example.ecommercebackend.dto.product.shipping.ShippingTemplateRequestDto;
+import com.example.ecommercebackend.dto.product.shipping.*;
 import com.example.ecommercebackend.entity.product.shipping.ShippingTemplate;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.repository.product.shipping.ShippingTemplateRepository;
@@ -16,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -135,4 +135,80 @@ public class ShippingTemplateService {
         }
 
     }
+
+    public BigDecimal getBalance() {
+        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+
+        String responseJson = webClient.delete()
+                .uri("/organizations/2340f7f2-1bf7-4c5b-b4cd-1244c4a1cf3a/balance")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        // responseJson: gelen JSON string
+        ObjectMapper mapper = new ObjectMapper();
+
+        JsonNode root = null;
+        try {
+            root = mapper.readTree(responseJson);
+        } catch (JsonProcessingException e) {
+            throw new BadRequestException("3. parti yazılımdan gelen data çözülemedi.");
+        }
+
+        boolean result = root.get("result").asBoolean();
+
+        if (result) {
+            return new BigDecimal(root.get("data").asText());
+        }else
+            throw new BadRequestException("Geçersiz istek lütfen tekrar deneyiniz!");
+    }
+
+    public List<CargoOffer> getCargoOffer(@NotNullParam String length,
+                                          @NotNullParam String width,
+                                          @NotNullParam String height,
+                                          @NotNullParam String weight){
+        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        String responseJson = webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/priceList")
+                        .queryParam("paramType", "parcel")
+                        .queryParam("length", length)
+                        .queryParam("width", width)
+                        .queryParam("height", height)
+                        .queryParam("weight", weight)
+                        .build())
+                .header("Authorization","Bearer %s".formatted(apiKey))
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        // responseJson: gelen JSON string
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            JsonNode root = mapper.readTree(responseJson);
+
+            boolean result = root.get("result").asBoolean();
+            String additionalMessage = root.get("additionalMessage").asText();
+
+            if (result && "Success".equals(additionalMessage)) {
+                JsonNode offersNode = root
+                        .path("priceList")
+                        .get(0)      // ilk priceList elemanı
+                        .path("offers");
+
+                // JsonNode --> List<CargoOffer>
+                return mapper.readerForListOf(CargoOffer.class).readValue(offersNode);
+            } else {
+                throw new RuntimeException("API response unsuccessful: " + additionalMessage);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse API response", e);
+        }
+
+
+    }
+
 }

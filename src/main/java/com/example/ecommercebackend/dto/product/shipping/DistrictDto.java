@@ -1,13 +1,20 @@
 package com.example.ecommercebackend.dto.product.shipping;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class DistrictDto {
+    @JsonProperty("name")
     private String name;
-    private String districtID;
+    @JsonProperty("districtID")
+    private Integer districtID;
+    @JsonProperty("cityCode")
     private String cityCode;
+    @JsonProperty("regionCode")
     private String regionCode;
+    @JsonProperty("countryCode")
     private String countryCode;
 
-    public DistrictDto(String name, String districtID, String cityCode, String regionCode, String countryCode) {
+    public DistrictDto(String name, Integer districtID, String cityCode, String regionCode, String countryCode) {
         this.name = name;
         this.districtID = districtID;
         this.cityCode = cityCode;
@@ -26,11 +33,11 @@ public class DistrictDto {
         this.name = name;
     }
 
-    public String getDistrictID() {
+    public Integer getDistrictID() {
         return districtID;
     }
 
-    public void setDistrictID(String districtID) {
+    public void setDistrictID(Integer districtID) {
         this.districtID = districtID;
     }
 

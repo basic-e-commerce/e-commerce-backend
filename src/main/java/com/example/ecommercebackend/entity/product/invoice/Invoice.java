@@ -31,6 +31,9 @@ public abstract class Invoice {
     private String username;
     private String countryName;
     private String city;
+    private String cityCode;
+    private String district;
+    private String districtId;
     private String addressLine1;
     private String postalCode;
     private String phoneNo;
@@ -38,7 +41,7 @@ public abstract class Invoice {
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant createdAt = Instant.now();
 
-    public Invoice(Payment payment, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType, String firstName, String lastName, String username, String countryName, String city, String addressLine1, String postalCode, String phoneNo) {
+    public Invoice(Payment payment, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType, String firstName, String lastName, String username, String countryName, String city, String cityCode, String district, String districtId, String addressLine1, String postalCode, String phoneNo) {
         this.payment = payment;
         this.totalAmount = totalAmount;
         this.taxAmount = taxAmount;
@@ -48,6 +51,9 @@ public abstract class Invoice {
         this.username = username;
         this.countryName = countryName;
         this.city = city;
+        this.cityCode = cityCode;
+        this.district = district;
+        this.districtId = districtId;
         this.addressLine1 = addressLine1;
         this.postalCode = postalCode;
         this.phoneNo = phoneNo;
@@ -64,6 +70,30 @@ public abstract class Invoice {
     @PrePersist
     public void prePersist() {
         this.createdAt = Instant.now();
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    public String getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(String districtId) {
+        this.districtId = districtId;
     }
 
     public enum InvoiceType {

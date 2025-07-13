@@ -2,10 +2,13 @@ package com.example.ecommercebackend.service.user;
 
 import com.example.ecommercebackend.builder.user.AddressBuilder;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
+import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
 import com.example.ecommercebackend.dto.product.shipping.AddressApiDto;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.entity.product.shipping.Country;
 import com.example.ecommercebackend.entity.user.Address;
+import com.example.ecommercebackend.entity.user.City;
+import com.example.ecommercebackend.entity.user.District;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.user.AddressRepository;
@@ -19,22 +22,38 @@ public class AddressService {
     private final CountryService countryService;
     private final AddressRepository addressRepository;
     private final AddressBuilder addressBuilder;
+    private final CityService cityService;
+    private final DistrictService districtService;
 
-    public AddressService(CountryService countryService, AddressRepository addressRepository, AddressBuilder addressBuilder) {
+    public AddressService(CountryService countryService, AddressRepository addressRepository, AddressBuilder addressBuilder, CityService cityService, DistrictService districtService) {
         this.countryService = countryService;
         this.addressRepository = addressRepository;
         this.addressBuilder = addressBuilder;
+        this.cityService = cityService;
+        this.districtService = districtService;
     }
 
     public Address createAddress(AddressCreateDto addressCreateDto) {
         Country country = countryService.findCountryByUpperName(addressCreateDto.getCountryName());
-        Address address = addressBuilder.addressCreateDtoToAddress(addressCreateDto,country);
+        City city = cityService.findByCityCode(addressCreateDto.getCityCode());
+        District district = districtService.findByDistrictId(addressCreateDto.getDistrictId());
+        Address address = addressBuilder.addressCreateDtoToAddress(addressCreateDto,country,city,district);
         return addressRepository.save(address);
     }
 
     public Address createAddress(AddressApiDto addressApiDto, MerchantCreateDto merchantCreateDto) {
         Country country = countryService.findCountryByUpperName("TURKIYE");
-        Address address = addressBuilder.addressApiDtoToAddress(addressApiDto,country,merchantCreateDto);
+        City city = cityService.findByCityCode(addressApiDto.getCityCode());
+        District district = districtService.findByDistrictId(addressApiDto.getDistrictID());
+        Address address = addressBuilder.addressApiDtoToAddress(addressApiDto,country,merchantCreateDto,city,district);
+        return addressRepository.save(address);
+    }
+
+    public Address createAddress(AddressApiDto addressApiDto, MerchantUpdateDto merchantCreateDto) {
+        Country country = countryService.findCountryByUpperName("TURKIYE");
+        City city = cityService.findByCityCode(addressApiDto.getCityCode());
+        District district = districtService.findByDistrictId(addressApiDto.getDistrictID());
+        Address address = addressBuilder.addressApiDtoToAddress(addressApiDto,country,merchantCreateDto,city,district);
         return addressRepository.save(address);
     }
 
@@ -62,8 +81,14 @@ public class AddressService {
             address.setCountry(country);
             isUpdated = true;
         }
-        if (!Objects.equals(address.getCity(), addressCreateDto.getCity())) {
-            address.setCity(addressCreateDto.getCity());
+        if (!Objects.equals(address.getCity().getCityCode(), addressCreateDto.getCityCode())) {
+            City city = cityService.findByCityCode(addressCreateDto.getCityCode());
+            address.setCity(city);
+            isUpdated = true;
+        }
+        if (!Objects.equals(address.getDistrict().getDistrictId(), addressCreateDto.getDistrictId())) {
+            District district = districtService.findByDistrictId(addressCreateDto.getDistrictId());
+            address.setDistrict(district);
             isUpdated = true;
         }
         if (!Objects.equals(address.getAddressLine1(), addressCreateDto.getAddressLine1())) {
@@ -88,7 +113,13 @@ public class AddressService {
     }
 
 
+    public City findByCityCode(String cityCode) {
+        return cityService.findByCityCode(cityCode);
+    }
 
+    public District findByDistrictId(Integer districtId) {
+        return districtService.findByDistrictId(districtId);
+    }
 
 
 }

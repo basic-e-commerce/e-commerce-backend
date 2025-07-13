@@ -10,12 +10,12 @@ public class AddressApiDto {
     private String cityName;
     private String cityCode;
     private String districtName;
-    private String districtID;
+    private Integer districtID;
     private String zip;
     private Boolean isRecipientAddress;
     private String shortName;
 
-    public AddressApiDto(String name, String email, String phone, String address1, String address2, String countryCode, String cityName, String cityCode, String districtName, String districtID, String zip, Boolean isRecipientAddress, String shortName) {
+    public AddressApiDto(String name, String email, String phone, String address1, String address2, String countryCode, String cityName, String cityCode, String districtName, Integer districtID, String zip, Boolean isRecipientAddress, String shortName) {
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -103,11 +103,11 @@ public class AddressApiDto {
         this.districtName = districtName;
     }
 
-    public String getDistrictID() {
+    public Integer getDistrictID() {
         return districtID;
     }
 
-    public void setDistrictID(String districtID) {
+    public void setDistrictID(Integer districtID) {
         this.districtID = districtID;
     }
 

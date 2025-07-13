@@ -27,84 +27,84 @@ import java.util.Set;
 
 @TestConfiguration
 public class TestDataInitializer {
-    @Bean
-    public CommandLineRunner initTestData(
-            RoleRepository roleRepository,
-            CountryRepository countryRepository,
-            MerchantRepository merchantRepository,
-            CustomerRepository customerRepository,
-            AdminRepository adminRepository,
-            PasswordEncoder passwordEncoder
-    ) {
-        return args -> {
-            if (!roleRepository.existsByRoleNameEqualsIgnoreCase("ADMIN")) {
-                roleRepository.save(new Role("ADMIN"));
-            }
-
-            if (!roleRepository.existsByRoleNameEqualsIgnoreCase("CUSTOMER")) {
-                roleRepository.save(new Role("CUSTOMER"));
-            }
-
-            if (!roleRepository.existsByRoleNameEqualsIgnoreCase("GUEST")) {
-                roleRepository.save(new Role("GUEST"));
-            }
-
-            if (countryRepository.findByUpperName("TURKIYE").isEmpty()) {
-                countryRepository.save(new Country(
-                        "TR", "Türkiye", "TURKIYE", "TUR", (short) 792, 90
-                ));
-            }
-
-            if (merchantRepository.findAll().isEmpty()) {
-                merchantRepository.save(new Merchant(
-                        "demo",
-                        new Address(
-                                "Mağaza Adresi",
-                                countryRepository.findByUpperName("TURKIYE").get(),
-                                "demo",
-                                "demo",
-                                "istanbul",
-                                "address line 1",
-                                "34000",
-                                "5559876758"
-                        ),
-                        "addresslink",   // addressLink
-                        null,            // CoverImage
-                        "5098765432",    // phoneNo
-                        "tel:5098765432",// phoneNoLink
-                        "feminizmturkiye2000@gmail.com", // email
-                        "mailto:feminizmturkiye2000@gmail.com", // emailLink
-                        BigDecimal.valueOf(1000),    // minOrderAmount
-                        BigDecimal.valueOf(75),      // shippingFee
-                        "izcb abhl kkto upek",       // emailPassword
-                        "instagram",                 // instagram
-                        "instagram link",            // instagramLink
-                        "wplink",                   // wpLink
-                        "footerdesc",               // footerDescription
-                        new LinkedList<>()          // openCloseHours
-                ));
-
-            }
-
-            if (customerRepository.findByUsername("customer@gmail.com").isEmpty()) {
-                Customer customer = new Customer(
-                        "customer", "customerSoyAd", "5075678909", "customer@gmail.com",
-                        passwordEncoder.encode("pass"),
-                        Set.of(roleRepository.findByRoleName("CUSTOMER").get()),
-                        true, true
-                );
-                customerRepository.save(customer);
-            }
-
-            if (adminRepository.findByUsername("admin@gmail.com").isEmpty()) {
-                Admin admin = new Admin(
-                        "admin", "admin", "56789089786", "admin@gmail.com",
-                        passwordEncoder.encode("admin"),
-                        Set.of(roleRepository.findByRoleName("ADMIN").get()),
-                        true, true
-                );
-                adminRepository.save(admin);
-            }
-        };
-    }
+//    @Bean
+//    public CommandLineRunner initTestData(
+//            RoleRepository roleRepository,
+//            CountryRepository countryRepository,
+//            MerchantRepository merchantRepository,
+//            CustomerRepository customerRepository,
+//            AdminRepository adminRepository,
+//            PasswordEncoder passwordEncoder
+//    ) {
+//        return args -> {
+//            if (!roleRepository.existsByRoleNameEqualsIgnoreCase("ADMIN")) {
+//                roleRepository.save(new Role("ADMIN"));
+//            }
+//
+//            if (!roleRepository.existsByRoleNameEqualsIgnoreCase("CUSTOMER")) {
+//                roleRepository.save(new Role("CUSTOMER"));
+//            }
+//
+//            if (!roleRepository.existsByRoleNameEqualsIgnoreCase("GUEST")) {
+//                roleRepository.save(new Role("GUEST"));
+//            }
+//
+//            if (countryRepository.findByUpperName("TURKIYE").isEmpty()) {
+//                countryRepository.save(new Country(
+//                        "TR", "Türkiye", "TURKIYE", "TUR", (short) 792, 90
+//                ));
+//            }
+//
+//            if (merchantRepository.findAll().isEmpty()) {
+//                merchantRepository.save(new Merchant(
+//                        "demo",
+//                        new Address(
+//                                "Mağaza Adresi",
+//                                countryRepository.findByUpperName("TURKIYE").get(),
+//                                "demo",
+//                                "demo",
+//                                "istanbul",
+//                                "address line 1",
+//                                "34000",
+//                                "5559876758"
+//                        ),
+//                        "addresslink",   // addressLink
+//                        null,            // CoverImage
+//                        "5098765432",    // phoneNo
+//                        "tel:5098765432",// phoneNoLink
+//                        "feminizmturkiye2000@gmail.com", // email
+//                        "mailto:feminizmturkiye2000@gmail.com", // emailLink
+//                        BigDecimal.valueOf(1000),    // minOrderAmount
+//                        BigDecimal.valueOf(75),      // shippingFee
+//                        "izcb abhl kkto upek",       // emailPassword
+//                        "instagram",                 // instagram
+//                        "instagram link",            // instagramLink
+//                        "wplink",                   // wpLink
+//                        "footerdesc",               // footerDescription
+//                        new LinkedList<>()          // openCloseHours
+//                ));
+//
+//            }
+//
+//            if (customerRepository.findByUsername("customer@gmail.com").isEmpty()) {
+//                Customer customer = new Customer(
+//                        "customer", "customerSoyAd", "5075678909", "customer@gmail.com",
+//                        passwordEncoder.encode("pass"),
+//                        Set.of(roleRepository.findByRoleName("CUSTOMER").get()),
+//                        true, true
+//                );
+//                customerRepository.save(customer);
+//            }
+//
+//            if (adminRepository.findByUsername("admin@gmail.com").isEmpty()) {
+//                Admin admin = new Admin(
+//                        "admin", "admin", "56789089786", "admin@gmail.com",
+//                        passwordEncoder.encode("admin"),
+//                        Set.of(roleRepository.findByRoleName("ADMIN").get()),
+//                        true, true
+//                );
+//                adminRepository.save(admin);
+//            }
+//        };
+//    }
 }

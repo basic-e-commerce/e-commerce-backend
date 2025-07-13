@@ -18,7 +18,9 @@ import com.example.ecommercebackend.service.user.AddressService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MerchantService {
@@ -34,11 +36,20 @@ public class MerchantService {
         this.merchantImageService = merchantImageService;
     }
     public MerchantResponseDto createMerchant(MerchantCreateDto merchantCreateDto) {
-        AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(),merchantCreateDto.getFirstName(),merchantCreateDto.getLastName(),merchantCreateDto.getCountryName(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
+        AddressCreateDto addressCreateDto = new AddressCreateDto(
+                merchantCreateDto.getTitle(),
+                merchantCreateDto.getFirstName(),
+                merchantCreateDto.getLastName(),
+                merchantCreateDto.getCountryName(),
+                merchantCreateDto.getCityCode(),
+                merchantCreateDto.getDistrictId(),
+                merchantCreateDto.getAddressLine1(),
+                merchantCreateDto.getPostalCode(),
+                merchantCreateDto.getPhoneNo());
         Address address = addressService.createAddress(addressCreateDto);
         List<Address> sendingAddresses = merchantCreateDto.getSendAddresses().stream().map(x->{
             return addressService.createAddress(x,merchantCreateDto);
-        }).toList();
+        }).collect(Collectors.toCollection(ArrayList::new));
 
         Merchant merchant = merchantBuilder.merchantCreateDtoToMerchant(merchantCreateDto, address,sendingAddresses);
         Merchant save = merchantRepository.save(merchant);
@@ -51,8 +62,23 @@ public class MerchantService {
 
     public MerchantResponseDto updateMerchant(MerchantUpdateDto merchantCreateDto) {
         Merchant merchant= getMerchant();
-        AddressCreateDto addressCreateDto = new AddressCreateDto(merchantCreateDto.getTitle(),merchantCreateDto.getFirstName(),merchantCreateDto.getLastName(), merchantCreateDto.getCountryName(), merchantCreateDto.getCity(), merchantCreateDto.getAddressLine1(), merchantCreateDto.getPostalCode(), merchantCreateDto.getPhoneNo());
+        AddressCreateDto addressCreateDto = new AddressCreateDto(
+                merchantCreateDto.getTitle(),
+                merchantCreateDto.getFirstName(),
+                merchantCreateDto.getLastName(),
+                merchantCreateDto.getCountryName(),
+                merchantCreateDto.getCity(),
+                merchantCreateDto.getDistrictId(),
+                merchantCreateDto.getAddressLine1(),
+                merchantCreateDto.getPostalCode(),
+                merchantCreateDto.getPhoneNo());
         Address address = addressService.updateAddressById(merchant.getAddress().getId(),addressCreateDto);
+
+        merchant.setSendingAddresses(null);
+        List<Address> sendingAddresses = merchantCreateDto.getSendAddresses().stream().map(x->{
+            return addressService.createAddress(x,merchantCreateDto);
+        }).collect(Collectors.toCollection(ArrayList::new));
+
         merchant.setAddress(address);
         merchant.setName(merchantCreateDto.getName());
         merchant.setPhoneNo(merchantCreateDto.getPhoneNo());
@@ -67,6 +93,7 @@ public class MerchantService {
         merchant.setWpLink(merchantCreateDto.getWpLink());
         merchant.setFooterDescription(merchantCreateDto.getFooterDescription());
         merchant.setOpenCloseHours(merchantCreateDto.getOpenCloseHours());
+        merchant.setSendingAddresses(sendingAddresses);
         return merchantBuilder.merchantToMerchantResponseDto(merchantRepository.save(merchant));
     }
 

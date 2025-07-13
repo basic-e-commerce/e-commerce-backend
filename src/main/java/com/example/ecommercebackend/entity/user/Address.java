@@ -21,9 +21,12 @@ public class Address {
     private String firstName;
     private String lastName;
 
-    private String city;
-    private String cityId;
-    private String districtID;
+    @ManyToOne
+    private City city;
+
+    @ManyToOne
+    private District district;
+
     private String addressLine1;
     private String postalCode;
     private String phoneNo;
@@ -36,12 +39,13 @@ public class Address {
         updatedAt = Instant.now();
     }
 
-    public Address(String title, Country country, String firstName, String lastName, String city, String addressLine1, String postalCode, String phoneNo) {
+    public Address(String title, Country country, String firstName, String lastName, City city, District district, String addressLine1, String postalCode, String phoneNo) {
         this.title = title;
         this.country = country;
         this.firstName = firstName;
         this.lastName = lastName;
         this.city = city;
+        this.district = district;
         this.addressLine1 = addressLine1;
         this.postalCode = postalCode;
         this.phoneNo = phoneNo;
@@ -74,11 +78,11 @@ public class Address {
         this.country = country;
     }
 
-    public String getCity() {
+    public City getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(City city) {
         this.city = city;
     }
 
@@ -138,19 +142,11 @@ public class Address {
         this.lastName = lastName;
     }
 
-    public String getCityId() {
-        return cityId;
+    public District getDistrict() {
+        return district;
     }
 
-    public void setCityId(String cityId) {
-        this.cityId = cityId;
-    }
-
-    public String getDistrictID() {
-        return districtID;
-    }
-
-    public void setDistrictID(String districtID) {
-        this.districtID = districtID;
+    public void setDistrict(District district) {
+        this.district = district;
     }
 }

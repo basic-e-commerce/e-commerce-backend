@@ -7,17 +7,19 @@ public class AddressDetailDto {
     private String lastName;
     private String countryName;
     private String city;
+    private String district;
     private String postalCode;
     private String phoneNo;
     private String addressLine1;
 
-    public AddressDetailDto(int id, String title, String firstName, String lastName, String countryName, String city, String postalCode, String phoneNo, String addressLine1) {
+    public AddressDetailDto(int id, String title, String firstName, String lastName, String countryName, String city, String district, String postalCode, String phoneNo, String addressLine1) {
         this.id = id;
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;
         this.countryName = countryName;
         this.city = city;
+        this.district = district;
         this.postalCode = postalCode;
         this.phoneNo = phoneNo;
         this.addressLine1 = addressLine1;
@@ -92,5 +94,13 @@ public class AddressDetailDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
     }
 }

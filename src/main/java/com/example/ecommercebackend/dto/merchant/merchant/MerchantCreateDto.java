@@ -15,7 +15,8 @@ public class MerchantCreateDto {
     private String lastName;
     private String title;
     private String countryName;
-    private String city;
+    private String cityCode;
+    private Integer districtId;
     private String addressLine1;
     private String postalCode;
     private String addressLink;
@@ -34,13 +35,14 @@ public class MerchantCreateDto {
     private LinkedList<OpenCloseHour> openCloseHours;
     private List<AddressApiDto> sendAddresses;
 
-    public MerchantCreateDto(String name, String firstName, String lastName, String title, String countryName, String city, String addressLine1, String postalCode, String addressLink, String phoneNo, String phoneNoLink, MultipartFile image, String email, String emailLink, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword, String instagram, String instagramLink, String wpLink, String footerDescription, LinkedList<OpenCloseHour> openCloseHours, List<AddressApiDto> sendAddresses) {
+    public MerchantCreateDto(String name, String firstName, String lastName, String title, String countryName, String cityCode, Integer districtId, String addressLine1, String postalCode, String addressLink, String phoneNo, String phoneNoLink, MultipartFile image, String email, String emailLink, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword, String instagram, String instagramLink, String wpLink, String footerDescription, LinkedList<OpenCloseHour> openCloseHours, List<AddressApiDto> sendAddresses) {
         this.name = name;
         this.firstName = firstName;
         this.lastName = lastName;
         this.title = title;
         this.countryName = countryName;
-        this.city = city;
+        this.cityCode = cityCode;
+        this.districtId = districtId;
         this.addressLine1 = addressLine1;
         this.postalCode = postalCode;
         this.addressLink = addressLink;
@@ -68,8 +70,8 @@ public class MerchantCreateDto {
         return title;
     }
 
-    public String getCity() {
-        return city;
+    public String getCityCode() {
+        return cityCode;
     }
 
     public String getAddressLine1() {
@@ -158,5 +160,13 @@ public class MerchantCreateDto {
 
     public void setSendAddresses(List<AddressApiDto> sendAddresses) {
         this.sendAddresses = sendAddresses;
+    }
+
+    public Integer getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Integer districtId) {
+        this.districtId = districtId;
     }
 }
