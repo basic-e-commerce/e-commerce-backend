@@ -5,10 +5,12 @@ import com.example.ecommercebackend.dto.product.products.ProductAdminDetailDto;
 import com.example.ecommercebackend.dto.product.products.ProductCreateDto;
 import com.example.ecommercebackend.dto.product.products.ProductDetailDto;
 import com.example.ecommercebackend.dto.product.products.ProductSmallDto;
+import com.example.ecommercebackend.dto.product.products.productTemplate.ProductTemplateDto;
 import com.example.ecommercebackend.dto.product.supplier.SupplierDetailDto;
 import com.example.ecommercebackend.dto.product.tag.TagDetailDto;
 import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.product.products.Product;
+import com.example.ecommercebackend.entity.product.products.ProductTemplate;
 import com.example.ecommercebackend.entity.product.products.ProductType;
 import com.example.ecommercebackend.entity.user.Admin;
 import org.springframework.stereotype.Component;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 @Component
 public class ProductBuilder {
 
-    public Product productCreateDtoToProduct(ProductCreateDto productCreateDto, Set<Category> categories, ProductType productType,String linkName) {
+    public Product productCreateDtoToProduct(ProductCreateDto productCreateDto, Set<Category> categories, ProductType productType, String linkName, ProductTemplate productTemplate) {
         return new Product(
                 productCreateDto.getName(),
                 linkName,
@@ -30,6 +32,7 @@ public class ProductBuilder {
                 productCreateDto.getBuyingPrice(),
                 productCreateDto.getQuantity(),
                 productCreateDto.getShortDescription(),
+                productTemplate,
                 categories,
                 productCreateDto.getDescription(),
                 productType,

@@ -207,7 +207,7 @@ public class CustomerService {
             if (titleExists)
                 throw new ResourceAlreadyExistException("Address "+ExceptionMessage.ALREADY_EXISTS.getMessage());
 
-            Address address = addressService.createAddress(addressCreateDto);
+            Address address = addressService.createAddress(addressCreateDto,true);
             customer1.getAddresses().add(address);
             customerRepository.save(customer1);
             return new AddressDetailDto(address.getId(),address.getTitle(),address.getFirstName(),address.getLastName(),address.getCountry().getUpperName(),address.getCity().getName(),address.getDistrict().getName(),address.getPostalCode(),address.getPhoneNo(),address.getAddressLine1());

@@ -70,6 +70,8 @@ payment:
 
 domain:
   test: https://litysofttest1.site
+  name: https://litysofttest1.site
+
 
 server:
   port: 8083

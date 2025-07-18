@@ -116,11 +116,56 @@ public class ShippingAddressService {
 
     }
 
-    public String createSendingAddress(AddressApiDto addressApiDto) {
-        return null;
+    public AddressReceiptDto createSendingAddress(AddressApiDto addressApiDto) {
+        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+
+        String responseJson = webClient.post()
+                .uri("/addresses")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .bodyValue(addressApiDto)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, r ->
+                        r.bodyToMono(String.class)
+                                .map(body -> {
+                                    log.error("4xx Client Error: {}", body);
+                                    return new BadRequestException("API 4xx error: " + body);
+                                })
+                )
+                .onStatus(HttpStatusCode::is5xxServerError, r ->
+                        r.bodyToMono(String.class)
+                                .map(body -> {
+                                    log.error("5xx Server Error: {}", body);
+                                    return new RuntimeException("API 5xx error: " + body);
+                                })
+                )
+                .bodyToMono(String.class)
+                .block();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            System.out.println("Giden JSON: " + mapper.writeValueAsString(addressApiDto));
+
+            JsonNode root = mapper.readTree(responseJson);
+            boolean result = root.get("result").asBoolean();
+
+            if (result){
+                JsonNode dataNode = root.get("data");
+                System.out.println(dataNode);
+                return mapper.treeToValue(dataNode, AddressReceiptDto.class);
+            }else
+                throw new BadRequestException("Kullanıcının kargo adresi oluşturulamadı.");
+
+        } catch (JsonMappingException e) {
+            throw new BadRequestException("Json datası eşleşmiyor.");
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Json datası işlenemedi.");
+        }
+
     }
 
-    public AddressReceiptDto createReceivingAddress(@NotNullParam AddressApiDto addressApiDto) {
+    public AddressReceiptDto createReceivingAddress(@NotNullParam AddressApiDto addressApiDto) throws JsonProcessingException {
         WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
 
         String responseJson = webClient.post()
@@ -152,24 +197,19 @@ public class ShippingAddressService {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        try {
-            System.out.println("Giden JSON: " + mapper.writeValueAsString(addressApiDto));
 
-            JsonNode root = mapper.readTree(responseJson);
-            boolean result = root.get("result").asBoolean();
+        System.out.println("Giden JSON: " + mapper.writeValueAsString(addressApiDto));
 
-            if (result){
-                JsonNode dataNode = root.get("data");
-                System.out.println(dataNode);
-                return mapper.treeToValue(dataNode, AddressReceiptDto.class);
-            }else
-                throw new BadRequestException("Kullanıcının kargo adresi oluşturulamadı.");
+        JsonNode root = mapper.readTree(responseJson);
+        boolean result = root.get("result").asBoolean();
 
-        } catch (JsonMappingException e) {
-            throw new BadRequestException("Json datası eşleşmiyor.");
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Json datası işlenemedi.");
-        }
+        if (result){
+            JsonNode dataNode = root.get("data");
+            System.out.println(dataNode);
+            return mapper.treeToValue(dataNode, AddressReceiptDto.class);
+        }else
+             throw new BadRequestException("Kullanıcının kargo adresi oluşturulamadı.");
+
     }
 
     public AddressShipResponse getAllAddress(@NotNullParam Boolean isRecipientAddress,@NotNullParam Integer limit,@NotNullParam Integer page){

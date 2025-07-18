@@ -47,6 +47,9 @@ public class Product {
     @Column(name = "product_description", nullable = false)
     private String productDescription;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ProductTemplate productTemplate;
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "product_categories",
@@ -135,7 +138,7 @@ public class Product {
         return Objects.equals(getId(), product.getId());
     }
 
-    public Product(String productName, String productLinkName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, Set<Category> categories, String productDescription, ProductType productType, Boolean published, BigDecimal taxRate, Boolean disableOutOfStock, Integer stockNotification) {
+    public Product(String productName, String productLinkName, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, ProductTemplate productTemplate, Set<Category> categories, String productDescription, ProductType productType, Boolean published, BigDecimal taxRate, Boolean disableOutOfStock, Integer stockNotification) {
         this.productName = productName;
         this.productLinkName= productLinkName;
         this.salePrice = salePrice;
@@ -143,6 +146,7 @@ public class Product {
         this.buyingPrice = buyingPrice;
         this.quantity = quantity;
         this.shortDescription = shortDescription;
+        this.productTemplate = productTemplate;
         this.productDescription = productDescription;
         this.categories = categories;
         this.taxRate=taxRate;
@@ -353,5 +357,13 @@ public class Product {
 
     public void setStockNotification(Integer stockNotification) {
         this.stockNotification = stockNotification;
+    }
+
+    public ProductTemplate getProductTemplate() {
+        return productTemplate;
+    }
+
+    public void setProductTemplate(ProductTemplate productTemplate) {
+        this.productTemplate = productTemplate;
     }
 }

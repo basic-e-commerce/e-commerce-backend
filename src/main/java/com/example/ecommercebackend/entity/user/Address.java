@@ -31,6 +31,9 @@ public class Address {
     private String postalCode;
     private String phoneNo;
 
+    private Boolean isRecipientAddress;
+    private String geliverId;
+
     private Instant createdAt = Instant.now();
     private Instant updatedAt = Instant.now();
 
@@ -39,7 +42,7 @@ public class Address {
         updatedAt = Instant.now();
     }
 
-    public Address(String title, Country country, String firstName, String lastName, City city, District district, String addressLine1, String postalCode, String phoneNo) {
+    public Address(String title, Country country, String firstName, String lastName, City city, District district, String addressLine1, String postalCode, String phoneNo, Boolean isRecipientAddress) {
         this.title = title;
         this.country = country;
         this.firstName = firstName;
@@ -49,6 +52,7 @@ public class Address {
         this.addressLine1 = addressLine1;
         this.postalCode = postalCode;
         this.phoneNo = phoneNo;
+        this.isRecipientAddress = isRecipientAddress;
     }
 
     public Address() {
@@ -148,5 +152,21 @@ public class Address {
 
     public void setDistrict(District district) {
         this.district = district;
+    }
+
+    public String getGeliverId() {
+        return geliverId;
+    }
+
+    public void setGeliverId(String geliverId) {
+        this.geliverId = geliverId;
+    }
+
+    public Boolean getRecipientAddress() {
+        return isRecipientAddress;
+    }
+
+    public void setRecipientAddress(Boolean recipientAddress) {
+        isRecipientAddress = recipientAddress;
     }
 }

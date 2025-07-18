@@ -23,6 +23,9 @@ public class Merchant {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Address> sendingAddresses;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Address defaultSendingAddress;
+
     @OneToOne
     private CoverImage coverImage;
     private String phoneNo;
@@ -75,6 +78,7 @@ public class Merchant {
         this.footerDescription = footerDescription;
         this.openCloseHours = openCloseHours;
         this.addressLink = addressLink;
+        this.defaultSendingAddress = sendingAddresses.get(0);
     }
     public Merchant() {}
 
@@ -220,5 +224,13 @@ public class Merchant {
 
     public void setSendingAddresses(List<Address> sendingAddresses) {
         this.sendingAddresses = sendingAddresses;
+    }
+
+    public Address getDefaultSendingAddress() {
+        return defaultSendingAddress;
+    }
+
+    public void setDefaultSendingAddress(Address defaultSendingAddress) {
+        this.defaultSendingAddress = defaultSendingAddress;
     }
 }

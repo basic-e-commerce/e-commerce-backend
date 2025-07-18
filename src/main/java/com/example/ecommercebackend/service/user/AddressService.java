@@ -33,27 +33,27 @@ public class AddressService {
         this.districtService = districtService;
     }
 
-    public Address createAddress(AddressCreateDto addressCreateDto) {
+    public Address createAddress(AddressCreateDto addressCreateDto,Boolean isReceiptAddress) {
         Country country = countryService.findCountryByUpperName(addressCreateDto.getCountryName());
         City city = cityService.findByCityCode(addressCreateDto.getCityCode());
         District district = districtService.findByDistrictId(addressCreateDto.getDistrictId());
-        Address address = addressBuilder.addressCreateDtoToAddress(addressCreateDto,country,city,district);
+        Address address = addressBuilder.addressCreateDtoToAddress(addressCreateDto,country,city,district,isReceiptAddress);
         return addressRepository.save(address);
     }
 
-    public Address createAddress(AddressApiDto addressApiDto, MerchantCreateDto merchantCreateDto) {
+    public Address createAddress(AddressApiDto addressApiDto, MerchantCreateDto merchantCreateDto,Boolean isReceiptAddress) {
         Country country = countryService.findCountryByUpperName("TURKIYE");
         City city = cityService.findByCityCode(addressApiDto.getCityCode());
         District district = districtService.findByDistrictId(addressApiDto.getDistrictID());
-        Address address = addressBuilder.addressApiDtoToAddress(addressApiDto,country,merchantCreateDto,city,district);
+        Address address = addressBuilder.addressApiDtoToAddress(addressApiDto,country,merchantCreateDto,city,district,isReceiptAddress);
         return addressRepository.save(address);
     }
 
-    public Address createAddress(AddressApiDto addressApiDto, MerchantUpdateDto merchantCreateDto) {
+    public Address createAddress(AddressApiDto addressApiDto, MerchantUpdateDto merchantCreateDto,Boolean isReceiptAddress) {
         Country country = countryService.findCountryByUpperName("TURKIYE");
         City city = cityService.findByCityCode(addressApiDto.getCityCode());
         District district = districtService.findByDistrictId(addressApiDto.getDistrictID());
-        Address address = addressBuilder.addressApiDtoToAddress(addressApiDto,country,merchantCreateDto,city,district);
+        Address address = addressBuilder.addressApiDtoToAddress(addressApiDto,country,merchantCreateDto,city,district,isReceiptAddress);
         return addressRepository.save(address);
     }
 

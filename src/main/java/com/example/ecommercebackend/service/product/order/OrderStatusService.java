@@ -8,11 +8,12 @@ import org.springframework.stereotype.Service;
 public class OrderStatusService {
     private final OrderStatusRepository orderStatusRepository;
 
+
     public OrderStatusService(OrderStatusRepository orderStatusRepository) {
         this.orderStatusRepository = orderStatusRepository;
     }
 
-    public OrderStatus createOrderStatus(OrderStatus.Status status, OrderStatus.Privacy privacy, OrderStatus.Color color) {
+    public OrderStatus createOrderStatus(OrderStatus.Status status,OrderStatus.Privacy privacy, OrderStatus.Color color) {
         OrderStatus orderStatus = new OrderStatus(status,privacy,color);
         return orderStatusRepository.save(orderStatus);
     }

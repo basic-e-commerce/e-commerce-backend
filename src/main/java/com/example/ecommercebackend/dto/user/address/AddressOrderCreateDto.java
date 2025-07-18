@@ -12,5 +12,6 @@ public record AddressOrderCreateDto(@NotNullField String firstName,
                                     @NotNullField String districtId,
                                     @NotNullField String addressLine1,
                                     @NotNullField String postalCode,
-                                    @NotNullField String phoneNo) {
+                                    @NotNullField String phoneNo,
+                                    String geliverId) {
 }

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 
 import java.awt.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "order_statuses")
@@ -17,6 +19,15 @@ public class OrderStatus {
     @Column(name = "status_name", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<OrderPackage> orderPackages = new ArrayList<>();
+
+    @Column(name = "receipt_address_id")
+    private String receiptAddressId;
+
+    @Column(name = "sender_address_id")
+    private String senderAddressId;
 
     @Column(name = "color", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -40,18 +51,48 @@ public class OrderStatus {
     @JoinColumn(name = "updated_by", referencedColumnName = "id")
     private Admin updatedBy;
 
+    public String getReceiptAddressId() {
+        return receiptAddressId;
+    }
+
+    public void setReceiptAddressId(String receiptAddressId) {
+        this.receiptAddressId = receiptAddressId;
+    }
+
+    public List<OrderPackage> getOrderPackages() {
+        return orderPackages;
+    }
+
+    public void setOrderPackages(List<OrderPackage> orderPackages) {
+        this.orderPackages = orderPackages;
+    }
+
+    public String getSenderAddressId() {
+        return senderAddressId;
+    }
+
+    public void setSenderAddressId(String senderAddressId) {
+        this.senderAddressId = senderAddressId;
+    }
+
     public enum Privacy {
         PUBLIC,
         PRIVATE
     }
 
     public enum Status {
-        PENDING,        // Sipariş işleniyor
-        APPROVED,       // Sipariş onaylandı
-        SHIPPED,        // Sipariş kargoya verildi
-        DELIVERED,      // Sipariş teslim edildi
-        CANCELLED;      // Sipariş iptal edildi
+        PENDING("Ürün Ödeme sürecindedir"),
+        APPROVED("Ürün ödemesi yapıldı, Kargo için Hazırlanıyor");
+
+
+        Status(String s) {
+        }
+        public String getValue() {
+            return name();
+        }
     }
+
+
 
     public enum Color {
         RED,
@@ -64,7 +105,7 @@ public class OrderStatus {
         updatedAt = Instant.now();
     }
 
-    public OrderStatus( Status status, Privacy privacy, Color color) {
+    public OrderStatus(Status status, Privacy privacy, Color color) {
         this.status = status;
         this.privacy = privacy;
         this.color = color;

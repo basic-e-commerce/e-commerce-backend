@@ -13,6 +13,7 @@ import com.example.ecommercebackend.entity.product.attribute.Attribute;
 import com.example.ecommercebackend.entity.product.attribute.ProductAttribute;
 import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.product.products.Product;
+import com.example.ecommercebackend.entity.product.products.ProductTemplate;
 import com.example.ecommercebackend.entity.product.products.ProductType;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
@@ -45,13 +46,15 @@ public class ProductService {
     private final ProductImageService productImageService;
     private final ProductBuilder productBuilder;
     private final CategoryService categoryService;
+    private final ProductTemplateService productTemplateService;
 
-    public ProductService(ProductRepository productRepository, CoverImageService coverImageService, ProductImageService productImageService, ProductBuilder productBuilder, CategoryService categoryService) {
+    public ProductService(ProductRepository productRepository, CoverImageService coverImageService, ProductImageService productImageService, ProductBuilder productBuilder, CategoryService categoryService, ProductTemplateService productTemplateService) {
         this.productRepository = productRepository;
         this.coverImageService = coverImageService;
         this.productImageService = productImageService;
         this.productBuilder = productBuilder;
         this.categoryService = categoryService;
+        this.productTemplateService = productTemplateService;
     }
 
     public ProductAdminDetailDto createSimpleProduct(@NotNullParam ProductCreateDto productCreateDto) {
@@ -90,8 +93,8 @@ public class ProductService {
                 throw new BadRequestException("Category is not a sub category");
         }
 
-
-        Product product = productBuilder.productCreateDtoToProduct(productCreateDto,categories,productType,generateLinkName(productCreateDto.getName()));
+        ProductTemplate productTemplate = productTemplateService.findById(productCreateDto.getProductTemplateId());
+        Product product = productBuilder.productCreateDtoToProduct(productCreateDto,categories,productType,generateLinkName(productCreateDto.getName()),productTemplate);
         Product saveProduct = productRepository.save(product);
 
         if (productCreateDto.getCoverImage() != null){
@@ -173,6 +176,10 @@ public class ProductService {
                 .filter(c -> !newCategoryIds.contains(c.getId()))
                 .collect(Collectors.toSet());
 
+        if (product.getProductTemplate().getId() != productUpdateDto.getProductTemplateId()){
+            ProductTemplate productTemplate = productTemplateService.findById(productUpdateDto.getProductTemplateId());
+            product.setProductTemplate(productTemplate);
+        }
 
         product.getCategories().removeAll(categoriesToRemove);
         product.getCategories().addAll(categoriesToAdd);

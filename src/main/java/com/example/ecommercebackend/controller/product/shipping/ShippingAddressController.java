@@ -2,7 +2,11 @@ package com.example.ecommercebackend.controller.product.shipping;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.dto.product.shipping.*;
+import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.service.product.shipping.ShippingAddressService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/shipping-address")
 public class ShippingAddressController {
+    private static final Logger log = LoggerFactory.getLogger(ShippingAddressController.class);
     private final ShippingAddressService shippingAddressService;
 
     public ShippingAddressController(ShippingAddressService shippingAddressService) {
@@ -29,13 +34,18 @@ public class ShippingAddressController {
     }
 
     @PostMapping("/create-sending-address")
-    public ResponseEntity<String> createSendingAddress(@RequestBody(required = false) AddressApiDto addressApiDto){
+    public ResponseEntity<AddressReceiptDto> createSendingAddress(@RequestBody(required = false) AddressApiDto addressApiDto){
         return new ResponseEntity<>(shippingAddressService.createSendingAddress(addressApiDto),HttpStatus.CREATED);
     }
 
     @PostMapping("/create-receipt-address")
     public ResponseEntity<AddressReceiptDto> createReceiptAddress(@RequestBody(required = false) AddressApiDto addressApiDto){
-        return new ResponseEntity<>(shippingAddressService.createReceivingAddress(addressApiDto),HttpStatus.CREATED);
+        try {
+            return new ResponseEntity<>(shippingAddressService.createReceivingAddress(addressApiDto),HttpStatus.CREATED);
+        } catch (JsonProcessingException e) {
+            log.error("Shipping Address create receipt address :Json datası işlenemedi: "+e.getMessage());
+            throw new BadRequestException("3. parti yazılımda hata vardır");
+        }
     }
 
     @GetMapping("/get-all")

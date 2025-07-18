@@ -1,11 +1,10 @@
 package com.example.ecommercebackend.controller.product.order;
 
 import com.example.ecommercebackend.anotation.RateLimit;
-import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
-import com.example.ecommercebackend.dto.product.order.OrderDetailDto;
-import com.example.ecommercebackend.dto.product.order.OrderFilterRequest;
-import com.example.ecommercebackend.dto.product.order.OrderResponseDto;
+import com.example.ecommercebackend.dto.product.order.*;
 import com.example.ecommercebackend.dto.product.products.ProductFilterRequest;
+import com.example.ecommercebackend.dto.product.products.productTemplate.CargoOfferDesiRequestAdminDto;
+import com.example.ecommercebackend.dto.product.shipping.OfferApproveDto;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import org.springframework.http.HttpStatus;
@@ -62,10 +61,21 @@ public class OrderController {
 
     @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
     @GetMapping("/by-order-code")
-    public ResponseEntity<OrderDetailDto> findByOrderCode(@RequestParam String orderCode) {
+    public ResponseEntity<OrderDetailDto> findByOrderCode(@RequestParam(required = false) String orderCode) {
         return new ResponseEntity<>(orderService.findOrderDetailByOrderCode(orderCode),HttpStatus.OK);
     }
 
+
+    @PostMapping("/cargo-offer")
+    public ResponseEntity<CargoOfferResponsesDto> cargoOffer(@RequestParam(required = false) String orderCode,
+                                                             @RequestBody(required = false)List<CargoOfferDesiRequestAdminDto> cargoOfferDesiRequestAdminDtos){
+        return new ResponseEntity<>(orderService.cargoOffer(orderCode,cargoOfferDesiRequestAdminDtos),HttpStatus.OK);
+    }
+
+    @PostMapping("/offer-approve")
+    public ResponseEntity<OfferApproveDto> offerApprove(@RequestParam(required = false) Integer orderPackageId,@RequestParam(required = false) String offerId){
+        return new ResponseEntity<>(orderService.offerApprove(orderPackageId,offerId),HttpStatus.OK);
+    }
 
 
 

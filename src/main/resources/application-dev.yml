@@ -72,6 +72,8 @@ payment:
 
 domain:
   test: http://localhost:8083
+  name: https://litysofttest1.site
+
 server:
   port: 8083
 

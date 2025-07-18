@@ -68,113 +68,6 @@ public class ECommerceBackendApplication {
 				countryRepository.save(turkey);
 			}
 
-//			if (cityRepository.findAll().isEmpty()) {
-//				WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
-//				String responseJson = webClient.get()
-//						.uri("/cities?countryCode=TR")
-//						.retrieve()
-//						.bodyToMono(String.class)
-//						.block();
-//
-//
-//				// responseJson: gelen JSON string
-//				ObjectMapper mapper = new ObjectMapper();
-//
-//				JsonNode root = null;
-//				try {
-//					root = mapper.readTree(responseJson);
-//
-//					boolean result = root.get("result").asBoolean();
-//					String additionalMessage = root.get("additionalMessage").asText();
-//
-//					if (result && (additionalMessage != null && additionalMessage.equals("Success"))) {
-//						JsonNode dataNode = root.get("data");
-//						// dataNode bir array (dizi) olduğu için
-//						List<CityDto> cityList = new ArrayList<>();
-//
-//						if (dataNode.isArray()) {
-//							for (JsonNode cityNode : dataNode) {
-//								// CityDto'ya dönüştürmek için ObjectMapper kullan
-//								CityDto city = mapper.treeToValue(cityNode, CityDto.class);
-//								System.out.println(city.getName());
-//								System.out.println(city.getCityCode());
-//								cityList.add(city);
-//							}
-//						}
-//
-//						cityList.forEach(cityDto -> {
-//							City city = new City(
-//									cityDto.getName(),
-//									cityDto.getCityCode(),
-//									cityDto.getCountryCode()
-//							);
-//							cityRepository.save(city);
-//						});
-//
-//						if (districtRepository.findAll().isEmpty()) {
-//							for (CityDto cityDto : cityList) {
-//								String responseJsonDistrict = webClient.get()
-//										.uri("/districts?countryCode=TR&cityCode=%s".formatted(cityDto.getCityCode()))
-//										.retrieve()
-//										.bodyToMono(String.class)
-//										.block();
-//
-//								ObjectMapper mapperDistrict = new ObjectMapper();
-//
-//								JsonNode rootDistrict = null;
-//								try {
-//									rootDistrict = mapperDistrict.readTree(responseJsonDistrict);
-//
-//									boolean resultDistrict = rootDistrict.get("result").asBoolean();
-//									String additionalMessageDistrict = rootDistrict.get("additionalMessage").asText();
-//
-//									if (resultDistrict && (additionalMessageDistrict != null && additionalMessageDistrict.equals("Success"))) {
-//										JsonNode dataNodeDistrict = rootDistrict.get("data");
-//										// dataNode bir array (dizi) olduğu için
-//										List<DistrictDto> districtDtoList = new ArrayList<>();
-//
-//										if (dataNode.isArray()) {
-//											for (JsonNode districtNode : dataNodeDistrict) {
-//												// CityDto'ya dönüştürmek için ObjectMapper kullan
-//												DistrictDto districtDto = mapper.treeToValue(districtNode, DistrictDto.class);
-//												districtDtoList.add(districtDto);
-//											}
-//										}
-//
-//										districtDtoList.forEach(districtDto -> {
-//											District district = new District(
-//													districtDto.getName(),
-//													districtDto.getDistrictID(),
-//													districtDto.getCityCode(),
-//													districtDto.getCountryCode()
-//											);
-//											System.out.println(district.getName()+" "+district.getCityCode());
-//											if (!districtRepository.existsByDistrictId(districtDto.getDistrictID())) {
-//												districtRepository.save(district);
-//											}
-//
-//										});
-//
-//										districtDtoList.clear();
-//
-//									}else
-//										throw new BadRequestException("3. parti servisinde hata bulunmaktadır! Lütfen daha sonra tekrar deneyiniz.");
-//
-//								} catch (JsonProcessingException e) {
-//									throw new BadRequestException(e.getMessage());
-//								}
-//							}
-//						}
-//
-//					}else
-//						throw new BadRequestException("3. parti servisinde hata bulunmaktadır! Lütfen daha sonra tekrar deneyiniz.");
-//
-//				} catch (JsonProcessingException e) {
-//					throw new BadRequestException(e.getMessage());
-//				}
-//
-//
-//			}
 
 			if (merchantRepository.findAll().isEmpty()) {
 				List<OpenCloseHour> openCloseHours = new LinkedList<>();
@@ -203,7 +96,8 @@ public class ECommerceBackendApplication {
 						districtRepository.findByDistrictId(107062).orElse(null),
 						"address line 1",
 						"34000",
-						"5559876758"
+						"5559876758",
+						false
 				);
 				sendingAddress.add(address);
 
@@ -218,7 +112,8 @@ public class ECommerceBackendApplication {
 								districtRepository.findByDistrictId(107062).orElse(null),
 								"address line 1",
 								"34000",
-								"5559876758"
+								"5559876758",
+								false
 								),
 						"addresslink",
 						sendingAddress,

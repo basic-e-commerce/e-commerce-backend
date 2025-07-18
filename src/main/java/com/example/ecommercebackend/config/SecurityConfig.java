@@ -119,6 +119,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/order/total-price").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/order").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/order/by-order-code").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-offer").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order/offer-approve").hasAuthority("ADMIN")
 
 
                         .requestMatchers(HttpMethod.PUT,"/api/v1/card").hasAuthority("CUSTOMER")
@@ -180,7 +182,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/shipping-address/{id}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/shipping-address/get/{id}").hasAuthority("ADMIN")
 
+                        .requestMatchers(HttpMethod.POST,"/api/v1/shipping-cargo").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/shipping-cargo/offer-approve").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/shipping-cargo/offer-cancel").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/shipping-cargo/detail").hasAuthority("ADMIN")
 
+                        .requestMatchers(HttpMethod.POST,"/api/v1/product-template").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/product-template/list").hasAuthority("ADMIN")
 
                         .anyRequest().permitAll())
                 .anonymous(anonymous -> anonymous

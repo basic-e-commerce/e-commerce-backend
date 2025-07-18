@@ -37,8 +37,10 @@ public class ProductCreateDto {
     private MultipartFile coverImage;
     @NotNullField
     private Integer stockNotification;
+    @NotNullField
+    private Integer productTemplateId;
 
-    public ProductCreateDto(String name, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, String description, Set<Integer> categoryIds, String productType, Boolean published, BigDecimal taxRate, Boolean disableOutOfStock, MultipartFile[] productImages, MultipartFile coverImage, Integer stockNotification) {
+    public ProductCreateDto(String name, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, String description, Set<Integer> categoryIds, String productType, Boolean published, BigDecimal taxRate, Boolean disableOutOfStock, MultipartFile[] productImages, MultipartFile coverImage, Integer stockNotification, Integer productTemplateId) {
         this.name = name;
         this.salePrice = salePrice;
         this.comparePrice = comparePrice;
@@ -54,6 +56,7 @@ public class ProductCreateDto {
         this.productImages = productImages;
         this.coverImage = coverImage;
         this.stockNotification = stockNotification;
+        this.productTemplateId = productTemplateId;
     }
 
     public String getName() {
@@ -174,5 +177,13 @@ public class ProductCreateDto {
 
     public void setStockNotification(Integer stockNotification) {
         this.stockNotification = stockNotification;
+    }
+
+    public Integer getProductTemplateId() {
+        return productTemplateId;
+    }
+
+    public void setProductTemplateId(Integer productTemplateId) {
+        this.productTemplateId = productTemplateId;
     }
 }

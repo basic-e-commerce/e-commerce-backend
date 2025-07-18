@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AddressBuilder {
-    public Address addressCreateDtoToAddress(AddressCreateDto addressCreateDto, Country country, City city,District district) {
+    public Address addressCreateDtoToAddress(AddressCreateDto addressCreateDto, Country country, City city,District district,Boolean isReceiptAddress) {
         return new Address(
                 addressCreateDto.getTitle(),
                 country,
@@ -22,11 +22,12 @@ public class AddressBuilder {
                 district,
                 addressCreateDto.getAddressLine1(),
                 addressCreateDto.getPostalCode(),
-                addressCreateDto.getPhoneNo()
+                addressCreateDto.getPhoneNo(),
+                isReceiptAddress
         );
     }
 
-    public Address addressApiDtoToAddress(AddressApiDto addressApiDto, Country country, MerchantCreateDto merchantCreateDto,City city,District district) {
+    public Address addressApiDtoToAddress(AddressApiDto addressApiDto, Country country, MerchantCreateDto merchantCreateDto,City city,District district,Boolean isReceiptAddress) {
         return new Address(
                 addressApiDto.getName(),
                 country,
@@ -36,11 +37,12 @@ public class AddressBuilder {
                 district,
                 merchantCreateDto.getAddressLine1(),
                 merchantCreateDto.getPostalCode(),
-                merchantCreateDto.getPhoneNo()
+                merchantCreateDto.getPhoneNo(),
+                isReceiptAddress
         );
     }
 
-    public Address addressApiDtoToAddress(AddressApiDto addressApiDto, Country country, MerchantUpdateDto merchantCreateDto, City city, District district) {
+    public Address addressApiDtoToAddress(AddressApiDto addressApiDto, Country country, MerchantUpdateDto merchantCreateDto, City city, District district,Boolean isReceiptAddress) {
         return new Address(
                 addressApiDto.getName(),
                 country,
@@ -50,7 +52,8 @@ public class AddressBuilder {
                 district,
                 merchantCreateDto.getAddressLine1(),
                 merchantCreateDto.getPostalCode(),
-                merchantCreateDto.getPhoneNo()
+                merchantCreateDto.getPhoneNo(),
+                isReceiptAddress
         );
     }
 }

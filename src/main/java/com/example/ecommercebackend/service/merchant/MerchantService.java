@@ -46,9 +46,9 @@ public class MerchantService {
                 merchantCreateDto.getAddressLine1(),
                 merchantCreateDto.getPostalCode(),
                 merchantCreateDto.getPhoneNo());
-        Address address = addressService.createAddress(addressCreateDto);
+        Address address = addressService.createAddress(addressCreateDto,false);
         List<Address> sendingAddresses = merchantCreateDto.getSendAddresses().stream().map(x->{
-            return addressService.createAddress(x,merchantCreateDto);
+            return addressService.createAddress(x,merchantCreateDto,false);
         }).collect(Collectors.toCollection(ArrayList::new));
 
         Merchant merchant = merchantBuilder.merchantCreateDtoToMerchant(merchantCreateDto, address,sendingAddresses);
@@ -76,7 +76,7 @@ public class MerchantService {
 
         merchant.setSendingAddresses(null);
         List<Address> sendingAddresses = merchantCreateDto.getSendAddresses().stream().map(x->{
-            return addressService.createAddress(x,merchantCreateDto);
+            return addressService.createAddress(x,merchantCreateDto,false);
         }).collect(Collectors.toCollection(ArrayList::new));
 
         merchant.setAddress(address);

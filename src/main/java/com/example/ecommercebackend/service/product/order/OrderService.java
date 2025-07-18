@@ -3,6 +3,8 @@ package com.example.ecommercebackend.service.product.order;
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.order.OrderBuilder;
 import com.example.ecommercebackend.dto.product.order.*;
+import com.example.ecommercebackend.dto.product.products.productTemplate.CargoOfferDesiRequestAdminDto;
+import com.example.ecommercebackend.dto.product.shipping.*;
 import com.example.ecommercebackend.dto.user.address.AddressOrderCreateDto;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.product.card.Card;
@@ -12,6 +14,7 @@ import com.example.ecommercebackend.entity.product.invoice.IndividualInvoice;
 import com.example.ecommercebackend.entity.product.invoice.Invoice;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderItem;
+import com.example.ecommercebackend.entity.product.order.OrderPackage;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import com.example.ecommercebackend.entity.product.products.Coupon;
 import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
@@ -26,16 +29,20 @@ import com.example.ecommercebackend.repository.product.order.OrderRepository;
 import com.example.ecommercebackend.repository.user.CustomerRepository;
 import com.example.ecommercebackend.service.invoice.InvoiceService;
 import com.example.ecommercebackend.service.merchant.MerchantService;
-import com.example.ecommercebackend.service.product.products.CouponService;
 import com.example.ecommercebackend.service.product.products.CustomerCouponService;
 import com.example.ecommercebackend.service.product.products.ProductService;
+import com.example.ecommercebackend.service.product.shipping.ShippingAddressService;
+import com.example.ecommercebackend.service.product.shipping.ShippingCargoService;
 import com.example.ecommercebackend.service.user.GuestService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
-import org.aspectj.weaver.ast.Or;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,19 +50,17 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
+    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     private final OrderRepository orderRepository;
     private final GuestService guestService;
     private final OrderStatusService orderStatusService;
@@ -66,10 +71,16 @@ public class OrderService {
     private final CustomerRepository customerRepository;
     private final InvoiceService invoiceService;
     private final CustomerCouponService customerCouponService;
+    private final ShippingAddressService shippingAddressService;
+    private final ShippingCargoService shippingCargoService;
+    private final OrderPackageService orderPackageService;
+
+    @Value("${domain.test}")
+    private String domain;
 
 
 
-    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService, CustomerRepository customerRepository, InvoiceService invoiceService, CustomerCouponService customerCouponService) {
+    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService, CustomerRepository customerRepository, InvoiceService invoiceService, CustomerCouponService customerCouponService, ShippingAddressService shippingAddressService, ShippingCargoService shippingCargoService, OrderPackageService orderPackageService) {
         this.orderRepository = orderRepository;
         this.guestService = guestService;
         this.orderStatusService = orderStatusService;
@@ -80,6 +91,9 @@ public class OrderService {
         this.customerRepository = customerRepository;
         this.invoiceService = invoiceService;
         this.customerCouponService = customerCouponService;
+        this.shippingAddressService = shippingAddressService;
+        this.shippingCargoService = shippingCargoService;
+        this.orderPackageService = orderPackageService;
     }
 
 
@@ -112,7 +126,8 @@ public class OrderService {
 
             Invoice saveInvoicce = invoiceService.save(invoice);
 
-            Order order = saveOrder(customer,
+            Order order = saveOrder(
+                    customer,
                     orderCreateDto.getAddress(),
                     totalPriceDto.getSavedOrderItems(),
                     orderStatus,
@@ -121,8 +136,6 @@ public class OrderService {
                     saveInvoicce,
                     customerCoupon
             );
-            System.out.println("order 9");
-            System.out.println("ordertotalprice:"+order.getTotalPrice());
 
             return orderRepository.save(order);
         }
@@ -271,12 +284,6 @@ public class OrderService {
 
             return orderPrice;
         }
-
-
-//        for (OrderItem orderItem: orderItems) {
-//            orderPrice = orderPrice.add(orderItem.getPrice());
-//        }
-//        return orderPrice;
     }
 
     public Set<OrderItem> createOrderItemWithCustomer(Card card) {
@@ -286,7 +293,6 @@ public class OrderService {
             OrderItem orderItem = new OrderItem(cardItem.getProduct(),orderItemPrice, cardItem.getQuantity());
             orderItems.add(orderItem);
         }
-
         return orderItemService.saveOrderItems(orderItems);
     }
 
@@ -312,6 +318,7 @@ public class OrderService {
     public Order saveOrder(User user, AddressOrderCreateDto addressOrderCreateDto, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal orderPrice,Invoice invoice,CustomerCoupon customerCoupon) {
         Order order = new Order(user,
                 customerCoupon,
+                addressOrderCreateDto.geliverId() != null ? addressOrderCreateDto.geliverId(): null,
                 addressOrderCreateDto.firstName(),
                 addressOrderCreateDto.lastName(),
                 addressOrderCreateDto.username(),
@@ -442,91 +449,6 @@ public class OrderService {
             totalPrice = totalPrice.add(kargoPrice);
         }
         return new TotalProcessDto(totalPrice,savedOrderItems);
-
-//        if (customerCoupon != null) {
-//            System.out.println("kupon 1");
-//            isCouponValidation(customerCoupon);
-//            System.out.println("kupon 2");
-//
-//            if (customerCoupon.getCoupon().getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
-//                BigDecimal discountValue = customerCoupon.getCoupon().getDiscountValue(); // Örneğin %10 ise 10 gelir
-//                System.out.println("kupon 3");
-//                if (discountValue == null) {
-//                    throw new BadRequestException("İndirim yüzdesi belirtilmemiş!");
-//                }
-//                System.out.println("kupon 4");
-//                for (OrderItem orderItem : savedOrderItems) {
-//                    boolean isProductInCoupon = customerCoupon.getCoupon().getProducts().stream()
-//                            .anyMatch(product -> product.equals(orderItem.getProduct()));
-//
-//                    if (isProductInCoupon) {
-//                        System.out.println("fiçeride");
-//                        BigDecimal divide = orderItem.getPrice().subtract(orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100)));
-//                        totalPrice = totalPrice.add(divide);
-//                        orderItem.setDiscountPrice(divide);
-//                    } else {
-//                        totalPrice = totalPrice.add(orderItem.getPrice());
-//                        orderItem.setDiscountPrice(orderItem.getPrice());
-//                    }
-//                }
-//
-//                if (customerCoupon.getCoupon().getMinOrderAmountLimit() != null &&
-//                        totalPrice.compareTo(customerCoupon.getCoupon().getMinOrderAmountLimit()) < 0) {
-//                    throw new BadRequestException("Bu kuponu kullanmak için minimum sipariş tutarı "
-//                            + customerCoupon.getCoupon().getMinOrderAmountLimit() + " TL olmalıdır.");
-//                }
-//
-//                if (totalPrice.compareTo(minPrice) < 0) {
-//                    totalPrice = totalPrice.add(kargoPrice);
-//                }
-//
-//                System.out.println("kupon 5");
-//                System.out.println("totalPriceKupon: "+totalPrice);
-//                return new TotalProcessDto(totalPrice,savedOrderItems);
-//
-//
-//
-//            } else if (customerCoupon.getCoupon().getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
-//                BigDecimal discountValue = customerCoupon.getCoupon().getDiscountValue(); // Örneğin %10 ise 10 gelir
-//
-//                if (discountValue == null) {
-//                    throw new BadRequestException("İndirim Miktarı belirtilmemiştir!");
-//                }
-//
-//                for (OrderItem orderItem: savedOrderItems) {
-//                    if (customerCoupon.getCoupon().getProducts().contains(orderItem.getProduct())) {
-//                        BigDecimal subtract = orderItem.getPrice().subtract(discountValue.multiply(BigDecimal.valueOf(orderItem.getQuantity())));
-//                        totalPrice = totalPrice.add(subtract);
-//                        orderItem.setDiscountPrice(subtract);
-//                    }else{
-//                        totalPrice = totalPrice.add(orderItem.getPrice());
-//                        orderItem.setDiscountPrice(orderItem.getPrice());
-//                    }
-//                }
-//
-//                if (customerCoupon.getCoupon().getMinOrderAmountLimit() != null &&
-//                        totalPrice.compareTo(customerCoupon.getCoupon().getMinOrderAmountLimit()) < 0) {
-//                    throw new BadRequestException("Bu kuponu kullanmak için minimum sipariş tutarı "
-//                            + customerCoupon.getCoupon().getMinOrderAmountLimit() + " TL olmalıdır.");
-//                }
-//                if (totalPrice.compareTo(minPrice) < 0) {
-//                    totalPrice = totalPrice.add(kargoPrice);
-//                }
-//                return new TotalProcessDto(totalPrice,savedOrderItems);
-//
-//            }else
-//                throw new BadRequestException("Geçersiz İndirim Tipi");
-//        }else{
-//            System.out.println("Kupon yok");
-//            for (OrderItem orderItem: savedOrderItems) {
-//                totalPrice = totalPrice.add(orderItem.getPrice());
-//                orderItem.setDiscountPrice(orderItem.getPrice());
-//            }
-//            if (totalPrice.compareTo(minPrice) < 0) {
-//                totalPrice = totalPrice.add(kargoPrice);
-//            }
-//            return new TotalProcessDto(totalPrice,savedOrderItems);
-//        }
     }
 
     public void isCouponValidation(CustomerCoupon customerCoupon) {
@@ -630,15 +552,6 @@ public class OrderService {
         return orderRepository.findAll(where, sort);
     }
 
-
-
-
-
-
-
-
-
-
     public Specification<Order> hasStatus(OrderStatus.Status status) {
         return (Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             if (status == null) {
@@ -674,7 +587,141 @@ public class OrderService {
     }
 
 
-    public OrderDetailDto findOrderDetailByOrderCode(String orderCode) {
+    public OrderDetailDto findOrderDetailByOrderCode(@NotNullParam String orderCode) {
         return orderBuilder.orderToOrderDetailDto(findByOrderCode(orderCode));
     }
+
+
+    public CargoOfferResponsesDto cargoOffer(String orderCode, List<CargoOfferDesiRequestAdminDto> cargoOfferDesiRequestAdminDtos) {
+        List<CargoOfferResponseDto> cargoOfferResponseDtos = new ArrayList<>();
+        Set<Integer> orderPackages = new HashSet<>();
+        Order order = findByOrderCode(orderCode);
+        String senderAddressId = merchantService.getMerchant().getDefaultSendingAddress().getGeliverId();
+        if (senderAddressId == null){
+
+        }
+        String receiptAddress = order.getGeliverId();
+        if (receiptAddress == null){
+            AddressApiDto addressApiDto = buildAddressDto(order);
+            try {
+                receiptAddress = shippingAddressService.createReceivingAddress(addressApiDto).getId();
+            } catch (JsonProcessingException e) {
+                throw new BadRequestException("Müşteri adresi oluşturulamadı");
+            }
+        }
+
+        List<CargoOfferRequestItem> cargoOfferRequestItems = new ArrayList<>();
+        for (OrderItem orderItem : order.getOrderItems()){
+            CargoOfferRequestItem cargoOfferRequestItem = new CargoOfferRequestItem(
+                    orderItem.getProduct().getProductName(),
+                    orderItem.getQuantity()
+            );
+            cargoOfferRequestItems.add(cargoOfferRequestItem);
+        }
+
+        CargoOfferRequestRecipientAddress recipientAddress = new CargoOfferRequestRecipientAddress(
+                order.getFirstName() +" "+ order.getLastName(),
+                order.getUsername(),
+                order.getPhoneNumber(),
+                order.getAddressLine1(),
+                order.getCityCode(),
+                order.getCityCode(),
+                order.getDistrict()
+        );
+
+        CargoOfferRequestOrder cargoOfferRequestOrder = new CargoOfferRequestOrder(
+                "API",
+                domain,
+                order.getOrderCode(),
+                order.getTotalPrice(),
+                "TL"
+        );
+
+        if (!order.getOrderStatus().getOrderPackages().isEmpty()){
+            order.getOrderStatus().getOrderPackages().clear();
+        }
+
+        for (CargoOfferDesiRequestAdminDto cargoOfferDesiRequestAdminDto: cargoOfferDesiRequestAdminDtos) {
+            CargoOfferRequestDto cargoOfferRequestDto = new CargoOfferRequestDto(
+                    true,
+                    senderAddressId,
+                    receiptAddress,
+                    String.valueOf(cargoOfferDesiRequestAdminDto.getLength()),
+                    String.valueOf(cargoOfferDesiRequestAdminDto.getHeight()),
+                    String.valueOf(cargoOfferDesiRequestAdminDto.getWidth()),
+                    cargoOfferDesiRequestAdminDto.getDistanceUnit(),
+                    String.valueOf(cargoOfferDesiRequestAdminDto.getWeight()),
+                    cargoOfferDesiRequestAdminDto.getMassUnit(),
+                    cargoOfferRequestItems,
+                    recipientAddress,
+                    false,
+                    cargoOfferRequestOrder
+            );
+            OrderPackage orderPackage = new OrderPackage(
+                    order.getOrderItems(),
+                    order.getFirstName()+ " " + order.getLastName(),
+                    cargoOfferDesiRequestAdminDto.getLength(),
+                    cargoOfferDesiRequestAdminDto.getWidth(),
+                    cargoOfferDesiRequestAdminDto.getHeight(),
+                    cargoOfferDesiRequestAdminDto.getWeight(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+            OrderPackage orderPackage1 = orderPackageService.createOrderPackage(orderPackage);
+            order.getOrderStatus().getOrderPackages().add(orderPackage);
+            orderPackages.add(orderPackage1.getId());
+
+            CargoOfferResponseDto createCargoOffers = shippingCargoService.getCreateCargoOffers(cargoOfferRequestDto);
+            cargoOfferResponseDtos.add(createCargoOffers);
+        }
+        orderRepository.save(order);
+
+        return new CargoOfferResponsesDto(cargoOfferResponseDtos,orderPackages);
+    }
+
+
+    public OfferApproveDto offerApprove(@NotNullParam Integer orderPackageId,@NotNullParam String offerId) {
+        OrderPackage orderPackage = orderPackageService.findById(orderPackageId);
+        OfferApproveDto offerApproveDto = shippingCargoService.offerApprove(offerId);
+
+        orderPackage.setShipmentId(offerApproveDto.getData().getShipment().getId());
+        orderPackage.setResponsiveLabelURL(offerApproveDto.getData().getShipment().getResponsiveLabelURL());
+        orderPackage.setCargoCompany(OrderPackage.CargoCompany.valueOf(offerApproveDto.getData().getShipment().getProviderServiceCode()));
+        orderPackage.setCargoStatus(OrderPackage.CargoStatus.INFORMATION_RECEIVED);
+        orderPackage.setCargoId(offerApproveDto.getData().getShipment().getId());
+        orderPackage.setBarcode(offerApproveDto.getData().getShipment().getBarcode());
+        orderPackage.setProductPaymentOnDelivery(offerApproveDto.getData().getShipment().isProductPaymentOnDelivery());
+        orderPackage.setCanceled(offerApproveDto.getData().isCanceled());
+        orderPackage.setRefund(offerApproveDto.getData().isRefund());
+
+        return offerApproveDto;
+    }
+
+
+    private AddressApiDto buildAddressDto(Order order) {
+        Random random = new Random();
+        return new AddressApiDto(
+                order.getFirstName() + " " + order.getLastName(),
+                order.getUsername(),
+                order.getPhoneNumber(),
+                order.getAddressLine1(),
+                "",
+                order.getCountry(),
+                order.getCity(),
+                order.getCityCode(),
+                order.getDistrict(),
+                order.getDistrictID(),
+                order.getPostalCode(),
+                true,
+                order.getFirstName() + " " + order.getLastName() + " " + (1000 + random.nextInt(9000))
+        );
+    }
+
 }

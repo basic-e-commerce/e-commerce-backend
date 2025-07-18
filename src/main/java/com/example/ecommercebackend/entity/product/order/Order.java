@@ -30,7 +30,11 @@ public class Order {
     @JoinColumn(name = "customer_coupon_id", referencedColumnName = "id")
     private CustomerCoupon customerCoupon;
 
+    @Column(name = "order_code")
     private String orderCode;
+
+    @Column(name = "geliver_id")
+    private String geliverId;
 
     @Column(name = "first_name")
     private String firstName;
@@ -47,8 +51,14 @@ public class Order {
     @Column(name = "city")
     private String city;
 
+    @Column(name = "city_code")
+    private String cityCode;
+
     @Column(name = "district")
     private String district;
+
+    @Column(name = "districtID")
+    private Integer districtID;
 
     @Column(name = "address_line_1")
     private String addressLine1;
@@ -104,9 +114,10 @@ public class Order {
         this.orderCode = UUID.randomUUID().toString();
     }
 
-    public Order(User user, CustomerCoupon customerCoupon, String firstName, String lastName, String username, String countryName, String city, String district, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price, Invoice invoice) {
+    public Order(User user, CustomerCoupon customerCoupon, String geliverId, String firstName, String lastName, String username, String countryName, String city, String district, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price, Invoice invoice) {
         this.user = user;
         this.customerCoupon = customerCoupon;
+        this.geliverId = geliverId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -332,5 +343,29 @@ public class Order {
 
     public void setDistrict(String district) {
         this.district = district;
+    }
+
+    public Integer getDistrictID() {
+        return districtID;
+    }
+
+    public void setDistrictID(Integer districtID) {
+        this.districtID = districtID;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    public String getGeliverId() {
+        return geliverId;
+    }
+
+    public void setGeliverId(String geliverId) {
+        this.geliverId = geliverId;
     }
 }
