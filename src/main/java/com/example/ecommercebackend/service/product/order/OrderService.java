@@ -598,7 +598,23 @@ public class OrderService {
         Order order = findByOrderCode(orderCode);
         String senderAddressId = merchantService.getMerchant().getDefaultSendingAddress().getGeliverId();
         if (senderAddressId == null){
-
+            Merchant merchant = merchantService.getMerchant();
+            AddressApiDto addressApiDto = new AddressApiDto(
+                    merchant.getAddress().getFirstName()+ " " + merchant.getAddress().getLastName(),
+                    merchant.getEmail(),
+                    merchant.getPhoneNo(),
+                    merchant.getAddress().getAddressLine1(),
+                    "",
+                    merchant.getAddress().getCountry().getIso(),
+                    merchant.getAddress().getCity().getName(),
+                    merchant.getAddress().getCity().getCityCode(),
+                    merchant.getAddress().getDistrict().getName(),
+                    merchant.getAddress().getDistrict().getDistrictId(),
+                    merchant.getAddress().getPostalCode(),
+                    false,
+                    "Gönderici adresi"
+            );
+            shippingAddressService.createSendingAddress(addressApiDto);
         }
         String receiptAddress = order.getGeliverId();
         if (receiptAddress == null){
