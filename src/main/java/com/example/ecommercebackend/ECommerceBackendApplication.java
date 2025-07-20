@@ -16,6 +16,9 @@ import com.example.ecommercebackend.repository.user.AdminRepository;
 import com.example.ecommercebackend.repository.user.CityRepository;
 import com.example.ecommercebackend.repository.user.DistrictRepository;
 import com.example.ecommercebackend.repository.user.RoleRepository;
+import com.example.ecommercebackend.service.product.shipping.ShippingAddressService;
+import com.example.ecommercebackend.service.user.CityService;
+import com.example.ecommercebackend.service.user.DistrictService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @SpringBootApplication
 public class ECommerceBackendApplication {
@@ -39,7 +43,14 @@ public class ECommerceBackendApplication {
 	}
 
 	@Bean
-	public CommandLineRunner init(RoleRepository roleRepository, MerchantRepository merchantRepository, CountryRepository countryRepository, CityRepository cityRepository, DistrictRepository districtRepository, WebClient.Builder webClientBuilder) {
+	public CommandLineRunner init(RoleRepository roleRepository,
+								  MerchantRepository merchantRepository,
+								  CountryRepository countryRepository,
+								  CityRepository cityRepository,
+								  DistrictRepository districtRepository,
+								  ShippingAddressService shippingAddressService,
+								  CityService cityService,
+								  DistrictService districtService) {
 		return args -> {
 
 			if (!roleRepository.existsByRoleNameEqualsIgnoreCase("ADMIN")) {
@@ -132,6 +143,26 @@ public class ECommerceBackendApplication {
 						openCloseHours
 				);
 				merchantRepository.save(merchant);
+			}
+
+
+			List<CityDto> cities = new ArrayList<>();
+			if (cityService.getAll().isEmpty()) {
+				shippingAddressService.getCities().stream().map(x->{
+					System.out.println(x.getName());
+                    return cities.add(cityService.save(x));
+				});
+
+			}
+
+			if (districtService.getAll().isEmpty()) {
+				for (CityDto cityDto : cities) {
+					List<DistrictDto> districts = shippingAddressService.getDistricts(cityDto.getCityCode());
+					for (DistrictDto districtDto : districts) {
+						System.out.println(districtDto.getName());
+						districtService.create(districtDto);
+					}
+				}
 			}
 
 
