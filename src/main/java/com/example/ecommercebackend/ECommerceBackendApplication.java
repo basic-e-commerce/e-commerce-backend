@@ -168,7 +168,7 @@ public class ECommerceBackendApplication {
 					List<DistrictDto> districts = shippingAddressService.getDistricts(cityDto.getCityCode());
 					for (DistrictDto districtDto : districts) {
 						System.out.println(districtDto.getName());
-						districtService.create(districtDto);
+						districtService.createNotThr(districtDto);
 					}
 				}
 			}

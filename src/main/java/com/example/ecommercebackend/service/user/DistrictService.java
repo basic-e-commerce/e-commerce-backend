@@ -19,6 +19,28 @@ public class DistrictService {
         this.districtRepository = districtRepository;
     }
 
+
+    public DistrictDto createNotThr(@NotNullParam DistrictDto districtDto) {
+        if (existByDistrictId(districtDto.getDistrictID()))
+            return null;
+
+        District district = new District(
+                districtDto.getName(),
+                districtDto.getDistrictID(),
+                districtDto.getCityCode(),
+                districtDto.getCountryCode()
+        );
+        District savedDistrict = districtRepository.save(district);
+        return new DistrictDto(
+                savedDistrict.getName(),
+                savedDistrict.getDistrictId(),
+                savedDistrict.getCityCode(),
+                "",
+                savedDistrict.getCountryCode()
+        );
+    }
+
+
     public DistrictDto create(@NotNullParam DistrictDto districtDto) {
         if (existByDistrictId(districtDto.getDistrictID()))
             throw new ResourceAlreadyExistException("Sistemde bu İlçe kayıtlıdır");
