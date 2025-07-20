@@ -155,12 +155,12 @@ public class ECommerceBackendApplication {
 
 			List<CityDto> cities = new ArrayList<>();
 			if (cityService.getAll().isEmpty()) {
-				shippingAddressService.getCities().stream().map(x->{
+				shippingAddressService.getCities().forEach(x -> {
 					System.out.println(x.getName());
-                    return cities.add(cityService.save(x));
+					cities.add(cityService.save(x));
 				});
-
 			}
+
 
 			System.out.println(6);
 			if (districtService.getAll().isEmpty()) {
