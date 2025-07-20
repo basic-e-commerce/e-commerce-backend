@@ -53,21 +53,26 @@ public class ECommerceBackendApplication {
 								  DistrictService districtService) {
 		return args -> {
 
+			System.out.println(1);
 			if (!roleRepository.existsByRoleNameEqualsIgnoreCase("ADMIN")) {
 				Role admin = new Role("ADMIN");
 				roleRepository.save(admin);
 			}
 
+			System.out.println(2);
 			if (!roleRepository.existsByRoleNameEqualsIgnoreCase("CUSTOMER")) {
 				Role customer = new Role("CUSTOMER");
 				roleRepository.save(customer);
 			}
+
+			System.out.println(3);
 
 			if (!roleRepository.existsByRoleNameEqualsIgnoreCase("GUEST")) {
 				Role customer = new Role("GUEST");
 				roleRepository.save(customer);
 			}
 
+			System.out.println(4);
 			if(countryRepository.findByUpperName("TURKIYE").isEmpty()){
 				Country turkey = new Country();
 				turkey.setIso("TR");
@@ -145,6 +150,8 @@ public class ECommerceBackendApplication {
 				merchantRepository.save(merchant);
 			}
 
+			System.out.println(5);
+
 
 			List<CityDto> cities = new ArrayList<>();
 			if (cityService.getAll().isEmpty()) {
@@ -155,6 +162,7 @@ public class ECommerceBackendApplication {
 
 			}
 
+			System.out.println(6);
 			if (districtService.getAll().isEmpty()) {
 				for (CityDto cityDto : cities) {
 					List<DistrictDto> districts = shippingAddressService.getDistricts(cityDto.getCityCode());
