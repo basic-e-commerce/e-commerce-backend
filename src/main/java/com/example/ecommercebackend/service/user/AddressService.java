@@ -68,10 +68,33 @@ public class AddressService {
                     addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName()+"-"+(100000+random.nextInt(90000))
             );
             try {
-                shippingAddressService.createReceivingAddress(addressApiDto);
+                addressApiDto.setShortName(address.getShortName());
+                AddressReceiptDto receivingAddress = shippingAddressService.createReceivingAddress(addressApiDto);
+                save.setGeliverId(receivingAddress.getId());
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                log.error("Address creation 3. parti yazılıma kaydedilemedi", e);
             }
+        }else {
+            Random random = new Random();
+            AddressApiDto addressApiDto = new AddressApiDto(
+                    addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName(),
+                    addressCreateDto.getUsername(),
+                    addressCreateDto.getPhoneNo(),
+                    addressCreateDto.getAddressLine1(),
+                    "",
+                    country.getIso(),
+                    city.getName(),
+                    city.getCityCode(),
+                    district.getName(),
+                    district.getDistrictId(),
+                    addressCreateDto.getPostalCode(),
+                    true,
+                    addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName()+"-"+(100000+random.nextInt(90000))
+            );
+
+            addressApiDto.setShortName(address.getShortName());
+            AddressReceiptDto sendingAddress = shippingAddressService.createSendingAddress(addressApiDto);
+            save.setGeliverId(sendingAddress.getId());
         }
 
         return save;
