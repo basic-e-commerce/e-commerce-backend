@@ -30,6 +30,7 @@ public class JavaMailStrategy implements IMailStrategy {
             message.setTo(to);
             message.setSubject(subject);
             message.setText(body);
+            System.out.println("bbbbbbbbbbbbbbbbbbbb");
             mailSender.send(message);
             System.out.println("aaaaaaaaaaaaaaaaaaaaaaa");
 

@@ -674,7 +674,7 @@ public class OrderService {
                     cargoOfferRequestOrder
             );
             OrderPackage orderPackage = new OrderPackage(
-                    order.getOrderItems(),
+                    new HashSet<>(order.getOrderItems()),
                     order.getFirstName()+ " " + order.getLastName(),
                     cargoOfferDesiRequestAdminDto.getLength(),
                     cargoOfferDesiRequestAdminDto.getWidth(),
