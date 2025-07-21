@@ -85,27 +85,39 @@ public class CustomerService {
 
 
     public Customer createCustomer(CustomerCreateDto customerCreateDto){
+        System.out.println(1);
         if (customerRepository.findByUsername(customerCreateDto.getUsername()).isPresent())
             throw new ResourceAlreadyExistException("Bu kullanıcı e postası kullanılmaktadır!");
 
+        System.out.println(1);
 
         User user = userService.getUserByUsernameOrNull(customerCreateDto.getUsername());
+        System.out.println(1);
 
         if (!customerCreateDto.getPassword().equals(customerCreateDto.getRePassword()))
             throw new BadRequestException(ExceptionMessage.PASSWORD_NOT_MATCHES.getMessage());
+        System.out.println(1);
 
+        System.out.println(1);
         Set<Role> roles = new HashSet<>();
+        System.out.println(1);
         roles.add(roleService.findByRoleName("CUSTOMER"));
+        System.out.println(1);
         String hashPassword = passwordEncoder.encode(customerCreateDto.getPassword());
 
+        System.out.println(1);
         if (user == null) {
+            System.out.println(1);
             Customer customer = customerBuilder.customerCreateDtoToCustomer(customerCreateDto,hashPassword,roles);
             Customer save = customerRepository.save(customer);
+            System.out.println(1);
             Card card = new Card(save);
             save.setCard(card);
 
+            System.out.println(1);
             sendCustomerVerificationMail(save);
 
+            System.out.println(1);
             return customerRepository.save(save);
         }else {
             if (user instanceof Guest guest){
@@ -133,11 +145,14 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
-    @Transactional
     public void sendCustomerVerificationMail(Customer customer) {
+        System.out.println(1);
         String generateCode = String.valueOf(100000 + (int)(Math.random() * 900000));
+        System.out.println(1);
         redisService.saveData(generateCode,customer.getUsername(), Duration.ofMinutes(30));
+        System.out.println(1);
         System.out.println("----------"+customer.getUsername());
+        System.out.println(1);
         String link = domain + "/api/v1/auth/verification/" + generateCode;
         String onayKodu = mailService.send(customer.getUsername(), "Onay Kodu","<!DOCTYPE html>\n" +
                 "<html lang=\"tr\">\n" +
@@ -194,6 +209,7 @@ public class CustomerService {
                 "</body>\n" +
                 "</html>\n" );
         System.out.println(onayKodu);
+        System.out.println(1);
         System.out.println(domain+"/api/v1/auth/verification/"+generateCode);
     }
 
