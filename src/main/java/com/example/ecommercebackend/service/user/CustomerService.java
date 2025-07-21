@@ -210,7 +210,20 @@ public class CustomerService {
             Address address = addressService.createAddress(addressCreateDto,true);
             customer1.getAddresses().add(address);
             customerRepository.save(customer1);
-            return new AddressDetailDto(address.getId(),address.getTitle(),address.getFirstName(),address.getLastName(),address.getCountry().getUpperName(),address.getCity().getName(),address.getDistrict().getName(),address.getPostalCode(),address.getPhoneNo(),address.getAddressLine1());
+            return new AddressDetailDto(address.getId(),
+                    address.getTitle(),
+                    address.getFirstName(),
+                    address.getLastName(),
+                    address.getCountry().getIso(),
+                    address.getCity().getName(),
+                    address.getCity().getCityCode(),
+                    address.getDistrict().getName(),
+                    address.getDistrict().getDistrictId(),
+                    address.getPostalCode(),
+                    address.getPhoneNo(),
+                    address.getAddressLine1(),
+                    address.getGeliverId()
+            );
         }else
             throw new BadRequestException("Customer Not Authenticated");
     }
@@ -225,12 +238,15 @@ public class CustomerService {
                 return new AddressDetailDto(x.getId(),
                         x.getTitle(),
                         x.getFirstName(),x.getLastName(),
-                        x.getCountry().getUpperName(),
+                        x.getCountry().getIso(),
                         x.getCity().getName(),
+                        x.getCity().getCityCode(),
                         x.getDistrict().getName(),
+                        x.getDistrict().getDistrictId(),
                         x.getPostalCode(),
                         x.getPhoneNo(),
-                        x.getAddressLine1());
+                        x.getAddressLine1(),
+                        x.getGeliverId());
             }).collect(Collectors.toSet());
         }else
             throw new BadRequestException("Customer Not Authenticated");
@@ -260,7 +276,21 @@ public class CustomerService {
                 customer1.getAddresses().add(targetAddress);
 
             Address updateAddress = addressService.updateAddressById(addressId, addressCreateDto);
-            return new AddressDetailDto(updateAddress.getId(),updateAddress.getTitle(),updateAddress.getFirstName(),updateAddress.getLastName(),updateAddress.getCountry().getUpperName(),updateAddress.getCity().getName(),updateAddress.getDistrict().getName(),updateAddress.getPostalCode(),updateAddress.getPhoneNo(),updateAddress.getAddressLine1());
+            return new AddressDetailDto(
+                    updateAddress.getId(),
+                    updateAddress.getTitle(),
+                    updateAddress.getFirstName(),
+                    updateAddress.getLastName(),
+                    updateAddress.getCountry().getIso(),
+                    updateAddress.getCity().getName(),
+                    updateAddress.getCity().getCityCode(),
+                    updateAddress.getDistrict().getName(),
+                    updateAddress.getDistrict().getDistrictId(),
+                    updateAddress.getPostalCode(),
+                    updateAddress.getPhoneNo(),
+                    updateAddress.getAddressLine1(),
+                    updateAddress.getGeliverId()
+            );
         }else
             throw new BadRequestException("Customer Not Authenticated");
     }

@@ -7,22 +7,28 @@ public class AddressDetailDto {
     private String lastName;
     private String countryName;
     private String city;
+    private String cityCode;
     private String district;
+    private Integer districtId;
     private String postalCode;
     private String phoneNo;
     private String addressLine1;
+    private String geliverId;
 
-    public AddressDetailDto(int id, String title, String firstName, String lastName, String countryName, String city, String district, String postalCode, String phoneNo, String addressLine1) {
+    public AddressDetailDto(int id, String title, String firstName, String lastName, String countryName, String city, String cityCode, String district, Integer districtId, String postalCode, String phoneNo, String addressLine1, String geliverId) {
         this.id = id;
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;
         this.countryName = countryName;
         this.city = city;
+        this.cityCode = cityCode;
         this.district = district;
+        this.districtId = districtId;
         this.postalCode = postalCode;
         this.phoneNo = phoneNo;
         this.addressLine1 = addressLine1;
+        this.geliverId = geliverId;
     }
 
     public int getId() {
@@ -102,5 +108,29 @@ public class AddressDetailDto {
 
     public void setDistrict(String district) {
         this.district = district;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    public Integer getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Integer districtId) {
+        this.districtId = districtId;
+    }
+
+    public String getGeliverId() {
+        return geliverId;
+    }
+
+    public void setGeliverId(String geliverId) {
+        this.geliverId = geliverId;
     }
 }
