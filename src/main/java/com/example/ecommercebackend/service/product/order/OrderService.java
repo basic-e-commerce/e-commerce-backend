@@ -787,6 +787,7 @@ public class OrderService {
         orderPackage.setProductPaymentOnDelivery(offerApproveDto.getData().getShipment().isProductPaymentOnDelivery());
         orderPackage.setCanceled(offerApproveDto.getData().isCanceled());
         orderPackage.setRefund(offerApproveDto.getData().isRefund());
+        orderPackageService.save(orderPackage);
 
         return offerApproveDto;
     }

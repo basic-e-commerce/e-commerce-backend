@@ -21,4 +21,7 @@ public class OrderPackageService {
         return orderPackageRepository.findById(id).orElseThrow(()-> new NotFoundException("Order Package Bulunamadı"));
     }
 
+    public void save(OrderPackage orderPackage) {
+        orderPackageRepository.save(orderPackage);
+    }
 }
