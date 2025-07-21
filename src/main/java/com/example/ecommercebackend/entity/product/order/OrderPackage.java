@@ -13,7 +13,12 @@ public class OrderPackage {
     @SequenceGenerator(name = "order_package_seq", sequenceName = "order_package_seq", allocationSize = 1)
     private int id;
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(
+            name = "order_package_order_items",
+            joinColumns = @JoinColumn(name = "order_package_id"),
+            inverseJoinColumns = @JoinColumn(name = "order_item_id")
+    )
     private Set<OrderItem> orderItems;
 
     private String packageName;
