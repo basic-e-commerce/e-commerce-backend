@@ -31,6 +31,7 @@ public class JavaMailStrategy implements IMailStrategy {
             message.setSubject(subject);
             message.setText(body);
             mailSender.send(message);
+            System.out.println("aaaaaaaaaaaaaaaaaaaaaaa");
 
             return "Mail Gönderildi!";
         }catch (Exception e) {
@@ -40,13 +41,14 @@ public class JavaMailStrategy implements IMailStrategy {
 
     public JavaMailSender createJavaMailSender(Merchant merchant) {
         String email = merchant.getEmail();
+        System.out.println("gönderici:"+email);
         String mailPassword = merchant.getEmailPassword();
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
         mailSender.setUsername(email);
         mailSender.setPassword(mailPassword);
-
+        System.out.println("-------11111");
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.auth", "true");
