@@ -113,6 +113,7 @@ public class ShippingCargoService {
                 )
                 .bodyToMono(String.class)
                 .block();
+        System.out.println(responseJson);
 
         ObjectMapper mapper = new ObjectMapper();
 
