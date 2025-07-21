@@ -17,7 +17,7 @@ public class OrderPackage {
     @JoinTable(
             name = "order_package_order_items",
             joinColumns = @JoinColumn(name = "order_package_id"),
-            inverseJoinColumns = @JoinColumn(name = "order_item_id")
+            inverseJoinColumns = @JoinColumn(name = "order_items_id") // dikkat: s
     )
     private Set<OrderItem> orderItems;
 
