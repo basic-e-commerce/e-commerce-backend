@@ -690,18 +690,9 @@ public class OrderService {
                     cargoOfferRequestOrder
             );
             System.out.println(17);
-            Set<OrderItem> newOrderItems = order.getOrderItems()
-                    .stream()
-                    .map(item -> {
-                        OrderItem copy = new OrderItem();
-                        copy.setProduct(item.getProduct());
-                        copy.setQuantity(item.getQuantity());
-                        // diğer alanları da kopyala
-                        return copy;
-                    })
-                    .collect(Collectors.toSet());
+
             OrderPackage orderPackage = new OrderPackage(
-                    newOrderItems,
+                    new HashSet<>(order.getOrderItems()),
                     order.getFirstName()+ " " + order.getLastName(),
                     cargoOfferDesiRequestAdminDto.getLength(),
                     cargoOfferDesiRequestAdminDto.getWidth(),
