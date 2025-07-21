@@ -85,6 +85,10 @@ public class CustomerService {
 
     @Transactional
     public Customer createCustomer(CustomerCreateDto customerCreateDto){
+        if (customerRepository.findByUsername(customerCreateDto.getUsername()).isPresent())
+            throw new ResourceAlreadyExistException("Bu kullanıcı e postası kullanılmaktadır!");
+
+
         User user = userService.getUserByUsernameOrNull(customerCreateDto.getUsername());
 
         if (!customerCreateDto.getPassword().equals(customerCreateDto.getRePassword()))
