@@ -83,6 +83,7 @@ public class CustomerService {
         return customerRepository.findByUsername(username).orElse(null);
     }
 
+    @Transactional
     public Customer createCustomer(CustomerCreateDto customerCreateDto){
         User user = userService.getUserByUsernameOrNull(customerCreateDto.getUsername());
 
@@ -128,6 +129,7 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
+    @Transactional
     public void sendCustomerVerificationMail(Customer customer) {
         String generateCode = String.valueOf(100000 + (int)(Math.random() * 900000));
         redisService.saveData(generateCode,customer.getUsername(), Duration.ofMinutes(30));
@@ -193,6 +195,7 @@ public class CustomerService {
 
     // -------------- address --------------------
 
+    @Transactional
     public AddressDetailDto createAddress(AddressCreateDto addressCreateDto) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -253,6 +256,7 @@ public class CustomerService {
 
     }
 
+    @Transactional
     public AddressDetailDto updateAddress(Integer addressId, AddressCreateDto addressCreateDto) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -295,6 +299,7 @@ public class CustomerService {
             throw new BadRequestException("Customer Not Authenticated");
     }
 
+    @Transactional
     public String deleteAddress(Integer addressId) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof Customer customer){
@@ -320,6 +325,7 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
+    @Transactional
     public String updatePassword(@NotNullParam PasswordUpdateDto passwordUpdateDto) {
         if (passwordUpdateDto.getOldPassword().isEmpty() || passwordUpdateDto.getPassword().isEmpty() || passwordUpdateDto.getRePassword().isEmpty())
             throw new BadRequestException("Lütfen tüm dataları doldurunuz");
@@ -347,6 +353,7 @@ public class CustomerService {
         return customerRepository.existsByPhoneNumber(phoneNo);
     }
 
+    @Transactional
     public String updateCustomer(@NotNullParam CustomerUpdateDto customerUpdateDto) {
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
