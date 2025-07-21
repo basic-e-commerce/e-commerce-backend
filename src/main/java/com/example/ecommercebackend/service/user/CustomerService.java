@@ -83,7 +83,7 @@ public class CustomerService {
         return customerRepository.findByUsername(username).orElse(null);
     }
 
-    @Transactional
+
     public Customer createCustomer(CustomerCreateDto customerCreateDto){
         if (customerRepository.findByUsername(customerCreateDto.getUsername()).isPresent())
             throw new ResourceAlreadyExistException("Bu kullanıcı e postası kullanılmaktadır!");
