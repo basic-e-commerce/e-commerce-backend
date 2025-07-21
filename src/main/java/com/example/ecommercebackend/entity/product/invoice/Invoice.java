@@ -33,7 +33,7 @@ public abstract class Invoice {
     private String city;
     private String cityCode;
     private String district;
-    private String districtId;
+    private Integer districtId;
     private String addressLine1;
     private String postalCode;
     private String phoneNo;
@@ -41,7 +41,7 @@ public abstract class Invoice {
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant createdAt = Instant.now();
 
-    public Invoice(Payment payment, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType, String firstName, String lastName, String username, String countryName, String city, String cityCode, String district, String districtId, String addressLine1, String postalCode, String phoneNo) {
+    public Invoice(Payment payment, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType, String firstName, String lastName, String username, String countryName, String city, String cityCode, String district, Integer districtId, String addressLine1, String postalCode, String phoneNo) {
         this.payment = payment;
         this.totalAmount = totalAmount;
         this.taxAmount = taxAmount;
@@ -88,11 +88,11 @@ public abstract class Invoice {
         this.cityCode = cityCode;
     }
 
-    public String getDistrictId() {
+    public Integer getDistrictId() {
         return districtId;
     }
 
-    public void setDistrictId(String districtId) {
+    public void setDistrictId(Integer districtId) {
         this.districtId = districtId;
     }
 

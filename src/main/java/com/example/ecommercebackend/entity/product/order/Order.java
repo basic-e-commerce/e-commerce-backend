@@ -48,6 +48,9 @@ public class Order {
     @Column(name = "country_name")
     private String countryName;
 
+    @Column(name = "country_iso")
+    private String countryIso;
+
     @Column(name = "city")
     private String city;
 
@@ -114,7 +117,7 @@ public class Order {
         this.orderCode = UUID.randomUUID().toString();
     }
 
-    public Order(User user, CustomerCoupon customerCoupon, String geliverId, String firstName, String lastName, String username, String countryName, String city, String district, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price, Invoice invoice) {
+    public Order(User user, CustomerCoupon customerCoupon, String geliverId, String firstName, String lastName, String username, String countryName, String countryIso, String city,String cityCode, String district,Integer districtID, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price, Invoice invoice) {
         this.user = user;
         this.customerCoupon = customerCoupon;
         this.geliverId = geliverId;
@@ -122,8 +125,11 @@ public class Order {
         this.lastName = lastName;
         this.username = username;
         this.countryName = countryName;
+        this.countryIso = countryIso;
         this.city = city;
+        this.cityCode = cityCode;
         this.district = district;
+        this.districtID = districtID;
         this.addressLine1 = addressLine1;
         this.postalCode = postalCode;
         this.phoneNumber = phoneNumber;
@@ -367,5 +373,13 @@ public class Order {
 
     public void setGeliverId(String geliverId) {
         this.geliverId = geliverId;
+    }
+
+    public String getCountryIso() {
+        return countryIso;
+    }
+
+    public void setCountryIso(String countryIso) {
+        this.countryIso = countryIso;
     }
 }

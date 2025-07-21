@@ -14,7 +14,7 @@ public class CorporateInvoice extends Invoice {
     private String taxNumber;
     private String taxOffice;
 
-    public CorporateInvoice(Payment payment, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType, String firstName, String lastName, String username, String countryName, String city,String cityCode,String district,String districtId, String addressLine1, String postalCode, String phoneNo, String companyName, String taxNumber, String taxOffice) {
+    public CorporateInvoice(Payment payment, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType, String firstName, String lastName, String username, String countryName, String city,String cityCode,String district,Integer districtId, String addressLine1, String postalCode, String phoneNo, String companyName, String taxNumber, String taxOffice) {
         super(payment, totalAmount, taxAmount, invoiceType, firstName, lastName, username, countryName, city,cityCode, district,districtId, addressLine1, postalCode, phoneNo);
         this.companyName = companyName;
         this.taxNumber = taxNumber;

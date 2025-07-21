@@ -31,8 +31,11 @@ import com.example.ecommercebackend.service.invoice.InvoiceService;
 import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.example.ecommercebackend.service.product.products.CustomerCouponService;
 import com.example.ecommercebackend.service.product.products.ProductService;
+import com.example.ecommercebackend.service.product.shipping.CountryService;
 import com.example.ecommercebackend.service.product.shipping.ShippingAddressService;
 import com.example.ecommercebackend.service.product.shipping.ShippingCargoService;
+import com.example.ecommercebackend.service.user.CityService;
+import com.example.ecommercebackend.service.user.DistrictService;
 import com.example.ecommercebackend.service.user.GuestService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -74,13 +77,16 @@ public class OrderService {
     private final ShippingAddressService shippingAddressService;
     private final ShippingCargoService shippingCargoService;
     private final OrderPackageService orderPackageService;
+    private final CityService cityService;
+    private final DistrictService districtService;
+    private final CountryService countryService;
 
     @Value("${domain.test}")
     private String domain;
 
 
 
-    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService, CustomerRepository customerRepository, InvoiceService invoiceService, CustomerCouponService customerCouponService, ShippingAddressService shippingAddressService, ShippingCargoService shippingCargoService, OrderPackageService orderPackageService) {
+    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService, CustomerRepository customerRepository, InvoiceService invoiceService, CustomerCouponService customerCouponService, ShippingAddressService shippingAddressService, ShippingCargoService shippingCargoService, OrderPackageService orderPackageService, CityService cityService, DistrictService districtService, CountryService countryService) {
         this.orderRepository = orderRepository;
         this.guestService = guestService;
         this.orderStatusService = orderStatusService;
@@ -94,6 +100,9 @@ public class OrderService {
         this.shippingAddressService = shippingAddressService;
         this.shippingCargoService = shippingCargoService;
         this.orderPackageService = orderPackageService;
+        this.cityService = cityService;
+        this.districtService = districtService;
+        this.countryService = countryService;
     }
 
 
@@ -316,15 +325,19 @@ public class OrderService {
 
 
     public Order saveOrder(User user, AddressOrderCreateDto addressOrderCreateDto, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal orderPrice,Invoice invoice,CustomerCoupon customerCoupon) {
-        Order order = new Order(user,
+        Order order = new Order(
+                user,
                 customerCoupon,
                 addressOrderCreateDto.geliverId() != null ? addressOrderCreateDto.geliverId(): null,
                 addressOrderCreateDto.firstName(),
                 addressOrderCreateDto.lastName(),
                 addressOrderCreateDto.username(),
                 addressOrderCreateDto.countryName(),
+                addressOrderCreateDto.countryIso(),
                 addressOrderCreateDto.city(),
+                addressOrderCreateDto.cityCode(),
                 addressOrderCreateDto.district(),
+                addressOrderCreateDto.districtId(),
                 addressOrderCreateDto.addressLine1(),
                 addressOrderCreateDto.postalCode(),
                 addressOrderCreateDto.phoneNo(),
@@ -655,7 +668,7 @@ public class OrderService {
                 order.getUsername(),
                 order.getPhoneNumber(),
                 order.getAddressLine1(),
-                order.getCountry(),
+                order.getCountryIso(),
                 order.getCityCode(),
                 order.getDistrict()
         );

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Table(name = "individual_invoice")
 public class IndividualInvoice extends Invoice{
 
-    public IndividualInvoice(Payment payment, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType, String firstName, String lastName, String username, String countryName, String city,String cityCode,String district,String districtId, String addressLine1, String postalCode, String phoneNo) {
+    public IndividualInvoice(Payment payment, BigDecimal totalAmount, BigDecimal taxAmount, InvoiceType invoiceType, String firstName, String lastName, String username, String countryName, String city,String cityCode,String district,Integer districtId, String addressLine1, String postalCode, String phoneNo) {
         super(payment, totalAmount, taxAmount, invoiceType, firstName, lastName, username, countryName, city,cityCode,district,districtId, addressLine1, postalCode, phoneNo);
     }
 
