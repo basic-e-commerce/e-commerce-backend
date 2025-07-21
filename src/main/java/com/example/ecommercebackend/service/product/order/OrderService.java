@@ -612,7 +612,7 @@ public class OrderService {
                     merchant.getAddress().getDistrict().getDistrictId(),
                     merchant.getAddress().getPostalCode(),
                     false,
-                    "Gönderici adresi"
+                    merchant.getAddress().getShortName()
             );
             shippingAddressService.createSendingAddress(addressApiDto);
         }

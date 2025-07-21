@@ -4,33 +4,42 @@ import com.example.ecommercebackend.builder.user.AddressBuilder;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
 import com.example.ecommercebackend.dto.product.shipping.AddressApiDto;
+import com.example.ecommercebackend.dto.product.shipping.AddressReceiptDto;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.entity.product.shipping.Country;
 import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.entity.user.City;
 import com.example.ecommercebackend.entity.user.District;
+import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.user.AddressRepository;
 import com.example.ecommercebackend.service.product.shipping.CountryService;
+import com.example.ecommercebackend.service.product.shipping.ShippingAddressService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
 @Service
 public class AddressService {
+    private static final Logger log = LoggerFactory.getLogger(AddressService.class);
     private final CountryService countryService;
     private final AddressRepository addressRepository;
     private final AddressBuilder addressBuilder;
     private final CityService cityService;
     private final DistrictService districtService;
+    private final ShippingAddressService shippingAddressService;
 
-    public AddressService(CountryService countryService, AddressRepository addressRepository, AddressBuilder addressBuilder, CityService cityService, DistrictService districtService) {
+    public AddressService(CountryService countryService, AddressRepository addressRepository, AddressBuilder addressBuilder, CityService cityService, DistrictService districtService, ShippingAddressService shippingAddressService) {
         this.countryService = countryService;
         this.addressRepository = addressRepository;
         this.addressBuilder = addressBuilder;
         this.cityService = cityService;
         this.districtService = districtService;
+        this.shippingAddressService = shippingAddressService;
     }
 
     public Address createAddress(AddressCreateDto addressCreateDto,Boolean isReceiptAddress) {
@@ -46,7 +55,22 @@ public class AddressService {
         City city = cityService.findByCityCode(addressApiDto.getCityCode());
         District district = districtService.findByDistrictId(addressApiDto.getDistrictID());
         Address address = addressBuilder.addressApiDtoToAddress(addressApiDto,country,merchantCreateDto,city,district,isReceiptAddress);
-        return addressRepository.save(address);
+        Address save = addressRepository.save(address);
+        if (isReceiptAddress){
+            addressApiDto.setShortName(address.getShortName());
+            try {
+                AddressReceiptDto receivingAddress = shippingAddressService.createReceivingAddress(addressApiDto);
+                save.setGeliverId(receivingAddress.getId());
+            } catch (JsonProcessingException e) {
+                log.error("3. parti servis için adres create methodunda json işleme hatası veriyor!");
+                throw new BadRequestException("3. parti servis hatası");
+            }
+        }else {
+            addressApiDto.setShortName(address.getShortName());
+            AddressReceiptDto sendingAddress = shippingAddressService.createSendingAddress(addressApiDto);
+            save.setGeliverId(sendingAddress.getId());
+        }
+        return save;
     }
 
     public Address createAddress(AddressApiDto addressApiDto, MerchantUpdateDto merchantCreateDto,Boolean isReceiptAddress) {

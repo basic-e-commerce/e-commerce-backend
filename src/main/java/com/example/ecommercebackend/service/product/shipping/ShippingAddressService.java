@@ -26,11 +26,9 @@ public class ShippingAddressService {
     private static final Logger log = LoggerFactory.getLogger(ShippingAddressService.class);
     private final WebClient.Builder webClientBuilder;
     private String apiKey;
-    private final AddressService addressService;
 
-    public ShippingAddressService(WebClient.Builder webClientBuilder, AddressService addressService) {
+    public ShippingAddressService(WebClient.Builder webClientBuilder) {
         this.webClientBuilder = webClientBuilder;
-        this.addressService = addressService;
         Dotenv dotenv = Dotenv.load(); // .env dosyasını otomatik bulur
         this.apiKey = dotenv.get("GELIVER");
     }

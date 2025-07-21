@@ -4,6 +4,7 @@ import com.example.ecommercebackend.entity.product.shipping.Country;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "address")
@@ -14,6 +15,7 @@ public class Address {
     private int id;
 
     private String title;
+    private String shortName;
 
     @ManyToOne
     @JoinColumn(name = "country_id",nullable = false)
@@ -53,6 +55,8 @@ public class Address {
         this.postalCode = postalCode;
         this.phoneNo = phoneNo;
         this.isRecipientAddress = isRecipientAddress;
+        String uuid = UUID.randomUUID().toString();
+        this.shortName = firstName+"-"+lastName+"-"+uuid.substring(0,8);
     }
 
     public Address() {
@@ -168,5 +172,13 @@ public class Address {
 
     public void setRecipientAddress(Boolean recipientAddress) {
         isRecipientAddress = recipientAddress;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 }
