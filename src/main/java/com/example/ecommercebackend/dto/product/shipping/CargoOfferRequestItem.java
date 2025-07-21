@@ -1,7 +1,12 @@
 package com.example.ecommercebackend.dto.product.shipping;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CargoOfferRequestItem {
+    @JsonProperty("title")
     private String title;
+
+    @JsonProperty("quantity")
     private Integer quantity;
 
     public CargoOfferRequestItem(String title, Integer quantity) {

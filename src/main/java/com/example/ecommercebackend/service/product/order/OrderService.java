@@ -691,6 +691,36 @@ public class OrderService {
             );
             System.out.println(17);
 
+            // 🚀 BURASI: Tüm değerleri tek tek yazdır
+            System.out.println("===== CargoOfferRequestDto =====");
+            System.out.println("test: " + cargoOfferRequestDto.isTest());
+            System.out.println("senderAddressID: " + cargoOfferRequestDto.getSenderAddressID());
+            System.out.println("returnAddressID: " + cargoOfferRequestDto.getReturnAddressID());
+            System.out.println("length: " + cargoOfferRequestDto.getLength());
+            System.out.println("height: " + cargoOfferRequestDto.getHeight());
+            System.out.println("width: " + cargoOfferRequestDto.getWidth());
+            System.out.println("distanceUnit: " + cargoOfferRequestDto.getDistanceUnit());
+            System.out.println("weight: " + cargoOfferRequestDto.getWeight());
+            System.out.println("massUnit: " + cargoOfferRequestDto.getMassUnit());
+            System.out.println("recipientAddress.name: " + cargoOfferRequestDto.getRecipientAddress().getName());
+            System.out.println("recipientAddress.email: " + cargoOfferRequestDto.getRecipientAddress().getEmail());
+            System.out.println("recipientAddress.phone: " + cargoOfferRequestDto.getRecipientAddress().getPhone());
+            System.out.println("recipientAddress.address1: " + cargoOfferRequestDto.getRecipientAddress().getAddress1());
+            System.out.println("recipientAddress.countryCode: " + cargoOfferRequestDto.getRecipientAddress().getCountryCode());
+            System.out.println("recipientAddress.cityCode: " + cargoOfferRequestDto.getRecipientAddress().getCityCode());
+            System.out.println("recipientAddress.districtName: " + cargoOfferRequestDto.getRecipientAddress().getDistrictName());
+            System.out.println("productPaymentOnDelivery: " + cargoOfferRequestDto.getProductPaymentOnDelivery());
+            System.out.println("order.sourceCode: " + cargoOfferRequestDto.getOrder().getSourceCode());
+            System.out.println("order.sourceIdentifier: " + cargoOfferRequestDto.getOrder().getSourceIdentifier());
+            System.out.println("order.orderNumber: " + cargoOfferRequestDto.getOrder().getOrderNumber());
+            System.out.println("order.totalAmount: " + cargoOfferRequestDto.getOrder().getTotalAmount());
+            System.out.println("order.totalAmountCurrency: " + cargoOfferRequestDto.getOrder().getTotalAmountCurrency());
+            System.out.println("items:");
+            for (CargoOfferRequestItem item : cargoOfferRequestDto.getItems()) {
+                System.out.println("  - title: " + item.getTitle() + ", quantity: " + item.getQuantity());
+            }
+            System.out.println("===== END =====");
+
             OrderPackage orderPackage = new OrderPackage(
                     new HashSet<>(order.getOrderItems()),
                     order.getFirstName()+ " " + order.getLastName(),
