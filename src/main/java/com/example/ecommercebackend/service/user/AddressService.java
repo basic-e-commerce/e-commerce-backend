@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Random;
 
 @Service
 public class AddressService {
@@ -47,7 +48,33 @@ public class AddressService {
         City city = cityService.findByCityCode(addressCreateDto.getCityCode());
         District district = districtService.findByDistrictId(addressCreateDto.getDistrictId());
         Address address = addressBuilder.addressCreateDtoToAddress(addressCreateDto,country,city,district,isReceiptAddress);
-        return addressRepository.save(address);
+        Address save = addressRepository.save(address);
+
+        if (isReceiptAddress){
+            Random random = new Random();
+            AddressApiDto addressApiDto = new AddressApiDto(
+                    addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName(),
+                    addressCreateDto.getUsername(),
+                    addressCreateDto.getPhoneNo(),
+                    addressCreateDto.getAddressLine1(),
+                    "",
+                    country.getIso(),
+                    city.getName(),
+                    city.getCityCode(),
+                    district.getName(),
+                    district.getDistrictId(),
+                    addressCreateDto.getPostalCode(),
+                    true,
+                    addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName()+"-"+(100000+random.nextInt(90000))
+            );
+            try {
+                shippingAddressService.createReceivingAddress(addressApiDto);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return save;
     }
 
     public Address createAddress(AddressApiDto addressApiDto, MerchantCreateDto merchantCreateDto,Boolean isReceiptAddress) {

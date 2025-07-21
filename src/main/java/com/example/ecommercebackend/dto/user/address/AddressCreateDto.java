@@ -8,6 +8,7 @@ public class AddressCreateDto {
     private String title;
     private String firstName;
     private String lastName;
+    private String username;
     private String countryName;
     private String cityCode;
     private Integer districtId;
@@ -15,10 +16,11 @@ public class AddressCreateDto {
     private String postalCode;
     private String phoneNo;
 
-    public AddressCreateDto(String title, String firstName, String lastName, String countryName, String cityCode, Integer districtId, String addressLine1, String postalCode, String phoneNo) {
+    public AddressCreateDto(String title, String firstName, String lastName, String username, String countryName, String cityCode, Integer districtId, String addressLine1, String postalCode, String phoneNo) {
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.username = username;
         this.countryName = countryName;
         this.cityCode = cityCode;
         this.districtId = districtId;
@@ -97,5 +99,13 @@ public class AddressCreateDto {
 
     public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
