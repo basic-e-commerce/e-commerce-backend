@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.service.product.products;
 
+import com.example.ecommercebackend.anotation.NotNullField;
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.products.coupon.CouponBuilder;
 import com.example.ecommercebackend.dto.product.coupon.CouponAdminResponseDto;
@@ -154,6 +155,12 @@ public class CouponService {
             coupon.setCustomerCoupons(new HashSet<>());
         }
 
+        return couponBuilder.couponToCouponAdminResponseDto(couponRepository.save(coupon));
+    }
+
+    public CouponAdminResponseDto changeActive(@NotNullParam String code,@NotNullParam Boolean active){
+        Coupon coupon = findByCode(code);
+        coupon.setActive(active);
         return couponBuilder.couponToCouponAdminResponseDto(couponRepository.save(coupon));
     }
 

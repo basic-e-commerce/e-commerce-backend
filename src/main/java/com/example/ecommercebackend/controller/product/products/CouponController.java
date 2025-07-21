@@ -28,4 +28,9 @@ public class CouponController {
     public ResponseEntity<List<CouponAdminResponseDto>> getAll(@RequestParam(required = false,defaultValue = "0") Integer page,@RequestParam(required = false,defaultValue = "10") Integer size){
         return new ResponseEntity<>(couponService.getAll(page,size),HttpStatus.OK);
     }
+
+    @PutMapping("/active")
+    public ResponseEntity<CouponAdminResponseDto> activate(@RequestParam(required = false) String code,@RequestParam(required = false) Boolean active){
+        return new ResponseEntity<>(couponService.changeActive(code,active),HttpStatus.OK);
+    }
 }
