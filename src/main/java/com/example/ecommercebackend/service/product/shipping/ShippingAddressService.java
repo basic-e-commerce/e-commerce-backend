@@ -165,6 +165,7 @@ public class ShippingAddressService {
 
     public AddressReceiptDto createReceivingAddress(@NotNullParam AddressApiDto addressApiDto) throws JsonProcessingException {
         WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        System.out.println("create receving adress 1");
 
         String responseJson = webClient.post()
                 .uri("/addresses")
@@ -187,6 +188,8 @@ public class ShippingAddressService {
                 )
                 .bodyToMono(String.class)
                 .block();
+
+        System.out.println("create receving adress 2"+responseJson);
 
 
         System.out.println("-------asddsasdadsa");
