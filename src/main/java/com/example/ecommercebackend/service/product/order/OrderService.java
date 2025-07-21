@@ -334,6 +334,9 @@ public class OrderService {
                 orderPrice,
                 invoice);
         order.setPayments(null);
+        order.setCity(addressOrderCreateDto.city());
+        order.setDistrict(addressOrderCreateDto.district());
+        order.setCountryName(addressOrderCreateDto.countryName());
         return order;
 
     }
@@ -652,7 +655,7 @@ public class OrderService {
                 order.getUsername(),
                 order.getPhoneNumber(),
                 order.getAddressLine1(),
-                order.getCityCode(),
+                order.getCountry(),
                 order.getCityCode(),
                 order.getDistrict()
         );
