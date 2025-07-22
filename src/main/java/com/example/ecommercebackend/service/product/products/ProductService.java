@@ -93,7 +93,10 @@ public class ProductService {
                 throw new BadRequestException("Category is not a sub category");
         }
 
-        ProductTemplate productTemplate = productTemplateService.findById(productCreateDto.getProductTemplateId());
+        ProductTemplate productTemplate = null;
+        if (productCreateDto.getProductTemplateId() != null){
+            productTemplate = productTemplateService.findById(productCreateDto.getProductTemplateId());
+        }
         Product product = productBuilder.productCreateDtoToProduct(productCreateDto,categories,productType,generateLinkName(productCreateDto.getName()),productTemplate);
         Product saveProduct = productRepository.save(product);
 

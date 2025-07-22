@@ -37,7 +37,6 @@ public class ProductCreateDto {
     private MultipartFile coverImage;
     @NotNullField
     private Integer stockNotification;
-    @NotNullField
     private Integer productTemplateId;
 
     public ProductCreateDto(String name, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, String description, Set<Integer> categoryIds, String productType, Boolean published, BigDecimal taxRate, Boolean disableOutOfStock, MultipartFile[] productImages, MultipartFile coverImage, Integer stockNotification, Integer productTemplateId) {
