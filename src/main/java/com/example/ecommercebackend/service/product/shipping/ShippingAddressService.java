@@ -117,6 +117,22 @@ public class ShippingAddressService {
     public AddressReceiptDto createSendingAddress(AddressApiDto addressApiDto) {
         WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
 
+        System.out.println("Adres bilgileri:");
+        System.out.println("name: " + addressApiDto.getName());
+        System.out.println("email: " + addressApiDto.getEmail());
+        System.out.println("phone: " + addressApiDto.getPhone());
+        System.out.println("address1: " + addressApiDto.getAddress1());
+        System.out.println("address2: " + addressApiDto.getAddress2());
+        System.out.println("countryCode: " + addressApiDto.getCountryCode());
+        System.out.println("cityName: " + addressApiDto.getCityName());
+        System.out.println("cityCode: " + addressApiDto.getCityCode());
+        System.out.println("districtName: " + addressApiDto.getDistrictName());
+        System.out.println("districtID: " + addressApiDto.getDistrictID());
+        System.out.println("zip: " + addressApiDto.getZip());
+        System.out.println("isRecipientAddress: " + addressApiDto.getRecipientAddress());
+        System.out.println("shortName: " + addressApiDto.getShortName());
+
+
         String responseJson = webClient.post()
                 .uri("/addresses")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
@@ -139,6 +155,8 @@ public class ShippingAddressService {
                 )
                 .bodyToMono(String.class)
                 .block();
+
+        System.out.println(responseJson);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -167,6 +185,21 @@ public class ShippingAddressService {
         WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
         System.out.println("create receving adress 1");
 
+        System.out.println("Adres bilgileri:");
+        System.out.println("name: " + addressApiDto.getName());
+        System.out.println("email: " + addressApiDto.getEmail());
+        System.out.println("phone: " + addressApiDto.getPhone());
+        System.out.println("address1: " + addressApiDto.getAddress1());
+        System.out.println("address2: " + addressApiDto.getAddress2());
+        System.out.println("countryCode: " + addressApiDto.getCountryCode());
+        System.out.println("cityName: " + addressApiDto.getCityName());
+        System.out.println("cityCode: " + addressApiDto.getCityCode());
+        System.out.println("districtName: " + addressApiDto.getDistrictName());
+        System.out.println("districtID: " + addressApiDto.getDistrictID());
+        System.out.println("zip: " + addressApiDto.getZip());
+        System.out.println("isRecipientAddress: " + addressApiDto.getRecipientAddress());
+        System.out.println("shortName: " + addressApiDto.getShortName());
+
         String responseJson = webClient.post()
                 .uri("/addresses")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
@@ -190,6 +223,7 @@ public class ShippingAddressService {
                 .block();
 
         System.out.println("create receving adress 2"+responseJson);
+        System.out.println(responseJson);
 
 
         System.out.println("-------asddsasdadsa");

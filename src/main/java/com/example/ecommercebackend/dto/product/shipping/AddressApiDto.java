@@ -1,5 +1,7 @@
 package com.example.ecommercebackend.dto.product.shipping;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class AddressApiDto {
     private String name;
     private String email;
@@ -12,6 +14,7 @@ public class AddressApiDto {
     private String districtName;
     private Integer districtID;
     private String zip;
+    @JsonProperty("isRecipientAddress")
     private Boolean isRecipientAddress;
     private String shortName;
 

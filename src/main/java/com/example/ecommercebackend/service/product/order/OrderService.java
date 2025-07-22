@@ -515,7 +515,7 @@ public class OrderService {
         }
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        return orderRepository.findAll(filterOrders(orderFilterRequest.getPaymentStatus()),pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
+        return orderRepository.findAll(filterOrders(orderFilterRequest.getPaymentStatus(),orderFilterRequest.getStatusCode()),pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
     }
 
     public List<Order> filterGuestSuccessOrder(User user){
@@ -524,9 +524,9 @@ public class OrderService {
         return orderRepository.findAll(specification,sort);
     }
 
-    private Specification<Order> filterOrders(String status) {
+    private Specification<Order> filterOrders(String status, OrderPackage.StatusCode statusCode) {
         if (!(status == null || status.isEmpty()))
-            return Specification.where(hasStatus(OrderStatus.Status.valueOf(status)));
+            return Specification.where(hasStatus(OrderStatus.Status.valueOf(status)).and(hasStatusCode(statusCode)));
         else
             return Specification.where(hasStatus(null));
     }
@@ -577,14 +577,51 @@ public class OrderService {
     }
 
     public Specification<Order> hasStatus(OrderStatus.Status status) {
-        return (Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+        return (root, query, cb) -> {
             if (status == null) {
-                return null; // Bu durumda filtre uygulanmaz
+                return cb.conjunction(); // her şeyi döndür (filtre yok)
             }
             Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
             return cb.equal(statusJoin.get("status"), status);
         };
     }
+
+    public Specification<Order> hasStatusCode(OrderPackage.StatusCode statusCode) {
+        return (root, query, cb) -> {
+            if (statusCode == null) {
+                return cb.conjunction(); // filtre yoksa hepsi
+            }
+
+            Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
+            Join<OrderStatus, OrderPackage> packageJoin = statusJoin.join("orderPackages");
+
+            return cb.equal(packageJoin.get("statusCode"), statusCode);
+        };
+    }
+
+    public Specification<Order> hasCargoStatus(OrderPackage.CargoStatus cargoStatus) {
+        return (root, query, cb) -> {
+            if (cargoStatus == null) {
+                return cb.conjunction();
+            }
+            Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
+            Join<OrderStatus, OrderPackage> packageJoin = statusJoin.join("orderPackages");
+            return cb.equal(packageJoin.get("cargoStatus"), cargoStatus);
+        };
+    }
+
+    public Specification<Order> hasCargoCompany(OrderPackage.CargoCompany cargoCompany) {
+        return (root, query, cb) -> {
+            if (cargoCompany == null) {
+                return cb.conjunction();
+            }
+            Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
+            Join<OrderStatus, OrderPackage> packageJoin = statusJoin.join("orderPackages");
+            return cb.equal(packageJoin.get("cargoCompany"), cargoCompany);
+        };
+    }
+
+
 
     public Specification<Order> hasUser(User user) {
         return (Root<Order> root,CriteriaQuery<?> query,CriteriaBuilder cb) ->
