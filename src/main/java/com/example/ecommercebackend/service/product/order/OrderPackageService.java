@@ -93,7 +93,8 @@ public class OrderPackageService {
             System.out.println("Data: null");
         }
 
-        OrderPackage orderPackage = orderPackageRepository.findByCargoId(webhookTrackUpdatedPayload.getData().getId()).orElseThrow(()-> new NotFoundException("ORder PAckage Bulunamadı"));
+        System.out.println("findbycargoId");
+        OrderPackage orderPackage = orderPackageRepository.findByCargoId(webhookTrackUpdatedPayload.getData().getId()).orElseThrow(()-> new NotFoundException("Kargo Paketi Bulunamadı"));
         System.out.println("kargoId: "+orderPackage.getCargoId());
         System.out.println("gelen kargo ID : "+ webhookTrackUpdatedPayload.getData().getId());
         System.out.println("gelen kargo id 2 : "+ webhookTrackUpdatedPayload.getData().getTrackingStatus().getId());
