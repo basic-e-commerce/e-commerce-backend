@@ -1,14 +1,19 @@
 package com.example.ecommercebackend.service.product.order;
 
+import com.example.ecommercebackend.dto.product.order.OrderPackageResponseDto;
 import com.example.ecommercebackend.dto.product.order.WebhookTrackUpdatedData;
 import com.example.ecommercebackend.dto.product.order.WebhookTrackUpdatedPayload;
 import com.example.ecommercebackend.dto.product.order.WebhookTrackingUpdatedStatus;
+import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
 import com.example.ecommercebackend.entity.product.order.OrderPackage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.order.OrderPackageRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderPackageService {
@@ -30,8 +35,28 @@ public class OrderPackageService {
         orderPackageRepository.save(orderPackage);
     }
 
-    public OrderPackage getDetails(Integer id) {
-        return orderPackageRepository.findById(id).orElseThrow(()-> new NotFoundException("Sipariş paketi bulunamadı"));
+    public OrderPackageResponseDto getDetails(Integer id) {
+        OrderPackage orderPackage = orderPackageRepository.findById(id).orElseThrow(() -> new NotFoundException("Sipariş paketi bulunamadı"));
+
+        return new OrderPackageResponseDto(
+                orderPackage.getId(),
+                orderPackage.getOrderItems().stream().map(x->{
+                    return new OrderItemResponseDto(
+                            x.getProduct().getId(),
+                            x.getProduct().getProductName(),
+                            x.getQuantity(),
+                            x.getProduct().getCoverImage().getUrl()
+                    );
+                }).collect(Collectors.toSet()),
+                orderPackage.getShipmentId(),
+                orderPackage.getStatusCode().name(),
+                orderPackage.getCargoId(),
+                orderPackage.getCargoCompany().name(),
+                orderPackage.getCargoStatus().getValue(),
+                orderPackage.getLocation(),
+                orderPackage.getUpdateAt().atZone(ZoneId.of("Istabul/Europe")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                orderPackage.getCanceled()
+        );
     }
 
     public OrderPackage getDetailsNull(Integer id) {

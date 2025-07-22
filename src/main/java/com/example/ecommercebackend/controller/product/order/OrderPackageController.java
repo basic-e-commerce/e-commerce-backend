@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.controller.product.order;
 
+import com.example.ecommercebackend.dto.product.order.OrderPackageResponseDto;
 import com.example.ecommercebackend.dto.product.order.WebhookTrackUpdatedPayload;
 import com.example.ecommercebackend.entity.product.order.OrderPackage;
 import com.example.ecommercebackend.service.product.order.OrderPackageService;
@@ -22,7 +23,7 @@ public class OrderPackageController {
     }
 
     @GetMapping("/id")
-    public ResponseEntity<OrderPackage> getDetails(@RequestParam Integer id) {
+    public ResponseEntity<OrderPackageResponseDto> getDetails(@RequestParam Integer id) {
         return new ResponseEntity<>(orderPackageService.getDetails(id), HttpStatus.OK);
     }
 }
