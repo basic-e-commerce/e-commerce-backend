@@ -54,7 +54,9 @@ public class OrderPackageService {
                 orderPackage.getCargoCompany().name(),
                 orderPackage.getCargoStatus().getValue(),
                 orderPackage.getLocation(),
-                orderPackage.getUpdateAt().atZone(ZoneId.of("Istabul/Europe")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                orderPackage.getUpdateAt()
+                        .atZone(ZoneId.of("Europe/Istanbul"))
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 orderPackage.getCanceled()
         );
     }
