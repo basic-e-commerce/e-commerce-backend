@@ -2,6 +2,7 @@ package com.example.ecommercebackend.entity.product.order;
 
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -48,10 +49,13 @@ public class OrderPackage {
     private Boolean productPaymentOnDelivery;
     private Boolean isCanceled;
     private Boolean isRefund;
+    private String location;
+
+    private Instant createAt;
+    private Instant updateAt;
 
 
-
-    public OrderPackage(Set<OrderItem> orderItems, String packageName, double length, double width, double height, double weight, String shipmentId, String responsiveLabelURL, CargoCompany cargoCompany, CargoStatus cargoStatus, String cargoId, String barcode, Boolean productPaymentOnDelivery, Boolean isCanceled, Boolean isRefund) {
+    public OrderPackage(Set<OrderItem> orderItems, String packageName, double length, double width, double height, double weight, String shipmentId, String responsiveLabelURL, CargoCompany cargoCompany, CargoStatus cargoStatus, String cargoId, String barcode, Boolean productPaymentOnDelivery, Boolean isCanceled, Boolean isRefund, String location) {
         this.orderItems = orderItems;
         this.packageName = packageName;
         this.length = length;
@@ -67,9 +71,20 @@ public class OrderPackage {
         this.productPaymentOnDelivery = productPaymentOnDelivery;
         this.isCanceled = isCanceled;
         this.isRefund = isRefund;
+        this.location = location;
     }
 
     public OrderPackage() {
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.createAt = Instant.now();
+        this.updateAt = Instant.now();
+    }
+    @PreUpdate
+    public void preUpdate() {
+        this.updateAt = Instant.now();
     }
 
     public StatusCode getStatusCode() {
@@ -128,6 +143,30 @@ public class OrderPackage {
         isRefund = refund;
     }
 
+    public Instant getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(Instant createAt) {
+        this.createAt = createAt;
+    }
+
+    public Instant getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(Instant updateAt) {
+        this.updateAt = updateAt;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     public enum StatusCode{
         PRE_TRANSIT,
         TRANSIT,
@@ -152,20 +191,20 @@ public class OrderPackage {
     }
 
     public enum CargoStatus{
-        INFORMATION_RECEIVED("Kargo sistemde oluşturuldu"),
-        PACKAGE_ACCEPTED("Kargo, Gönderici şube tarafından teslim alındı"),
-        PACKAGE_DEPARTED("Kargo, aktarma merkezinden ayrıldı"),
-        PACKAGE_PROCESSING("Kargo aktarma merkezinde"),
-        DELIVERY_SCHEDULED("Kargo alıcı şubede"),
-        OUT_OF_DELIVERY("Kargo Dağıtımda"),
-        PACKAGE_DAMAGE("Paket Hasarlı"),
-        PACKAGE_FORWARDED_TO_ANOTHER_CARRIER("Kargo aracı firmaya verildi"),
-        DELIVERY_RESCHEDULED("Kargo dağıtım zamanı değişti"),
-        DELIVERED("Kargo alıcıya teslim edildi"),
-        PACKAGE_LOST("Paket Kayboldu"),
-        PACKAGE_UNDELIVERABLE("Kargo dağıtılamıyor."),
-        RETURN_TO_SENDER("Kargo iade edildi"),
-        OTHER("Bilinmeyen Durum");
+        information_received("Kargo sistemde oluşturuldu"),
+        package_accepted("Kargo, Gönderici şube tarafından teslim alındı"),
+        package_departed("Kargo, aktarma merkezinden ayrıldı"),
+        package_processing("Kargo aktarma merkezinde"),
+        delivery_scheduled("Kargo alıcı şubede"),
+        out_of_delivery("Kargo Dağıtımda"),
+        package_damage("Paket Hasarlı"),
+        package_forwarded_to_another_carrier("Kargo aracı firmaya verildi"),
+        delivery_rescheduled("Kargo dağıtım zamanı değişti"),
+        delivered("Kargo alıcıya teslim edildi"),
+        package_lost("Paket Kayboldu"),
+        package_undeliverable("Kargo dağıtılamıyor."),
+        return_to_sender("Kargo iade edildi"),
+        other("Bilinmeyen Durum");
 
         CargoStatus(String s) {
         }

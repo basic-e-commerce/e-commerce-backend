@@ -752,7 +752,8 @@ public class OrderService {
                     null,
                     null,
                     null,
-                    null
+                    null,
+                    "Depo"
             );
             System.out.println();
             System.out.println(18);
@@ -781,7 +782,7 @@ public class OrderService {
         orderPackage.setShipmentId(offerApproveDto.getData().getShipment().getId());
         orderPackage.setResponsiveLabelURL(offerApproveDto.getData().getShipment().getResponsiveLabelURL());
         orderPackage.setCargoCompany(OrderPackage.CargoCompany.valueOf(offerApproveDto.getData().getShipment().getProviderServiceCode()));
-        orderPackage.setCargoStatus(OrderPackage.CargoStatus.INFORMATION_RECEIVED);
+        orderPackage.setCargoStatus(OrderPackage.CargoStatus.information_received);
         orderPackage.setCargoId(offerApproveDto.getData().getShipment().getId());
         orderPackage.setBarcode(offerApproveDto.getData().getShipment().getBarcode());
         orderPackage.setProductPaymentOnDelivery(offerApproveDto.getData().getShipment().isProductPaymentOnDelivery());
