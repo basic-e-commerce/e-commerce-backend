@@ -170,7 +170,7 @@ public class CardService {
         }
 
         if (totalPrice(card).compareTo(coupon.getMinOrderAmountLimit()) < 0) {
-            throw new IllegalArgumentException("Sipariş tutarı kuponun minimum limiti olan " + coupon.getMinOrderAmountLimit() + " TL'den küçük.");
+            throw new BadRequestException("Sipariş tutarı kuponun minimum limiti olan " + coupon.getMinOrderAmountLimit() + " TL'den küçük.");
         }
 
 

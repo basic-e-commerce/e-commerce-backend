@@ -490,7 +490,7 @@ public class OrderService {
             totalValue = totalValue.add(orderItem.getDiscountPrice());
         }
         if (totalValue.compareTo(customerCoupon.getCoupon().getMinOrderAmountLimit()) < 0) {
-            throw new IllegalArgumentException("Sipariş tutarı kuponun minimum limiti olan " + customerCoupon.getCoupon().getMinOrderAmountLimit() + " TL'den küçük.");
+            throw new BadRequestException("Sipariş tutarı kuponun minimum limiti olan " + customerCoupon.getCoupon().getMinOrderAmountLimit() + " TL'den küçük.");
         }
 
 
