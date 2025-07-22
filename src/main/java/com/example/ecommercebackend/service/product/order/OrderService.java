@@ -225,7 +225,7 @@ public class OrderService {
         BigDecimal orderPrice = BigDecimal.valueOf(0);
 
         if (customerCoupon != null) {
-            isCouponValidation(customerCoupon);
+            isCouponValidation(customerCoupon,orderItems);
             if (customerCoupon.getCoupon().getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
                 BigDecimal discountValue = customerCoupon.getCoupon().getDiscountValue(); // Örneğin %10 ise 10 gelir
                 System.out.println("kupon 3");
@@ -467,7 +467,7 @@ public class OrderService {
         return new TotalProcessDto(totalPrice,savedOrderItems);
     }
 
-    public void isCouponValidation(CustomerCoupon customerCoupon) {
+    public void isCouponValidation(CustomerCoupon customerCoupon,Set<OrderItem> savedOrderItems) {
         if (!customerCoupon.getCoupon().getActive())
             throw new BadRequestException("Kullanılan Kupon Aktif değildir!");
 
@@ -485,6 +485,14 @@ public class OrderService {
         if (customerCoupon.getCoupon().getCouponEndDate() != null && now.isAfter(customerCoupon.getCoupon().getCouponEndDate())) {
             throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
         }
+        BigDecimal totalValue = BigDecimal.valueOf(0);
+        for (OrderItem orderItem: savedOrderItems) {
+            totalValue = totalValue.add(orderItem.getDiscountPrice());
+        }
+        if (totalValue.compareTo(customerCoupon.getCoupon().getMinOrderAmountLimit()) < 0) {
+            throw new IllegalArgumentException("Sipariş tutarı kuponun minimum limiti olan " + customerCoupon.getCoupon().getMinOrderAmountLimit() + " TL'den küçük.");
+        }
+
 
     }
 

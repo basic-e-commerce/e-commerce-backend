@@ -4,6 +4,7 @@ import com.example.ecommercebackend.builder.product.card.CardBuilder;
 import com.example.ecommercebackend.dto.product.card.*;
 import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.card.CardItem;
+import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.entity.product.products.Coupon;
 import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
 import com.example.ecommercebackend.entity.product.products.Product;
@@ -20,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
@@ -131,7 +133,7 @@ public class CardService {
                 CustomerCoupon newCustomerCoupon = new CustomerCoupon(customer,coupon,Instant.now());
                 customerCoupon = customerCouponService.save(newCustomerCoupon);
             }
-            isCouponValidation(coupon);
+            isCouponValidation(coupon,customer.getCard());
             customer.getCard().setCustomerCoupon(customerCoupon);
             cardRepository.save(customer.getCard());
             return "Kupon Eklendi!";
@@ -148,7 +150,7 @@ public class CardService {
         }else
             throw new BadRequestException("Lütfen giriş yapınız!");
     }
-    public void isCouponValidation(Coupon coupon) {
+    public void isCouponValidation(Coupon coupon,Card card) {
         if (!coupon.getActive())
             throw new BadRequestException("Kullanılan Kupon Aktif değildir!");
 
@@ -167,5 +169,20 @@ public class CardService {
             throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
         }
 
+        if (totalPrice(card).compareTo(coupon.getMinOrderAmountLimit()) < 0) {
+            throw new IllegalArgumentException("Sipariş tutarı kuponun minimum limiti olan " + coupon.getMinOrderAmountLimit() + " TL'den küçük.");
+        }
+
+
+
+    }
+
+    public BigDecimal totalPrice(Card card) {
+        BigDecimal totalPrice = BigDecimal.valueOf(0);
+        //Set<OrderItem> newOrderItems = new HashSet<>();
+        for (CardItem cardItem: card.getItems()) {
+            totalPrice = totalPrice.add(cardItem.getProduct().getComparePrice());
+        }
+        return totalPrice;
     }
 }
