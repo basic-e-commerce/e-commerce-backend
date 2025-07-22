@@ -112,7 +112,7 @@ public class ECommerceBackendApplication {
 						districtRepository.findByDistrictId(107062).orElse(null),
 						"address line 1",
 						"34000",
-						"5559876758",
+						"+905559876758",
 						false
 				);
 				sendingAddress.add(address);
@@ -134,7 +134,7 @@ public class ECommerceBackendApplication {
 						"addresslink",
 						sendingAddress,
 						null,
-						"5098765432",
+						"+905098765432",
 						"tel:5098765432",
 						"feminizmturkiye2000@gmail.com",
 						"mailto:feminizmturkiye2000@gmail.com",

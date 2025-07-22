@@ -205,11 +205,13 @@ public class OrderPackage {
         package_undeliverable("Kargo dağıtılamıyor."),
         return_to_sender("Kargo iade edildi"),
         other("Bilinmeyen Durum");
+        private String value;
 
-        CargoStatus(String s) {
+        CargoStatus(String value) {
+            this.value = value;
         }
         public String getValue() {
-            return name();
+            return value;
         }
     }
 
