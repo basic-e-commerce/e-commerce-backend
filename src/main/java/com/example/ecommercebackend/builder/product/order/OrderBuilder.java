@@ -2,9 +2,7 @@ package com.example.ecommercebackend.builder.product.order;
 
 import com.example.ecommercebackend.dto.product.invoice.CorporateInvoiceResponseDto;
 import com.example.ecommercebackend.dto.product.invoice.InvoiceResponseDto;
-import com.example.ecommercebackend.dto.product.order.AddressOrderDetailDto;
-import com.example.ecommercebackend.dto.product.order.OrderDetailDto;
-import com.example.ecommercebackend.dto.product.order.OrderResponseDto;
+import com.example.ecommercebackend.dto.product.order.*;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.invoice.CorporateInvoice;
@@ -13,7 +11,12 @@ import com.example.ecommercebackend.entity.product.order.Order;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -67,7 +70,36 @@ public class OrderBuilder {
                     return new OrderItemResponseDto(orderItem.getProduct().getId(), orderItem.getProduct().getProductName(), orderItem.getQuantity(), coverImage);
                 }).toList(),
                 installment,
-                order.getOrderStatus().getStatus().name()
+                new OrderStatusResponse(
+                        order.getOrderStatus().getId(),
+                        order.getOrderStatus().getStatus().getValue(),
+                        new ArrayList<>(order.getOrderStatus().getOrderPackages()).stream().sorted().map(x-> {
+                            return new OrderPackageResponseDto(
+                                    x.getId(),
+                                    x.getOrderItems().stream().map(y->{
+                                        return new OrderItemResponseDto(
+                                                y.getProduct().getId(),
+                                                y.getProduct().getProductName(),
+                                                y.getProduct().getQuantity(),
+                                                y.getProduct().getCoverImage().getUrl()
+                                        );}
+                                    ).collect(Collectors.toSet()),
+                                    x.getShipmentId(),
+                                    x.getStatusCode().name(),
+                                    x.getCargoId(),
+                                    x.getCargoCompany().name(),
+                                    x.getCargoStatus().getValue(),
+                                    x.getLocation(),
+                                    x.getUpdateAt()
+                                            .atZone(ZoneId.of("Europe/Istanbul"))
+                                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                                    x.getCanceled()
+                            );
+                        }).toList(),
+                        order.getOrderStatus().getColor().name(),
+                        order.getOrderStatus().getCreatedAt().atZone(ZoneId.of("Europe/Istanbul"))
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                )
         );
         InvoiceResponseDto invoiceResponseDto = new InvoiceResponseDto(
                 order.getInvoice().getId(),

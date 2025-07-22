@@ -3,6 +3,7 @@ package com.example.ecommercebackend.dto.product.order;
 import com.example.ecommercebackend.dto.product.invoice.InvoiceResponseDto;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
+import com.example.ecommercebackend.entity.product.order.OrderStatus;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,10 +18,10 @@ public class OrderDetailDto {
     private AddressOrderDetailDto address;
     private List<OrderItemResponseDto> orderItemResponseDtos;
     private int installment;
-    private String orderStatus;
     private InvoiceResponseDto invoiceResponseDto;
+    private OrderStatusResponse orderStatusResponse;
 
-    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, int installment, String orderStatus) {
+    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, int installment, OrderStatusResponse orderStatusResponse) {
         this.id = id;
         this.orderCode = orderCode;
         this.firstName = firstName;
@@ -30,7 +31,7 @@ public class OrderDetailDto {
         this.address = address;
         this.orderItemResponseDtos = orderItemResponseDtos;
         this.installment = installment;
-        this.orderStatus = orderStatus;
+        this.orderStatusResponse = orderStatusResponse;
     }
 
     public int getId() {
@@ -97,14 +98,6 @@ public class OrderDetailDto {
         this.installment = installment;
     }
 
-    public String getOrderStatus() {
-        return orderStatus;
-    }
-
-    public void setOrderStatus(String orderStatus) {
-        this.orderStatus = orderStatus;
-    }
-
     public InvoiceResponseDto getInvoiceResponseDto() {
         return invoiceResponseDto;
     }
@@ -119,5 +112,13 @@ public class OrderDetailDto {
 
     public void setCustomerPrice(BigDecimal customerPrice) {
         this.customerPrice = customerPrice;
+    }
+
+    public OrderStatusResponse getOrderStatusResponse() {
+        return orderStatusResponse;
+    }
+
+    public void setOrderStatusResponse(OrderStatusResponse orderStatusResponse) {
+        this.orderStatusResponse = orderStatusResponse;
     }
 }
