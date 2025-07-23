@@ -4,9 +4,7 @@ import com.example.ecommercebackend.dto.product.products.ProductSmallDto;
 import com.example.ecommercebackend.dto.user.customer.CustomerProfileDto;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class CouponAdminResponseDto {
     private Integer id;
@@ -22,10 +20,9 @@ public class CouponAdminResponseDto {
     private LocalDateTime couponStartDate;
     private LocalDateTime couponEndDate;
 
-    private Boolean isPublic;
     private Boolean isActive;
 
-    public CouponAdminResponseDto(Integer id, String code, String description, String discountType, BigDecimal discountValue, Integer timesUsed, Integer totalUsageLimit, BigDecimal minOrderAmountLimit, LocalDateTime couponStartDate, LocalDateTime couponEndDate, Boolean isPublic, Boolean isActive) {
+    public CouponAdminResponseDto(Integer id, String code, String description, String discountType, BigDecimal discountValue, Integer timesUsed, Integer totalUsageLimit, BigDecimal minOrderAmountLimit, LocalDateTime couponStartDate, LocalDateTime couponEndDate , Boolean isActive) {
         this.id = id;
         this.code = code;
         this.description = description;
@@ -36,7 +33,6 @@ public class CouponAdminResponseDto {
         this.minOrderAmountLimit = minOrderAmountLimit;
         this.couponStartDate = couponStartDate;
         this.couponEndDate = couponEndDate;
-        this.isPublic = isPublic;
         this.isActive = isActive;
     }
 
@@ -118,14 +114,6 @@ public class CouponAdminResponseDto {
 
     public void setCouponEndDate(LocalDateTime couponEndDate) {
         this.couponEndDate = couponEndDate;
-    }
-
-    public Boolean getPublic() {
-        return isPublic;
-    }
-
-    public void setPublic(Boolean aPublic) {
-        isPublic = aPublic;
     }
 
     public Boolean getActive() {

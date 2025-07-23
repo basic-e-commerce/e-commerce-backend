@@ -24,7 +24,6 @@ public class CouponBuilder {
                 coupon.getMinOrderAmountLimit(),
                 coupon.getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
                 coupon.getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
-                coupon.getPublic(),
                 coupon.getActive()
         );
     }

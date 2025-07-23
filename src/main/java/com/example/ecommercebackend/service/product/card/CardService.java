@@ -126,15 +126,11 @@ public class CardService {
             Coupon coupon = couponService.findByCode(code);
             CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
 
-            if (customerCoupon == null && !coupon.getPublic())
-                throw new NotFoundException("Tanımlanabilecek bir kupon bulunamadı!");
+            if (customerCoupon != null)
+                throw new NotFoundException("Bu kupon Kullanılmıştır!");
 
-            if (customerCoupon == null && coupon.getPublic()) {
-                CustomerCoupon newCustomerCoupon = new CustomerCoupon(customer,coupon,Instant.now());
-                customerCoupon = customerCouponService.save(newCustomerCoupon);
-            }
-            isCouponValidation(coupon,customer.getCard());
-            customer.getCard().setCustomerCoupon(customerCoupon);
+            isCouponValidation(coupon,customer);
+            customer.getCard().setCoupon(coupon);
             cardRepository.save(customer.getCard());
             return "Kupon Eklendi!";
         }else
@@ -144,13 +140,13 @@ public class CardService {
     public String removeCoupon() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof Customer customer) {
-            customer.getCard().setCustomerCoupon(null);
+            customer.getCard().setCoupon(null);
             cardRepository.save(customer.getCard());
             return "Kupon Kaldırıldı!";
         }else
             throw new BadRequestException("Lütfen giriş yapınız!");
     }
-    public void isCouponValidation(Coupon coupon,Card card) {
+    public void isCouponValidation(Coupon coupon,Customer customer) {
         if (!coupon.getActive())
             throw new BadRequestException("Kullanılan Kupon Aktif değildir!");
 
@@ -169,10 +165,14 @@ public class CardService {
             throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
         }
 
-        if (totalPrice(card).compareTo(coupon.getMinOrderAmountLimit()) < 0) {
+        if (totalPrice(customer.getCard()).compareTo(coupon.getMinOrderAmountLimit()) < 0) {
             throw new BadRequestException("Sipariş tutarı kuponun minimum limiti olan " + coupon.getMinOrderAmountLimit() + " TL'den küçük.");
         }
 
+        if (coupon.getCustomerAssigned()){
+            if (!coupon.getCustomers().contains(customer))
+                throw new BadRequestException("Bu Kupon Kullanılamamaktadır!");
+        }
 
 
     }

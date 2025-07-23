@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.entity.product.card;
 
 
+import com.example.ecommercebackend.entity.product.products.Coupon;
 import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
 import com.example.ecommercebackend.entity.user.Customer;
 import jakarta.persistence.*;
@@ -24,8 +25,8 @@ public class Card {
     private List<CardItem> items = new ArrayList<>();
 
     @OneToOne
-    @JoinColumn(name = "customer_coupon_id", referencedColumnName = "id")
-    private CustomerCoupon customerCoupon;
+    @JoinColumn(name = "coupon_id", referencedColumnName = "id")
+    private Coupon coupon;
 
     public Card(Customer customer) {
         this.customer = customer;
@@ -58,11 +59,11 @@ public class Card {
         this.items = items;
     }
 
-    public CustomerCoupon getCustomerCoupon() {
-        return customerCoupon;
+    public Coupon getCoupon() {
+        return coupon;
     }
 
-    public void setCustomerCoupon(CustomerCoupon customerCoupon) {
-        this.customerCoupon = customerCoupon;
+    public void setCoupon(Coupon coupon) {
+        this.coupon = coupon;
     }
 }

@@ -39,9 +39,10 @@ public class Coupon {
 
     private Instant couponStartDate;
     private Instant couponEndDate;
-
-    private Boolean isPublic;
     private Boolean isActive;
+    private Boolean isCustomerAssigned;
+    private Boolean isProductAssigned;
+
 
     @JsonIgnore
     @ManyToMany
@@ -51,8 +52,13 @@ public class Coupon {
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     private Set<Product> products = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private Set<CustomerCoupon> customerCoupons = new HashSet<>();
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(
+            name = "coupons_has_customer",
+            joinColumns = @JoinColumn(name = "coupon_id"),
+            inverseJoinColumns = @JoinColumn(name = "customer_id"))
+    private Set<Customer> customers = new HashSet<>();
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
@@ -70,7 +76,23 @@ public class Coupon {
     @JoinColumn(name = "updated_by")
     private Admin updatedBy;
 
+    public Coupon(String code, String description, DiscountType discountType, BigDecimal discountValue, int timesUsed, Integer totalUsageLimit, BigDecimal minOrderAmountLimit, Instant couponStartDate, Instant couponEndDate, Boolean isActive, Boolean isCustomerAssigned, Boolean isProductAssigned) {
+        this.code = code;
+        this.description = description;
+        this.discountType = discountType;
+        this.discountValue = discountValue;
+        this.timesUsed = timesUsed;
+        this.totalUsageLimit = totalUsageLimit;
+        this.minOrderAmountLimit = minOrderAmountLimit;
+        this.couponStartDate = couponStartDate;
+        this.couponEndDate = couponEndDate;
+        this.isActive = isActive;
+        this.isCustomerAssigned = isCustomerAssigned;
+        this.isProductAssigned = isProductAssigned;
+    }
 
+    public Coupon() {
+    }
 
     @PrePersist
     private void generateCouponData() {
@@ -94,23 +116,6 @@ public class Coupon {
         this.updatedAt = Instant.now();
     }
 
-
-    public Set<CustomerCoupon> getCustomerCoupons() {
-        return customerCoupons;
-    }
-
-    public void setCustomerCoupons(Set<CustomerCoupon> customerCoupons) {
-        this.customerCoupons = customerCoupons;
-    }
-
-    public Boolean getPublic() {
-        return isPublic;
-    }
-
-    public void setPublic(Boolean aPublic) {
-        isPublic = aPublic;
-    }
-
     public Boolean getActive() {
         return isActive;
     }
@@ -119,26 +124,32 @@ public class Coupon {
         isActive = active;
     }
 
+    public Set<Customer> getCustomers() {
+        return customers;
+    }
+
+    public void setCustomers(Set<Customer> customers) {
+        this.customers = customers;
+    }
+
+    public Boolean getCustomerAssigned() {
+        return isCustomerAssigned;
+    }
+
+    public void setCustomerAssigned(Boolean customerAssigned) {
+        isCustomerAssigned = customerAssigned;
+    }
+
+    public Boolean getProductAssigned() {
+        return isProductAssigned;
+    }
+
+    public void setProductAssigned(Boolean productAssigned) {
+        isProductAssigned = productAssigned;
+    }
 
     public enum DiscountType{
         PERCENTAGE,FIXEDAMOUNT
-    }
-
-
-    public Coupon(String code, String description, BigDecimal discountValue, DiscountType discountType, Integer totalUsageLimit, BigDecimal minOrderAmountLimit, Instant couponStartDate, Instant couponEndDate, Boolean isPublic, Boolean isActive) {
-        this.code = code;
-        this.description = description;
-        this.discountValue = discountValue;
-        this.discountType = discountType;
-        this.totalUsageLimit = totalUsageLimit;
-        this.minOrderAmountLimit = minOrderAmountLimit;
-        this.couponStartDate = couponStartDate;
-        this.couponEndDate = couponEndDate;
-        this.isPublic = isPublic;
-        this.isActive = isActive;
-    }
-
-    public Coupon() {
     }
 
     public int getId() {

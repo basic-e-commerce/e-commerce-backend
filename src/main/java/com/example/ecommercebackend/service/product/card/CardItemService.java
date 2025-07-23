@@ -70,25 +70,25 @@ public class CardItemService {
             Customer customer = customerRepository.findById(customer1.getId()).get();
             List<ProductQuantityDto> cardProduct = new ArrayList<>();
 
-            CustomerCoupon customerCoupon = customer.getCard().getCustomerCoupon();
+            Coupon coupon = customer.getCard().getCoupon();
             List<CardResponseDetails> productDetails = new ArrayList<>();
 
             CouponCustomerResponseDto couponResponseDto = null;
-            if (customerCoupon != null) {
-                isCouponValidation(customerCoupon);
-                if (customerCoupon.getCoupon().getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)){
+            if (coupon != null) {
+                isCouponValidation(coupon);
+                if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)){
                     productDetails = customer.getCard().getItems().stream().map(x -> {
                         String url = "";
                         if (x.getProduct().getCoverImage() != null) {
                             url = x.getProduct().getCoverImage().getUrl();
                         }
 
-                        boolean isProductInCoupon = customerCoupon.getCoupon().getProducts().stream()
+                        boolean isProductInCoupon = coupon.getProducts().stream()
                                 .anyMatch(product -> product.equals(x.getProduct()));
 
                         BigDecimal comparePrice = x.getProduct().getComparePrice();
                         if (isProductInCoupon)
-                            comparePrice = comparePrice.subtract(comparePrice.multiply(customerCoupon.getCoupon().getDiscountValue()).divide(BigDecimal.valueOf(100)));
+                            comparePrice = comparePrice.subtract(comparePrice.multiply(coupon.getDiscountValue()).divide(BigDecimal.valueOf(100)));
 
                         cardProduct.add(new ProductQuantityDto(comparePrice,x.getProduct().getTaxRate(), x.getQuantity()));
 
@@ -100,19 +100,19 @@ public class CardItemService {
                                 url,
                                 x.getQuantity());
                     }).toList();
-                }else if (customerCoupon.getCoupon().getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)){
+                }else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)){
                     productDetails = customer.getCard().getItems().stream().map(x -> {
                         String url = "";
                         if (x.getProduct().getCoverImage() != null) {
                             url = x.getProduct().getCoverImage().getUrl();
                         }
 
-                        boolean isProductInCoupon = customerCoupon.getCoupon().getProducts().stream()
+                        boolean isProductInCoupon = coupon.getProducts().stream()
                                 .anyMatch(product -> product.equals(x.getProduct()));
 
                         BigDecimal comparePrice = x.getProduct().getComparePrice();
                         if (isProductInCoupon)
-                            comparePrice = comparePrice.subtract(customerCoupon.getCoupon().getDiscountValue());
+                            comparePrice = comparePrice.subtract(coupon.getDiscountValue());
 
                         cardProduct.add(new ProductQuantityDto(comparePrice,x.getProduct().getTaxRate(), x.getQuantity()));
 
@@ -142,12 +142,11 @@ public class CardItemService {
                                 x.getQuantity());
                     }).toList();
                 }
-                couponResponseDto = new CouponCustomerResponseDto(customerCoupon.getCoupon().getCode(),
-                        customerCoupon.getCoupon().getDescription(),
-                        customerCoupon.getCoupon().getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
-                        customerCoupon.getCoupon().getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
-                        customerCoupon.getCoupon().getActive(),
-                        customerCoupon.getUsed()
+                couponResponseDto = new CouponCustomerResponseDto(coupon.getCode(),
+                        coupon.getDescription(),
+                        coupon.getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
+                        coupon.getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
+                        coupon.getActive()
                         );
 
 
@@ -243,22 +242,22 @@ public class CardItemService {
             throw new BadRequestException("Geçersiz Kullanıcı");
     }
 
-    private void isCouponValidation(CustomerCoupon customerCoupon) {
-        if (!customerCoupon.getCoupon().getActive())
+    private void isCouponValidation(Coupon coupon) {
+        if (!coupon.getActive())
             throw new BadRequestException("Kullanılan Kupon Aktif değildir!");
 
-        System.out.println("customerCoupon.getCoupon().getTimesUsed():"+customerCoupon.getCoupon().getTimesUsed());
-        System.out.println("customerCoupon.getCoupon().getTotalUsageLimit(): "+customerCoupon.getCoupon().getTotalUsageLimit());
-        if (customerCoupon.getCoupon().getTimesUsed() >= customerCoupon.getCoupon().getTotalUsageLimit())
+        System.out.println("coupon.getTimesUsed():"+coupon.getTimesUsed());
+        System.out.println("coupon.getTotalUsageLimit(): "+coupon.getTotalUsageLimit());
+        if (coupon.getTimesUsed() >= coupon.getTotalUsageLimit())
             throw new BadRequestException("Kuponun Kullanım Limiti Dolmuştur");
 
         Instant now = Instant.now();
 
-        if (customerCoupon.getCoupon().getCouponStartDate() != null && now.isBefore(customerCoupon.getCoupon().getCouponStartDate())) {
+        if (coupon.getCouponStartDate() != null && now.isBefore(coupon.getCouponStartDate())) {
             throw new BadRequestException("Kupon henüz geçerli değildir!");
         }
 
-        if (customerCoupon.getCoupon().getCouponEndDate() != null && now.isAfter(customerCoupon.getCoupon().getCouponEndDate())) {
+        if (coupon.getCouponEndDate() != null && now.isAfter(coupon.getCouponEndDate())) {
             throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
         }
     }

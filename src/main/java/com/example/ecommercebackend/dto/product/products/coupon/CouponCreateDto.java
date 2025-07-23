@@ -27,11 +27,13 @@ public class CouponCreateDto {
     private List<Integer> productIds = new ArrayList<>();
     private List<Integer> customerIds = new ArrayList<>();
     @NotNullField
-    private Boolean isPublic;
-    @NotNullField
     private Boolean isActive;
+    @NotNullField
+    private Boolean isCustomerAssigned;
+    @NotNullField
+    private Boolean isProductAssigned;
 
-    public CouponCreateDto(String code, String description, BigDecimal discountValue, String discountType, Integer tatalUsageLimit, BigDecimal minOrderAmountLimit, Instant startDate, Instant endDate, List<Integer> productIds, List<Integer> customerIds, Boolean isPublic, Boolean isActive) {
+    public CouponCreateDto(String code, String description, BigDecimal discountValue, String discountType, Integer tatalUsageLimit, BigDecimal minOrderAmountLimit, Instant startDate, Instant endDate, List<Integer> productIds, List<Integer> customerIds , Boolean isActive, Boolean isCustomerAssigned, Boolean isProductAssigned) {
         this.code = code;
         this.description = description;
         this.discountValue = discountValue;
@@ -42,8 +44,9 @@ public class CouponCreateDto {
         this.endDate = endDate;
         this.productIds = productIds;
         this.customerIds = customerIds;
-        this.isPublic = isPublic;
         this.isActive = isActive;
+        this.isCustomerAssigned = isCustomerAssigned;
+        this.isProductAssigned = isProductAssigned;
     }
 
     public String getCode() {
@@ -125,14 +128,7 @@ public class CouponCreateDto {
     public void setCustomerIds(List<Integer> customerIds) {
         this.customerIds = customerIds;
     }
-
-    public Boolean getPublic() {
-        return isPublic;
-    }
-
-    public void setPublic(Boolean aPublic) {
-        isPublic = aPublic;
-    }
+    
 
     public Boolean getActive() {
         return isActive;
@@ -140,5 +136,21 @@ public class CouponCreateDto {
 
     public void setActive(Boolean active) {
         isActive = active;
+    }
+
+    public Boolean getCustomerAssigned() {
+        return isCustomerAssigned;
+    }
+
+    public void setCustomerAssigned(Boolean customerAssigned) {
+        isCustomerAssigned = customerAssigned;
+    }
+
+    public Boolean getProductAssigned() {
+        return isProductAssigned;
+    }
+
+    public void setProductAssigned(Boolean productAssigned) {
+        isProductAssigned = productAssigned;
     }
 }

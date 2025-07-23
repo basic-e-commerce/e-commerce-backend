@@ -1,16 +1,14 @@
 package com.example.ecommercebackend.service.product.products;
 
-import com.example.ecommercebackend.anotation.NotNullField;
+
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.products.coupon.CouponBuilder;
 import com.example.ecommercebackend.dto.product.coupon.CouponAdminResponseDto;
 import com.example.ecommercebackend.dto.product.products.coupon.CouponCreateDto;
 import com.example.ecommercebackend.entity.product.products.Coupon;
-import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
-import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.product.products.CouponRepository;
 import com.example.ecommercebackend.repository.user.CustomerRepository;
@@ -36,14 +34,12 @@ public class CouponService {
     private final CouponRepository couponRepository;
     private final CustomerRepository customerRepository;
     private final ProductService productService;
-    private final CustomerCouponService customerCouponService;
     private final CouponBuilder couponBuilder;
 
-    public CouponService(CouponRepository couponRepository, CustomerRepository customerRepository, ProductService productService, CustomerCouponService customerCouponService, CouponBuilder couponBuilder) {
+    public CouponService(CouponRepository couponRepository, CustomerRepository customerRepository, ProductService productService, CouponBuilder couponBuilder) {
         this.couponRepository = couponRepository;
         this.customerRepository = customerRepository;
         this.productService = productService;
-        this.customerCouponService = customerCouponService;
         this.couponBuilder = couponBuilder;
     }
 
@@ -90,12 +86,12 @@ public class CouponService {
 
         Instant now = Instant.now();
         Instant startDate = couponCreateDto.getStartDate();
-        Instant endDate = couponCreateDto.getEndDate();
 
-        // Başlangıç tarihi geçmiş olamaz
         if (startDate.isBefore(now)) {
-            throw new BadRequestException("Kuponun başlangıç tarihi geçmiş olamaz.");
+            startDate = now;
         }
+
+        Instant endDate = couponCreateDto.getEndDate();
 
         // Bitiş tarihi geçmiş olamaz
         if (endDate.isBefore(now)) {
@@ -115,45 +111,33 @@ public class CouponService {
 
         Set<Product> products = new HashSet<>();
 
-        if (couponCreateDto.getProductIds() == null || couponCreateDto.getProductIds().isEmpty()){
-            products.addAll(productService.findAll());
-        }else{
-            for (Integer productId : couponCreateDto.getProductIds()){
-                Product product = productService.findProductById(productId);
-                products.add(product);
-            }
-        }
-        coupon.setProducts(products);
+        coupon.setProductAssigned(couponCreateDto.getProductAssigned());
 
-        if (!couponCreateDto.getPublic()){
-            coupon.setPublic(false);
+        if (couponCreateDto.getProductAssigned()){
+            if (couponCreateDto.getProductIds() != null && !couponCreateDto.getProductIds().isEmpty()){
+                for (Integer productId : couponCreateDto.getProductIds()){
+                    Product product = productService.findProductById(productId);
+                    products.add(product);
+                }
+                coupon.setProducts(products);
+            }else
+                coupon.setProductAssigned(false);
 
+        }else
+            coupon.setProductAssigned(false);
+
+
+        Set<Customer> customers = new HashSet<>();
+        if (couponCreateDto.getCustomerAssigned()){
             if (couponCreateDto.getCustomerIds() != null && !couponCreateDto.getCustomerIds().isEmpty()){
-                Set<CustomerCoupon> customerCoupons = new HashSet<>();
-                Instant create = Instant.now();
                 for (Integer customerId : couponCreateDto.getCustomerIds()){
-                    Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new NotFoundException("Seçtiğiniz Müşteri bulunamamıştır!: "+ customerId));
-                    CustomerCoupon customerCoupon = new CustomerCoupon(customer,coupon,create);
-                    CustomerCoupon saveCustomerCoupon = customerCouponService.save(customerCoupon);
-                    customerCoupons.add(saveCustomerCoupon);
+                    customerRepository.findById(customerId).ifPresent(customers::add);
                 }
-                coupon.setCustomerCoupons(customerCoupons);
-            }else{
-                Set<CustomerCoupon> customerCoupons = new HashSet<>();
-                List<Customer> customers = customerRepository.findAll();
-                Instant create = Instant.now();
-                for (Customer customer : customers){
-                    CustomerCoupon customerCoupon = new CustomerCoupon(customer,coupon,create);
-                    CustomerCoupon saveCustomerCoupon = customerCouponService.save(customerCoupon);
-                    customerCoupons.add(saveCustomerCoupon);
-                }
-                coupon.setCustomerCoupons(customerCoupons);
-            }
-
-        }else{
-            coupon.setPublic(true);
-            coupon.setCustomerCoupons(new HashSet<>());
-        }
+                coupon.setCustomers(customers);
+            }else
+                coupon.setCustomerAssigned(false);
+        }else
+            coupon.setCustomerAssigned(false);
 
         return couponBuilder.couponToCouponAdminResponseDto(couponRepository.save(coupon));
     }
@@ -168,10 +152,6 @@ public class CouponService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         Pageable pageable = PageRequest.of(page, size, sort);
         return couponRepository.findAll(pageable).stream().map(couponBuilder::couponToCouponAdminResponseDto).collect(Collectors.toList());
-    }
-
-    public Coupon findCouponByCodeAndActive(String code, boolean active) {
-        return couponRepository.findOne(Specification.where(hasCode(code).and(isActive(active)))).orElse(null);
     }
 
     public Boolean existByCode(String code){

@@ -26,10 +26,12 @@ import com.example.ecommercebackend.entity.user.User;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
+import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.product.order.OrderRepository;
 import com.example.ecommercebackend.repository.user.CustomerRepository;
 import com.example.ecommercebackend.service.invoice.InvoiceService;
 import com.example.ecommercebackend.service.merchant.MerchantService;
+import com.example.ecommercebackend.service.product.products.CouponService;
 import com.example.ecommercebackend.service.product.products.CustomerCouponService;
 import com.example.ecommercebackend.service.product.products.ProductService;
 import com.example.ecommercebackend.service.product.shipping.CountryService;
@@ -80,16 +82,14 @@ public class OrderService {
     private final ShippingAddressService shippingAddressService;
     private final ShippingCargoService shippingCargoService;
     private final OrderPackageService orderPackageService;
-    private final CityService cityService;
-    private final DistrictService districtService;
-    private final CountryService countryService;
+    private final CouponService couponService;
 
     @Value("${domain.test}")
     private String domain;
 
 
 
-    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService, CustomerRepository customerRepository, InvoiceService invoiceService, CustomerCouponService customerCouponService, ShippingAddressService shippingAddressService, ShippingCargoService shippingCargoService, OrderPackageService orderPackageService, CityService cityService, DistrictService districtService, CountryService countryService) {
+    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService, CustomerRepository customerRepository, InvoiceService invoiceService, CustomerCouponService customerCouponService, ShippingAddressService shippingAddressService, ShippingCargoService shippingCargoService, OrderPackageService orderPackageService, CouponService couponService) {
         this.orderRepository = orderRepository;
         this.guestService = guestService;
         this.orderStatusService = orderStatusService;
@@ -103,9 +103,7 @@ public class OrderService {
         this.shippingAddressService = shippingAddressService;
         this.shippingCargoService = shippingCargoService;
         this.orderPackageService = orderPackageService;
-        this.cityService = cityService;
-        this.districtService = districtService;
-        this.countryService = countryService;
+        this.couponService = couponService;
     }
 
 
@@ -119,21 +117,32 @@ public class OrderService {
         if (principal instanceof Customer customer) {
             System.out.println("OrderCode: "+ orderCreateDto.getCode());
 
+            Set<OrderItem> savedOrderItems = createOrderItemWithCustomer(customer.getCard());
             CustomerCoupon customerCoupon = null;
+            Coupon coupon = null;
             if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
                 customerCoupon = customerCouponService.findCouponByCodeAndActive(orderCreateDto.getCode(), customer);
-                System.out.println(customerCoupon.getCoupon().getCode());
-                System.out.println(customerCoupon.getCoupon().getMinOrderAmountLimit());
+
+                if (customerCoupon != null) {
+                    if (customerCoupon.getUsed())
+                        throw new ResourceAlreadyExistException("Bu kupon kullanılmıştır!");
+                }else {
+                    customerCoupon = new CustomerCoupon(
+                            customer,
+                            coupon,
+                            Instant.now()
+                    );
+                }
+                coupon = couponService.findByCode(orderCreateDto.getCode());
+                isCouponValidation(coupon,savedOrderItems,customer);
             }
 
             if (customer.getCard().getItems().isEmpty())
                 throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
 
-            Set<OrderItem> savedOrderItems = createOrderItemWithCustomer(customer.getCard());
+            BigDecimal orderPrice = orderPrice(savedOrderItems,coupon);
 
-            BigDecimal orderPrice = orderPrice(savedOrderItems,customerCoupon);
-
-            TotalProcessDto totalPriceDto = processTotalPrice(savedOrderItems,customerCoupon);
+            TotalProcessDto totalPriceDto = processTotalPrice(savedOrderItems,coupon);
 
             BigDecimal totalTax = calculateTax(totalPriceDto.getSavedOrderItems());
 
@@ -227,20 +236,19 @@ public class OrderService {
         return totalTaxAmount.divide(totalAmount, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
     }
 
-    public BigDecimal orderPrice(Set<OrderItem> orderItems,CustomerCoupon customerCoupon) {
+    public BigDecimal orderPrice(Set<OrderItem> orderItems,Coupon coupon) {
         BigDecimal orderPrice = BigDecimal.valueOf(0);
 
-        if (customerCoupon != null) {
-            isCouponValidation(customerCoupon,orderItems);
-            if (customerCoupon.getCoupon().getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
-                BigDecimal discountValue = customerCoupon.getCoupon().getDiscountValue(); // Örneğin %10 ise 10 gelir
+        if (coupon != null) {
+            if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
+                BigDecimal discountValue = coupon.getDiscountValue(); // Örneğin %10 ise 10 gelir
                 System.out.println("kupon 3");
                 if (discountValue == null) {
                     throw new BadRequestException("İndirim yüzdesi belirtilmemiş!");
                 }
                 System.out.println("kupon 4");
                 for (OrderItem orderItem : orderItems) {
-                    boolean isProductInCoupon = customerCoupon.getCoupon().getProducts().stream()
+                    boolean isProductInCoupon = coupon.getProducts().stream()
                             .anyMatch(product -> product.equals(orderItem.getProduct()));
 
                     if (isProductInCoupon) {
@@ -254,23 +262,23 @@ public class OrderService {
                     }
                 }
 
-                if (customerCoupon.getCoupon().getMinOrderAmountLimit() != null &&
-                        orderPrice.compareTo(customerCoupon.getCoupon().getMinOrderAmountLimit()) < 0) {
+                if (coupon.getMinOrderAmountLimit() != null &&
+                        orderPrice.compareTo(coupon.getMinOrderAmountLimit()) < 0) {
                     throw new BadRequestException("Bu kuponu kullanmak için minimum sipariş tutarı "
-                            + customerCoupon.getCoupon().getMinOrderAmountLimit() + " TL olmalıdır.");
+                            + coupon.getMinOrderAmountLimit() + " TL olmalıdır.");
                 }
 
                 return orderPrice;
 
-            } else if (customerCoupon.getCoupon().getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
-                BigDecimal discountValue = customerCoupon.getCoupon().getDiscountValue(); // Örneğin %10 ise 10 gelir
+            } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
+                BigDecimal discountValue = coupon.getDiscountValue(); // Örneğin %10 ise 10 gelir
 
                 if (discountValue == null) {
                     throw new BadRequestException("İndirim Miktarı belirtilmemiştir!");
                 }
 
                 for (OrderItem orderItem: orderItems) {
-                    if (customerCoupon.getCoupon().getProducts().contains(orderItem.getProduct())) {
+                    if (coupon.getProducts().contains(orderItem.getProduct())) {
                         BigDecimal subtract = orderItem.getPrice().subtract(discountValue.multiply(BigDecimal.valueOf(orderItem.getQuantity())));
                         orderPrice = orderPrice.add(subtract);
                         orderItem.setDiscountPrice(subtract);
@@ -280,10 +288,10 @@ public class OrderService {
                     }
                 }
 
-                if (customerCoupon.getCoupon().getMinOrderAmountLimit() != null &&
-                        orderPrice.compareTo(customerCoupon.getCoupon().getMinOrderAmountLimit()) < 0) {
+                if (coupon.getMinOrderAmountLimit() != null &&
+                        orderPrice.compareTo(coupon.getMinOrderAmountLimit()) < 0) {
                     throw new BadRequestException("Bu kuponu kullanmak için minimum sipariş tutarı "
-                            + customerCoupon.getCoupon().getMinOrderAmountLimit() + " TL olmalıdır.");
+                            + coupon.getMinOrderAmountLimit() + " TL olmalıdır.");
                 }
 
                 return orderPrice;
@@ -456,7 +464,7 @@ public class OrderService {
 
 
 
-    private TotalProcessDto processTotalPrice(Set<OrderItem> savedOrderItems,CustomerCoupon customerCoupon) {
+    private TotalProcessDto processTotalPrice(Set<OrderItem> savedOrderItems,Coupon coupon) {
         Merchant merchant = merchantService.getMerchant();
         BigDecimal kargoPrice = merchant.getShippingFee();
         System.out.println("******************** kargoprice : "+ kargoPrice);
@@ -473,30 +481,38 @@ public class OrderService {
         return new TotalProcessDto(totalPrice,savedOrderItems);
     }
 
-    public void isCouponValidation(CustomerCoupon customerCoupon,Set<OrderItem> savedOrderItems) {
-        if (!customerCoupon.getCoupon().getActive())
+    public void isCouponValidation(Coupon coupon,Set<OrderItem> savedOrderItems, Customer customer) {
+        if (!coupon.getActive())
             throw new BadRequestException("Kullanılan Kupon Aktif değildir!");
 
-        System.out.println("customerCoupon.getCoupon().getTimesUsed():"+customerCoupon.getCoupon().getTimesUsed());
-        System.out.println("customerCoupon.getCoupon().getTotalUsageLimit(): "+customerCoupon.getCoupon().getTotalUsageLimit());
-        if (customerCoupon.getCoupon().getTimesUsed() >= customerCoupon.getCoupon().getTotalUsageLimit())
+        System.out.println("coupon.getTimesUsed():"+coupon.getTimesUsed());
+        System.out.println("coupon.getTotalUsageLimit(): "+coupon.getTotalUsageLimit());
+        if (coupon.getTimesUsed() >= coupon.getTotalUsageLimit())
             throw new BadRequestException("Kuponun Kullanım Limiti Dolmuştur");
 
         Instant now = Instant.now();
 
-        if (customerCoupon.getCoupon().getCouponStartDate() != null && now.isBefore(customerCoupon.getCoupon().getCouponStartDate())) {
+        if (coupon.getCouponStartDate() != null && now.isBefore(coupon.getCouponStartDate())) {
             throw new BadRequestException("Kupon henüz geçerli değildir!");
         }
 
-        if (customerCoupon.getCoupon().getCouponEndDate() != null && now.isAfter(customerCoupon.getCoupon().getCouponEndDate())) {
+        if (coupon.getCouponEndDate() != null && now.isAfter(coupon.getCouponEndDate())) {
             throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
         }
         BigDecimal totalValue = BigDecimal.valueOf(0);
         for (OrderItem orderItem: savedOrderItems) {
             totalValue = totalValue.add(orderItem.getDiscountPrice());
         }
-        if (totalValue.compareTo(customerCoupon.getCoupon().getMinOrderAmountLimit()) < 0) {
-            throw new BadRequestException("Sipariş tutarı kuponun minimum limiti olan " + customerCoupon.getCoupon().getMinOrderAmountLimit() + " TL'den küçük.");
+        if (totalValue.compareTo(coupon.getMinOrderAmountLimit()) < 0) {
+            throw new BadRequestException("Sipariş tutarı kuponun minimum limiti olan " + coupon.getMinOrderAmountLimit() + " TL'den küçük.");
+        }
+
+        if (customer != null) {
+            if (coupon.getCustomerAssigned()){
+                if (!coupon.getCustomers().contains(customer)){
+                    throw new BadRequestException("Kullanıcı bu kupona sahip değildir!");
+                }
+            }
         }
 
     }

@@ -172,7 +172,7 @@ public class PaymentService {
                 if (order.getUser() instanceof Customer customer){
                     Card card = cardService.findByCustomer(customer);
                     card.setItems(new ArrayList<>());
-                    card.setCustomerCoupon(null);
+                    card.setCoupon(null);
                     cardService.save(card);
                 }
             }
