@@ -7,6 +7,8 @@ import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantResponseDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
+import com.example.ecommercebackend.dto.product.shipping.AddressApiDto;
+import com.example.ecommercebackend.dto.product.shipping.AddressReceiptDto;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.entity.file.CoverImage;
@@ -16,12 +18,15 @@ import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.merchant.MerchantRepository;
 import com.example.ecommercebackend.service.file.MerchantImageService;
+import com.example.ecommercebackend.service.product.shipping.ShippingAddressService;
 import com.example.ecommercebackend.service.user.AddressService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,12 +35,14 @@ public class MerchantService {
     private final MerchantBuilder merchantBuilder;
     private final AddressService addressService;
     private final MerchantImageService merchantImageService;
+    private final ShippingAddressService shippingAddressService;
 
-    public MerchantService(MerchantRepository merchantRepository, MerchantBuilder merchantBuilder, AddressService addressService, MerchantImageService merchantImageService) {
+    public MerchantService(MerchantRepository merchantRepository, MerchantBuilder merchantBuilder, AddressService addressService, MerchantImageService merchantImageService, ShippingAddressService shippingAddressService) {
         this.merchantRepository = merchantRepository;
         this.addressService = addressService;
         this.merchantBuilder = merchantBuilder;
         this.merchantImageService = merchantImageService;
+        this.shippingAddressService = shippingAddressService;
     }
     public MerchantResponseDto createMerchant(MerchantCreateDto merchantCreateDto) {
         AddressCreateDto addressCreateDto = new AddressCreateDto(
@@ -134,20 +141,39 @@ public class MerchantService {
         Merchant merchant = getMerchant();
         merchant.getSendingAddresses().add(address);
         merchantRepository.save(merchant);
-        return new AddressDetailDto(
-                address.getId(),
-                address.getTitle(),
-                address.getFirstName(),
-                address.getLastName(),
-                address.getCountry().getUpperName(),
+        AddressApiDto addressApiDto = new AddressApiDto(
+                address.getFirstName()+ " "+ address.getLastName(),
+                merchant.getEmail(),
+                address.getPhoneNo(),
+                address.getAddressLine1(),
+                "",
+                address.getCountry().getIso(),
                 address.getCity().getName(),
                 address.getCity().getCityCode(),
                 address.getDistrict().getName(),
                 address.getDistrict().getDistrictId(),
                 address.getPostalCode(),
-                address.getPhoneNo(),
-                address.getAddressLine1(),
-                address.getGeliverId()
+                false,
+                address.getFirstName() + " " + address.getLastName() + " " + UUID.randomUUID()
+        );
+        AddressReceiptDto sendingAddress = shippingAddressService.createSendingAddress(addressApiDto);
+        address.setGeliverId(sendingAddress.getId());
+        Address save = addressService.save(address);
+
+        return new AddressDetailDto(
+                save.getId(),
+                save.getTitle(),
+                save.getFirstName(),
+                save.getLastName(),
+                save.getCountry().getUpperName(),
+                save.getCity().getName(),
+                save.getCity().getCityCode(),
+                save.getDistrict().getName(),
+                save.getDistrict().getDistrictId(),
+                save.getPostalCode(),
+                save.getPhoneNo(),
+                save.getAddressLine1(),
+                save.getGeliverId()
         );
     }
 
@@ -157,6 +183,8 @@ public class MerchantService {
 
         if (!merchant.getSendingAddresses().contains(address))
             throw new NotFoundException("Gönderici adresi bulunamadı!");
+
+        shippingAddressService.deleteShippingAddress(address.getGeliverId());
 
         merchant.getSendingAddresses().remove(address);
         merchantRepository.save(getMerchant());
