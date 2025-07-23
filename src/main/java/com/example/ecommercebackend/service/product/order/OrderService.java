@@ -122,6 +122,8 @@ public class OrderService {
             CustomerCoupon customerCoupon = null;
             if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
                 customerCoupon = customerCouponService.findCouponByCodeAndActive(orderCreateDto.getCode(), customer);
+                System.out.println(customerCoupon.getCoupon().getCode());
+                System.out.println(customerCoupon.getCoupon().getMinOrderAmountLimit());
             }
 
             if (customer.getCard().getItems().isEmpty())
