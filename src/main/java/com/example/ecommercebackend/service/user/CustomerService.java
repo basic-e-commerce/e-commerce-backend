@@ -2,6 +2,8 @@ package com.example.ecommercebackend.service.user;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.user.CustomerBuilder;
+import com.example.ecommercebackend.dto.product.shipping.AddressApiDto;
+import com.example.ecommercebackend.dto.product.shipping.AddressReceiptDto;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.dto.user.customer.CustomerCreateDto;
@@ -21,7 +23,9 @@ import com.example.ecommercebackend.repository.product.card.CardRepository;
 import com.example.ecommercebackend.repository.user.CustomerRepository;
 import com.example.ecommercebackend.service.mail.MailService;
 import com.example.ecommercebackend.service.product.order.OrderService;
+import com.example.ecommercebackend.service.product.shipping.ShippingAddressService;
 import com.example.ecommercebackend.service.redis.RedisService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -60,8 +64,9 @@ public class CustomerService {
     private final MailService mailService;
     private final OrderService orderService;
     private final GuestService guestService;
+    private final ShippingAddressService shippingAddressService;
 
-    public CustomerService(CustomerRepository customerRepository, UserService userService, PasswordEncoder passwordEncoder, RoleService roleService, CustomerBuilder customerBuilder, CardRepository cardRepository, AddressService addressService, RedisService redisService, MailService mailService, OrderService orderService, GuestService guestService) {
+    public CustomerService(CustomerRepository customerRepository, UserService userService, PasswordEncoder passwordEncoder, RoleService roleService, CustomerBuilder customerBuilder, CardRepository cardRepository, AddressService addressService, RedisService redisService, MailService mailService, OrderService orderService, GuestService guestService, ShippingAddressService shippingAddressService) {
         this.customerRepository = customerRepository;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -73,6 +78,7 @@ public class CustomerService {
         this.mailService = mailService;
         this.orderService = orderService;
         this.guestService = guestService;
+        this.shippingAddressService = shippingAddressService;
     }
 
     public Customer findByUsername(String username) {
@@ -246,19 +252,45 @@ public class CustomerService {
             Address address = addressService.createAddress(addressCreateDto,true);
             customer1.getAddresses().add(address);
             customerRepository.save(customer1);
-            return new AddressDetailDto(address.getId(),
-                    address.getTitle(),
-                    address.getFirstName(),
-                    address.getLastName(),
+
+            AddressApiDto addressApiDto = new AddressApiDto(
+                    address.getFirstName() + " "+ address.getLastName(),
+                    customer.getUsername(),
+                    customer.getPhoneNumber() != null ? customer.getPhoneNumber() : null,
+                    address.getAddressLine1(),
+                    "",
                     address.getCountry().getIso(),
                     address.getCity().getName(),
                     address.getCity().getCityCode(),
                     address.getDistrict().getName(),
                     address.getDistrict().getDistrictId(),
                     address.getPostalCode(),
-                    address.getPhoneNo(),
-                    address.getAddressLine1(),
-                    address.getGeliverId()
+                    true,
+                    address.getFirstName() + "-"+ address.getLastName()+"-"+UUID.randomUUID()
+            );
+
+            try {
+                AddressReceiptDto sendingAddress = shippingAddressService.createReceivingAddress(addressApiDto);
+                address.setGeliverId(sendingAddress.getId());
+
+            } catch (JsonProcessingException e) {
+                throw new BadRequestException("Json not serialize");
+            }
+
+            Address save = addressService.save(address);
+            return new AddressDetailDto(address.getId(),
+                    save.getTitle(),
+                    save.getFirstName(),
+                    save.getLastName(),
+                    save.getCountry().getIso(),
+                    save.getCity().getName(),
+                    save.getCity().getCityCode(),
+                    save.getDistrict().getName(),
+                    save.getDistrict().getDistrictId(),
+                    save.getPostalCode(),
+                    save.getPhoneNo(),
+                    save.getAddressLine1(),
+                    save.getGeliverId()
             );
         }else
             throw new BadRequestException("Customer Not Authenticated");

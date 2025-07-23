@@ -802,8 +802,7 @@ public class OrderService {
                     null,
                     null,
                     null,
-                    "Depo",
-                    BigDecimal.ZERO
+                    "Depo"
             );
             System.out.println();
             System.out.println(18);
@@ -876,8 +875,7 @@ public class OrderService {
                 false,
                 false,
                 false,
-                "Alıcı Şubede",
-                orderPackageRequestDto.getAmount()
+                "Alıcı Şubede"
         );
 
         OrderPackage saveOrderPackage = orderPackageService.createOrderPackage(orderPackage);

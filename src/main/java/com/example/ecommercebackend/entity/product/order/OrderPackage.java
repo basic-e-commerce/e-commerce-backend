@@ -51,13 +51,13 @@ public class OrderPackage {
     private Boolean isCanceled;
     private Boolean isRefund;
     private String location;
-    private BigDecimal amount;
+
 
     private Instant createAt;
     private Instant updateAt;
 
 
-    public OrderPackage(Set<OrderItem> orderItems, String packageName, double length, double width, double height, double weight, String shipmentId, String responsiveLabelURL, CargoCompany cargoCompany, CargoStatus cargoStatus, String cargoId, String barcode, Boolean productPaymentOnDelivery, Boolean isCanceled, Boolean isRefund, String location, BigDecimal amount) {
+    public OrderPackage(Set<OrderItem> orderItems, String packageName, double length, double width, double height, double weight, String shipmentId, String responsiveLabelURL, CargoCompany cargoCompany, CargoStatus cargoStatus, String cargoId, String barcode, Boolean productPaymentOnDelivery, Boolean isCanceled, Boolean isRefund, String location) {
         this.orderItems = orderItems;
         this.packageName = packageName;
         this.length = length;
@@ -74,7 +74,7 @@ public class OrderPackage {
         this.isCanceled = isCanceled;
         this.isRefund = isRefund;
         this.location = location;
-        this.amount = amount;
+
     }
 
     public OrderPackage() {
@@ -168,14 +168,6 @@ public class OrderPackage {
 
     public void setLocation(String location) {
         this.location = location;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
     }
 
     public enum StatusCode{
