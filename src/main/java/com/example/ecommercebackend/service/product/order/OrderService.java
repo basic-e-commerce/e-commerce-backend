@@ -771,6 +771,7 @@ public class OrderService {
             System.out.println("recipientAddress.phone: " + cargoOfferRequestDto.getRecipientAddress().getPhone());
             System.out.println("recipientAddress.address1: " + cargoOfferRequestDto.getRecipientAddress().getAddress1());
             System.out.println("recipientAddress.countryCode: " + cargoOfferRequestDto.getRecipientAddress().getCountryCode());
+            System.out.println("recipientAddress.countryCode: " + cargoOfferRequestDto.getRecipientAddress().getCountryCode());
             System.out.println("recipientAddress.cityCode: " + cargoOfferRequestDto.getRecipientAddress().getCityCode());
             System.out.println("recipientAddress.districtName: " + cargoOfferRequestDto.getRecipientAddress().getDistrictName());
             System.out.println("productPaymentOnDelivery: " + cargoOfferRequestDto.getProductPaymentOnDelivery());
@@ -925,7 +926,7 @@ public class OrderService {
                 order.getPhoneNumber(),
                 order.getAddressLine1(),
                 "",
-                order.getCountry(),
+                order.getCountryIso(),
                 order.getCity(),
                 order.getCityCode(),
                 order.getDistrict(),
