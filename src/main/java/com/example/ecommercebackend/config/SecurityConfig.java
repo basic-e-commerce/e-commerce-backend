@@ -107,6 +107,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/customer/profile").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.POST,"/api/v1/customer").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/customer").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/customer/re-verification-code").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/auth/verification/{code}").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v1/auth/c-login").permitAll()

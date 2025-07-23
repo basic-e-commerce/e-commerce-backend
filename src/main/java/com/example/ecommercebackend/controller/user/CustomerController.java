@@ -34,6 +34,14 @@ public class CustomerController {
         return new ResponseEntity<>(customerService.createCustomer(customerCreateDto), HttpStatus.CREATED);
     }
 
+    @RateLimit(limit = 2, duration = 1, unit = TimeUnit.MINUTES)
+    @PostMapping("/re-verification-code")
+    public ResponseEntity<String> reSendVerificationMail(@RequestParam(required = false) String username){
+        return new ResponseEntity<>(customerService.reSendVerificationMail(username), HttpStatus.OK);
+    }
+
+
+
     @RateLimit(limit = 3, duration = 1, unit = TimeUnit.SECONDS)
     @GetMapping
     public ResponseEntity<List<Customer>> getAll(){

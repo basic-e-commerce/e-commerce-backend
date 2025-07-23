@@ -149,7 +149,6 @@ public class CustomerService {
         System.out.println(1);
         String generateCode = String.valueOf(100000 + (int)(Math.random() * 900000));
         System.out.println(1);
-        redisService.saveData(generateCode,customer.getUsername(), Duration.ofMinutes(30));
         System.out.println(1);
         System.out.println("----------"+customer.getUsername());
         System.out.println(1);
@@ -208,9 +207,23 @@ public class CustomerService {
                 "  </div>\n" +
                 "</body>\n" +
                 "</html>\n" );
+        redisService.saveData(generateCode,customer.getUsername(), Duration.ofDays(1));
         System.out.println(onayKodu);
         System.out.println(1);
         System.out.println(domain+"/api/v1/auth/verification/"+generateCode);
+    }
+
+    public String reSendVerificationMail(@NotNullParam String username){
+        Customer customer = findByUsername(username);
+
+        if (customer.isEnabled())
+            throw new BadRequestException("Hesabınız zaten onaylanmıştır!");
+
+        if (redisService.getData(customer.getUsername()) != null)
+            throw new ResourceAlreadyExistException("Lütfen Mail Kutunuzu kontrol ediniz!");
+
+        sendCustomerVerificationMail(customer);
+        return "Mail tekrar gönderildi!";
     }
 
     // -------------- address --------------------
