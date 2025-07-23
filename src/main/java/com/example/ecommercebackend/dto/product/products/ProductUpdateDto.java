@@ -32,7 +32,7 @@ public class ProductUpdateDto {
     private BigDecimal taxRate;
     @NotNullField
     private Integer stockNotification;
-    @NotNullField
+
     private Integer productTemplateId;
 
     public ProductUpdateDto(String name, BigDecimal salePrice, BigDecimal comparePrice, BigDecimal buyingPrice, Integer quantity, String shortDescription, String description, Set<Integer> categoryIds, String productType, Boolean published, Boolean disableOutOfStock, BigDecimal taxRate, Integer stockNotification, Integer productTemplateId) {

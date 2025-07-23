@@ -179,9 +179,11 @@ public class ProductService {
                 .filter(c -> !newCategoryIds.contains(c.getId()))
                 .collect(Collectors.toSet());
 
-        if (product.getProductTemplate().getId() != productUpdateDto.getProductTemplateId()){
-            ProductTemplate productTemplate = productTemplateService.findById(productUpdateDto.getProductTemplateId());
-            product.setProductTemplate(productTemplate);
+        if (productUpdateDto.getProductTemplateId() != null){
+            if (product.getProductTemplate().getId() != productUpdateDto.getProductTemplateId()){
+                ProductTemplate productTemplate = productTemplateService.findById(productUpdateDto.getProductTemplateId());
+                product.setProductTemplate(productTemplate);
+            }
         }
 
         product.getCategories().removeAll(categoriesToRemove);
