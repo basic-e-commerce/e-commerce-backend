@@ -117,6 +117,7 @@ public class OrderService {
 
         OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
         if (principal instanceof Customer customer) {
+            System.out.println("OrderCode: "+ orderCreateDto.getCode());
 
             CustomerCoupon customerCoupon = null;
             if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
