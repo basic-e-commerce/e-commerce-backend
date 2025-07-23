@@ -256,7 +256,7 @@ public class CustomerService {
             AddressApiDto addressApiDto = new AddressApiDto(
                     address.getFirstName() + " "+ address.getLastName(),
                     customer.getUsername(),
-                    customer.getPhoneNumber() != null ? customer.getPhoneNumber() : null,
+                    address.getPhoneNo(),
                     address.getAddressLine1(),
                     "",
                     address.getCountry().getIso(),
