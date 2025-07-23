@@ -126,8 +126,11 @@ public class CardService {
             Coupon coupon = couponService.findByCode(code);
             CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
 
-            if (customerCoupon != null)
-                throw new NotFoundException("Bu kupon Kullanılmıştır!");
+            if (customerCoupon != null){
+                if (customerCoupon.getUsed()){
+                    throw new NotFoundException("Bu kupon Kullanılmıştır!");
+                }
+            }
 
             isCouponValidation(coupon,customer);
             customer.getCard().setCoupon(coupon);
@@ -173,7 +176,6 @@ public class CardService {
             if (!coupon.getCustomers().contains(customer))
                 throw new BadRequestException("Bu Kupon Kullanılamamaktadır!");
         }
-
 
     }
 
