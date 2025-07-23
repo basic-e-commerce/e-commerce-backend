@@ -8,12 +8,14 @@ import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.invoice.CorporateInvoice;
 import com.example.ecommercebackend.entity.product.invoice.Invoice;
 import com.example.ecommercebackend.entity.product.order.Order;
+import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -71,34 +73,46 @@ public class OrderBuilder {
                 }).toList(),
                 installment,
                 new OrderStatusResponse(
-                        order.getOrderStatus().getId(),
-                        order.getOrderStatus().getStatus().getValue(),
-                        new ArrayList<>(order.getOrderStatus().getOrderPackages()).stream().sorted().map(x-> {
-                            return new OrderPackageResponseDto(
-                                    x.getId(),
-                                    x.getOrderItems().stream().map(y->{
-                                        return new OrderItemResponseDto(
-                                                y.getProduct().getId(),
-                                                y.getProduct().getProductName(),
-                                                y.getProduct().getQuantity(),
-                                                y.getProduct().getCoverImage().getUrl()
-                                        );}
-                                    ).collect(Collectors.toSet()),
-                                    x.getShipmentId(),
-                                    x.getStatusCode().name(),
-                                    x.getCargoId(),
-                                    x.getCargoCompany().name(),
-                                    x.getCargoStatus().getValue(),
-                                    x.getLocation(),
-                                    x.getUpdateAt()
-                                            .atZone(ZoneId.of("Europe/Istanbul"))
-                                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                                    x.getCanceled()
-                            );
-                        }).toList(),
-                        order.getOrderStatus().getColor().name(),
-                        order.getOrderStatus().getCreatedAt().atZone(ZoneId.of("Europe/Istanbul"))
-                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        order.getOrderStatus() != null ? order.getOrderStatus().getId() : null,
+                        order.getOrderStatus() != null && order.getOrderStatus().getStatus() != null
+                                ? order.getOrderStatus().getStatus().getValue() : null,
+                        Optional.ofNullable(order.getOrderStatus())
+                                .map(OrderStatus::getOrderPackages)
+                                .orElse(Collections.emptyList())
+                                .stream()
+                                .sorted()
+                                .map(x -> new OrderPackageResponseDto(
+                                        x.getId(),
+                                        Optional.ofNullable(x.getOrderItems())
+                                                .orElse(Collections.emptySet())
+                                                .stream()
+                                                .map(y -> new OrderItemResponseDto(
+                                                        y.getProduct() != null ? y.getProduct().getId() : null,
+                                                        y.getProduct() != null ? y.getProduct().getProductName() : null,
+                                                        y.getProduct() != null ? y.getProduct().getQuantity() : null,
+                                                        y.getProduct() != null && y.getProduct().getCoverImage() != null
+                                                                ? y.getProduct().getCoverImage().getUrl() : null
+                                                )).collect(Collectors.toSet()),
+                                        x.getShipmentId(),
+                                        x.getStatusCode() != null ? x.getStatusCode().name() : null,
+                                        x.getCargoId(),
+                                        x.getCargoCompany() != null ? x.getCargoCompany().name() : null,
+                                        x.getCargoStatus() != null ? x.getCargoStatus().getValue() : null,
+                                        x.getLocation(),
+                                        x.getUpdateAt() != null
+                                                ? x.getUpdateAt()
+                                                .atZone(ZoneId.of("Europe/Istanbul"))
+                                                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                                                : null,
+                                        x.getCanceled()
+                                )).toList(),
+                        order.getOrderStatus() != null && order.getOrderStatus().getColor() != null
+                                ? order.getOrderStatus().getColor().name() : null,
+                        order.getOrderStatus() != null && order.getOrderStatus().getCreatedAt() != null
+                                ? order.getOrderStatus().getCreatedAt()
+                                .atZone(ZoneId.of("Europe/Istanbul"))
+                                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                                : null
                 )
         );
         InvoiceResponseDto invoiceResponseDto = new InvoiceResponseDto(

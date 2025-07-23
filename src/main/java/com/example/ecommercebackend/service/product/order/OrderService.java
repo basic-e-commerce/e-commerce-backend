@@ -493,7 +493,6 @@ public class OrderService {
             throw new BadRequestException("Sipariş tutarı kuponun minimum limiti olan " + customerCoupon.getCoupon().getMinOrderAmountLimit() + " TL'den küçük.");
         }
 
-
     }
 
     public Order findByOrderCode(String orderCode) {
