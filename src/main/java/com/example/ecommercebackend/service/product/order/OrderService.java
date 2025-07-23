@@ -710,6 +710,7 @@ public class OrderService {
         }
 
         System.out.println(12);
+        System.out.println("iso: "+order.getCountryIso());
         CargoOfferRequestRecipientAddress recipientAddress = new CargoOfferRequestRecipientAddress(
                 order.getFirstName() +" "+ order.getLastName(),
                 order.getUsername(),
