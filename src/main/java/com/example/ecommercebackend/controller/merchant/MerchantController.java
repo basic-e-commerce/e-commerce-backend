@@ -5,6 +5,8 @@ import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantResponseDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
+import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
+import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.service.merchant.MerchantService;
 import org.springframework.http.HttpStatus;
@@ -47,4 +49,31 @@ public class MerchantController {
     public ResponseEntity<ImageDetailDto> updateCoverImage(@RequestParam("image") MultipartFile file) {
         return new ResponseEntity<>(merchantService.updateCoverImage(file), HttpStatus.OK);
     }
+
+    @GetMapping("/list-sending-address")
+    @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)
+    public ResponseEntity<List<AddressDetailDto>> getSendingAddresses() {
+        return new ResponseEntity<>(merchantService.getSendingAddresses(),HttpStatus.OK);
+    }
+
+
+    @PostMapping("/add-sending-address")
+    @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)
+    public ResponseEntity<AddressDetailDto> createSendingAddress(@RequestBody(required = false) AddressCreateDto addressCreateDto) {
+        return new ResponseEntity<>(merchantService.createSendingAddress(addressCreateDto), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/remove-sending-address")
+    @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)
+    public ResponseEntity<String> removeSendingAddress(@RequestParam(required = false) Integer addressId) {
+        return new ResponseEntity<>(merchantService.removeSendingAddress(addressId), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/select-default-address")
+    @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)
+    public ResponseEntity<AddressDetailDto> selectDefaultAddress(@RequestParam(required = false) Integer addressId) {
+        return new ResponseEntity<>(merchantService.selectDefaultSendingAddress(addressId), HttpStatus.OK);
+    }
+
+
 }

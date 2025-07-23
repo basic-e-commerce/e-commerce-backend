@@ -93,6 +93,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/v1/merchant").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/merchant").permitAll()
                         .requestMatchers(HttpMethod.PUT,"/api/v1/merchant/image").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/merchant/add-sending-address").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/merchant/remove-sending-address").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/merchant/select-default-address").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/merchant/list-sending-address").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/customer/address").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/customer/address").hasAuthority("CUSTOMER")
