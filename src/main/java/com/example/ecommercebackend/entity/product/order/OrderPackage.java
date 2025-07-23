@@ -2,6 +2,7 @@ package com.example.ecommercebackend.entity.product.order;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -50,12 +51,13 @@ public class OrderPackage {
     private Boolean isCanceled;
     private Boolean isRefund;
     private String location;
+    private BigDecimal amount;
 
     private Instant createAt;
     private Instant updateAt;
 
 
-    public OrderPackage(Set<OrderItem> orderItems, String packageName, double length, double width, double height, double weight, String shipmentId, String responsiveLabelURL, CargoCompany cargoCompany, CargoStatus cargoStatus, String cargoId, String barcode, Boolean productPaymentOnDelivery, Boolean isCanceled, Boolean isRefund, String location) {
+    public OrderPackage(Set<OrderItem> orderItems, String packageName, double length, double width, double height, double weight, String shipmentId, String responsiveLabelURL, CargoCompany cargoCompany, CargoStatus cargoStatus, String cargoId, String barcode, Boolean productPaymentOnDelivery, Boolean isCanceled, Boolean isRefund, String location, BigDecimal amount) {
         this.orderItems = orderItems;
         this.packageName = packageName;
         this.length = length;
@@ -72,6 +74,7 @@ public class OrderPackage {
         this.isCanceled = isCanceled;
         this.isRefund = isRefund;
         this.location = location;
+        this.amount = amount;
     }
 
     public OrderPackage() {
@@ -167,6 +170,14 @@ public class OrderPackage {
         this.location = location;
     }
 
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
     public enum StatusCode{
         PRE_TRANSIT,
         TRANSIT,
@@ -204,6 +215,7 @@ public class OrderPackage {
         package_lost("Paket Kayboldu"),
         package_undeliverable("Kargo dağıtılamıyor."),
         return_to_sender("Kargo iade edildi"),
+        cancel("Kargo iptal edildi"),
         other("Bilinmeyen Durum");
         private String value;
 

@@ -126,20 +126,22 @@ public class ShippingCargoService {
             if (result) {
                 return mapper.readValue(responseJson, OfferApproveDto.class);
             } else {
-                throw new BadRequestException("API response unsuccessful: " + message);
+                log.error("OfferCargo methodu çalışmadı. Hata kodu mesajı {}", message);
+                throw new BadRequestException("3. parti servis hatası");
             }
 
         } catch (Exception e) {
-            throw new BadRequestException("Failed to parse API response: " + e.getMessage());
+            log.error("offer approve Json dönüştürülemedi! " + e.getMessage());
+            throw new BadRequestException("3. Parti Servis Hatası");
         }
     }
 
 
-    public OfferCancelDto offerCancel(@NotNullParam String id) {
+    public OfferCancelDto offerCancel(@NotNullParam String shipmentId) {
         WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
 
         String responseJson = webClient.delete()
-                .uri("/shipments/%s".formatted(id))
+                .uri("/shipments/%s".formatted(shipmentId))
                 .header("Authorization", "Bearer %s".formatted(apiKey))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, r ->
@@ -171,7 +173,7 @@ public class ShippingCargoService {
                 throw new BadRequestException("Failed to delete shipment: " + message);
             }
 
-            log.info("Shipment {} deleted successfully: {}", id, message);
+            log.info("Kargo {} iptal edildi.  : {}", shipmentId, message);
             return mapper.readValue(responseJson, OfferCancelDto.class);
 
         } catch (Exception e) {

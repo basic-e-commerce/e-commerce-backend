@@ -3,6 +3,7 @@ package com.example.ecommercebackend.service.product.order;
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.order.OrderBuilder;
 import com.example.ecommercebackend.dto.product.order.*;
+import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
 import com.example.ecommercebackend.dto.product.products.productTemplate.CargoOfferDesiRequestAdminDto;
 import com.example.ecommercebackend.dto.product.shipping.*;
 import com.example.ecommercebackend.dto.user.address.AddressOrderCreateDto;
@@ -58,6 +59,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -652,9 +655,9 @@ public class OrderService {
     }
 
 
-    public CargoOfferResponsesDto cargoOffer(String orderCode, List<CargoOfferDesiRequestAdminDto> cargoOfferDesiRequestAdminDtos) {
+    public CargoOfferResponsesUserDto cargoOffer(String orderCode, List<CargoOfferDesiRequestAdminDto> cargoOfferDesiRequestAdminDtos) {
         List<CargoOfferResponseDto> cargoOfferResponseDtos = new ArrayList<>();
-        Set<Integer> orderPackages = new HashSet<>();
+        List<Integer> orderPackages = new ArrayList<>();
         System.out.println(1);
         Order order = findByOrderCode(orderCode);
         System.out.println(2);
@@ -797,7 +800,8 @@ public class OrderService {
                     null,
                     null,
                     null,
-                    "Depo"
+                    "Depo",
+                    BigDecimal.ZERO
             );
             System.out.println();
             System.out.println(18);
@@ -815,11 +819,22 @@ public class OrderService {
         orderRepository.save(order);
 
         System.out.println(23);
-        return new CargoOfferResponsesDto(cargoOfferResponseDtos,orderPackages);
+        CargoOfferResponseDto cargoOfferResponseDto = cargoOfferResponseDtos.getFirst();
+        return new CargoOfferResponsesUserDto(
+                orderPackages.getFirst(),
+                new CargoOfferResponseUserDto(
+                        cargoOfferResponseDto.getData().getLength(),
+                        cargoOfferResponseDto.getData().getWidth(),
+                        cargoOfferResponseDto.getData().getHeight(),
+                        cargoOfferResponseDto.getData().getWeight(),
+                        cargoOfferResponseDto.getData().getOffers().getCheapest(),
+                        cargoOfferResponseDto.getData().getOffers().getFastest(),
+                        cargoOfferResponseDto.getData().getOffers().getList()
+                ));
     }
 
 
-    public OfferApproveDto offerApprove(@NotNullParam Integer orderPackageId,@NotNullParam String offerId) {
+    public OfferApproveUserDto offerApprove(@NotNullParam Integer orderPackageId,@NotNullParam String offerId) {
         OrderPackage orderPackage = orderPackageService.findById(orderPackageId);
         OfferApproveDto offerApproveDto = shippingCargoService.offerApprove(offerId);
 
@@ -834,9 +849,72 @@ public class OrderService {
         orderPackage.setRefund(offerApproveDto.getData().isRefund());
         orderPackageService.save(orderPackage);
 
-        return offerApproveDto;
+        return new OfferApproveUserDto(
+                offerApproveDto.getData().getShipment()
+        );
     }
 
+    public OrderPackageResponseDto cargoManuel(String orderCode,OrderPackageRequestDto orderPackageRequestDto) {
+        Order order = findByOrderCode(orderCode);
+        List<OrderPackage> orderPackages = new ArrayList<>();
+
+        OrderPackage orderPackage = new OrderPackage(
+                new HashSet<>(order.getOrderItems()),
+                orderPackageRequestDto.getPackageName(),
+                orderPackageRequestDto.getLength(),
+                orderPackageRequestDto.getWidth(),
+                orderPackageRequestDto.getHeight(),
+                orderPackageRequestDto.getWeight(),
+                orderPackageRequestDto.getCargoId(),
+                orderPackageRequestDto.getResponsiveLabelURL(),
+                orderPackageRequestDto.getCargoCompany(),
+                OrderPackage.CargoStatus.delivery_scheduled,
+                orderPackageRequestDto.getCargoId(),
+                orderPackageRequestDto.getBarcode(),
+                false,
+                false,
+                false,
+                "Alıcı Şubede",
+                orderPackageRequestDto.getAmount()
+        );
+
+        OrderPackage saveOrderPackage = orderPackageService.createOrderPackage(orderPackage);
+        orderPackages.add(saveOrderPackage);
+        order.getOrderStatus().setOrderPackages(orderPackages);
+        orderRepository.save(order);
+
+        return new OrderPackageResponseDto(
+                saveOrderPackage.getId(),
+                saveOrderPackage.getOrderItems().stream().map(x->{
+                    return new OrderItemResponseDto(
+                            x.getProduct().getId(),
+                            x.getProduct().getProductName(),
+                            x.getQuantity(),
+                            x.getProduct().getCoverImage().getUrl()
+                    );
+                }).collect(Collectors.toSet()),
+                saveOrderPackage.getShipmentId(),
+                saveOrderPackage.getStatusCode().name(),
+                saveOrderPackage.getCargoId(),
+                saveOrderPackage.getCargoCompany().name(),
+                saveOrderPackage.getCargoStatus().getValue(),
+                saveOrderPackage.getLocation(),
+                Instant.now().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                false
+        );
+    }
+
+
+    public String cargoCancel(Integer orderPackageId) {
+        OrderPackage orderPackage = orderPackageService.findById(orderPackageId);
+        OfferCancelDto offerCancelDto = shippingCargoService.offerCancel(orderPackage.getShipmentId());
+        orderPackage.setUpdateAt(Instant.now());
+        orderPackage.setCanceled(true);
+        orderPackage.setCargoStatus(OrderPackage.CargoStatus.cancel);
+        orderPackage.setStatusCode(OrderPackage.StatusCode.valueOf(offerCancelDto.getData().getStatusCode()));
+        orderPackageService.save(orderPackage);
+        return "Kargo iptal edildi";
+    }
 
     private AddressApiDto buildAddressDto(Order order) {
         Random random = new Random();
@@ -856,5 +934,4 @@ public class OrderService {
                 order.getFirstName() + " " + order.getLastName() + " " + (1000 + random.nextInt(9000))
         );
     }
-
 }

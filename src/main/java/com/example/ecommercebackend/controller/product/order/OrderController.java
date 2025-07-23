@@ -5,6 +5,7 @@ import com.example.ecommercebackend.dto.product.order.*;
 import com.example.ecommercebackend.dto.product.products.ProductFilterRequest;
 import com.example.ecommercebackend.dto.product.products.productTemplate.CargoOfferDesiRequestAdminDto;
 import com.example.ecommercebackend.dto.product.shipping.OfferApproveDto;
+import com.example.ecommercebackend.entity.product.order.OrderPackage;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import org.springframework.http.HttpStatus;
@@ -67,14 +68,24 @@ public class OrderController {
 
 
     @PostMapping("/cargo-offer")
-    public ResponseEntity<CargoOfferResponsesDto> cargoOffer(@RequestParam(required = false) String orderCode,
+    public ResponseEntity<CargoOfferResponsesUserDto> cargoOffer(@RequestParam(required = false) String orderCode,
                                                              @RequestBody(required = false)List<CargoOfferDesiRequestAdminDto> cargoOfferDesiRequestAdminDtos){
         return new ResponseEntity<>(orderService.cargoOffer(orderCode,cargoOfferDesiRequestAdminDtos),HttpStatus.OK);
     }
 
     @PostMapping("/offer-approve")
-    public ResponseEntity<OfferApproveDto> offerApprove(@RequestParam(required = false) Integer orderPackageId,@RequestParam(required = false) String offerId){
+    public ResponseEntity<OfferApproveUserDto> offerApprove(@RequestParam(required = false) Integer orderPackageId,@RequestParam(required = false) String offerId){
         return new ResponseEntity<>(orderService.offerApprove(orderPackageId,offerId),HttpStatus.OK);
+    }
+
+    @PostMapping("/cargo-cancel")
+    public ResponseEntity<String> cargoCancel(@RequestParam(required = false) Integer orderPackageId){
+        return new ResponseEntity<>(orderService.cargoCancel(orderPackageId),HttpStatus.OK);
+    }
+
+    @PostMapping("/cargo-manuel")
+    public ResponseEntity<OrderPackageResponseDto> manuelCargo(@RequestParam(required = false) String orderCode,@RequestBody(required = false) OrderPackageRequestDto orderPackageRequestDto){
+        return new ResponseEntity<>(orderService.cargoManuel(orderCode,orderPackageRequestDto),HttpStatus.OK);
     }
 
 
