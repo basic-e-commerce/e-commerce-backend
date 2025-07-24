@@ -144,6 +144,7 @@ public class CouponService {
     }
 
     public CouponAdminResponseDto changeActive(@NotNullParam String code,@NotNullParam Boolean active){
+        System.out.println("code: "+code);
         Coupon coupon = findByCode(code);
         coupon.setActive(active);
         return couponBuilder.couponToCouponAdminResponseDto(couponRepository.save(coupon));
