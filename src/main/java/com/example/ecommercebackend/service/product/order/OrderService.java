@@ -138,13 +138,14 @@ public class OrderService {
                 customerCoupon.setCoupon(coupon);
                 isCouponValidation(coupon,savedOrderItems,customer);
             }
+            System.out.println("Kupon var mı : "+ coupon.getCode());
 
             if (customer.getCard().getItems().isEmpty())
                 throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
 
             BigDecimal orderPrice = orderPrice(savedOrderItems,coupon);
 
-            TotalProcessDto totalPriceDto = processTotalPrice(savedOrderItems,coupon);
+            TotalProcessDto totalPriceDto = processTotalPrice(savedOrderItems);
 
             BigDecimal totalTax = calculateTax(totalPriceDto.getSavedOrderItems());
 
@@ -180,7 +181,7 @@ public class OrderService {
                 Set<OrderItem> savedOrderItems = createOrderItemWithAnon(orderCreateDto);
 
                 BigDecimal orderPrice = orderPrice(savedOrderItems,null);
-                TotalProcessDto totalProcessDto = processTotalPrice(savedOrderItems, null);
+                TotalProcessDto totalProcessDto = processTotalPrice(savedOrderItems);
                 BigDecimal totalTax = calculateTax(totalProcessDto.getSavedOrderItems());
                 Invoice invoice = getInvoice(totalProcessDto.getTotalPrice(),totalTax,orderCreateDto);
                 Invoice saveInvoicce = invoiceService.save(invoice);
@@ -196,11 +197,11 @@ public class OrderService {
                             orderCreateDto.getAddress().username(),
                             false,
                             false);
-
                 }
+
                 Set<OrderItem> savedOrderItems = createOrderItemWithAnon(orderCreateDto);
                 BigDecimal orderPrice = orderPrice(savedOrderItems,null);
-                TotalProcessDto totalProcessDto = processTotalPrice(savedOrderItems, null);
+                TotalProcessDto totalProcessDto = processTotalPrice(savedOrderItems);
                 BigDecimal totalTax = calculateTax(totalProcessDto.getSavedOrderItems());
                 Invoice invoice = getInvoice(totalProcessDto.getTotalPrice(),totalTax,orderCreateDto);
                 Invoice saveInvoicce = invoiceService.save(invoice);
@@ -257,6 +258,7 @@ public class OrderService {
                         System.out.println("fiçeride");
                         BigDecimal divide = orderItem.getPrice().subtract(orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100)));
                         orderPrice = orderPrice.add(divide);
+                        System.out.println("orderprice: "+ orderPrice);
                         orderItem.setDiscountPrice(divide);
                     } else {
                         orderPrice = orderPrice.add(orderItem.getPrice());
@@ -466,7 +468,7 @@ public class OrderService {
 
 
 
-    private TotalProcessDto processTotalPrice(Set<OrderItem> savedOrderItems,Coupon coupon) {
+    private TotalProcessDto processTotalPrice(Set<OrderItem> savedOrderItems) {
         Merchant merchant = merchantService.getMerchant();
         BigDecimal kargoPrice = merchant.getShippingFee();
         System.out.println("******************** kargoprice : "+ kargoPrice);

@@ -22,6 +22,7 @@ public class Address {
     private Country country;
     private String firstName;
     private String lastName;
+    private String username;
 
     @ManyToOne
     private City city;
@@ -44,11 +45,12 @@ public class Address {
         updatedAt = Instant.now();
     }
 
-    public Address(String title, Country country, String firstName, String lastName, City city, District district, String addressLine1, String postalCode, String phoneNo, Boolean isRecipientAddress) {
+    public Address(String title, Country country, String firstName, String lastName, String username, City city, District district, String addressLine1, String postalCode, String phoneNo, Boolean isRecipientAddress) {
         this.title = title;
         this.country = country;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.username = username;
         this.city = city;
         this.district = district;
         this.addressLine1 = addressLine1;
@@ -180,5 +182,13 @@ public class Address {
 
     public void setShortName(String shortName) {
         this.shortName = shortName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
