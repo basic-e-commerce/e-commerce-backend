@@ -251,51 +251,70 @@ public class OrderService {
                 }
                 System.out.println("kupon 4");
                 for (OrderItem orderItem : orderItems) {
-                    boolean isProductInCoupon = coupon.getProducts().stream()
-                            .anyMatch(product -> product.equals(orderItem.getProduct()));
 
-                    if (isProductInCoupon) {
+                    if (coupon.getProductAssigned()){
+                        boolean isProductInCoupon = coupon.getProducts().stream()
+                                .anyMatch(product -> product.equals(orderItem.getProduct()));
+
+                        if (isProductInCoupon) {
+                            System.out.println("fiçeride");
+                            BigDecimal divide = orderItem.getPrice().subtract(orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
+                            orderPrice = orderPrice.add(divide);
+                            System.out.println("orderprice: "+ orderPrice);
+                            orderItem.setDiscountPrice(divide);
+                        } else {
+                            orderPrice = orderPrice.add(orderItem.getPrice());
+                            orderItem.setDiscountPrice(orderItem.getPrice());
+                        }
+                    }else{
                         System.out.println("fiçeride");
-                        BigDecimal divide = orderItem.getPrice().subtract(orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100)));
+                        BigDecimal divide = orderItem.getPrice().subtract(orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
                         orderPrice = orderPrice.add(divide);
                         System.out.println("orderprice: "+ orderPrice);
                         orderItem.setDiscountPrice(divide);
-                    } else {
-                        orderPrice = orderPrice.add(orderItem.getPrice());
-                        orderItem.setDiscountPrice(orderItem.getPrice());
                     }
-                }
-
-                if (coupon.getMinOrderAmountLimit() != null &&
-                        orderPrice.compareTo(coupon.getMinOrderAmountLimit()) < 0) {
-                    throw new BadRequestException("Bu kuponu kullanmak için minimum sipariş tutarı "
-                            + coupon.getMinOrderAmountLimit() + " TL olmalıdır.");
                 }
 
                 return orderPrice;
 
             } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
-                BigDecimal discountValue = coupon.getDiscountValue(); // Örneğin %10 ise 10 gelir
+                BigDecimal discountValue = coupon.getDiscountValue();
 
                 if (discountValue == null) {
                     throw new BadRequestException("İndirim Miktarı belirtilmemiştir!");
                 }
 
-                for (OrderItem orderItem: orderItems) {
-                    if (coupon.getProducts().contains(orderItem.getProduct())) {
-                        BigDecimal subtract = orderItem.getPrice().subtract(discountValue.multiply(BigDecimal.valueOf(orderItem.getQuantity())));
+                if (coupon.getProductAssigned()) {
+                    int orderItemSize = 0;
+                    for(OrderItem orderItem : orderItems) {
+                        if (coupon.getProducts().contains(orderItem.getProduct())) {
+                            orderItemSize +=1;
+                        }
+                    }
+                    BigDecimal substract = coupon.getDiscountValue()
+                            .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
+
+                    for (OrderItem orderItem: orderItems) {
+                        if (coupon.getProducts().contains(orderItem.getProduct())) {
+                            BigDecimal subtract = orderItem.getPrice().subtract(substract);
+                            orderPrice = orderPrice.add(subtract);
+                            orderItem.setDiscountPrice(subtract);
+                        }else{
+                            orderPrice = orderPrice.add(orderItem.getPrice());
+                            orderItem.setDiscountPrice(orderItem.getPrice());
+                        }
+                    }
+                }else{
+                    int orderItemSize = orderItems.size();
+
+                    BigDecimal substract = coupon.getDiscountValue()
+                            .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
+
+                    for (OrderItem orderItem: orderItems) {
+                        BigDecimal subtract = orderItem.getPrice().subtract(substract);
                         orderPrice = orderPrice.add(subtract);
                         orderItem.setDiscountPrice(subtract);
-                    }else{
-                        orderPrice = orderPrice.add(orderItem.getPrice());
-                        orderItem.setDiscountPrice(orderItem.getPrice());
                     }
-                }
-
-                if (coupon.getMinOrderAmountLimit() != null &&
-                        orderPrice.compareTo(coupon.getMinOrderAmountLimit()) < 0) {
-                    throw new BadRequestException("Bu kuponu kullanmak için minimum sipariş tutarı "
-                            + coupon.getMinOrderAmountLimit() + " TL olmalıdır.");
                 }
 
                 return orderPrice;

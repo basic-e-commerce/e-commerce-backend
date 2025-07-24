@@ -169,6 +169,10 @@ public class AddressService {
             address.setAddressLine1(addressCreateDto.getAddressLine1());
             isUpdated = true;
         }
+        if (!Objects.equals(address.getUsername(), addressCreateDto.getUsername())) {
+            address.setUsername(addressCreateDto.getUsername());
+            isUpdated = true;
+        }
 
         if (!Objects.equals(address.getPostalCode(), addressCreateDto.getPostalCode())) {
             address.setPostalCode(addressCreateDto.getPostalCode());
