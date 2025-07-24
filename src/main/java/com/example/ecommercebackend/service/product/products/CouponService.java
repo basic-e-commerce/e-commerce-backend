@@ -173,11 +173,11 @@ public class CouponService {
 
 
     public Coupon findByCodeNull(String code) {
-        return couponRepository.findOne(Specification.where(hasCode(code).and(isActive(true)))).orElse(null);
+        return couponRepository.findOne(Specification.where(hasCode(code))).orElse(null);
     }
 
     public Coupon findByCode(String code) {
-        return couponRepository.findOne(Specification.where(hasCode(code).and(isActive(true)))).orElseThrow(()-> new NotFoundException("Kupon bulunamadı!"));
+        return couponRepository.findOne(Specification.where(hasCode(code))).orElseThrow(()-> new NotFoundException("Kupon bulunamadı!"));
     }
 
 
