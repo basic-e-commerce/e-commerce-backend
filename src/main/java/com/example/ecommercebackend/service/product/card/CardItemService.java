@@ -77,21 +77,25 @@ public class CardItemService {
             if (coupon != null) {
                 isCouponValidation(coupon);
                 if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)){
+                    System.out.println("1");
                     productDetails = customer.getCard().getItems().stream().map(x -> {
+                        System.out.println("2");
                         String url = "";
                         if (x.getProduct().getCoverImage() != null) {
                             url = x.getProduct().getCoverImage().getUrl();
                         }
+                        System.out.println("3");
 
                         boolean isProductInCoupon = coupon.getProducts().stream()
                                 .anyMatch(product -> product.equals(x.getProduct()));
+                        System.out.println("4");
 
                         BigDecimal comparePrice = x.getProduct().getComparePrice();
                         if (isProductInCoupon)
                             comparePrice = comparePrice.subtract(comparePrice.multiply(coupon.getDiscountValue()).divide(BigDecimal.valueOf(100)));
-
+                        System.out.println(5);
                         cardProduct.add(new ProductQuantityDto(comparePrice,x.getProduct().getTaxRate(), x.getQuantity()));
-
+                        System.out.println(6);
                         return new CardResponseDetails(x.getProduct().getId(),
                                 x.getProduct().getProductName(),
                                 x.getProduct().getProductLinkName(),
