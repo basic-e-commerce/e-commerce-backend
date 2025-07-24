@@ -118,6 +118,7 @@ public class OrderService {
             System.out.println("OrderCode: "+ orderCreateDto.getCode());
 
             Set<OrderItem> savedOrderItems = createOrderItemWithCustomer(customer.getCard());
+
             CustomerCoupon customerCoupon = null;
             Coupon coupon = null;
             if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
@@ -473,7 +474,7 @@ public class OrderService {
 
         //Set<OrderItem> newOrderItems = new HashSet<>();
         for (OrderItem orderItem: savedOrderItems) {
-            totalPrice = totalPrice.add(orderItem.getDiscountPrice());
+            totalPrice = totalPrice.add(orderItem.getPrice());
         }
         if (totalPrice.compareTo(minPrice) < 0) {
             totalPrice = totalPrice.add(kargoPrice);
@@ -501,7 +502,9 @@ public class OrderService {
         }
         BigDecimal totalValue = BigDecimal.valueOf(0);
         System.out.println("TOTAL VALUE: "+totalValue);
+        System.out.println("size: "+savedOrderItems.size());
         for (OrderItem orderItem: savedOrderItems) {
+            System.out.println(orderItem.getDiscountPrice());
             totalValue = totalValue.add(orderItem.getDiscountPrice());
             System.out.println("TOTAL VALUE: "+totalValue);
         }
