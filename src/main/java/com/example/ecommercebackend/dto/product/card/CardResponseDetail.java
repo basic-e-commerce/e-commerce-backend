@@ -11,15 +11,17 @@ public class CardResponseDetail {
     private BigDecimal totalTax;
     private BigDecimal shippingCost;
     private BigDecimal totalPrice;
+    private BigDecimal couponPrice;
     private float shippingCostRate;
     List<CardResponseDetails> details;
     private CouponCustomerResponseDto couponCustomerResponseDto;
 
-    public CardResponseDetail(BigDecimal totalWithOutTax, BigDecimal totalTax, BigDecimal shippingCost, BigDecimal totalPrice, float shippingCostRate, List<CardResponseDetails> details, CouponCustomerResponseDto couponCustomerResponseDto) {
+    public CardResponseDetail(BigDecimal totalWithOutTax, BigDecimal totalTax, BigDecimal shippingCost, BigDecimal totalPrice, BigDecimal couponPrice, float shippingCostRate, List<CardResponseDetails> details, CouponCustomerResponseDto couponCustomerResponseDto) {
         this.totalWithOutTax = totalWithOutTax;
         this.totalTax = totalTax;
         this.shippingCost = shippingCost;
         this.totalPrice = totalPrice;
+        this.couponPrice = couponPrice;
         this.shippingCostRate = shippingCostRate;
         this.details = details;
         this.couponCustomerResponseDto = couponCustomerResponseDto;
@@ -80,5 +82,13 @@ public class CardResponseDetail {
 
     public void setCouponCustomerResponseDto(CouponCustomerResponseDto couponCustomerResponseDto) {
         this.couponCustomerResponseDto = couponCustomerResponseDto;
+    }
+
+    public BigDecimal getCouponPrice() {
+        return couponPrice;
+    }
+
+    public void setCouponPrice(BigDecimal couponPrice) {
+        this.couponPrice = couponPrice;
     }
 }

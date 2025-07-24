@@ -61,190 +61,342 @@ public class CardItemService {
         cardItemRepository.delete(cardItem);
     }
 
+//
+//    public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequestDto){
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        System.out.println(principal);
+//
+//        if (principal instanceof Customer customer1) {
+//            Customer customer = customerRepository.findById(customer1.getId()).get();
+//            List<ProductQuantityDto> cardProduct = new ArrayList<>();
+//
+//            Coupon coupon = customer.getCard().getCoupon();
+//            List<CardResponseDetails> productDetails = new ArrayList<>();
+//            BigDecimal couponPrice = BigDecimal.ZERO;
+//
+//            CouponCustomerResponseDto couponResponseDto = null;
+//            if (coupon != null) {
+//                isCouponValidation(coupon);
+//                if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)){
+//                    System.out.println("1");
+//                    productDetails = customer.getCard().getItems().stream().map(x -> {
+//
+//
+//                        System.out.println("2");
+//                        String url = "";
+//                        if (x.getProduct().getCoverImage() != null) {
+//                            url = x.getProduct().getCoverImage().getUrl();
+//                        }
+//                        System.out.println("3");
+//
+//                        BigDecimal comparePrice = x.getProduct().getComparePrice();
+//
+//                        if (coupon.getProductAssigned()){
+//                            boolean isProductInCoupon = coupon.getProducts().stream()
+//                                    .anyMatch(product -> product.equals(x.getProduct()));
+//                            if (isProductInCoupon){
+//                                BigDecimal substract = comparePrice.multiply(coupon.getDiscountValue()).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP);
+//                                comparePrice = comparePrice.subtract(substract);
+//                                couponPrice.add(substract);
+//                            }else{
+//                                comparePrice = x.getProduct().getComparePrice();
+//                            }
+//
+//                        }else {
+//                            comparePrice = x.getProduct().getComparePrice();
+//                        }
+//
+//
+//                        System.out.println(5);
+//                        cardProduct.add(
+//                                new ProductQuantityDto(
+//                                        comparePrice,
+//                                        x.getProduct().getTaxRate(),
+//                                        x.getQuantity()
+//                                )
+//                        );
+//                        System.out.println(6);
+//                        return new CardResponseDetails(x.getProduct().getId(),
+//                                x.getProduct().getProductName(),
+//                                x.getProduct().getProductLinkName(),
+//                                x.getProduct().getSalePrice(),
+//                                comparePrice,
+//                                url,
+//                                x.getQuantity());
+//                    }).toList();
+//                }else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)){
+//                    productDetails = customer.getCard().getItems().stream().map(x -> {
+//                        String url = "";
+//                        if (x.getProduct().getCoverImage() != null) {
+//                            url = x.getProduct().getCoverImage().getUrl();
+//                        }
+//
+//                        BigDecimal comparePrice = x.getProduct().getComparePrice();
+//
+//                        if (coupon.getProductAssigned()){
+//                            boolean isProductInCoupon = coupon.getProducts().stream()
+//                                    .anyMatch(product -> product.equals(x.getProduct()));
+//
+//                            BigDecimal orderItemSize = BigDecimal.ZERO;
+//                            for ()
+//
+//                            if (isProductInCoupon){
+//                                comparePrice = comparePrice.subtract(coupon.getDiscountValue());
+//
+//                            }
+//
+//                        }
+//
+//
+//                        cardProduct.add(new ProductQuantityDto(comparePrice,x.getProduct().getTaxRate(), x.getQuantity()));
+//
+//                        return new CardResponseDetails(x.getProduct().getId(),
+//                                x.getProduct().getProductName(),
+//                                x.getProduct().getProductLinkName(),
+//                                x.getProduct().getSalePrice(),
+//                                comparePrice,
+//                                url,
+//                                x.getQuantity());
+//                    }).toList();
+//
+//                }else {
+//                    productDetails = customer.getCard().getItems().stream().map(x -> {
+//                        String url = "";
+//                        if (x.getProduct().getCoverImage() != null) {
+//                            url = x.getProduct().getCoverImage().getUrl();
+//                        }
+//                        cardProduct.add(
+//                                new ProductQuantityDto(
+//                                        x.getProduct().getComparePrice(),
+//                                        x.getProduct().getTaxRate(),
+//                                        x.getQuantity()
+//                                )
+//                        );
+//
+//                        return new CardResponseDetails(x.getProduct().getId(),
+//                                x.getProduct().getProductName(),
+//                                x.getProduct().getProductLinkName(),
+//                                x.getProduct().getSalePrice(),
+//                                x.getProduct().getComparePrice(),
+//                                url,
+//                                x.getQuantity());
+//                    }).toList();
+//                }
+//                couponResponseDto = new CouponCustomerResponseDto(coupon.getCode(),
+//                        coupon.getDescription(),
+//                        coupon.getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
+//                        coupon.getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
+//                        coupon.getActive()
+//                        );
+//
+//
+//            }else {
+//                productDetails = customer.getCard().getItems().stream().map(x -> {
+//                    String url = "";
+//                    if (x.getProduct().getCoverImage() != null) {
+//                        url = x.getProduct().getCoverImage().getUrl();
+//                    }
+//                    cardProduct.add(
+//                            new ProductQuantityDto(
+//                                    x.getProduct().getComparePrice(),
+//                                    x.getProduct().getTaxRate(),
+//                                    x.getQuantity()
+//                            )
+//                    );
+//
+//                    return new CardResponseDetails(x.getProduct().getId(),
+//                            x.getProduct().getProductName(),
+//                            x.getProduct().getProductLinkName(),
+//                            x.getProduct().getSalePrice(),
+//                            x.getProduct().getComparePrice(),
+//                            url,
+//                            x.getQuantity());
+//                }).toList();
+//            }
+//
+//            BigDecimal totalWithOutTax = getTotalWithOutTax(cardProduct);
+//            BigDecimal totalTax = getTotalTaxAmount(cardProduct);
+//
+//            BigDecimal shippingCost = BigDecimal.ZERO;
+//            float shippingCostRate = getShippingCostRate(getTotalAmountWithOutShippingCost(cardProduct));
+//
+//
+//
+//            if (getTotalAmountWithOutShippingCost(cardProduct).compareTo(getMerchant().getMinOrderAmount()) < 0) {
+//                shippingCost = getMerchant().getShippingFee();
+//            }
+//            BigDecimal totalPrice = getTotalAmountWithShippingCost(cardProduct,shippingCost);
+//
+//
+//            return new CardResponseDetail(
+//                    totalWithOutTax,
+//                    totalTax,
+//                    shippingCost,
+//                    totalPrice,
+//                    couponPrice,
+//                    shippingCostRate,
+//                    productDetails,
+//                    couponResponseDto
+//                    );
+//
+//        }else if (principal instanceof String && principal.equals("anonymousUser")) {
+//            throw new BadRequestException("Kullanıcı giriş yapmadan kupon kullanamaz!");
+//
+////            List<ProductQuantityDto> productCollect = cardProductRequestDto.stream().map(x -> {
+////                Product product =productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
+////                int quantity = x.getQuantity();
+////                return new ProductQuantityDto(product.getComparePrice(),product.getTaxRate(),quantity);
+////            }).toList();
+////
+////            List<CardResponseDetails> productDetails = cardProductRequestDto.stream().map(x -> {
+////                Product product = productRepository.findById(x.getProductId())
+////                        .orElseThrow(() -> new NotFoundException("Product not found"));
+////                String coverImageUrl = "";
+////                if (product.getCoverImage() != null) {
+////                    coverImageUrl = product.getCoverImage().getUrl();
+////                }
+////                return new CardResponseDetails(product.getId(),
+////                        product.getProductName(),
+////                        product.getProductLinkName(),
+////                        product.getSalePrice(),
+////                        product.getComparePrice(),
+////                        coverImageUrl,
+////                        x.getQuantity());
+////            }).toList();
+////
+////            BigDecimal totalWithOutTax = getTotalWithOutTax(productCollect);
+////            BigDecimal totalTax = getTotalTaxAmount(productCollect);
+////
+////            BigDecimal shippingCost = BigDecimal.ZERO;
+////            float shippingCostRate = getShippingCostRate(getTotalAmountWithOutShippingCost(productCollect));
+////
+////
+////
+////            if (getTotalAmountWithOutShippingCost(productCollect).compareTo(getMerchant().getMinOrderAmount()) < 0) {
+////                shippingCost = getMerchant().getShippingFee();
+////            }
+////            BigDecimal totalPrice = getTotalAmountWithShippingCost(productCollect,shippingCost);
+////
+////            return new CardResponseDetail(
+////                    totalWithOutTax,
+////                    totalTax,
+////                    shippingCost,
+////                    totalPrice,
+////
+////                    shippingCostRate,
+////                    productDetails,
+////                    null
+////            );
+//        }else
+//            throw new BadRequestException("Geçersiz Kullanıcı");
+//    }
+public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequestDto) {
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequestDto){
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println(principal);
+    if (principal instanceof Customer customer1) {
+        Customer customer = customerRepository.findById(customer1.getId()).get();
+        List<ProductQuantityDto> cardProduct = new ArrayList<>();
+        Coupon coupon = customer.getCard().getCoupon();
+        List<CardResponseDetails> productDetails = new ArrayList<>();
+        BigDecimal couponPrice = BigDecimal.ZERO;
+        CouponCustomerResponseDto couponResponseDto = null;
 
-        if (principal instanceof Customer customer1) {
-            Customer customer = customerRepository.findById(customer1.getId()).get();
-            List<ProductQuantityDto> cardProduct = new ArrayList<>();
+        List<CardItem> items = customer.getCard().getItems();
+        int itemCount = (int) items.stream()
+                .filter(i -> coupon != null && coupon.getProductAssigned()
+                        ? coupon.getProducts().contains(i.getProduct())
+                        : true)
+                .count();
 
-            Coupon coupon = customer.getCard().getCoupon();
-            List<CardResponseDetails> productDetails = new ArrayList<>();
+        for (CardItem item : items) {
+            Product product = item.getProduct();
+            String url = (product.getCoverImage() != null) ? product.getCoverImage().getUrl() : "";
+            BigDecimal comparePrice = product.getComparePrice();
+            BigDecimal finalPrice = comparePrice;
 
-            CouponCustomerResponseDto couponResponseDto = null;
             if (coupon != null) {
                 isCouponValidation(coupon);
-                if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)){
-                    System.out.println("1");
-                    productDetails = customer.getCard().getItems().stream().map(x -> {
-                        System.out.println("2");
-                        String url = "";
-                        if (x.getProduct().getCoverImage() != null) {
-                            url = x.getProduct().getCoverImage().getUrl();
-                        }
-                        System.out.println("3");
+                BigDecimal discountValue = coupon.getDiscountValue();
+                boolean assigned = coupon.getProductAssigned();
+                boolean isInCoupon = assigned && coupon.getProducts().contains(product);
 
-                        boolean isProductInCoupon = coupon.getProducts().stream()
-                                .anyMatch(product -> product.equals(x.getProduct()));
-                        System.out.println("4");
+                if (discountValue == null)
+                    throw new BadRequestException("İndirim oranı/miktarı eksik");
 
-                        BigDecimal comparePrice = x.getProduct().getComparePrice();
-                        if (isProductInCoupon)
-                            comparePrice = comparePrice.subtract(comparePrice.multiply(coupon.getDiscountValue()).divide(BigDecimal.valueOf(100)));
-                        System.out.println(5);
-                        cardProduct.add(new ProductQuantityDto(comparePrice,x.getProduct().getTaxRate(), x.getQuantity()));
-                        System.out.println(6);
-                        return new CardResponseDetails(x.getProduct().getId(),
-                                x.getProduct().getProductName(),
-                                x.getProduct().getProductLinkName(),
-                                x.getProduct().getSalePrice(),
-                                comparePrice,
-                                url,
-                                x.getQuantity());
-                    }).toList();
-                }else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)){
-                    productDetails = customer.getCard().getItems().stream().map(x -> {
-                        String url = "";
-                        if (x.getProduct().getCoverImage() != null) {
-                            url = x.getProduct().getCoverImage().getUrl();
-                        }
-
-                        boolean isProductInCoupon = coupon.getProducts().stream()
-                                .anyMatch(product -> product.equals(x.getProduct()));
-
-                        BigDecimal comparePrice = x.getProduct().getComparePrice();
-                        if (isProductInCoupon)
-                            comparePrice = comparePrice.subtract(coupon.getDiscountValue());
-
-                        cardProduct.add(new ProductQuantityDto(comparePrice,x.getProduct().getTaxRate(), x.getQuantity()));
-
-                        return new CardResponseDetails(x.getProduct().getId(),
-                                x.getProduct().getProductName(),
-                                x.getProduct().getProductLinkName(),
-                                x.getProduct().getSalePrice(),
-                                comparePrice,
-                                url,
-                                x.getQuantity());
-                    }).toList();
-
-                }else {
-                    productDetails = customer.getCard().getItems().stream().map(x -> {
-                        String url = "";
-                        if (x.getProduct().getCoverImage() != null) {
-                            url = x.getProduct().getCoverImage().getUrl();
-                        }
-                        cardProduct.add(new ProductQuantityDto(x.getProduct().getComparePrice(),x.getProduct().getTaxRate(), x.getQuantity()));
-
-                        return new CardResponseDetails(x.getProduct().getId(),
-                                x.getProduct().getProductName(),
-                                x.getProduct().getProductLinkName(),
-                                x.getProduct().getSalePrice(),
-                                x.getProduct().getComparePrice(),
-                                url,
-                                x.getQuantity());
-                    }).toList();
-                }
-                couponResponseDto = new CouponCustomerResponseDto(coupon.getCode(),
-                        coupon.getDescription(),
-                        coupon.getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
-                        coupon.getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
-                        coupon.getActive()
-                        );
-
-
-            }else {
-                productDetails = customer.getCard().getItems().stream().map(x -> {
-                    String url = "";
-                    if (x.getProduct().getCoverImage() != null) {
-                        url = x.getProduct().getCoverImage().getUrl();
+                if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
+                    if (!assigned || isInCoupon) {
+                        BigDecimal discountAmount = comparePrice.multiply(discountValue)
+                                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                        finalPrice = comparePrice.subtract(discountAmount);
+                        couponPrice = couponPrice.add(discountAmount);
                     }
-                    cardProduct.add(new ProductQuantityDto(x.getProduct().getComparePrice(),x.getProduct().getTaxRate(), x.getQuantity()));
+                } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
+                    if (!assigned || isInCoupon) {
+                        if (itemCount == 0)
+                            throw new BadRequestException("İndirim uygulanacak ürün yok");
 
-                    return new CardResponseDetails(x.getProduct().getId(),
-                            x.getProduct().getProductName(),
-                            x.getProduct().getProductLinkName(),
-                            x.getProduct().getSalePrice(),
-                            x.getProduct().getComparePrice(),
-                            url,
-                            x.getQuantity());
-                }).toList();
-            }
-
-            BigDecimal totalWithOutTax = getTotalWithOutTax(cardProduct);
-            BigDecimal totalTax = getTotalTaxAmount(cardProduct);
-
-            BigDecimal shippingCost = BigDecimal.ZERO;
-            float shippingCostRate = getShippingCostRate(getTotalAmountWithOutShippingCost(cardProduct));
-
-
-
-            if (getTotalAmountWithOutShippingCost(cardProduct).compareTo(getMerchant().getMinOrderAmount()) < 0) {
-                shippingCost = getMerchant().getShippingFee();
-            }
-            BigDecimal totalPrice = getTotalAmountWithShippingCost(cardProduct,shippingCost);
-
-
-            return new CardResponseDetail(
-                    totalWithOutTax,
-                    totalTax,
-                    shippingCost,
-                    totalPrice,
-                    shippingCostRate,
-                    productDetails,
-                    couponResponseDto
-                    );
-
-        }else if (principal instanceof String && principal.equals("anonymousUser")) {
-
-            List<ProductQuantityDto> productCollect = cardProductRequestDto.stream().map(x -> {
-                Product product =productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
-                int quantity = x.getQuantity();
-                return new ProductQuantityDto(product.getComparePrice(),product.getTaxRate(),quantity);
-            }).toList();
-
-            List<CardResponseDetails> productDetails = cardProductRequestDto.stream().map(x -> {
-                Product product = productRepository.findById(x.getProductId())
-                        .orElseThrow(() -> new NotFoundException("Product not found"));
-                String coverImageUrl = "";
-                if (product.getCoverImage() != null) {
-                    coverImageUrl = product.getCoverImage().getUrl();
+                        BigDecimal perItemDiscount = discountValue
+                                .divide(BigDecimal.valueOf(itemCount), 2, RoundingMode.HALF_UP);
+                        finalPrice = comparePrice.subtract(perItemDiscount);
+                        couponPrice = couponPrice.add(perItemDiscount);
+                    }
                 }
-                return new CardResponseDetails(product.getId(),
-                        product.getProductName(),
-                        product.getProductLinkName(),
-                        product.getSalePrice(),
-                        product.getComparePrice(),
-                        coverImageUrl,
-                        x.getQuantity());
-            }).toList();
-
-            BigDecimal totalWithOutTax = getTotalWithOutTax(productCollect);
-            BigDecimal totalTax = getTotalTaxAmount(productCollect);
-
-            BigDecimal shippingCost = BigDecimal.ZERO;
-            float shippingCostRate = getShippingCostRate(getTotalAmountWithOutShippingCost(productCollect));
-
-
-
-            if (getTotalAmountWithOutShippingCost(productCollect).compareTo(getMerchant().getMinOrderAmount()) < 0) {
-                shippingCost = getMerchant().getShippingFee();
             }
-            BigDecimal totalPrice = getTotalAmountWithShippingCost(productCollect,shippingCost);
 
-            return new CardResponseDetail(
-                    totalWithOutTax,
-                    totalTax,
-                    shippingCost,
-                    totalPrice,
-                    shippingCostRate,
-                    productDetails,
-                    null
+            // Listeye ekle
+            cardProduct.add(new ProductQuantityDto(finalPrice, product.getTaxRate(), item.getQuantity()));
+            productDetails.add(new CardResponseDetails(
+                    product.getId(),
+                    product.getProductName(),
+                    product.getProductLinkName(),
+                    product.getSalePrice(),
+                    finalPrice,
+                    url,
+                    item.getQuantity()
+            ));
+        }
+
+        if (coupon != null) {
+            couponResponseDto = new CouponCustomerResponseDto(
+                    coupon.getCode(),
+                    coupon.getDescription(),
+                    coupon.getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
+                    coupon.getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
+                    coupon.getActive()
             );
-        }else
-            throw new BadRequestException("Geçersiz Kullanıcı");
+        }
+
+        // Fiyat hesaplamaları
+        BigDecimal totalWithOutTax = getTotalWithOutTax(cardProduct);
+        BigDecimal totalTax = getTotalTaxAmount(cardProduct);
+        BigDecimal shippingCost = BigDecimal.ZERO;
+        float shippingCostRate = getShippingCostRate(getTotalAmountWithOutShippingCost(cardProduct));
+
+        if (getTotalAmountWithOutShippingCost(cardProduct).compareTo(getMerchant().getMinOrderAmount()) < 0) {
+            shippingCost = getMerchant().getShippingFee();
+        }
+
+        BigDecimal totalPrice = getTotalAmountWithShippingCost(cardProduct, shippingCost);
+
+        return new CardResponseDetail(
+                totalWithOutTax,
+                totalTax,
+                shippingCost,
+                totalPrice,
+                couponPrice,
+                shippingCostRate,
+                productDetails,
+                couponResponseDto
+        );
     }
+
+    if (principal instanceof String && principal.equals("anonymousUser")) {
+        throw new BadRequestException("Kullanıcı giriş yapmadan kupon kullanamaz!");
+    }
+
+    throw new BadRequestException("Geçersiz Kullanıcı");
+}
+
 
     private void isCouponValidation(Coupon coupon) {
         if (!coupon.getActive())
