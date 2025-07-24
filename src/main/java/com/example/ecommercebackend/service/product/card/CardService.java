@@ -123,7 +123,7 @@ public class CardService {
     public String addCoupon(String code) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof Customer customer) {
-            Coupon coupon = couponService.findByCode(code);
+            Coupon coupon = couponService.findByCodeNull(code);
             CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
 
             if (customerCoupon != null){

@@ -134,7 +134,7 @@ public class OrderService {
                             Instant.now()
                     );
                 }
-                coupon = couponService.findByCode(orderCreateDto.getCode());
+                coupon = couponService.findByCodeNull(orderCreateDto.getCode());
                 customerCoupon.setCoupon(coupon);
                 isCouponValidation(coupon,savedOrderItems,customer);
             }

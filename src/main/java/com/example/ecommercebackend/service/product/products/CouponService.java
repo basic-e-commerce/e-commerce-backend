@@ -9,6 +9,7 @@ import com.example.ecommercebackend.entity.product.products.Coupon;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
+import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.product.products.CouponRepository;
 import com.example.ecommercebackend.repository.user.CustomerRepository;
@@ -170,9 +171,15 @@ public class CouponService {
     }
 
 
-    public Coupon findByCode(String code) {
+    public Coupon findByCodeNull(String code) {
         return couponRepository.findOne(Specification.where(hasCode(code).and(isActive(true)))).orElse(null);
     }
+
+    public Coupon findByCode(String code) {
+        return couponRepository.findOne(Specification.where(hasCode(code).and(isActive(true)))).orElseThrow(()-> new NotFoundException("Kupon bulunamadı!"));
+    }
+
+
 
 
 }
