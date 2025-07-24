@@ -7,7 +7,7 @@ public class AddressDetailDto {
     private String lastName;
     private String username;
     private String countryName;
-    private String countryCode;
+    private String countryIso;
     private String city;
     private String cityCode;
     private String district;
@@ -17,14 +17,14 @@ public class AddressDetailDto {
     private String addressLine1;
     private String geliverId;
 
-    public AddressDetailDto(int id, String title, String firstName, String lastName, String username, String countryName, String countryCode, String city, String cityCode, String district, Integer districtId, String postalCode, String phoneNo, String addressLine1, String geliverId) {
+    public AddressDetailDto(int id, String title, String firstName, String lastName, String username, String countryName, String countryIso, String city, String cityCode, String district, Integer districtId, String postalCode, String phoneNo, String addressLine1, String geliverId) {
         this.id = id;
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.countryName = countryName;
-        this.countryCode = countryCode;
+        this.countryIso = countryIso;
         this.city = city;
         this.cityCode = cityCode;
         this.district = district;
@@ -146,11 +146,11 @@ public class AddressDetailDto {
         this.username = username;
     }
 
-    public String getCountryCode() {
-        return countryCode;
+    public String getCountryIso() {
+        return countryIso;
     }
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
+    public void setCountryIso(String countryIso) {
+        this.countryIso = countryIso;
     }
 }
