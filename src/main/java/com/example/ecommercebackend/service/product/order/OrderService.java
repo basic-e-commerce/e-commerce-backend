@@ -138,7 +138,6 @@ public class OrderService {
                 customerCoupon.setCoupon(coupon);
                 isCouponValidation(coupon,savedOrderItems,customer);
             }
-            System.out.println("Kupon var mı : "+ coupon.getCode());
 
             if (customer.getCard().getItems().isEmpty())
                 throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
