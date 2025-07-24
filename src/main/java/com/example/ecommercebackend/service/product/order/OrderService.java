@@ -500,8 +500,10 @@ public class OrderService {
             throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
         }
         BigDecimal totalValue = BigDecimal.valueOf(0);
+        System.out.println("TOTAL VALUE: "+totalValue);
         for (OrderItem orderItem: savedOrderItems) {
             totalValue = totalValue.add(orderItem.getDiscountPrice());
+            System.out.println("TOTAL VALUE: "+totalValue);
         }
         if (totalValue.compareTo(coupon.getMinOrderAmountLimit()) < 0) {
             throw new BadRequestException("Sipariş tutarı kuponun minimum limiti olan " + coupon.getMinOrderAmountLimit() + " TL'den küçük.");
