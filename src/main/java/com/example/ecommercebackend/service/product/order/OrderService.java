@@ -474,7 +474,7 @@ public class OrderService {
 
         //Set<OrderItem> newOrderItems = new HashSet<>();
         for (OrderItem orderItem: savedOrderItems) {
-            totalPrice = totalPrice.add(orderItem.getPrice());
+            totalPrice = totalPrice.add(orderItem.getDiscountPrice());
         }
         if (totalPrice.compareTo(minPrice) < 0) {
             totalPrice = totalPrice.add(kargoPrice);
@@ -504,8 +504,8 @@ public class OrderService {
         System.out.println("TOTAL VALUE: "+totalValue);
         System.out.println("size: "+savedOrderItems.size());
         for (OrderItem orderItem: savedOrderItems) {
-            System.out.println(orderItem.getDiscountPrice());
-            totalValue = totalValue.add(orderItem.getDiscountPrice());
+            System.out.println(orderItem.getPrice());
+            totalValue = totalValue.add(orderItem.getPrice());
             System.out.println("TOTAL VALUE: "+totalValue);
         }
         if (totalValue.compareTo(coupon.getMinOrderAmountLimit()) < 0) {
