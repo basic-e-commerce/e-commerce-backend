@@ -135,6 +135,7 @@ public class OrderService {
                     );
                 }
                 coupon = couponService.findByCode(orderCreateDto.getCode());
+                customerCoupon.setCoupon(coupon);
                 isCouponValidation(coupon,savedOrderItems,customer);
             }
 
