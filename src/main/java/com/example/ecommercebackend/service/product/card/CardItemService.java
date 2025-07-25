@@ -390,10 +390,29 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
                 productDetails,
                 couponResponseDto
         );
-    }
+    }else if (principal instanceof String && principal.equals("anonymousUser")) {
+        List<ProductQuantityDto> productCollect = cardProductRequestDto.stream().map(x -> {
+            Product product =productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
+            int quantity = x.getQuantity();
+            return new ProductQuantityDto(product.getComparePrice(),product.getTaxRate(),quantity);
+        }).toList();
 
-    if (principal instanceof String && principal.equals("anonymousUser")) {
-        throw new BadRequestException("Kullanıcı giriş yapmadan kupon kullanamaz!");
+        List<CardResponseDetails> productDetails = cardProductRequestDto.stream().map(x -> {
+            Product product = productRepository.findById(x.getProductId())
+                    .orElseThrow(() -> new NotFoundException("Product not found"));
+            String coverImageUrl = "";
+            if (product.getCoverImage() != null) {
+                coverImageUrl = product.getCoverImage().getUrl();
+            }
+            return new CardResponseDetails(product.getId(),
+                    product.getProductName(),
+                    product.getProductLinkName(),
+                    product.getSalePrice(),
+                    product.getComparePrice(),
+                    product.getComparePrice(),
+                    coverImageUrl,
+                    x.getQuantity());
+        }).toList();
     }
 
     throw new BadRequestException("Geçersiz Kullanıcı");
