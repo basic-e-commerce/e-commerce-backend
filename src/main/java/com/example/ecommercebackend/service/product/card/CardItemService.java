@@ -314,7 +314,7 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
             Product product = item.getProduct();
             String url = (product.getCoverImage() != null) ? product.getCoverImage().getUrl() : "";
             BigDecimal comparePrice = product.getComparePrice();
-            BigDecimal finalPrice = comparePrice;
+            BigDecimal productCouponPrice = couponPrice;
 
             if (coupon != null) {
                 isCouponValidation(coupon);
@@ -329,7 +329,7 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
                     if (!assigned || isInCoupon) {
                         BigDecimal discountAmount = comparePrice.multiply(discountValue)
                                 .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-                        BigDecimal productCouponPrice = comparePrice.subtract(discountAmount);
+                         productCouponPrice = comparePrice.subtract(discountAmount);
                         couponPrice = couponPrice.add(discountAmount.multiply(BigDecimal.valueOf(item.getQuantity())));
 
                     }
@@ -340,21 +340,21 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
 
                         BigDecimal perItemDiscount = discountValue
                                 .divide(BigDecimal.valueOf(itemCount), 2, RoundingMode.HALF_UP);
-                        finalPrice = comparePrice.subtract(perItemDiscount);
+                        productCouponPrice = comparePrice.subtract(perItemDiscount);
                         couponPrice = couponPrice.add(perItemDiscount);
                     }
                 }
             }
 
             // Listeye ekle
-            cardProduct.add(new ProductQuantityDto(finalPrice, product.getTaxRate(), item.getQuantity()));
+            cardProduct.add(new ProductQuantityDto(productCouponPrice, product.getTaxRate(), item.getQuantity()));
             productDetails.add(new CardResponseDetails(
                     product.getId(),
                     product.getProductName(),
                     product.getProductLinkName(),
                     product.getSalePrice(),
                     product.getComparePrice(),
-                    finalPrice,
+                    productCouponPrice,
                     url,
                     item.getQuantity()
             ));
