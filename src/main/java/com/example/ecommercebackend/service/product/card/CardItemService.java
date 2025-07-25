@@ -62,242 +62,15 @@ public class CardItemService {
         cardItemRepository.delete(cardItem);
     }
 
-//
-//    public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequestDto){
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        System.out.println(principal);
-//
-//        if (principal instanceof Customer customer1) {
-//            Customer customer = customerRepository.findById(customer1.getId()).get();
-//            List<ProductQuantityDto> cardProduct = new ArrayList<>();
-//
-//            Coupon coupon = customer.getCard().getCoupon();
-//            List<CardResponseDetails> productDetails = new ArrayList<>();
-//            BigDecimal couponPrice = BigDecimal.ZERO;
-//
-//            CouponCustomerResponseDto couponResponseDto = null;
-//            if (coupon != null) {
-//                isCouponValidation(coupon);
-//                if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)){
-//                    System.out.println("1");
-//                    productDetails = customer.getCard().getItems().stream().map(x -> {
-//
-//
-//                        System.out.println("2");
-//                        String url = "";
-//                        if (x.getProduct().getCoverImage() != null) {
-//                            url = x.getProduct().getCoverImage().getUrl();
-//                        }
-//                        System.out.println("3");
-//
-//                        BigDecimal comparePrice = x.getProduct().getComparePrice();
-//
-//                        if (coupon.getProductAssigned()){
-//                            boolean isProductInCoupon = coupon.getProducts().stream()
-//                                    .anyMatch(product -> product.equals(x.getProduct()));
-//                            if (isProductInCoupon){
-//                                BigDecimal substract = comparePrice.multiply(coupon.getDiscountValue()).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP);
-//                                comparePrice = comparePrice.subtract(substract);
-//                                couponPrice.add(substract);
-//                            }else{
-//                                comparePrice = x.getProduct().getComparePrice();
-//                            }
-//
-//                        }else {
-//                            comparePrice = x.getProduct().getComparePrice();
-//                        }
-//
-//
-//                        System.out.println(5);
-//                        cardProduct.add(
-//                                new ProductQuantityDto(
-//                                        comparePrice,
-//                                        x.getProduct().getTaxRate(),
-//                                        x.getQuantity()
-//                                )
-//                        );
-//                        System.out.println(6);
-//                        return new CardResponseDetails(x.getProduct().getId(),
-//                                x.getProduct().getProductName(),
-//                                x.getProduct().getProductLinkName(),
-//                                x.getProduct().getSalePrice(),
-//                                comparePrice,
-//                                url,
-//                                x.getQuantity());
-//                    }).toList();
-//                }else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)){
-//                    productDetails = customer.getCard().getItems().stream().map(x -> {
-//                        String url = "";
-//                        if (x.getProduct().getCoverImage() != null) {
-//                            url = x.getProduct().getCoverImage().getUrl();
-//                        }
-//
-//                        BigDecimal comparePrice = x.getProduct().getComparePrice();
-//
-//                        if (coupon.getProductAssigned()){
-//                            boolean isProductInCoupon = coupon.getProducts().stream()
-//                                    .anyMatch(product -> product.equals(x.getProduct()));
-//
-//                            BigDecimal orderItemSize = BigDecimal.ZERO;
-//                            for ()
-//
-//                            if (isProductInCoupon){
-//                                comparePrice = comparePrice.subtract(coupon.getDiscountValue());
-//
-//                            }
-//
-//                        }
-//
-//
-//                        cardProduct.add(new ProductQuantityDto(comparePrice,x.getProduct().getTaxRate(), x.getQuantity()));
-//
-//                        return new CardResponseDetails(x.getProduct().getId(),
-//                                x.getProduct().getProductName(),
-//                                x.getProduct().getProductLinkName(),
-//                                x.getProduct().getSalePrice(),
-//                                comparePrice,
-//                                url,
-//                                x.getQuantity());
-//                    }).toList();
-//
-//                }else {
-//                    productDetails = customer.getCard().getItems().stream().map(x -> {
-//                        String url = "";
-//                        if (x.getProduct().getCoverImage() != null) {
-//                            url = x.getProduct().getCoverImage().getUrl();
-//                        }
-//                        cardProduct.add(
-//                                new ProductQuantityDto(
-//                                        x.getProduct().getComparePrice(),
-//                                        x.getProduct().getTaxRate(),
-//                                        x.getQuantity()
-//                                )
-//                        );
-//
-//                        return new CardResponseDetails(x.getProduct().getId(),
-//                                x.getProduct().getProductName(),
-//                                x.getProduct().getProductLinkName(),
-//                                x.getProduct().getSalePrice(),
-//                                x.getProduct().getComparePrice(),
-//                                url,
-//                                x.getQuantity());
-//                    }).toList();
-//                }
-//                couponResponseDto = new CouponCustomerResponseDto(coupon.getCode(),
-//                        coupon.getDescription(),
-//                        coupon.getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
-//                        coupon.getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
-//                        coupon.getActive()
-//                        );
-//
-//
-//            }else {
-//                productDetails = customer.getCard().getItems().stream().map(x -> {
-//                    String url = "";
-//                    if (x.getProduct().getCoverImage() != null) {
-//                        url = x.getProduct().getCoverImage().getUrl();
-//                    }
-//                    cardProduct.add(
-//                            new ProductQuantityDto(
-//                                    x.getProduct().getComparePrice(),
-//                                    x.getProduct().getTaxRate(),
-//                                    x.getQuantity()
-//                            )
-//                    );
-//
-//                    return new CardResponseDetails(x.getProduct().getId(),
-//                            x.getProduct().getProductName(),
-//                            x.getProduct().getProductLinkName(),
-//                            x.getProduct().getSalePrice(),
-//                            x.getProduct().getComparePrice(),
-//                            url,
-//                            x.getQuantity());
-//                }).toList();
-//            }
-//
-//            BigDecimal totalWithOutTax = getTotalWithOutTax(cardProduct);
-//            BigDecimal totalTax = getTotalTaxAmount(cardProduct);
-//
-//            BigDecimal shippingCost = BigDecimal.ZERO;
-//            float shippingCostRate = getShippingCostRate(getTotalAmountWithOutShippingCost(cardProduct));
-//
-//
-//
-//            if (getTotalAmountWithOutShippingCost(cardProduct).compareTo(getMerchant().getMinOrderAmount()) < 0) {
-//                shippingCost = getMerchant().getShippingFee();
-//            }
-//            BigDecimal totalPrice = getTotalAmountWithShippingCost(cardProduct,shippingCost);
-//
-//
-//            return new CardResponseDetail(
-//                    totalWithOutTax,
-//                    totalTax,
-//                    shippingCost,
-//                    totalPrice,
-//                    couponPrice,
-//                    shippingCostRate,
-//                    productDetails,
-//                    couponResponseDto
-//                    );
-//
-//        }else if (principal instanceof String && principal.equals("anonymousUser")) {
-//            throw new BadRequestException("Kullanıcı giriş yapmadan kupon kullanamaz!");
-//
-////            List<ProductQuantityDto> productCollect = cardProductRequestDto.stream().map(x -> {
-////                Product product =productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
-////                int quantity = x.getQuantity();
-////                return new ProductQuantityDto(product.getComparePrice(),product.getTaxRate(),quantity);
-////            }).toList();
-////
-////            List<CardResponseDetails> productDetails = cardProductRequestDto.stream().map(x -> {
-////                Product product = productRepository.findById(x.getProductId())
-////                        .orElseThrow(() -> new NotFoundException("Product not found"));
-////                String coverImageUrl = "";
-////                if (product.getCoverImage() != null) {
-////                    coverImageUrl = product.getCoverImage().getUrl();
-////                }
-////                return new CardResponseDetails(product.getId(),
-////                        product.getProductName(),
-////                        product.getProductLinkName(),
-////                        product.getSalePrice(),
-////                        product.getComparePrice(),
-////                        coverImageUrl,
-////                        x.getQuantity());
-////            }).toList();
-////
-////            BigDecimal totalWithOutTax = getTotalWithOutTax(productCollect);
-////            BigDecimal totalTax = getTotalTaxAmount(productCollect);
-////
-////            BigDecimal shippingCost = BigDecimal.ZERO;
-////            float shippingCostRate = getShippingCostRate(getTotalAmountWithOutShippingCost(productCollect));
-////
-////
-////
-////            if (getTotalAmountWithOutShippingCost(productCollect).compareTo(getMerchant().getMinOrderAmount()) < 0) {
-////                shippingCost = getMerchant().getShippingFee();
-////            }
-////            BigDecimal totalPrice = getTotalAmountWithShippingCost(productCollect,shippingCost);
-////
-////            return new CardResponseDetail(
-////                    totalWithOutTax,
-////                    totalTax,
-////                    shippingCost,
-////                    totalPrice,
-////
-////                    shippingCostRate,
-////                    productDetails,
-////                    null
-////            );
-//        }else
-//            throw new BadRequestException("Geçersiz Kullanıcı");
-//    }
+
 public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequestDto) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     System.out.println("principal : "+ authentication.getPrincipal());
 
     if (authentication.getPrincipal() instanceof Customer customer1) {
         Customer customer = customerRepository.findById(customer1.getId()).get();
-        List<ProductQuantityDto> cardProduct = new ArrayList<>();
+
+        List<ProductQuantityDto> cardProduct = new ArrayList<>();   // döndürülecek product product ve quantity için liste oluşturuluyor ama kupon varsa bu olacak yoksa olmayacak
         List<ProductQuantityDto> cardProductNoCoupon = new ArrayList<>();
         Coupon coupon = customer.getCard().getCoupon();
         List<CardResponseDetails> productDetails = new ArrayList<>();
@@ -317,8 +90,9 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
             BigDecimal comparePrice = product.getComparePrice();
             BigDecimal productCouponPrice = couponPrice;
 
+
             if (coupon != null) {
-                isCouponValidation(coupon);
+                isCouponValidation(coupon,customer);
                 BigDecimal discountValue = coupon.getDiscountValue();
                 boolean assigned = coupon.getProductAssigned();
                 boolean isInCoupon = assigned && coupon.getProducts().contains(product);
@@ -447,24 +221,33 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
 }
 
 
-    private void isCouponValidation(Coupon coupon) {
+    private void isCouponValidation(Coupon coupon,Customer customer) {
         if (!coupon.getActive())
             throw new BadRequestException("Kullanılan Kupon Aktif değildir!");
 
         System.out.println("coupon.getTimesUsed():"+coupon.getTimesUsed());
         System.out.println("coupon.getTotalUsageLimit(): "+coupon.getTotalUsageLimit());
-        if (coupon.getTimesUsed() >= coupon.getTotalUsageLimit())
+        if (coupon.getTimesUsed() >= coupon.getTotalUsageLimit()){
+            customer.getCard().setCoupon(null);
+            customerRepository.save(customer);
             throw new BadRequestException("Kuponun Kullanım Limiti Dolmuştur");
+        }
+
 
         Instant now = Instant.now();
 
         if (coupon.getCouponStartDate() != null && now.isBefore(coupon.getCouponStartDate())) {
+            customer.getCard().setCoupon(null);
+            customerRepository.save(customer);
             throw new BadRequestException("Kupon henüz geçerli değildir!");
         }
 
         if (coupon.getCouponEndDate() != null && now.isAfter(coupon.getCouponEndDate())) {
+            customer.getCard().setCoupon(null);
+            customerRepository.save(customer);
             throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
         }
+
     }
 
 
