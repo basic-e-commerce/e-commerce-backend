@@ -327,8 +327,9 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
                     if (!assigned || isInCoupon) {
                         BigDecimal discountAmount = comparePrice.multiply(discountValue)
                                 .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-                        finalPrice = comparePrice.subtract(discountAmount);
-                        couponPrice = couponPrice.add(discountAmount);
+                        BigDecimal productCouponPrice = comparePrice.subtract(discountAmount);
+                        couponPrice = couponPrice.add(discountAmount.multiply(BigDecimal.valueOf(item.getQuantity())));
+
                     }
                 } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
                     if (!assigned || isInCoupon) {
@@ -350,6 +351,7 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
                     product.getProductName(),
                     product.getProductLinkName(),
                     product.getSalePrice(),
+                    product.getComparePrice(),
                     finalPrice,
                     url,
                     item.getQuantity()

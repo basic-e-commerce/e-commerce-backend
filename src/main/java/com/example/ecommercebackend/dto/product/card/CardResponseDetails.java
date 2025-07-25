@@ -8,15 +8,17 @@ public class CardResponseDetails {
     private String productLinkName;
     private BigDecimal price;
     private BigDecimal comparePrice;
+    private BigDecimal couponProductPrice;
     private String coverImage;
     private int quantity;
 
-    public CardResponseDetails(int id, String title, String productLinkName, BigDecimal price, BigDecimal comparePrice, String coverImage, int quantity) {
+    public CardResponseDetails(int id, String title, String productLinkName, BigDecimal price, BigDecimal comparePrice, BigDecimal couponProductPrice, String coverImage, int quantity) {
         this.id = id;
         this.title = title;
         this.productLinkName = productLinkName;
         this.price = price;
         this.comparePrice = comparePrice;
+        this.couponProductPrice = couponProductPrice;
         this.coverImage = coverImage;
         this.quantity = quantity;
     }
@@ -75,5 +77,13 @@ public class CardResponseDetails {
 
     public void setProductLinkName(String productLinkName) {
         this.productLinkName = productLinkName;
+    }
+
+    public BigDecimal getCouponProductPrice() {
+        return couponProductPrice;
+    }
+
+    public void setCouponProductPrice(BigDecimal couponProductPrice) {
+        this.couponProductPrice = couponProductPrice;
     }
 }
