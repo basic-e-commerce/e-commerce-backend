@@ -19,6 +19,7 @@ import com.example.ecommercebackend.repository.user.CustomerRepository;
 import com.example.ecommercebackend.service.merchant.MerchantService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -291,9 +292,9 @@ public class CardItemService {
 //            throw new BadRequestException("Geçersiz Kullanıcı");
 //    }
 public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequestDto) {
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    if (principal instanceof Customer customer1) {
+    if (authentication.getPrincipal() instanceof Customer customer1) {
         Customer customer = customerRepository.findById(customer1.getId()).get();
         List<ProductQuantityDto> cardProduct = new ArrayList<>();
         Coupon coupon = customer.getCard().getCoupon();
@@ -390,14 +391,14 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
                 productDetails,
                 couponResponseDto
         );
-    }else if (principal instanceof String && principal.equals("anonymousUser")) {
+    }else if (authentication instanceof AnonymousAuthenticationToken) {
         List<ProductQuantityDto> productCollect = cardProductRequestDto.stream().map(x -> {
             Product product =productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
             int quantity = x.getQuantity();
             return new ProductQuantityDto(product.getComparePrice(),product.getTaxRate(),quantity);
         }).toList();
 
-        List<CardResponseDetails> productDetails = cardProductRequestDto.stream().map(x -> {
+        cardProductRequestDto.stream().map(x -> {
             Product product = productRepository.findById(x.getProductId())
                     .orElseThrow(() -> new NotFoundException("Product not found"));
             String coverImageUrl = "";
