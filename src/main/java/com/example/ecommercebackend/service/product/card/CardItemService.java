@@ -298,6 +298,7 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
     if (authentication.getPrincipal() instanceof Customer customer1) {
         Customer customer = customerRepository.findById(customer1.getId()).get();
         List<ProductQuantityDto> cardProduct = new ArrayList<>();
+        List<ProductQuantityDto> cardProductNoCoupon = new ArrayList<>();
         Coupon coupon = customer.getCard().getCoupon();
         List<CardResponseDetails> productDetails = new ArrayList<>();
         BigDecimal couponPrice = BigDecimal.ZERO;
@@ -348,6 +349,7 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
 
             // Listeye ekle
             cardProduct.add(new ProductQuantityDto(productCouponPrice, product.getTaxRate(), item.getQuantity()));
+            cardProductNoCoupon.add(new ProductQuantityDto(comparePrice, product.getTaxRate(), item.getQuantity()));
             productDetails.add(new CardResponseDetails(
                     product.getId(),
                     product.getProductName(),
@@ -381,11 +383,13 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
         }
 
         BigDecimal totalPrice = getTotalAmountWithShippingCost(cardProduct, shippingCost);
+        BigDecimal totalNoCouponPrice = getTotalAmountWithShippingCost(cardProductNoCoupon, shippingCost);
 
         return new CardResponseDetail(
                 totalWithOutTax,
                 totalTax,
                 shippingCost,
+                totalNoCouponPrice,
                 totalPrice,
                 couponPrice,
                 shippingCostRate,
@@ -429,6 +433,7 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
                 totalWithOutTax,
                 totalTax,
                 shippingCost,
+                totalPrice,
                 totalPrice,
                 BigDecimal.ZERO,
                 shippingCostRate,
