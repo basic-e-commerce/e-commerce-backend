@@ -393,15 +393,15 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
                 couponResponseDto
         );
     }else if (authentication.getPrincipal().equals("anonymousUser")) {
-        cardProductRequestDto.stream().map(x -> {
+        List<ProductQuantityDto> productCollect = cardProductRequestDto.stream().map(x -> {
             Product product =productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
             int quantity = x.getQuantity();
             return new ProductQuantityDto(product.getComparePrice(),product.getTaxRate(),quantity);
         }).toList();
 
-        cardProductRequestDto.stream().map(x -> {
+        List<CardResponseDetails> productDetails = cardProductRequestDto.stream().map(x -> {
             Product product = productRepository.findById(x.getProductId())
-                    .orElseThrow(() -> new NotFoundException("Ürün bulunamadı"));
+                    .orElseThrow(() -> new NotFoundException("Product not found"));
             String coverImageUrl = "";
             if (product.getCoverImage() != null) {
                 coverImageUrl = product.getCoverImage().getUrl();
@@ -415,6 +415,27 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
                     coverImageUrl,
                     x.getQuantity());
         }).toList();
+
+        BigDecimal totalWithOutTax = getTotalWithOutTax(productCollect);
+        BigDecimal totalTax = getTotalTaxAmount(productCollect);
+        BigDecimal shippingCost = BigDecimal.ZERO;
+        float shippingCostRate = getShippingCostRate(getTotalAmountWithOutShippingCost(productCollect));
+        if (getTotalAmountWithOutShippingCost(productCollect).compareTo(getMerchant().getMinOrderAmount()) < 0) {
+            shippingCost = getMerchant().getShippingFee();
+        }
+        BigDecimal totalPrice = getTotalAmountWithShippingCost(productCollect,shippingCost);
+
+        return new CardResponseDetail(
+                totalWithOutTax,
+                totalTax,
+                shippingCost,
+                totalPrice,
+                BigDecimal.ZERO,
+                shippingCostRate,
+                productDetails,
+                null
+        );
+
     }
 
     throw new BadRequestException("Geçersiz Kullanıcı");
