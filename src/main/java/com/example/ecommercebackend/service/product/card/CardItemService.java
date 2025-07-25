@@ -293,6 +293,7 @@ public class CardItemService {
 //    }
 public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequestDto) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    System.out.println("principal : "+ authentication.getPrincipal());
 
     if (authentication.getPrincipal() instanceof Customer customer1) {
         Customer customer = customerRepository.findById(customer1.getId()).get();
@@ -391,7 +392,7 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
                 productDetails,
                 couponResponseDto
         );
-    }else if (authentication instanceof AnonymousAuthenticationToken) {
+    }else if (authentication.getPrincipal() instanceof String && authentication.getPrincipal().equals("anonymousUser")) {
         cardProductRequestDto.stream().map(x -> {
             Product product =productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
             int quantity = x.getQuantity();
