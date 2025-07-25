@@ -392,7 +392,7 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
                 productDetails,
                 couponResponseDto
         );
-    }else if (authentication.getPrincipal() instanceof String && authentication.getPrincipal().equals("anonymousUser")) {
+    }else if (authentication.getPrincipal().equals("anonymousUser")) {
         cardProductRequestDto.stream().map(x -> {
             Product product =productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
             int quantity = x.getQuantity();
