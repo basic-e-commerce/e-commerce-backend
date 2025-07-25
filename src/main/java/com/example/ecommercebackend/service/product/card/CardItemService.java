@@ -392,7 +392,7 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
                 couponResponseDto
         );
     }else if (authentication instanceof AnonymousAuthenticationToken) {
-        List<ProductQuantityDto> productCollect = cardProductRequestDto.stream().map(x -> {
+        cardProductRequestDto.stream().map(x -> {
             Product product =productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
             int quantity = x.getQuantity();
             return new ProductQuantityDto(product.getComparePrice(),product.getTaxRate(),quantity);
@@ -400,7 +400,7 @@ public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequ
 
         cardProductRequestDto.stream().map(x -> {
             Product product = productRepository.findById(x.getProductId())
-                    .orElseThrow(() -> new NotFoundException("Product not found"));
+                    .orElseThrow(() -> new NotFoundException("Ürün bulunamadı"));
             String coverImageUrl = "";
             if (product.getCoverImage() != null) {
                 coverImageUrl = product.getCoverImage().getUrl();
