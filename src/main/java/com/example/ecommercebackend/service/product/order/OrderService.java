@@ -712,7 +712,6 @@ public class OrderService {
 
     public CargoOfferResponsesUserDto cargoOffer(String orderCode, List<CargoOfferDesiRequestAdminDto> cargoOfferDesiRequestAdminDtos) {
         List<CargoOfferResponseDto> cargoOfferResponseDtos = new ArrayList<>();
-        List<Integer> orderPackages = new ArrayList<>();
         Order order = findByOrderCode(orderCode);
         String senderAddressId = merchantService.getMerchant().getDefaultSendingAddress().getGeliverId();
 
@@ -834,7 +833,6 @@ public class OrderService {
 
         CargoOfferResponseDto cargoOfferResponseDto = cargoOfferResponseDtos.getFirst();
         return new CargoOfferResponsesUserDto(
-                orderPackages.get(0),
                 new CargoOfferResponseUserDto(
                         cargoOfferResponseDto.getData().getLength(),
                         cargoOfferResponseDto.getData().getWidth(),
