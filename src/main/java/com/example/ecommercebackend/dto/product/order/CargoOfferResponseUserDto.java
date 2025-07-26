@@ -19,6 +19,12 @@ public class CargoOfferResponseUserDto {
     @JsonProperty("weight")
     private String weight;
 
+    @JsonProperty("distanceUnit")
+    private String distanceUnit;
+
+    @JsonProperty("massUnit")
+    private String massUnit;
+
     @JsonProperty("cheapest")
     private OfferUserDto cheapest;
 
@@ -28,11 +34,13 @@ public class CargoOfferResponseUserDto {
     @JsonProperty("list")
     private List<OfferUserDto> list;
 
-    public CargoOfferResponseUserDto(String length, String width, String height, String weight, OfferUserDto cheapest, OfferUserDto fastest, List<OfferUserDto> list) {
+    public CargoOfferResponseUserDto(String length, String width, String height, String weight, String distanceUnit, String massUnit, OfferUserDto cheapest, OfferUserDto fastest, List<OfferUserDto> list) {
         this.length = length;
         this.width = width;
         this.height = height;
         this.weight = weight;
+        this.distanceUnit = distanceUnit;
+        this.massUnit = massUnit;
         this.cheapest = cheapest;
         this.fastest = fastest;
         this.list = list;
@@ -92,5 +100,21 @@ public class CargoOfferResponseUserDto {
 
     public void setList(List<OfferUserDto> list) {
         this.list = list;
+    }
+
+    public String getDistanceUnit() {
+        return distanceUnit;
+    }
+
+    public void setDistanceUnit(String distanceUnit) {
+        this.distanceUnit = distanceUnit;
+    }
+
+    public String getMassUnit() {
+        return massUnit;
+    }
+
+    public void setMassUnit(String massUnit) {
+        this.massUnit = massUnit;
     }
 }

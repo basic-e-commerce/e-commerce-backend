@@ -70,6 +70,7 @@ public class PaymentService {
                 "İslem Baslatılıyor",
                 BigDecimal.ZERO,
                 orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber(),
+                "transactionalId",
                 order
         );
         System.out.println("payment 11");
@@ -138,6 +139,9 @@ public class PaymentService {
 
     @Transactional
     public void payCallBack(Map<String, String> collections, HttpServletResponse httpServletResponse) throws IOException {
+        System.out.println("Gelen Callback Parametreleri:");
+        collections.forEach((key, value) -> System.out.println(key + ": " + value));
+
         PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
         PayCallBackDto payCallBackDto = paymentStrategy.payCallBack(collections);
 
@@ -153,7 +157,7 @@ public class PaymentService {
                 order.getCustomerCoupon().setUsedAt(Instant.now());
                 order.getCustomerCoupon().getCoupon().setTimesUsed(order.getCustomerCoupon().getCoupon().getTimesUsed()+1);
             }
-            Set<Sell> collect = order.getOrderItems().stream().map(sellService::save).collect(Collectors.toSet());
+            Set<Sell> collect = order.getOrderItems().stream().map(x->sellService.save(x,"asd")).collect(Collectors.toSet());
             payment.setSells(collect);
 
             Invoice invoice = order.getInvoice();

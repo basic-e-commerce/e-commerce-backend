@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.entity.product.order;
 
+import com.example.ecommercebackend.entity.product.products.ProductTemplate;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -28,6 +29,9 @@ public class OrderPackage {
     private double width;
     private double height;
     private double weight;  // kg
+    private ProductTemplate.DistanceUnit distanceUnit;
+    private ProductTemplate.MassUnit massUnit;
+
 
     private String shipmentId;
     private String responsiveLabelURL;
@@ -57,13 +61,15 @@ public class OrderPackage {
     private Instant updateAt;
 
 
-    public OrderPackage(Set<OrderItem> orderItems, String packageName, double length, double width, double height, double weight, String shipmentId, String responsiveLabelURL, CargoCompany cargoCompany, CargoStatus cargoStatus, String cargoId, String barcode, Boolean productPaymentOnDelivery, Boolean isCanceled, Boolean isRefund, String location) {
+    public OrderPackage(Set<OrderItem> orderItems, String packageName, double length, double width, double height, double weight, ProductTemplate.DistanceUnit distanceUnit, ProductTemplate.MassUnit massUnit, String shipmentId, String responsiveLabelURL, CargoCompany cargoCompany, CargoStatus cargoStatus, String cargoId, String barcode, Boolean productPaymentOnDelivery, Boolean isCanceled, Boolean isRefund, String location) {
         this.orderItems = orderItems;
         this.packageName = packageName;
         this.length = length;
         this.width = width;
         this.height = height;
         this.weight = weight;
+        this.distanceUnit = distanceUnit;
+        this.massUnit = massUnit;
         this.shipmentId = shipmentId;
         this.responsiveLabelURL = responsiveLabelURL;
         this.cargoCompany = cargoCompany;
@@ -298,5 +304,21 @@ public class OrderPackage {
 
     public void setCargoId(String cargoId) {
         this.cargoId = cargoId;
+    }
+
+    public ProductTemplate.DistanceUnit getDistanceUnit() {
+        return distanceUnit;
+    }
+
+    public void setDistanceUnit(ProductTemplate.DistanceUnit distanceUnit) {
+        this.distanceUnit = distanceUnit;
+    }
+
+    public ProductTemplate.MassUnit getMassUnit() {
+        return massUnit;
+    }
+
+    public void setMassUnit(ProductTemplate.MassUnit massUnit) {
+        this.massUnit = massUnit;
     }
 }

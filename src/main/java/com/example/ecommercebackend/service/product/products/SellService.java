@@ -59,7 +59,7 @@ public class SellService {
     }
 
     @Transactional
-    public Sell save(OrderItem orderItem) {
+    public Sell save(OrderItem orderItem,String transactionId) {
         Product product = orderItem.getProduct();
         System.out.println("sell product: " + product.getProductName());
         System.out.println("sell product quantity: : " + product.getQuantity());
@@ -76,7 +76,8 @@ public class SellService {
         Sell sell = new Sell(
                 save,
                 orderItem.getPrice(),
-                orderItem.getQuantity()
+                orderItem.getQuantity(),
+                transactionId
         );
         return sellRepository.save(sell);
     }

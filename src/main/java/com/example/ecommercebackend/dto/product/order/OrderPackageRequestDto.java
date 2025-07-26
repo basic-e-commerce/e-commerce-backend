@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.dto.product.order;
 
 import com.example.ecommercebackend.entity.product.order.OrderPackage;
+import com.example.ecommercebackend.entity.product.products.ProductTemplate;
 
 import java.math.BigDecimal;
 
@@ -10,6 +11,8 @@ public class OrderPackageRequestDto {
     private double width;
     private double height;
     private double weight;  // kg
+    private ProductTemplate.DistanceUnit distanceUnit;
+    private ProductTemplate.MassUnit massUnit;
     private String responsiveLabelURL;
     private OrderPackage.CargoCompany cargoCompany;
     private String cargoId;
@@ -17,12 +20,14 @@ public class OrderPackageRequestDto {
     private String barcode;
     private BigDecimal amount;
 
-    public OrderPackageRequestDto(String packageName, double length, double width, double height, double weight, String responsiveLabelURL, OrderPackage.CargoCompany cargoCompany, String cargoId, String location, String barcode, BigDecimal amount) {
+    public OrderPackageRequestDto(String packageName, double length, double width, double height, double weight, ProductTemplate.DistanceUnit distanceUnit, ProductTemplate.MassUnit massUnit, String responsiveLabelURL, OrderPackage.CargoCompany cargoCompany, String cargoId, String location, String barcode, BigDecimal amount) {
         this.packageName = packageName;
         this.length = length;
         this.width = width;
         this.height = height;
         this.weight = weight;
+        this.distanceUnit = distanceUnit;
+        this.massUnit = massUnit;
         this.responsiveLabelURL = responsiveLabelURL;
         this.cargoCompany = cargoCompany;
         this.cargoId = cargoId;
@@ -117,5 +122,21 @@ public class OrderPackageRequestDto {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public ProductTemplate.DistanceUnit getDistanceUnit() {
+        return distanceUnit;
+    }
+
+    public void setDistanceUnit(ProductTemplate.DistanceUnit distanceUnit) {
+        this.distanceUnit = distanceUnit;
+    }
+
+    public ProductTemplate.MassUnit getMassUnit() {
+        return massUnit;
+    }
+
+    public void setMassUnit(ProductTemplate.MassUnit massUnit) {
+        this.massUnit = massUnit;
     }
 }

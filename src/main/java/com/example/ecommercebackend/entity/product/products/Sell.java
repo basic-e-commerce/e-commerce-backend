@@ -26,12 +26,15 @@ public class Sell {
     @Column(nullable = false)
     private Integer quantity;
 
+    private String transactionId;
+
     private Instant sellDate = Instant.now();
 
-    public Sell(Product product, BigDecimal price, Integer quantity) {
+    public Sell(Product product, BigDecimal price, Integer quantity, String transactionId) {
         this.product = product;
         this.price = price;
         this.quantity = quantity;
+        this.transactionId = transactionId;
     }
 
     public Sell() {
@@ -78,5 +81,13 @@ public class Sell {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 }

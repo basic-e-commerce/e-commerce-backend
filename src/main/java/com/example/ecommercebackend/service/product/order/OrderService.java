@@ -20,6 +20,7 @@ import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import com.example.ecommercebackend.entity.product.products.Coupon;
 import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
 import com.example.ecommercebackend.entity.product.products.Product;
+import com.example.ecommercebackend.entity.product.products.ProductTemplate;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.entity.user.Guest;
 import com.example.ecommercebackend.entity.user.User;
@@ -825,33 +826,7 @@ public class OrderService {
             }
             System.out.println("===== END =====");
 
-            OrderPackage orderPackage = new OrderPackage(
-                    new HashSet<>(order.getOrderItems()),
-                    order.getFirstName()+ " " + order.getLastName(),
-                    cargoOfferDesiRequestAdminDto.getLength(),
-                    cargoOfferDesiRequestAdminDto.getWidth(),
-                    cargoOfferDesiRequestAdminDto.getHeight(),
-                    cargoOfferDesiRequestAdminDto.getWeight(),
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    "Depo"
-            );
-
-            OrderPackage orderPackage1 = orderPackageService.createOrderPackage(orderPackage);
-
-            order.getOrderStatus().getOrderPackages().add(orderPackage);
-
-            orderPackages.add(orderPackage1.getId());
-
             CargoOfferResponseDto createCargoOffers = shippingCargoService.getCreateCargoOffers(cargoOfferRequestDto);
-
             cargoOfferResponseDtos.add(createCargoOffers);
         }
         orderRepository.save(order);
@@ -865,6 +840,8 @@ public class OrderService {
                         cargoOfferResponseDto.getData().getWidth(),
                         cargoOfferResponseDto.getData().getHeight(),
                         cargoOfferResponseDto.getData().getWeight(),
+                        cargoOfferResponseDto.getData().getDistanceUnit(),
+                        cargoOfferResponseDto.getData().getMassUnit(),
                         new OfferUserDto(
                                 cargoOfferResponseDto.getData().getOffers().getCheapest().getId(),
                                 cargoOfferResponseDto.getData().getOffers().getCheapest().getCreatedAt(),
@@ -915,6 +892,8 @@ public class OrderService {
                 cargoOfferDesiRequestAdminDto.getWidth(),
                 cargoOfferDesiRequestAdminDto.getHeight(),
                 cargoOfferDesiRequestAdminDto.getWeight(),
+                ProductTemplate.DistanceUnit.valueOf(cargoOfferDesiRequestAdminDto.getDistanceUnit()),
+                ProductTemplate.MassUnit.valueOf(cargoOfferDesiRequestAdminDto.getMassUnit()),
                 shipment.getId(),
                 shipment.getResponsiveLabelURL(),
                 OrderPackage.CargoCompany.valueOf(shipment.getProviderServiceCode()),
@@ -955,6 +934,8 @@ public class OrderService {
                 orderPackageRequestDto.getWidth(),
                 orderPackageRequestDto.getHeight(),
                 orderPackageRequestDto.getWeight(),
+                orderPackageRequestDto.getDistanceUnit(),
+                orderPackageRequestDto.getMassUnit(),
                 orderPackageRequestDto.getCargoId(),
                 orderPackageRequestDto.getResponsiveLabelURL(),
                 orderPackageRequestDto.getCargoCompany(),
