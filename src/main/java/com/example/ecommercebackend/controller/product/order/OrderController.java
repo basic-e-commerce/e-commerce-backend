@@ -74,8 +74,8 @@ public class OrderController {
     }
 
     @PostMapping("/offer-approve")
-    public ResponseEntity<OfferApproveUserDto> offerApprove(@RequestParam(required = false) Integer orderPackageId,@RequestParam(required = false) String offerId){
-        return new ResponseEntity<>(orderService.offerApprove(orderPackageId,offerId),HttpStatus.OK);
+    public ResponseEntity<OfferApproveUserDto> offerApprove(@RequestParam(required = false) String orderCode,@RequestParam(required = false) String offerId,@RequestBody(required = false) CargoOfferDesiRequestAdminDto cargoOfferDesiRequestAdminDto){
+        return new ResponseEntity<>(orderService.offerApprove(orderCode,offerId,cargoOfferDesiRequestAdminDto),HttpStatus.OK);
     }
 
     @PostMapping("/cargo-cancel")

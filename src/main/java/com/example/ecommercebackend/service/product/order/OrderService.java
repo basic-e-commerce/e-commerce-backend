@@ -712,15 +712,11 @@ public class OrderService {
     public CargoOfferResponsesUserDto cargoOffer(String orderCode, List<CargoOfferDesiRequestAdminDto> cargoOfferDesiRequestAdminDtos) {
         List<CargoOfferResponseDto> cargoOfferResponseDtos = new ArrayList<>();
         List<Integer> orderPackages = new ArrayList<>();
-        System.out.println(1);
         Order order = findByOrderCode(orderCode);
-        System.out.println(2);
         String senderAddressId = merchantService.getMerchant().getDefaultSendingAddress().getGeliverId();
-        System.out.println(3);
+
         if (senderAddressId == null){
-            System.out.println(4);
             Merchant merchant = merchantService.getMerchant();
-            System.out.println(5);
             AddressApiDto addressApiDto = new AddressApiDto(
                     merchant.getAddress().getFirstName()+ " " + merchant.getAddress().getLastName(),
                     merchant.getEmail(),
@@ -736,13 +732,10 @@ public class OrderService {
                     false,
                     merchant.getAddress().getShortName()
             );
-            System.out.println(6);
             shippingAddressService.createSendingAddress(addressApiDto);
         }
         String receiptAddress = order.getGeliverId();
-        System.out.println(7);
         if (receiptAddress == null){
-            System.out.println(8);
             AddressApiDto addressApiDto = buildAddressDto(order);
             try {
                 receiptAddress = shippingAddressService.createReceivingAddress(addressApiDto).getId();
@@ -754,17 +747,13 @@ public class OrderService {
         System.out.println(9);
         List<CargoOfferRequestItem> cargoOfferRequestItems = new ArrayList<>();
         for (OrderItem orderItem : order.getOrderItems()){
-            System.out.println(10);
             CargoOfferRequestItem cargoOfferRequestItem = new CargoOfferRequestItem(
                     orderItem.getProduct().getProductName(),
                     orderItem.getQuantity()
             );
-            System.out.println(11);
             cargoOfferRequestItems.add(cargoOfferRequestItem);
         }
 
-        System.out.println(12);
-        System.out.println("iso: "+order.getCountryIso());
         CargoOfferRequestRecipientAddress recipientAddress = new CargoOfferRequestRecipientAddress(
                 order.getFirstName() +" "+ order.getLastName(),
                 order.getUsername(),
@@ -775,7 +764,6 @@ public class OrderService {
                 order.getDistrict()
         );
 
-        System.out.println(13);
         CargoOfferRequestOrder cargoOfferRequestOrder = new CargoOfferRequestOrder(
                 "API",
                 domain,
@@ -784,14 +772,12 @@ public class OrderService {
                 "TL"
         );
 
-        System.out.println(14);
+
         if (!order.getOrderStatus().getOrderPackages().isEmpty()){
             order.getOrderStatus().getOrderPackages().clear();
         }
 
-        System.out.println(15);
         for (CargoOfferDesiRequestAdminDto cargoOfferDesiRequestAdminDto: cargoOfferDesiRequestAdminDtos) {
-            System.out.println(16);
             CargoOfferRequestDto cargoOfferRequestDto = new CargoOfferRequestDto(
                     true,
                     senderAddressId,
@@ -807,7 +793,6 @@ public class OrderService {
                     false,
                     cargoOfferRequestOrder
             );
-            System.out.println(17);
 
             // 🚀 BURASI: Tüm değerleri tek tek yazdır
             System.out.println("===== CargoOfferRequestDto =====");
@@ -858,22 +843,20 @@ public class OrderService {
                     null,
                     "Depo"
             );
-            System.out.println();
-            System.out.println(18);
+
             OrderPackage orderPackage1 = orderPackageService.createOrderPackage(orderPackage);
-            System.out.println(19);
+
             order.getOrderStatus().getOrderPackages().add(orderPackage);
-            System.out.println(20);
+
             orderPackages.add(orderPackage1.getId());
 
-            System.out.println(21);
             CargoOfferResponseDto createCargoOffers = shippingCargoService.getCreateCargoOffers(cargoOfferRequestDto);
-            System.out.println(22);
+
             cargoOfferResponseDtos.add(createCargoOffers);
         }
         orderRepository.save(order);
 
-        System.out.println(23);
+
         CargoOfferResponseDto cargoOfferResponseDto = cargoOfferResponseDtos.getFirst();
         return new CargoOfferResponsesUserDto(
                 orderPackages.getFirst(),
@@ -920,20 +903,31 @@ public class OrderService {
     }
 
 
-    public OfferApproveUserDto offerApprove(@NotNullParam Integer orderPackageId,@NotNullParam String offerId) {
-        OrderPackage orderPackage = orderPackageService.findById(orderPackageId);
+    public OfferApproveUserDto offerApprove(@NotNullParam String orderCode,@NotNullParam String offerId, @NotNullParam CargoOfferDesiRequestAdminDto cargoOfferDesiRequestAdminDto) {
+        Order order = findByOrderCode(orderCode);
         OfferApproveDto offerApproveDto = shippingCargoService.offerApprove(offerId);
+        ShipmentDto shipment = offerApproveDto.getData().getShipment();
 
-        orderPackage.setShipmentId(offerApproveDto.getData().getShipment().getId());
-        orderPackage.setResponsiveLabelURL(offerApproveDto.getData().getShipment().getResponsiveLabelURL());
-        orderPackage.setCargoCompany(OrderPackage.CargoCompany.valueOf(offerApproveDto.getData().getShipment().getProviderServiceCode()));
-        orderPackage.setCargoStatus(OrderPackage.CargoStatus.information_received);
-        orderPackage.setCargoId(offerApproveDto.getData().getShipment().getId());
-        orderPackage.setBarcode(offerApproveDto.getData().getShipment().getBarcode());
-        orderPackage.setProductPaymentOnDelivery(offerApproveDto.getData().getShipment().isProductPaymentOnDelivery());
-        orderPackage.setCanceled(offerApproveDto.getData().isCanceled());
-        orderPackage.setRefund(offerApproveDto.getData().isRefund());
-        orderPackageService.save(orderPackage);
+        OrderPackage orderPackage = new OrderPackage(
+                new HashSet<>(order.getOrderItems()),
+                order.getFirstName()+ " " + order.getLastName(),
+                cargoOfferDesiRequestAdminDto.getLength(),
+                cargoOfferDesiRequestAdminDto.getWidth(),
+                cargoOfferDesiRequestAdminDto.getHeight(),
+                cargoOfferDesiRequestAdminDto.getWeight(),
+                shipment.getId(),
+                shipment.getResponsiveLabelURL(),
+                OrderPackage.CargoCompany.valueOf(shipment.getProviderServiceCode()),
+                OrderPackage.CargoStatus.information_received,
+                shipment.getId(),
+                shipment.getBarcode(),
+                shipment.isProductPaymentOnDelivery(),
+                offerApproveDto.getData().isCanceled(),
+                offerApproveDto.getData().isRefund(),
+                "Depo"
+        );
+        order.getOrderStatus().getOrderPackages().add(orderPackage);
+        orderRepository.save(order);
 
         return new OfferApproveUserDto(
                 new ShipmentUserDto(
