@@ -70,6 +70,8 @@ public class CardItemService {
             if (coupon != null) {
                 couponCustomerResponseDto = new CouponCustomerResponseDto(
                         coupon.getCode(),
+                        coupon.getDiscountType().name(),
+                        coupon.getDiscountValue().setScale(2, RoundingMode.HALF_UP).toPlainString(),
                         coupon.getDescription(),
                         coupon.getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
                         coupon.getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
