@@ -136,7 +136,9 @@ public class OrderService {
                 }
                 coupon = couponService.findByCodeNull(orderCreateDto.getCode());
                 customerCoupon.setCoupon(coupon);
-                isCouponValidation(coupon,savedOrderItems,customer);
+                if (coupon != null) {
+                    isCouponValidation(coupon,savedOrderItems,customer);
+                }
             }
 
             if (customer.getCard().getItems().isEmpty())
@@ -632,19 +634,19 @@ public class OrderService {
             return cb.equal(statusJoin.get("status"), status);
         };
     }
-
     public Specification<Order> hasStatusCode(OrderPackage.StatusCode statusCode) {
         return (root, query, cb) -> {
-            if (statusCode == null) {
-                return cb.conjunction(); // filtre yoksa hepsi
-            }
-
             Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
             Join<OrderStatus, OrderPackage> packageJoin = statusJoin.join("orderPackages");
+
+            if (statusCode == null) {
+                return cb.isNull(packageJoin.get("statusCode")); // sadece statusCode'u null olanlar
+            }
 
             return cb.equal(packageJoin.get("statusCode"), statusCode);
         };
     }
+
 
     public Specification<Order> hasCargoStatus(OrderPackage.CargoStatus cargoStatus) {
         return (root, query, cb) -> {
