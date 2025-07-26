@@ -182,7 +182,7 @@ public class CardService {
         BigDecimal totalPrice = BigDecimal.valueOf(0);
         //Set<OrderItem> newOrderItems = new HashSet<>();
         for (CardItem cardItem: card.getItems()) {
-            totalPrice = totalPrice.add(cardItem.getProduct().getComparePrice());
+            totalPrice = totalPrice.add(cardItem.getProduct().getComparePrice().multiply(BigDecimal.valueOf(cardItem.getQuantity())));
         }
         return totalPrice;
     }
