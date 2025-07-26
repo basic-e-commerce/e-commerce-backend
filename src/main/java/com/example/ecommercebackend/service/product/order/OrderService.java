@@ -882,9 +882,40 @@ public class OrderService {
                         cargoOfferResponseDto.getData().getWidth(),
                         cargoOfferResponseDto.getData().getHeight(),
                         cargoOfferResponseDto.getData().getWeight(),
-                        cargoOfferResponseDto.getData().getOffers().getCheapest(),
-                        cargoOfferResponseDto.getData().getOffers().getFastest(),
-                        cargoOfferResponseDto.getData().getOffers().getList()
+                        new OfferUserDto(
+                                cargoOfferResponseDto.getData().getOffers().getCheapest().getId(),
+                                cargoOfferResponseDto.getData().getOffers().getCheapest().getCreatedAt(),
+                                cargoOfferResponseDto.getData().getOffers().getCheapest().getTotalAmount(),
+                                cargoOfferResponseDto.getData().getOffers().getCheapest().getDiscountRate(),
+                                cargoOfferResponseDto.getData().getOffers().getCheapest().getProviderCode(),
+                                cargoOfferResponseDto.getData().getOffers().getCheapest().getProviderServiceCode(),
+                                cargoOfferResponseDto.getData().getOffers().getCheapest().getAverageEstimatedTimeHumanReadible(),
+                                cargoOfferResponseDto.getData().getOffers().getCheapest().getRating()
+
+                        ),
+                        new OfferUserDto(
+                                cargoOfferResponseDto.getData().getOffers().getFastest().getId(),
+                                cargoOfferResponseDto.getData().getOffers().getFastest().getCreatedAt(),
+                                cargoOfferResponseDto.getData().getOffers().getFastest().getTotalAmount(),
+                                cargoOfferResponseDto.getData().getOffers().getFastest().getDiscountRate(),
+                                cargoOfferResponseDto.getData().getOffers().getFastest().getProviderCode(),
+                                cargoOfferResponseDto.getData().getOffers().getFastest().getProviderServiceCode(),
+                                cargoOfferResponseDto.getData().getOffers().getFastest().getAverageEstimatedTimeHumanReadible(),
+                                cargoOfferResponseDto.getData().getOffers().getFastest().getRating()
+
+                        ),
+                        cargoOfferResponseDto.getData().getOffers().getList().stream().map(x->{
+                            return new OfferUserDto(
+                                    x.getId(),
+                                    x.getCreatedAt(),
+                                    x.getTotalAmount(),
+                                    x.getDiscountRate(),
+                                    x.getProviderCode(),
+                                    x.getProviderServiceCode(),
+                                    x.getAverageEstimatedTimeHumanReadible(),
+                                    x.getRating()
+                            );
+                        }).toList()
                 ));
     }
 

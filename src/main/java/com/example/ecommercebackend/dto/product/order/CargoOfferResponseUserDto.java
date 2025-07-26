@@ -20,15 +20,15 @@ public class CargoOfferResponseUserDto {
     private String weight;
 
     @JsonProperty("cheapest")
-    private OfferDto cheapest;
+    private OfferUserDto cheapest;
 
     @JsonProperty("fastest")
-    private OfferDto fastest;
+    private OfferUserDto fastest;
 
     @JsonProperty("list")
-    private List<OfferDto> list;
+    private List<OfferUserDto> list;
 
-    public CargoOfferResponseUserDto(String length, String width, String height, String weight, OfferDto cheapest, OfferDto fastest, List<OfferDto> list) {
+    public CargoOfferResponseUserDto(String length, String width, String height, String weight, OfferUserDto cheapest, OfferUserDto fastest, List<OfferUserDto> list) {
         this.length = length;
         this.width = width;
         this.height = height;
@@ -70,27 +70,27 @@ public class CargoOfferResponseUserDto {
         this.weight = weight;
     }
 
-    public OfferDto getCheapest() {
+    public OfferUserDto getCheapest() {
         return cheapest;
     }
 
-    public void setCheapest(OfferDto cheapest) {
+    public void setCheapest(OfferUserDto cheapest) {
         this.cheapest = cheapest;
     }
 
-    public OfferDto getFastest() {
+    public OfferUserDto getFastest() {
         return fastest;
     }
 
-    public void setFastest(OfferDto fastest) {
+    public void setFastest(OfferUserDto fastest) {
         this.fastest = fastest;
     }
 
-    public List<OfferDto> getList() {
+    public List<OfferUserDto> getList() {
         return list;
     }
 
-    public void setList(List<OfferDto> list) {
+    public void setList(List<OfferUserDto> list) {
         this.list = list;
     }
 }
