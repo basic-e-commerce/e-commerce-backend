@@ -166,6 +166,7 @@ public class CardService {
             throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
         }
 
+        System.out.println("totalprice: "+ totalPrice(customer.getCard()));
         if (totalPrice(customer.getCard()).compareTo(coupon.getMinOrderAmountLimit()) < 0) {
             throw new BadRequestException("Sipariş tutarı kuponun minimum limiti olan " + coupon.getMinOrderAmountLimit() + " TL'den küçük.");
         }
