@@ -10,20 +10,18 @@ public class CardResponseDetail {
     private BigDecimal totalWithOutTax;
     private BigDecimal totalTax;
     private BigDecimal shippingCost;
-    private BigDecimal totalNoCouponPrice;
     private BigDecimal totalPrice;
-    private BigDecimal couponPrice;
+    private BigDecimal couponDiscount;
     private float shippingCostRate;
     List<CardResponseDetails> details;
     private CouponCustomerResponseDto couponCustomerResponseDto;
 
-    public CardResponseDetail(BigDecimal totalWithOutTax, BigDecimal totalTax, BigDecimal shippingCost, BigDecimal totalNoCouponPrice, BigDecimal totalPrice, BigDecimal couponPrice, float shippingCostRate, List<CardResponseDetails> details, CouponCustomerResponseDto couponCustomerResponseDto) {
+    public CardResponseDetail(BigDecimal totalWithOutTax, BigDecimal totalTax, BigDecimal shippingCost, BigDecimal totalPrice, BigDecimal couponDiscount, float shippingCostRate, List<CardResponseDetails> details, CouponCustomerResponseDto couponCustomerResponseDto) {
         this.totalWithOutTax = totalWithOutTax;
         this.totalTax = totalTax;
         this.shippingCost = shippingCost;
-        this.totalNoCouponPrice = totalNoCouponPrice;
         this.totalPrice = totalPrice;
-        this.couponPrice = couponPrice;
+        this.couponDiscount = couponDiscount;
         this.shippingCostRate = shippingCostRate;
         this.details = details;
         this.couponCustomerResponseDto = couponCustomerResponseDto;
@@ -86,19 +84,11 @@ public class CardResponseDetail {
         this.couponCustomerResponseDto = couponCustomerResponseDto;
     }
 
-    public BigDecimal getCouponPrice() {
-        return couponPrice;
+    public BigDecimal getCouponDiscount() {
+        return couponDiscount;
     }
 
-    public void setCouponPrice(BigDecimal couponPrice) {
-        this.couponPrice = couponPrice;
-    }
-
-    public BigDecimal getTotalNoCouponPrice() {
-        return totalNoCouponPrice;
-    }
-
-    public void setTotalNoCouponPrice(BigDecimal totalNoCouponPrice) {
-        this.totalNoCouponPrice = totalNoCouponPrice;
+    public void setCouponDiscount(BigDecimal couponDiscount) {
+        this.couponDiscount = couponDiscount;
     }
 }

@@ -5,11 +5,13 @@ import com.example.ecommercebackend.entity.product.products.Product;
 import java.math.BigDecimal;
 
 public class ProductQuantityDto {
+    private Integer productId;
     private BigDecimal comparePrice;
     private BigDecimal taxRate;
     private int quantity;
 
-    public ProductQuantityDto(BigDecimal comparePrice, BigDecimal taxRate, int quantity) {
+    public ProductQuantityDto(Integer productId, BigDecimal comparePrice, BigDecimal taxRate, int quantity) {
+        this.productId = productId;
         this.comparePrice = comparePrice;
         this.taxRate = taxRate;
         this.quantity = quantity;
@@ -37,5 +39,13 @@ public class ProductQuantityDto {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
     }
 }
