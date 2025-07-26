@@ -82,13 +82,15 @@ public class OrderStatus {
 
     public enum Status {
         PENDING("Ürün Ödeme sürecindedir"),
-        APPROVED("Ürün ödemesi yapıldı, Kargo için Hazırlanıyor");
-
+        APPROVED("Ürün ödemesi yapıldı, Kargo için Hazırlanıyor"),
+        RETURNED("Iade sipariş");
+        private String message;
 
         Status(String s) {
+            this.message = s;
         }
         public String getValue() {
-            return name();
+            return message;
         }
     }
 
