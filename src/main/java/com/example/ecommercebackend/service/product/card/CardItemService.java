@@ -39,6 +39,7 @@ public class CardItemService {
     private final MerchantService merchantService;
     private final CustomerRepository customerRepository;
 
+
     public CardItemService(CardItemRepository cardItemRepository, ProductRepository productRepository, MerchantService merchantService, CustomerRepository customerRepository) {
         this.cardItemRepository = cardItemRepository;
         this.productRepository = productRepository;
@@ -46,11 +47,11 @@ public class CardItemService {
         this.customerRepository = customerRepository;
     }
 
-    public CardItem create(CardItemCreateDto cardItemCreateDto) {
-        Product product = productRepository.findById(cardItemCreateDto.productId()).orElseThrow(()-> new NotFoundException("Product not found card item"));
-        CardItem cardItem = new CardItem(product, cardItemCreateDto.quantity());
-        return cardItemRepository.save(cardItem);
-    }
+//    public CardItem create(CardItemCreateDto cardItemCreateDto) {
+//        Product product = productRepository.findById(cardItemCreateDto.productId()).orElseThrow(()-> new NotFoundException("Product not found card item"));
+//        CardItem cardItem = new CardItem(product, cardItemCreateDto.quantity());
+//        return cardItemRepository.save(cardItem);
+//    }
 
 
 
@@ -122,14 +123,10 @@ public class CardItemService {
                 }
             }
 
+            if (itemCount == 0){
 
-            for (CardItem item: items){
-                if (coupon != null && coupon.getProductAssigned()){
-                    if (coupon.getProducts().contains(item.getProduct())){
-
-                    }
-                }
             }
+
 
 
             for (CardItem item : items) {
@@ -158,6 +155,11 @@ public class CardItemService {
                         }
                     } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
                         if (!assigned || isInCoupon) {
+                            if (itemCount == 0){
+                                throw new BadRequestException("İndirim uygulanacak ürün yok");
+                            }
+
+                            System.out.println("itemcount: " + itemCount);
 
                             BigDecimal perItemDiscount = discountValue
                                     .divide(BigDecimal.valueOf(itemCount), 2, RoundingMode.HALF_UP);
