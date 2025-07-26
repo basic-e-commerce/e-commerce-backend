@@ -110,7 +110,7 @@ public class OrderService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
-        OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatufs.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
+        OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
         if (principal instanceof Customer customer) {
             System.out.println("OrderCode: "+ orderCreateDto.getCode());
 
