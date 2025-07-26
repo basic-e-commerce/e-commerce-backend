@@ -22,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.RoundingMode;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,6 +51,8 @@ public class CustomerCouponService {
                 return new CouponCustomerResponseDto(
                         customerCoupon.getCoupon().getCode(),
                         customerCoupon.getCoupon().getDescription(),
+                        customerCoupon.getCoupon().getDiscountType().name(),
+                        customerCoupon.getCoupon().getDiscountValue().setScale(2, RoundingMode.HALF_UP).toPlainString(),
                         customerCoupon.getCoupon().getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
                         customerCoupon.getCoupon().getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
                         customerCoupon.getCoupon().getActive()
