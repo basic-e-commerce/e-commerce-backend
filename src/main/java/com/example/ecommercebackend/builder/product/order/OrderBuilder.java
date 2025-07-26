@@ -8,6 +8,7 @@ import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.invoice.CorporateInvoice;
 import com.example.ecommercebackend.entity.product.invoice.Invoice;
 import com.example.ecommercebackend.entity.product.order.Order;
+import com.example.ecommercebackend.entity.product.order.OrderPackage;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
@@ -80,7 +81,7 @@ public class OrderBuilder {
                                 .map(OrderStatus::getOrderPackages)
                                 .orElse(Collections.emptyList())
                                 .stream()
-                                .sorted()
+                                .sorted(Comparator.comparing(OrderPackage::getUpdateAt))
                                 .map(x -> new OrderPackageResponseDto(
                                         x.getId(),
                                         Optional.ofNullable(x.getOrderItems())
