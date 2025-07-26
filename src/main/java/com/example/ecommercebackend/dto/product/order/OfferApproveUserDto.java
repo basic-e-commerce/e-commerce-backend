@@ -1,21 +1,17 @@
 package com.example.ecommercebackend.dto.product.order;
 
-import com.example.ecommercebackend.dto.product.shipping.ShipmentDto;
-
-import java.math.BigDecimal;
-
 public class OfferApproveUserDto {
-    private ShipmentDto shipment;
+    private ShipmentUserDto shipment;
 
-    public OfferApproveUserDto(ShipmentDto shipment) {
+    public OfferApproveUserDto(ShipmentUserDto shipment) {
         this.shipment = shipment;
     }
 
-    public ShipmentDto getShipment() {
+    public ShipmentUserDto getShipment() {
         return shipment;
     }
 
-    public void setShipment(ShipmentDto shipment) {
+    public void setShipment(ShipmentUserDto shipment) {
         this.shipment = shipment;
     }
 }

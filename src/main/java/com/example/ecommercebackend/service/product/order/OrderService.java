@@ -936,7 +936,17 @@ public class OrderService {
         orderPackageService.save(orderPackage);
 
         return new OfferApproveUserDto(
-                offerApproveDto.getData().getShipment()
+                new ShipmentUserDto(
+                        offerApproveDto.getData().getShipment().getId(),
+                        offerApproveDto.getData().getShipment().getCreatedAt(),
+                        offerApproveDto.getData().getShipment().getUpdatedAt(),
+                        offerApproveDto.getData().getShipment().isTest(),
+                        offerApproveDto.getData().getShipment().getBarcode(),
+                        offerApproveDto.getData().getShipment().getLabelFileType(),
+                        offerApproveDto.getData().getShipment().getLabelURL(),
+                        offerApproveDto.getData().getShipment().getStatusCode(),
+                        offerApproveDto.getData().getShipment().getResponsiveLabelURL()
+                )
         );
     }
 
