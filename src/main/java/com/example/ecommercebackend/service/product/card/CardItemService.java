@@ -143,6 +143,7 @@ public class CardItemService {
                         if (!assigned || isInCoupon) {
                             if (itemCount == 0)
                                 throw new BadRequestException("İndirim uygulanacak ürün yok");
+                            System.out.println("itemcount: " + itemCount);
 
                             BigDecimal perItemDiscount = discountValue
                                     .divide(BigDecimal.valueOf(itemCount), 2, RoundingMode.HALF_UP);
