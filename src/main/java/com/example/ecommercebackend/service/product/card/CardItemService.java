@@ -63,162 +63,193 @@ public class CardItemService {
     }
 
 
-public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequestDto) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    System.out.println("principal : "+ authentication.getPrincipal());
+//    public CardResponseDetails getDetailsNew(List<CardProductRequestDto> cardProductRequestDto){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//        /*
+//            Kullanıcı giriş yapmışssa
+//                kuponu varsa
+//                    kuponsuz Toplam fiyat
+//                    kuponlu Toplam fiyat
+//                    toplam fiyat için vergi oranları
+//                    ne kadar fiyat düştüğü ile ilgili bilgi
+//                    kargo fiyatı
+//                    net fiyat
+//                    Liste
+//                        product bilgileri
+//                        product quantity
+//                        product
+//
+//
+//
+//
+//
+//         */
+//        if (authentication.getPrincipal() instanceof Customer customer1) {
+//
+//        } else if (authentication.getPrincipal().equals("anonymousUser")) {
+//
+//        }
+//
+//
+//    }
 
-    if (authentication.getPrincipal() instanceof Customer customer1) {
-        Customer customer = customerRepository.findById(customer1.getId()).get();
+    public CardResponseDetail getDetails(List<CardProductRequestDto> cardProductRequestDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("principal : "+ authentication.getPrincipal());
 
-        List<ProductQuantityDto> cardProduct = new ArrayList<>();   // döndürülecek product product ve quantity için liste oluşturuluyor ama kupon varsa bu olacak yoksa olmayacak
-        List<ProductQuantityDto> cardProductNoCoupon = new ArrayList<>();
-        Coupon coupon = customer.getCard().getCoupon();
-        List<CardResponseDetails> productDetails = new ArrayList<>();
-        BigDecimal couponPrice = BigDecimal.ZERO;
-        CouponCustomerResponseDto couponResponseDto = null;
+        if (authentication.getPrincipal() instanceof Customer customer1) {
+            Customer customer = customerRepository.findById(customer1.getId()).get();
 
-        List<CardItem> items = customer.getCard().getItems();
-        int itemCount = (int) items.stream()
-                .filter(i -> coupon != null && coupon.getProductAssigned()
-                        ? coupon.getProducts().contains(i.getProduct())
-                        : true)
-                .count();
+            List<ProductQuantityDto> cardProduct = new ArrayList<>();   // döndürülecek product product ve quantity için liste oluşturuluyor ama kupon varsa bu olacak yoksa olmayacak
+            List<ProductQuantityDto> cardProductNoCoupon = new ArrayList<>();
+            Coupon coupon = customer.getCard().getCoupon();
+            List<CardResponseDetails> productDetails = new ArrayList<>();
+            BigDecimal couponPrice = BigDecimal.ZERO;
+            CouponCustomerResponseDto couponResponseDto = null;
 
-        for (CardItem item : items) {
-            Product product = item.getProduct();
-            String url = (product.getCoverImage() != null) ? product.getCoverImage().getUrl() : "";
-            BigDecimal comparePrice = product.getComparePrice();
-            BigDecimal productCouponPrice = couponPrice;
+            List<CardItem> items = customer.getCard().getItems();
+            int itemCount = (int) items.stream()
+                    .filter(i -> coupon != null && coupon.getProductAssigned()
+                            ? coupon.getProducts().contains(i.getProduct())
+                            : true)
+                    .count();
+
+            for (CardItem item : items) {
+                Product product = item.getProduct();
+                String url = (product.getCoverImage() != null) ? product.getCoverImage().getUrl() : "";
+                BigDecimal comparePrice = product.getComparePrice();
+                BigDecimal productCouponPrice = couponPrice;
 
 
-            if (coupon != null) {
-                isCouponValidation(coupon,customer);
-                BigDecimal discountValue = coupon.getDiscountValue();
-                boolean assigned = coupon.getProductAssigned();
-                boolean isInCoupon = assigned && coupon.getProducts().contains(product);
+                if (coupon != null) {
+                    isCouponValidation(coupon,customer);
+                    BigDecimal discountValue = coupon.getDiscountValue();
+                    boolean assigned = coupon.getProductAssigned();
+                    boolean isInCoupon = assigned && coupon.getProducts().contains(product);
 
-                if (discountValue == null)
-                    throw new BadRequestException("İndirim oranı/miktarı eksik");
+                    if (discountValue == null)
+                        throw new BadRequestException("İndirim oranı/miktarı eksik");
 
-                if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
-                    if (!assigned || isInCoupon) {
-                        BigDecimal discountAmount = comparePrice.multiply(discountValue)
-                                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-                         productCouponPrice = comparePrice.subtract(discountAmount);
-                        couponPrice = couponPrice.add(discountAmount.multiply(BigDecimal.valueOf(item.getQuantity())));
+                    if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
+                        if (!assigned || isInCoupon) {
+                            BigDecimal discountAmount = comparePrice.multiply(discountValue)
+                                    .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                             productCouponPrice = comparePrice.subtract(discountAmount);
+                            couponPrice = couponPrice.add(discountAmount.multiply(BigDecimal.valueOf(item.getQuantity())));
 
-                    }
-                } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
-                    if (!assigned || isInCoupon) {
-                        if (itemCount == 0)
-                            throw new BadRequestException("İndirim uygulanacak ürün yok");
+                        }
+                    } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
+                        if (!assigned || isInCoupon) {
+                            if (itemCount == 0)
+                                throw new BadRequestException("İndirim uygulanacak ürün yok");
 
-                        BigDecimal perItemDiscount = discountValue
-                                .divide(BigDecimal.valueOf(itemCount), 2, RoundingMode.HALF_UP);
-                        productCouponPrice = comparePrice.subtract(perItemDiscount);
-                        couponPrice = couponPrice.add(perItemDiscount);
+                            BigDecimal perItemDiscount = discountValue
+                                    .divide(BigDecimal.valueOf(itemCount), 2, RoundingMode.HALF_UP);
+                            productCouponPrice = comparePrice.subtract(perItemDiscount);
+                            couponPrice = couponPrice.add(perItemDiscount);
+                        }
                     }
                 }
+
+                // Listeye ekle
+                cardProduct.add(new ProductQuantityDto(productCouponPrice, product.getTaxRate(), item.getQuantity()));
+                cardProductNoCoupon.add(new ProductQuantityDto(comparePrice, product.getTaxRate(), item.getQuantity()));
+                productDetails.add(new CardResponseDetails(
+                        product.getId(),
+                        product.getProductName(),
+                        product.getProductLinkName(),
+                        product.getSalePrice(),
+                        product.getComparePrice(),
+                        productCouponPrice,
+                        url,
+                        item.getQuantity()
+                ));
             }
 
-            // Listeye ekle
-            cardProduct.add(new ProductQuantityDto(productCouponPrice, product.getTaxRate(), item.getQuantity()));
-            cardProductNoCoupon.add(new ProductQuantityDto(comparePrice, product.getTaxRate(), item.getQuantity()));
-            productDetails.add(new CardResponseDetails(
-                    product.getId(),
-                    product.getProductName(),
-                    product.getProductLinkName(),
-                    product.getSalePrice(),
-                    product.getComparePrice(),
-                    productCouponPrice,
-                    url,
-                    item.getQuantity()
-            ));
-        }
+            if (coupon != null) {
+                couponResponseDto = new CouponCustomerResponseDto(
+                        coupon.getCode(),
+                        coupon.getDescription(),
+                        coupon.getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
+                        coupon.getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
+                        coupon.getActive()
+                );
+            }
 
-        if (coupon != null) {
-            couponResponseDto = new CouponCustomerResponseDto(
-                    coupon.getCode(),
-                    coupon.getDescription(),
-                    coupon.getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
-                    coupon.getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
-                    coupon.getActive()
+            // Fiyat hesaplamaları
+            BigDecimal totalWithOutTax = getTotalWithOutTax(cardProduct);
+            BigDecimal totalTax = getTotalTaxAmount(cardProduct);
+            BigDecimal shippingCost = BigDecimal.ZERO;
+            float shippingCostRate = getShippingCostRate(getTotalAmountWithOutShippingCost(cardProduct));
+
+            if (getTotalAmountWithOutShippingCost(cardProduct).compareTo(getMerchant().getMinOrderAmount()) < 0) {
+                shippingCost = getMerchant().getShippingFee();
+            }
+
+            BigDecimal totalPrice = getTotalAmountWithShippingCost(cardProduct, shippingCost);
+            BigDecimal totalNoCouponPrice = getTotalAmountWithShippingCost(cardProductNoCoupon, shippingCost);
+
+            return new CardResponseDetail(
+                    totalWithOutTax,
+                    totalTax,
+                    shippingCost,
+                    totalNoCouponPrice,
+                    totalPrice,
+                    couponPrice,
+                    shippingCostRate,
+                    productDetails,
+                    couponResponseDto
             );
-        }
+        }else if (authentication.getPrincipal().equals("anonymousUser")) {
+            List<ProductQuantityDto> productCollect = cardProductRequestDto.stream().map(x -> {
+                Product product =productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
+                int quantity = x.getQuantity();
+                return new ProductQuantityDto(product.getComparePrice(),product.getTaxRate(),quantity);
+            }).toList();
 
-        // Fiyat hesaplamaları
-        BigDecimal totalWithOutTax = getTotalWithOutTax(cardProduct);
-        BigDecimal totalTax = getTotalTaxAmount(cardProduct);
-        BigDecimal shippingCost = BigDecimal.ZERO;
-        float shippingCostRate = getShippingCostRate(getTotalAmountWithOutShippingCost(cardProduct));
+            List<CardResponseDetails> productDetails = cardProductRequestDto.stream().map(x -> {
+                Product product = productRepository.findById(x.getProductId())
+                        .orElseThrow(() -> new NotFoundException("Product not found"));
+                String coverImageUrl = "";
+                if (product.getCoverImage() != null) {
+                    coverImageUrl = product.getCoverImage().getUrl();
+                }
+                return new CardResponseDetails(product.getId(),
+                        product.getProductName(),
+                        product.getProductLinkName(),
+                        product.getSalePrice(),
+                        product.getComparePrice(),
+                        product.getComparePrice(),
+                        coverImageUrl,
+                        x.getQuantity());
+            }).toList();
 
-        if (getTotalAmountWithOutShippingCost(cardProduct).compareTo(getMerchant().getMinOrderAmount()) < 0) {
-            shippingCost = getMerchant().getShippingFee();
-        }
-
-        BigDecimal totalPrice = getTotalAmountWithShippingCost(cardProduct, shippingCost);
-        BigDecimal totalNoCouponPrice = getTotalAmountWithShippingCost(cardProductNoCoupon, shippingCost);
-
-        return new CardResponseDetail(
-                totalWithOutTax,
-                totalTax,
-                shippingCost,
-                totalNoCouponPrice,
-                totalPrice,
-                couponPrice,
-                shippingCostRate,
-                productDetails,
-                couponResponseDto
-        );
-    }else if (authentication.getPrincipal().equals("anonymousUser")) {
-        List<ProductQuantityDto> productCollect = cardProductRequestDto.stream().map(x -> {
-            Product product =productRepository.findById(x.getProductId()).orElseThrow(()-> new NotFoundException("Product "+ ExceptionMessage.NOT_FOUND.getMessage()));
-            int quantity = x.getQuantity();
-            return new ProductQuantityDto(product.getComparePrice(),product.getTaxRate(),quantity);
-        }).toList();
-
-        List<CardResponseDetails> productDetails = cardProductRequestDto.stream().map(x -> {
-            Product product = productRepository.findById(x.getProductId())
-                    .orElseThrow(() -> new NotFoundException("Product not found"));
-            String coverImageUrl = "";
-            if (product.getCoverImage() != null) {
-                coverImageUrl = product.getCoverImage().getUrl();
+            BigDecimal totalWithOutTax = getTotalWithOutTax(productCollect);
+            BigDecimal totalTax = getTotalTaxAmount(productCollect);
+            BigDecimal shippingCost = BigDecimal.ZERO;
+            float shippingCostRate = getShippingCostRate(getTotalAmountWithOutShippingCost(productCollect));
+            if (getTotalAmountWithOutShippingCost(productCollect).compareTo(getMerchant().getMinOrderAmount()) < 0) {
+                shippingCost = getMerchant().getShippingFee();
             }
-            return new CardResponseDetails(product.getId(),
-                    product.getProductName(),
-                    product.getProductLinkName(),
-                    product.getSalePrice(),
-                    product.getComparePrice(),
-                    product.getComparePrice(),
-                    coverImageUrl,
-                    x.getQuantity());
-        }).toList();
+            BigDecimal totalPrice = getTotalAmountWithShippingCost(productCollect,shippingCost);
 
-        BigDecimal totalWithOutTax = getTotalWithOutTax(productCollect);
-        BigDecimal totalTax = getTotalTaxAmount(productCollect);
-        BigDecimal shippingCost = BigDecimal.ZERO;
-        float shippingCostRate = getShippingCostRate(getTotalAmountWithOutShippingCost(productCollect));
-        if (getTotalAmountWithOutShippingCost(productCollect).compareTo(getMerchant().getMinOrderAmount()) < 0) {
-            shippingCost = getMerchant().getShippingFee();
+            return new CardResponseDetail(
+                    totalWithOutTax,
+                    totalTax,
+                    shippingCost,
+                    totalPrice,
+                    totalPrice,
+                    BigDecimal.ZERO,
+                    shippingCostRate,
+                    productDetails,
+                    null
+            );
+
         }
-        BigDecimal totalPrice = getTotalAmountWithShippingCost(productCollect,shippingCost);
 
-        return new CardResponseDetail(
-                totalWithOutTax,
-                totalTax,
-                shippingCost,
-                totalPrice,
-                totalPrice,
-                BigDecimal.ZERO,
-                shippingCostRate,
-                productDetails,
-                null
-        );
-
+        throw new BadRequestException("Geçersiz Kullanıcı");
     }
-
-    throw new BadRequestException("Geçersiz Kullanıcı");
-}
 
 
     private void isCouponValidation(Coupon coupon,Customer customer) {

@@ -28,15 +28,13 @@ import java.util.List;
 @Service
 public class CardService {
     private final CardRepository cardRepository;
-    private final CardItemService cardItemService;
     private final CardBuilder cardBuilder;
     private final ProductService productService;
     private final CustomerCouponService customerCouponService;
     private final CouponService couponService;
 
-    public CardService(CardRepository cardRepository, CardItemService cardItemService, CardBuilder cardBuilder, ProductService productService, CustomerCouponService customerCouponService, CouponService couponService) {
+    public CardService(CardRepository cardRepository, CardBuilder cardBuilder, ProductService productService, CustomerCouponService customerCouponService, CouponService couponService) {
         this.cardRepository = cardRepository;
-        this.cardItemService = cardItemService;
         this.cardBuilder = cardBuilder;
         this.productService = productService;
         this.customerCouponService = customerCouponService;
@@ -58,14 +56,14 @@ public class CardService {
         // 2. Kullanıcının müşteri olup olmadığını kontrol et
         if (!(principal instanceof Customer customer)) {
             throw new BadRequestException("Authentication failed");
-        }else
-            System.out.println("Customerr  -------");
+        }
 
         // 3. Müşterinin sepetini al
         Card card = customer.getCard();
 
         for (CardItemCreateDto cardItemCreateDto : cardCreateDto.getCardItems()) {
-            int productQuantity = productService.findProductById(cardItemCreateDto.productId()).getQuantity();
+            Product product = productService.findProductById(cardItemCreateDto.productId());
+            int productQuantity = product.getQuantity();
 
             // 4. Sepette aynı üründen olup olmadığını kontrol et
             CardItem existingCardItem = card.getItems().stream()
@@ -86,11 +84,9 @@ public class CardService {
                     System.out.println("ürün 0 ise");
                     card.getItems().remove(existingCardItem);
                     cardRepository.save(card);
-                    cardItemService.delete(existingCardItem);
                 } else {
                     // 7. Miktarı güncelle
                     existingCardItem.setQuantity(totalQuantity);
-                    cardItemService.save(existingCardItem);
                     cardRepository.save(card);
                 }
             } else {
@@ -100,9 +96,11 @@ public class CardService {
                 if (cardItemCreateDto.quantity() > productQuantity)
                     throw new BadRequestException("Yetersiz Ürün Stoğu: "+cardItemCreateDto.productId());
 
-                // 8. Ürün sepette yoksa, yeni CardItem oluştur ve sepete ekle
-                CardItem newCardItem = cardItemService.create(cardItemCreateDto);
-                card.getItems().add(newCardItem);
+                CardItem cardItem = new CardItem(
+                        product,
+                        cardItemCreateDto.quantity()
+                );
+                card.getItems().add(cardItem);
                 cardRepository.save(card);
             }
         }
