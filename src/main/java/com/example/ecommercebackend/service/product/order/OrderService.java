@@ -834,7 +834,7 @@ public class OrderService {
 
         CargoOfferResponseDto cargoOfferResponseDto = cargoOfferResponseDtos.getFirst();
         return new CargoOfferResponsesUserDto(
-                orderPackages.getFirst(),
+                orderPackages.get(0),
                 new CargoOfferResponseUserDto(
                         cargoOfferResponseDto.getData().getLength(),
                         cargoOfferResponseDto.getData().getWidth(),
