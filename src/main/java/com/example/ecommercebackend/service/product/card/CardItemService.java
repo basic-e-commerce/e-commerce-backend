@@ -109,11 +109,28 @@ public class CardItemService {
             CouponCustomerResponseDto couponResponseDto = null;
 
             List<CardItem> items = customer.getCard().getItems();
-            int itemCount = (int) items.stream()
-                    .filter(i -> coupon != null && coupon.getProductAssigned()
-                            ? coupon.getProducts().contains(i.getProduct())
-                            : true)
-                    .count();
+            //int itemCount = (int) items.stream().filter(i -> coupon != null && coupon.getProductAssigned() ? coupon.getProducts().contains(i.getProduct()) : true).count();
+
+            int itemCount  = 0;
+            if (coupon != null && coupon.getProductAssigned()){
+                List<Product> couponProduct = new ArrayList<>(coupon.getProducts());
+
+                for (CardItem item : items) {
+                    if (couponProduct.contains(item.getProduct())) {
+                        itemCount += item.getQuantity();
+                    }
+                }
+            }
+
+
+            for (CardItem item: items){
+                if (coupon != null && coupon.getProductAssigned()){
+                    if (coupon.getProducts().contains(item.getProduct())){
+
+                    }
+                }
+            }
+
 
             for (CardItem item : items) {
                 Product product = item.getProduct();
