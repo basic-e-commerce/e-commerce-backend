@@ -113,21 +113,25 @@ public class CardItemService {
             //int itemCount = (int) items.stream().filter(i -> coupon != null && coupon.getProductAssigned() ? coupon.getProducts().contains(i.getProduct()) : true).count();
 
             int itemCount  = 0;
-            if (coupon != null && coupon.getProductAssigned()){
+            if (coupon != null){
+
                 List<Product> couponProduct = new ArrayList<>(coupon.getProducts());
 
-                for (CardItem item : items) {
-                    for(Product product : couponProduct){
-                        if (product.getId() == item.getProduct().getId()){
-                            itemCount += item.getQuantity();
+                if (coupon.getProductAssigned()){
+                    for (CardItem item : items) {
+                        for(Product product : couponProduct){
+                            if (product.getId() == item.getProduct().getId()){
+                                itemCount += item.getQuantity();
+                            }
                         }
+                    }
+                }else{
+                    for (CardItem item : items) {
+                        itemCount+=item.getQuantity();
                     }
                 }
             }
 
-            if (itemCount == 0){
-
-            }
 
 
 
@@ -157,9 +161,7 @@ public class CardItemService {
                         }
                     } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
                         if (!assigned || isInCoupon) {
-                            if (itemCount == 0){
-                                throw new BadRequestException("İndirim uygulanacak ürün bulunamadı");
-                            }
+
                             BigDecimal perItemDiscount = discountValue
                                     .divide(BigDecimal.valueOf(itemCount), 2, RoundingMode.HALF_UP);
                             productCouponPrice = comparePrice.subtract(perItemDiscount);
