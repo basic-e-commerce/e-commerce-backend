@@ -41,10 +41,7 @@ import com.example.ecommercebackend.service.user.CityService;
 import com.example.ecommercebackend.service.user.DistrictService;
 import com.example.ecommercebackend.service.user.GuestService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +110,7 @@ public class OrderService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
-        OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
+        OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatufs.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
         if (principal instanceof Customer customer) {
             System.out.println("OrderCode: "+ orderCreateDto.getCode());
 
@@ -574,10 +571,17 @@ public class OrderService {
     }
 
     private Specification<Order> filterOrders(String status, OrderPackage.StatusCode statusCode) {
-        if (!(status == null || status.isEmpty()))
+        if (!(status == null || status.isEmpty())){
+            System.out.println("status: "+status);
+            System.out.println("statusCode: "+statusCode);
             return Specification.where(hasStatus(OrderStatus.Status.valueOf(status)).and(hasStatusCode(statusCode)));
-        else
+
+        }else{
+            System.out.println("status: "+status);
+            System.out.println("statusCode: "+statusCode);
             return Specification.where(hasStatus(null));
+
+        }
     }
 
     private Specification<Order> filterGuestSuccessOrders(User user) {
@@ -636,16 +640,19 @@ public class OrderService {
     }
     public Specification<Order> hasStatusCode(OrderPackage.StatusCode statusCode) {
         return (root, query, cb) -> {
-            Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
-            Join<OrderStatus, OrderPackage> packageJoin = statusJoin.join("orderPackages");
+            Join<Order, OrderStatus> statusJoin = root.join("orderStatus", JoinType.LEFT);
 
             if (statusCode == null) {
-                return cb.isNull(packageJoin.get("statusCode")); // sadece statusCode'u null olanlar
+                // orderPackages ilişkisi boş olanları getir
+                return cb.isEmpty(statusJoin.get("orderPackages"));
             }
 
+            // orderPackages içinde statusCode eşleşenleri getir
+            Join<OrderStatus, OrderPackage> packageJoin = statusJoin.join("orderPackages", JoinType.LEFT);
             return cb.equal(packageJoin.get("statusCode"), statusCode);
         };
     }
+
 
 
     public Specification<Order> hasCargoStatus(OrderPackage.CargoStatus cargoStatus) {
