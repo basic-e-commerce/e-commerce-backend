@@ -29,15 +29,12 @@ public class Merchant {
     @OneToOne
     private CoverImage coverImage;
     private String phoneNo;
-    private String phoneNoLink;
     private String email;
-    private String emailLink;
     private BigDecimal minOrderAmount;
     private BigDecimal shippingFee;
     private String emailPassword;
     private String instagram;
     private String instagramLink;
-    private String wpLink;
     private String footerDescription;
     @ElementCollection
     @CollectionTable(name = "merchant_open_close_hours", joinColumns = @JoinColumn(name = "merchant_id"))
@@ -50,15 +47,12 @@ public class Merchant {
             List<Address> sendingAddresses,
             CoverImage coverImage,
             String phoneNo,
-            String phoneNoLink,
             String email,
-            String emailLink,
             BigDecimal minOrderAmount,
             BigDecimal shippingFee,
             String emailPassword,
             String instagram,
             String instagramLink,
-            String wpLink,
             String footerDescription,
             List<OpenCloseHour> openCloseHours) {
         this.name = name;
@@ -66,15 +60,12 @@ public class Merchant {
         this.sendingAddresses = sendingAddresses;
         this.coverImage = coverImage;
         this.phoneNo = phoneNo;
-        this.phoneNoLink = phoneNoLink;
         this.email = email;
-        this.emailLink = emailLink;
         this.minOrderAmount = minOrderAmount;
         this.shippingFee = shippingFee;
         this.emailPassword = emailPassword;
         this.instagram = instagram;
         this.instagramLink = instagramLink;
-        this.wpLink = wpLink;
         this.footerDescription = footerDescription;
         this.openCloseHours = openCloseHours;
         this.addressLink = addressLink;
@@ -166,22 +157,6 @@ public class Merchant {
         this.addressLink = addressLink;
     }
 
-    public String getPhoneNoLink() {
-        return phoneNoLink;
-    }
-
-    public void setPhoneNoLink(String phoneNoLink) {
-        this.phoneNoLink = phoneNoLink;
-    }
-
-    public String getEmailLink() {
-        return emailLink;
-    }
-
-    public void setEmailLink(String emailLink) {
-        this.emailLink = emailLink;
-    }
-
     public void setEmailPassword(String emailPassword) {
         this.emailPassword = emailPassword;
     }
@@ -200,14 +175,6 @@ public class Merchant {
 
     public void setInstagramLink(String instagramLink) {
         this.instagramLink = instagramLink;
-    }
-
-    public String getWpLink() {
-        return wpLink;
-    }
-
-    public void setWpLink(String wpLink) {
-        this.wpLink = wpLink;
     }
 
     public String getFooterDescription() {

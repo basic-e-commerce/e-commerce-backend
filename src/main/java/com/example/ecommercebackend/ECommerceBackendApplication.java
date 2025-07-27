@@ -139,15 +139,12 @@ public class ECommerceBackendApplication {
 						sendingAddress,
 						null,
 						"+905098765432",
-						"tel:5098765432",
 						"feminizmturkiye2000@gmail.com",
-						"mailto:feminizmturkiye2000@gmail.com",
 						BigDecimal.valueOf(1000),
 						BigDecimal.valueOf(75),
 						"izcb abhl kkto upek",
 						"instagram",
 						"instagram link",
-						"wplink",
 						"footerdesc",
 						openCloseHours
 				);

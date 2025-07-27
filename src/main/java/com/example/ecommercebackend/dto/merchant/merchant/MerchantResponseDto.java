@@ -17,20 +17,17 @@ public class MerchantResponseDto {
     private String postalCode;
     private String addressLink;
     private String phoneNo;
-    private String phoneNoLink;
     private String email;
-    private String emailLink;
     private BigDecimal minOrderAmount;
     private BigDecimal shippingFee;
     private String emailPassword;
     private String instagram;
     private String instagramLink;
-    private String wpLink;
     private String footerDescription;
     private List<OpenCloseHour> openCloseHours;
     private ImageDetailDto coverImage;
 
-    public MerchantResponseDto(int id, String name, String countryName, String city, String district, String addressLine1, String postalCode, String addressLink, String phoneNo, String phoneNoLink, String email, String emailLink, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword, String instagram, String instagramLink, String wpLink, String footerDescription, List<OpenCloseHour> openCloseHours, ImageDetailDto coverImage) {
+    public MerchantResponseDto(int id, String name, String countryName, String city, String district, String addressLine1, String postalCode, String addressLink, String phoneNo, String email, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword, String instagram, String instagramLink, String footerDescription, List<OpenCloseHour> openCloseHours, ImageDetailDto coverImage) {
         this.id = id;
         this.name = name;
         this.countryName = countryName;
@@ -40,15 +37,12 @@ public class MerchantResponseDto {
         this.postalCode = postalCode;
         this.addressLink = addressLink;
         this.phoneNo = phoneNo;
-        this.phoneNoLink = phoneNoLink;
         this.email = email;
-        this.emailLink = emailLink;
         this.minOrderAmount = minOrderAmount;
         this.shippingFee = shippingFee;
         this.emailPassword = emailPassword;
         this.instagram = instagram;
         this.instagramLink = instagramLink;
-        this.wpLink = wpLink;
         this.footerDescription = footerDescription;
         this.openCloseHours = openCloseHours;
         this.coverImage = coverImage;
@@ -118,28 +112,12 @@ public class MerchantResponseDto {
         this.phoneNo = phoneNo;
     }
 
-    public String getPhoneNoLink() {
-        return phoneNoLink;
-    }
-
-    public void setPhoneNoLink(String phoneNoLink) {
-        this.phoneNoLink = phoneNoLink;
-    }
-
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getEmailLink() {
-        return emailLink;
-    }
-
-    public void setEmailLink(String emailLink) {
-        this.emailLink = emailLink;
     }
 
     public BigDecimal getMinOrderAmount() {
@@ -180,14 +158,6 @@ public class MerchantResponseDto {
 
     public void setInstagramLink(String instagramLink) {
         this.instagramLink = instagramLink;
-    }
-
-    public String getWpLink() {
-        return wpLink;
-    }
-
-    public void setWpLink(String wpLink) {
-        this.wpLink = wpLink;
     }
 
     public String getFooterDescription() {
