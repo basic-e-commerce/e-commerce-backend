@@ -96,6 +96,7 @@ public class IyzicoPayment implements PaymentStrategy {
 
         if (!"success".equalsIgnoreCase(paymentComplateDto.getStatus())) {
             return new PayCallBackDto(
+                    "Failed",
                     paymentComplateDto.getConversationId(),
                     paymentComplateDto.getStatus(),
                     null
@@ -170,6 +171,7 @@ public class IyzicoPayment implements PaymentStrategy {
 
             if (threedsPayment.getStatus().equals("success")) {
                 return new PayCallBackDto(
+                        threedsPayment.getPaymentId(),
                         threedsPayment.getConversationId(),
                         threedsPayment.getStatus(),
                         threedsPayment.getPaymentItems().stream().map(x->{
@@ -184,6 +186,7 @@ public class IyzicoPayment implements PaymentStrategy {
                 );
             }else
                 return new PayCallBackDto(
+                        threedsPayment.getPaymentId(),
                         threedsPayment.getConversationId(),
                         threedsPayment.getStatus(),
                         new ArrayList<>()

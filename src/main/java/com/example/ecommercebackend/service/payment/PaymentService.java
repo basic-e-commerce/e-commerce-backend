@@ -154,6 +154,7 @@ public class PaymentService {
 
         if (payCallBackDto.getStatus().equals("success")) {
             payment.setPaymentStatus(Payment.PaymentStatus.SUCCESS);
+            payment.setPaymentId(payCallBackDto.getPaymentId());
             paymentRepository.save(payment);
 
             // update orderstatus approved,green

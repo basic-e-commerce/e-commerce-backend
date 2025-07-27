@@ -5,11 +5,13 @@ import org.apache.tika.sax.Link;
 import java.util.List;
 
 public class PayCallBackDto {
+    private String paymentId;
     private String conversationId;
     private String status;
     private List<OrderItemTansactionId> orderItemTansactionIds;
 
-    public PayCallBackDto(String conversationId, String status, List<OrderItemTansactionId> orderItemTansactionIds) {
+    public PayCallBackDto(String paymentId, String conversationId, String status, List<OrderItemTansactionId> orderItemTansactionIds) {
+        this.paymentId = paymentId;
         this.conversationId = conversationId;
         this.status = status;
         this.orderItemTansactionIds = orderItemTansactionIds;
@@ -37,5 +39,13 @@ public class PayCallBackDto {
 
     public void setOrderItemTansactionIds(List<OrderItemTansactionId> orderItemTansactionIds) {
         this.orderItemTansactionIds = orderItemTansactionIds;
+    }
+
+    public String getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(String paymentId) {
+        this.paymentId = paymentId;
     }
 }

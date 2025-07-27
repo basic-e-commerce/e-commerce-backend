@@ -27,7 +27,7 @@ public class Payment {
     private String paymentUniqId;
     private BigDecimal totalAmount;
     private int installment;
-    private String paymentTransactionId;
+    private String paymentId;
 
     @OneToMany(cascade = CascadeType.ALL)
     private Set<Sell> sells;
@@ -40,7 +40,7 @@ public class Payment {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    public Payment(String name, String surname, String username, String phoneNo, String country, String city, String zipCode, String cardHolderName, String conversationId, String paymentUniqId, BigDecimal totalAmount, int installment, String paymentTransactionId, Order order) {
+    public Payment(String name, String surname, String username, String phoneNo, String country, String city, String zipCode, String cardHolderName, String conversationId, String paymentUniqId, BigDecimal totalAmount, int installment, String paymentId, Order order) {
         this.name = name;
         this.surname = surname;
         this.username = username;
@@ -53,7 +53,7 @@ public class Payment {
         this.paymentUniqId = paymentUniqId;
         this.totalAmount = totalAmount;
         this.installment = installment;
-        this.paymentTransactionId = paymentTransactionId;
+        this.paymentId = paymentId;
         this.order = order;
     }
     public Payment() {
@@ -188,12 +188,12 @@ public class Payment {
         this.sells = sells;
     }
 
-    public String getPaymentTransactionId() {
-        return paymentTransactionId;
+    public String getPaymentId() {
+        return paymentId;
     }
 
-    public void setPaymentTransactionId(String paymentTransactionId) {
-        this.paymentTransactionId = paymentTransactionId;
+    public void setPaymentId(String paymentId) {
+        this.paymentId = paymentId;
     }
 
     public enum PaymentStatus {
