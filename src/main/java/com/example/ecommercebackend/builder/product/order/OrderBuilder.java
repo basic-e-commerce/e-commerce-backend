@@ -70,7 +70,7 @@ public class OrderBuilder {
                         order.getInvoice().getPhoneNumber(),
                         order.getInvoice().getAddressLine1()
                 ),
-                order.getRefundOrderItems().stream().map(orderItem -> {
+                order.getOrderItems().stream().map(orderItem -> {
 
                     String coverImage = "";
                     if (orderItem.getProduct().getCoverImage() != null) {
@@ -78,7 +78,7 @@ public class OrderBuilder {
                     }
                     return new OrderItemResponseDto(orderItem.getProduct().getId(), orderItem.getProduct().getProductName(), orderItem.getQuantity(), coverImage,orderItem.getDiscountPrice(),orderItem.getId());
                 }).toList(),
-                order.getOrderItems().stream().map(orderItem -> {
+                order.getRefundOrderItems().stream().map(orderItem -> {
 
                     String coverImage = "";
                     if (orderItem.getProduct().getCoverImage() != null) {

@@ -215,12 +215,13 @@ public class PaymentService {
     public void refund(String orderCode, List<OrderItemRefundDto> orderItemRefundDtos, BigDecimal refundAmount){
         Order order = orderService.findByOrderCode(orderCode);
         Set<OrderItem> orderItems = order.getOrderItems();
+        Set<OrderItem> refundItems = new HashSet<>();
 
 
         for (OrderItem orderItem : orderItems) {
             OrderItem current = null;
             for (OrderItemRefundDto orderItemRefundDto : orderItemRefundDtos) {
-                if (orderItemRefundDto.orderItemId() == orderItem.getId()){
+                if (orderItemRefundDto.orderItemId() == orderItem.getId() && orderItemRefundDto.productId() == orderItem.getProduct().getId()){
                     current = orderItem;
                 }
             }
