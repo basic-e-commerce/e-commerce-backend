@@ -97,6 +97,7 @@ public class IyzicoPayment implements PaymentStrategy {
         for (Map.Entry<String, String> entry : collections.entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
+        System.out.println("----------------------------------------");
         String status = collections.get("status");
         String paymentId = collections.get("paymentId");
         String conversationId = collections.get("conversationId");
