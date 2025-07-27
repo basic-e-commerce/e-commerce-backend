@@ -149,7 +149,7 @@ public class PaymentService {
                 collections.get("paymentId"),
                 payment.getOrder().getCustomerPrice(),
                 payment.getOrder().getOrderCode(),
-                "tr"
+                "TRY"
         ));
 
         if (payCallBackDto.getStatus().equals("success")) {
