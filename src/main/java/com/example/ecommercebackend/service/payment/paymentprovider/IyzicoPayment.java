@@ -117,6 +117,7 @@ public class IyzicoPayment implements PaymentStrategy {
             ThreedsPayment threedsPayment =ThreedsPayment.createV2(createThreedsPaymentRequestV2, options);
             System.out.println(threedsPayment.getStatus());
             System.out.println("errorMessage: "+threedsPayment.getErrorMessage());
+            System.out.println("errorCode: "+threedsPayment.getErrorCode());
 
 
 //            CreateThreedsPaymentRequest request = new CreateThreedsPaymentRequest();
