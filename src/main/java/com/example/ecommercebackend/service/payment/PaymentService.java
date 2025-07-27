@@ -141,12 +141,11 @@ public class PaymentService {
     public void payCallBack(Map<String, String> collections, HttpServletResponse httpServletResponse) throws IOException {
         System.out.println("Gelen Callback Parametreleri:");
         collections.forEach((key, value) -> System.out.println(key + ": " + value));
-
+        Payment payment = paymentRepository.findByConversationId(collections.get("conversationId")).orElseThrow(()-> new NotFoundException("Ödeme bulunamadı"));
         PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
-        PayCallBackDto payCallBackDto = paymentStrategy.payCallBack(collections);
+        PayCallBackDto payCallBackDto = paymentStrategy.payCallBack(collections,payment);
 
         if (payCallBackDto.getStatus().equals("success")) {
-            Payment payment = findByConversationId(payCallBackDto.getConversationId());
             payment.setPaymentStatus(Payment.PaymentStatus.SUCCESS);
             paymentRepository.save(payment);
 
@@ -188,7 +187,6 @@ public class PaymentService {
             //mailService.send(order.getUsername(),"Siparişiniz onaylandı","Order code: "+ order.getOrderCode());
             httpServletResponse.sendRedirect(redirectUrl);
         }else{
-            Payment payment = findByConversationId(payCallBackDto.getConversationId());
             payment.setPaymentStatus(Payment.PaymentStatus.FAILED);
             String redirectUrl = "https://litysofttest1.site/failed-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
             httpServletResponse.sendRedirect(redirectUrl);

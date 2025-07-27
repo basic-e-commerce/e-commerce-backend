@@ -113,9 +113,12 @@ public class CategoryService {
         }
 
         categoryRepository.deleteById(category.getId());
-        Category parentCategory = category.getParentCategory();
-        parentCategory.setSubCategory(true);
-        categoryRepository.save(parentCategory);
+        if (category.getParentCategory() != null){
+            Category parentCategory = category.getParentCategory();
+            parentCategory.setSubCategory(true);
+            categoryRepository.save(parentCategory);
+        }
+
 
         return categoryBuilder.categoryToCategoryDetailDto(category);
     }

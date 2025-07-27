@@ -8,10 +8,12 @@ import com.example.ecommercebackend.dto.payment.response.InstallmentInfoDto;
 import com.example.ecommercebackend.dto.payment.response.InstallmentPriceDto;
 import com.example.ecommercebackend.dto.payment.response.PayCallBackDto;
 import com.example.ecommercebackend.dto.payment.response.ProcessCreditCardDto;
+import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.exception.BadRequestException;
+import com.example.ecommercebackend.service.payment.PaymentService;
 import com.example.ecommercebackend.service.payment.PaymentStrategy;
 import com.iyzipay.Options;
 import com.iyzipay.model.*;
@@ -92,7 +94,7 @@ public class IyzicoPayment implements PaymentStrategy {
 
 
     @Override
-    public PayCallBackDto payCallBack(Map<String, String> collections) {
+    public PayCallBackDto payCallBack(Map<String, String> collections, Payment payment) {
         System.out.println("----------------------------------------");
         for (Map.Entry<String, String> entry : collections.entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue());
@@ -118,7 +120,13 @@ public class IyzicoPayment implements PaymentStrategy {
 
             CreateThreedsPaymentRequestV2 createThreedsPaymentRequestV2 = new CreateThreedsPaymentRequestV2();
             createThreedsPaymentRequestV2.setPaymentId(paymentId);
-            //createThreedsPaymentRequestV2.setPaidPrice();
+            createThreedsPaymentRequestV2.setConversationId(conversationId);
+
+
+
+
+
+
 
 
             CreateThreedsPaymentRequest request = new CreateThreedsPaymentRequest();
