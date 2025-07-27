@@ -93,6 +93,7 @@ public class IyzicoPayment implements PaymentStrategy {
 
     @Override
     public PayCallBackDto payCallBack(Map<String, String> collections) {
+        System.out.println("----------------------------------------");
         for (Map.Entry<String, String> entry : collections.entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
@@ -120,9 +121,50 @@ public class IyzicoPayment implements PaymentStrategy {
             request.setPaymentId(paymentId);
 
             ThreedsPayment threedsPayment = ThreedsPayment.create(request,options);
-            System.out.println("status: "+threedsPayment.getStatus());
-            System.out.println("paymentId: "+threedsPayment.getPaymentId());
-            System.out.println("conversationId: "+threedsPayment.getConversationId());
+            System.out.println("status: " + threedsPayment.getStatus());
+            System.out.println("price: " + threedsPayment.getPrice());
+            System.out.println("paidPrice: " + threedsPayment.getPaidPrice());
+            System.out.println("currency: " + threedsPayment.getCurrency());
+            System.out.println("installment: " + threedsPayment.getInstallment());
+            System.out.println("paymentId: " + threedsPayment.getPaymentId());
+            System.out.println("paymentStatus: " + threedsPayment.getPaymentStatus());
+            System.out.println("fraudStatus: " + threedsPayment.getFraudStatus());
+            System.out.println("merchantCommissionRate: " + threedsPayment.getMerchantCommissionRate());
+            System.out.println("merchantCommissionRateAmount: " + threedsPayment.getMerchantCommissionRateAmount());
+            System.out.println("iyziCommissionRateAmount: " + threedsPayment.getIyziCommissionRateAmount());
+            System.out.println("iyziCommissionFee: " + threedsPayment.getIyziCommissionFee());
+            System.out.println("cardType: " + threedsPayment.getCardType());
+            System.out.println("cardAssociation: " + threedsPayment.getCardAssociation());
+            System.out.println("cardFamily: " + threedsPayment.getCardFamily());
+            System.out.println("cardToken: " + threedsPayment.getCardToken());
+            System.out.println("cardUserKey: " + threedsPayment.getCardUserKey());
+            System.out.println("binNumber: " + threedsPayment.getBinNumber());
+            System.out.println("basketId: " + threedsPayment.getBasketId());
+            System.out.println("authCode: " + threedsPayment.getAuthCode());
+            System.out.println("phase: " + threedsPayment.getPhase());
+            System.out.println("lastFourDigits: " + threedsPayment.getLastFourDigits());
+            System.out.println("posOrderId: " + threedsPayment.getPosOrderId());
+            System.out.println("hostReference: " + threedsPayment.getHostReference());
+            System.out.println("iban: " + threedsPayment.getIban());
+            System.out.println("legalCompanyTitle: " + threedsPayment.getLegalCompanyTitle());
+            System.out.println("bankName: " + threedsPayment.getBankName());
+            System.out.println("referenceCode: " + threedsPayment.getReferenceCode());
+            System.out.println("mdStatus: " + threedsPayment.getMdStatus());
+            System.out.println("signature: " + threedsPayment.getSignature());
+
+            if (threedsPayment.getPaymentItems() != null && !threedsPayment.getPaymentItems().isEmpty()) {
+                System.out.println("Payment Items:");
+                for (PaymentItem item : threedsPayment.getPaymentItems()) {
+                    System.out.println("\tItemId: " + item.getItemId());
+                    System.out.println("\tPaymentTransactionId: " + item.getPaymentTransactionId());
+                    System.out.println("\tTransactionStatus: " + item.getTransactionStatus());
+                    System.out.println("\tPrice: " + item.getPrice());
+                    System.out.println("\tPaidPrice: " + item.getPaidPrice());
+                    System.out.println("--------");
+                }
+            }
+
+
 
 
             if (threedsPayment.getStatus().equals("success")) {
