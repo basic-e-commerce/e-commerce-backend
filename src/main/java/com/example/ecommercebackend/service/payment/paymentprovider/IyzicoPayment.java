@@ -222,7 +222,7 @@ public class IyzicoPayment implements PaymentStrategy {
     }
 
     @Override
-    public String refund(String paymentId, BigDecimal refundAmount) {
+    public Refund refund(String paymentId, BigDecimal refundAmount) {
         Options options = getOptions();
 
         CreateRefundV2Request createRefundV2Request = new CreateRefundV2Request();
@@ -232,7 +232,33 @@ public class IyzicoPayment implements PaymentStrategy {
 
         Refund refund = Refund.createV2(createRefundV2Request, options);
 
-        return refund.getPaymentId();
+        if (refund.getStatus().equals("success")) {
+            if (!refund.getConversationId().equals(createRefundV2Request.getConversationId())) {
+                throw new BadRequestException("Yapılan istekte hata vardır!");
+            }
+
+        }
+
+        return refund;
+    }
+
+    @Override
+    public Cancel cancel(String paymentId){
+        Options options = getOptions();
+        String uuid = UUID.randomUUID().toString();
+
+        CreateCancelRequest request = new CreateCancelRequest();
+        request.setPaymentId(paymentId);
+        request.setConversationId(uuid);
+
+        Cancel cancel = Cancel.create(request, options);
+
+        if (cancel.getStatus().equals("success")) {
+            if (!cancel.getConversationId().equals(uuid)) {
+                throw new BadRequestException("Ödeme tutarsızlığı bulunmaktadır!");
+            }
+        }
+        return cancel;
     }
 
 

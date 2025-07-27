@@ -21,12 +21,12 @@ public class DistrictService {
 
 
     public DistrictDto createNotThr(@NotNullParam DistrictDto districtDto) {
-        if (existByDistrictId(districtDto.getDistrictID()))
+        if (existByDistrictId(districtDto.getDistrictId()))
             return null;
 
         District district = new District(
                 districtDto.getName(),
-                districtDto.getDistrictID(),
+                districtDto.getDistrictId(),
                 districtDto.getCityCode(),
                 districtDto.getCountryCode()
         );
@@ -42,12 +42,12 @@ public class DistrictService {
 
 
     public DistrictDto create(@NotNullParam DistrictDto districtDto) {
-        if (existByDistrictId(districtDto.getDistrictID()))
+        if (existByDistrictId(districtDto.getDistrictId()))
             throw new ResourceAlreadyExistException("Sistemde bu İlçe kayıtlıdır");
 
         District district = new District(
                 districtDto.getName(),
-                districtDto.getDistrictID(),
+                districtDto.getDistrictId(),
                 districtDto.getCityCode(),
                 districtDto.getCountryCode()
         );

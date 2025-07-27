@@ -6,7 +6,7 @@ public class DistrictDto {
     @JsonProperty("name")
     private String name;
     @JsonProperty("districtID")
-    private Integer districtID;
+    private Integer districtId;
     @JsonProperty("cityCode")
     private String cityCode;
     @JsonProperty("regionCode")
@@ -14,9 +14,9 @@ public class DistrictDto {
     @JsonProperty("countryCode")
     private String countryCode;
 
-    public DistrictDto(String name, Integer districtID, String cityCode, String regionCode, String countryCode) {
+    public DistrictDto(String name, Integer districtId, String cityCode, String regionCode, String countryCode) {
         this.name = name;
-        this.districtID = districtID;
+        this.districtId = districtId;
         this.cityCode = cityCode;
         this.regionCode = regionCode;
         this.countryCode = countryCode;
@@ -33,12 +33,12 @@ public class DistrictDto {
         this.name = name;
     }
 
-    public Integer getDistrictID() {
-        return districtID;
+    public Integer getDistrictId() {
+        return districtId;
     }
 
-    public void setDistrictID(Integer districtID) {
-        this.districtID = districtID;
+    public void setDistrictId(Integer districtId) {
+        this.districtId = districtId;
     }
 
     public String getCityCode() {

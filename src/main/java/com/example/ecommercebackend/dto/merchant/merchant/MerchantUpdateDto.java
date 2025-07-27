@@ -1,11 +1,10 @@
 package com.example.ecommercebackend.dto.merchant.merchant;
 
-import com.example.ecommercebackend.dto.product.shipping.AddressApiDto;
-import com.example.ecommercebackend.entity.merchant.OpenCloseHour;
 
+import com.example.ecommercebackend.entity.merchant.OpenCloseHour;
 import java.math.BigDecimal;
 import java.util.LinkedList;
-import java.util.List;
+
 
 public class MerchantUpdateDto {
     private String name;
@@ -136,9 +135,5 @@ public class MerchantUpdateDto {
 
     public Integer getDistrictId() {
         return districtId;
-    }
-
-    public void setDistrictId(Integer districtId) {
-        this.districtId = districtId;
     }
 }
