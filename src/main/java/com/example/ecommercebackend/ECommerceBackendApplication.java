@@ -114,7 +114,8 @@ public class ECommerceBackendApplication {
 						"address line 1",
 						"34000",
 						"+905559876758",
-						false
+						false,
+						true
 				);
 				sendingAddress.add(address);
 
@@ -131,7 +132,8 @@ public class ECommerceBackendApplication {
 								"address line 1",
 								"34000",
 								"5559876758",
-								false
+								false,
+								true
 								),
 						"addresslink",
 						sendingAddress,
