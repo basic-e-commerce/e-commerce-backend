@@ -33,12 +33,16 @@ public class DistrictDto {
         this.name = name;
     }
 
-    public Integer getDistrictId() {
-        return districtId;
-    }
-
+    // Setter: JSON alırken districtID olarak karşıla
+    @JsonProperty("districtID")
     public void setDistrictId(Integer districtId) {
         this.districtId = districtId;
+    }
+
+    // Getter: JSON verirken districtId olarak gönder
+    @JsonProperty("districtId")
+    public Integer getDistrictId() {
+        return districtId;
     }
 
     public String getCityCode() {
