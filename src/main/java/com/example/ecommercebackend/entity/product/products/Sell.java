@@ -21,13 +21,8 @@ public class Sell {
     private Product product;  // Burada Product entity'si ile ilişkilendirdik
     private Integer orderItemId;
 
-    @Column(nullable = false)
     private BigDecimal price;
-
-    @Column(nullable = false)
     private BigDecimal paidPrice;
-
-    @Column(nullable = false)
     private Integer quantity;
 
     private String paymentTransactionId;
