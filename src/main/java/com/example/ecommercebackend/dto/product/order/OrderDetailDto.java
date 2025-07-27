@@ -1,11 +1,13 @@
 package com.example.ecommercebackend.dto.product.order;
 
+import com.example.ecommercebackend.dto.product.coupon.CouponResponseDto;
 import com.example.ecommercebackend.dto.product.invoice.InvoiceResponseDto;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 public class OrderDetailDto {
@@ -17,11 +19,13 @@ public class OrderDetailDto {
     private BigDecimal customerPrice;
     private AddressOrderDetailDto address;
     private List<OrderItemResponseDto> orderItemResponseDtos;
+    private List<OrderItemResponseDto> refundItemResponseDtos;
     private int installment;
     private InvoiceResponseDto invoiceResponseDto;
     private OrderStatusResponse orderStatusResponse;
+    private String createdAt;
 
-    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, int installment, OrderStatusResponse orderStatusResponse) {
+    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, List<OrderItemResponseDto> refundItemResponseDtos, int installment, OrderStatusResponse orderStatusResponse, String createdAt) {
         this.id = id;
         this.orderCode = orderCode;
         this.firstName = firstName;
@@ -30,8 +34,10 @@ public class OrderDetailDto {
         this.customerPrice = customerPrice;
         this.address = address;
         this.orderItemResponseDtos = orderItemResponseDtos;
+        this.refundItemResponseDtos = refundItemResponseDtos;
         this.installment = installment;
         this.orderStatusResponse = orderStatusResponse;
+        this.createdAt = createdAt;
     }
 
     public int getId() {
@@ -120,5 +126,21 @@ public class OrderDetailDto {
 
     public void setOrderStatusResponse(OrderStatusResponse orderStatusResponse) {
         this.orderStatusResponse = orderStatusResponse;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public List<OrderItemResponseDto> getRefundItemResponseDtos() {
+        return refundItemResponseDtos;
+    }
+
+    public void setRefundItemResponseDtos(List<OrderItemResponseDto> refundItemResponseDtos) {
+        this.refundItemResponseDtos = refundItemResponseDtos;
     }
 }

@@ -29,8 +29,12 @@ public class Sell {
     private String basketId;
 
     private Instant sellDate = Instant.now();
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isRefund;
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isCancel;
 
-    public Sell(Product product, Integer orderItemId, BigDecimal price, BigDecimal paidPrice, Integer quantity, String paymentTransactionId, String basketId) {
+    public Sell(Product product, Integer orderItemId, BigDecimal price, BigDecimal paidPrice, Integer quantity, String paymentTransactionId, String basketId, Boolean isRefund, Boolean isCancel) {
         this.product = product;
         this.orderItemId = orderItemId;
         this.price = price;
@@ -38,6 +42,8 @@ public class Sell {
         this.quantity = quantity;
         this.paymentTransactionId = paymentTransactionId;
         this.basketId = basketId;
+        this.isRefund = isRefund;
+        this.isCancel = isCancel;
     }
 
     public Sell() {
@@ -116,5 +122,21 @@ public class Sell {
 
     public void setOrderItemId(Integer orderItemId) {
         this.orderItemId = orderItemId;
+    }
+
+    public Boolean getRefund() {
+        return isRefund;
+    }
+
+    public void setRefund(Boolean refund) {
+        isRefund = refund;
+    }
+
+    public Boolean getCancel() {
+        return isCancel;
+    }
+
+    public void setCancel(Boolean cancel) {
+        isCancel = cancel;
     }
 }

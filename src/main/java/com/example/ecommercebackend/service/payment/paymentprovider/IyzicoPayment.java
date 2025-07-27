@@ -236,10 +236,13 @@ public class IyzicoPayment implements PaymentStrategy {
             if (!refund.getConversationId().equals(createRefundV2Request.getConversationId())) {
                 throw new BadRequestException("Yapılan istekte hata vardır!");
             }
-
+            return refund;
+        } else if (refund.getStatus().equals("failure")) {
+            throw new BadRequestException("İade yapılamadı:"+refund.getErrorMessage());
+        }else{
+            throw new BadRequestException("Bilinmeyen hata!");
         }
 
-        return refund;
     }
 
     @Override

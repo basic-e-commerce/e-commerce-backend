@@ -45,7 +45,9 @@ public class OrderPackageService {
                             x.getProduct().getId(),
                             x.getProduct().getProductName(),
                             x.getQuantity(),
-                            x.getProduct().getCoverImage().getUrl()
+                            x.getProduct().getCoverImage().getUrl(),
+                            x.getDiscountPrice(),
+                            x.getId()
                     );
                 }).collect(Collectors.toSet()),
                 orderPackage.getShipmentId(),

@@ -3,6 +3,7 @@ package com.example.ecommercebackend.entity.product.products;
 import com.example.ecommercebackend.entity.user.Customer;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -22,12 +23,14 @@ public class CustomerCoupon {
     private Coupon coupon;
 
     private Boolean isUsed = false;
+    private BigDecimal discountPrice;
     private Instant createAt;
     private Instant usedAt;
 
-    public CustomerCoupon(Customer customer, Coupon coupon, Instant createAt) {
+    public CustomerCoupon(Customer customer, Coupon coupon, BigDecimal discountPrice, Instant createAt) {
         this.customer = customer;
         this.coupon = coupon;
+        this.discountPrice = discountPrice;
         this.createAt = createAt;
     }
 
@@ -80,5 +83,13 @@ public class CustomerCoupon {
 
     public void setUsedAt(Instant usedAt) {
         this.usedAt = usedAt;
+    }
+
+    public BigDecimal getDiscountPrice() {
+        return discountPrice;
+    }
+
+    public void setDiscountPrice(BigDecimal discountPrice) {
+        this.discountPrice = discountPrice;
     }
 }

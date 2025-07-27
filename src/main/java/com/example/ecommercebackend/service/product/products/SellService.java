@@ -81,7 +81,9 @@ public class SellService {
                 orderItemTansactionId.getPaidPrice(),
                 orderItem.getQuantity(),
                 orderItemTansactionId.getPaymentTransactionId(),
-                orderItemTansactionId.getBasketId()
+                orderItemTansactionId.getBasketId(),
+                false,
+                false
         );
         return sellRepository.save(sell);
     }

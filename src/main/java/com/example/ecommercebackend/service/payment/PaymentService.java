@@ -4,6 +4,8 @@ import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.response.*;
 import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
+import com.example.ecommercebackend.dto.product.order.OrderItemCreateDto;
+import com.example.ecommercebackend.dto.product.orderitem.OrderItemRefundDto;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.invoice.Invoice;
@@ -206,6 +208,36 @@ public class PaymentService {
             String redirectUrl = "https://litysofttest1.site/failed-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
             httpServletResponse.sendRedirect(redirectUrl);
         }
+    }
+
+
+
+    public void refund(String orderCode, List<OrderItemRefundDto> orderItemRefundDtos, BigDecimal refundAmount){
+        Order order = orderService.findByOrderCode(orderCode);
+        Set<OrderItem> orderItems = order.getOrderItems();
+
+
+        for (OrderItem orderItem : orderItems) {
+            OrderItem current = null;
+            for (OrderItemRefundDto orderItemRefundDto : orderItemRefundDtos) {
+                if (orderItemRefundDto.orderItemId() == orderItem.getId()){
+                    current = orderItem;
+                }
+            }
+            if (current != null){
+
+            }else{
+                throw new BadRequestException("Siparişte bu ürün kalemi bulunamamaktadır!");
+            }
+
+        }
+        Payment payment = order.getPayments();
+
+
+    }
+
+    public void cancel(){
+
     }
 
     private Payment findByConversationId(String conversationId) {

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -32,6 +34,9 @@ public class Payment {
     @OneToMany(cascade = CascadeType.ALL)
     private Set<Sell> sells;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Sell> refundSells = new HashSet<>();
+
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus = PaymentStatus.PROCESS;
 
@@ -39,6 +44,8 @@ public class Payment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
+
+    private Instant createdAt = Instant.now();
 
     public Payment(String name, String surname, String username, String phoneNo, String country, String city, String zipCode, String cardHolderName, String conversationId, String paymentUniqId, BigDecimal totalAmount, int installment, String paymentId, Order order) {
         this.name = name;
@@ -194,6 +201,18 @@ public class Payment {
 
     public void setPaymentId(String paymentId) {
         this.paymentId = paymentId;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Set<Sell> getRefundSells() {
+        return refundSells;
+    }
+
+    public void setRefundSells(Set<Sell> refundSells) {
+        this.refundSells = refundSells;
     }
 
     public enum PaymentStatus {

@@ -1,16 +1,22 @@
 package com.example.ecommercebackend.dto.product.orderitem;
 
+import java.math.BigDecimal;
+
 public class OrderItemResponseDto {
     private int productId;
     private String productName;
     private int quantity;
     private String coverImage;
+    private BigDecimal price;
+    private Integer orderItemId;
 
-    public OrderItemResponseDto(int productId, String productName, int quantity, String coverImage) {
+    public OrderItemResponseDto(int productId, String productName, int quantity, String coverImage, BigDecimal price, Integer orderItemId) {
         this.productId = productId;
         this.productName = productName;
         this.quantity = quantity;
         this.coverImage = coverImage;
+        this.price = price;
+        this.orderItemId = orderItemId;
     }
 
     public int getProductId() {
@@ -43,5 +49,21 @@ public class OrderItemResponseDto {
 
     public void setCoverImage(String coverImage) {
         this.coverImage = coverImage;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getOrderItemId() {
+        return orderItemId;
+    }
+
+    public void setOrderItemId(Integer orderItemId) {
+        this.orderItemId = orderItemId;
     }
 }

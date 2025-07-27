@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -75,6 +76,9 @@ public class Order {
     @OneToMany(fetch = FetchType.EAGER)
     private Set<OrderItem> orderItems;
 
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<OrderItem> refundOrderItems = new HashSet<>();
+
     @ManyToOne
     @JoinColumn(name = "order_status_id", referencedColumnName = "id")
     private OrderStatus orderStatus;
@@ -87,6 +91,9 @@ public class Order {
 
     @Column(name = "customer_price")
     private BigDecimal customerPrice;
+
+    @Column(name = "refund_price", columnDefinition = "NUMERIC DEFAULT 0", nullable = false)
+    private BigDecimal refundPrice = BigDecimal.ZERO;
 
     @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Payment payments;
@@ -381,5 +388,21 @@ public class Order {
 
     public void setCountryIso(String countryIso) {
         this.countryIso = countryIso;
+    }
+
+    public BigDecimal getRefundPrice() {
+        return refundPrice;
+    }
+
+    public void setRefundPrice(BigDecimal refundPrice) {
+        this.refundPrice = refundPrice;
+    }
+
+    public Set<OrderItem> getRefundOrderItems() {
+        return refundOrderItems;
+    }
+
+    public void setRefundOrderItems(Set<OrderItem> refundOrderItems) {
+        this.refundOrderItems = refundOrderItems;
     }
 }

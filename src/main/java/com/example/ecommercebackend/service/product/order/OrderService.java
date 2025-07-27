@@ -129,6 +129,7 @@ public class OrderService {
                     customerCoupon = new CustomerCoupon(
                             customer,
                             coupon,
+                            BigDecimal.ZERO,
                             Instant.now()
                     );
                 }
@@ -958,7 +959,9 @@ public class OrderService {
                             x.getProduct().getId(),
                             x.getProduct().getProductName(),
                             x.getQuantity(),
-                            x.getProduct().getCoverImage().getUrl()
+                            x.getProduct().getCoverImage().getUrl(),
+                            x.getDiscountPrice(),
+                            x.getId()
                     );
                 }).collect(Collectors.toSet()),
                 saveOrderPackage.getShipmentId(),

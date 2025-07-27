@@ -34,7 +34,13 @@ public class OrderBuilder {
                     if (x.getProduct().getCoverImage() != null) {
                         coverImage = x.getProduct().getCoverImage().getUrl();
                     }
-                    return new OrderItemResponseDto(x.getProduct().getId(),x.getProduct().getProductName(),x.getQuantity(),coverImage);
+                    return new OrderItemResponseDto(
+                            x.getProduct().getId(),
+                            x.getProduct().getProductName(),
+                            x.getQuantity(),
+                            coverImage,
+                            x.getDiscountPrice(),
+                            x.getId());
                 }).toList()
         );
     }
@@ -64,13 +70,21 @@ public class OrderBuilder {
                         order.getInvoice().getPhoneNumber(),
                         order.getInvoice().getAddressLine1()
                 ),
+                order.getRefundOrderItems().stream().map(orderItem -> {
+
+                    String coverImage = "";
+                    if (orderItem.getProduct().getCoverImage() != null) {
+                        coverImage = orderItem.getProduct().getCoverImage().getUrl();
+                    }
+                    return new OrderItemResponseDto(orderItem.getProduct().getId(), orderItem.getProduct().getProductName(), orderItem.getQuantity(), coverImage,orderItem.getDiscountPrice(),orderItem.getId());
+                }).toList(),
                 order.getOrderItems().stream().map(orderItem -> {
 
                     String coverImage = "";
                     if (orderItem.getProduct().getCoverImage() != null) {
                         coverImage = orderItem.getProduct().getCoverImage().getUrl();
                     }
-                    return new OrderItemResponseDto(orderItem.getProduct().getId(), orderItem.getProduct().getProductName(), orderItem.getQuantity(), coverImage);
+                    return new OrderItemResponseDto(orderItem.getProduct().getId(), orderItem.getProduct().getProductName(), orderItem.getQuantity(), coverImage,orderItem.getDiscountPrice(),orderItem.getId());
                 }).toList(),
                 installment,
                 new OrderStatusResponse(
@@ -81,7 +95,7 @@ public class OrderBuilder {
                                 .map(OrderStatus::getOrderPackages)
                                 .orElse(Collections.emptyList())
                                 .stream()
-                                .sorted(Comparator.comparing(OrderPackage::getUpdateAt))
+                                .sorted(Comparator.comparing(OrderPackage::getCreateAt))
                                 .map(x -> new OrderPackageResponseDto(
                                         x.getId(),
                                         Optional.ofNullable(x.getOrderItems())
@@ -90,9 +104,11 @@ public class OrderBuilder {
                                                 .map(y -> new OrderItemResponseDto(
                                                         y.getProduct() != null ? y.getProduct().getId() : null,
                                                         y.getProduct() != null ? y.getProduct().getProductName() : null,
-                                                        y.getProduct() != null ? y.getProduct().getQuantity() : null,
+                                                        y.getQuantity() != null ? y.getQuantity() : null,
                                                         y.getProduct() != null && y.getProduct().getCoverImage() != null
-                                                                ? y.getProduct().getCoverImage().getUrl() : null
+                                                                ? y.getProduct().getCoverImage().getUrl() : null,
+                                                        y.getDiscountPrice() != null ? y.getDiscountPrice() : null,
+                                                        y.getId() != null ? y.getId() : null
                                                 )).collect(Collectors.toSet()),
                                         x.getShipmentId(),
                                         x.getStatusCode() != null ? x.getStatusCode().name() : null,
@@ -114,7 +130,8 @@ public class OrderBuilder {
                                 .atZone(ZoneId.of("Europe/Istanbul"))
                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                                 : null
-                )
+                ),
+                order.getCreatedAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         );
         InvoiceResponseDto invoiceResponseDto = new InvoiceResponseDto(
                 order.getInvoice().getId(),
