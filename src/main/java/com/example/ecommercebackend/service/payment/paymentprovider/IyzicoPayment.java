@@ -116,6 +116,11 @@ public class IyzicoPayment implements PaymentStrategy {
 
             Options options = getOptions();
 
+            CreateThreedsPaymentRequestV2 createThreedsPaymentRequestV2 = new CreateThreedsPaymentRequestV2();
+            createThreedsPaymentRequestV2.setPaymentId(paymentId);
+            //createThreedsPaymentRequestV2.setPaidPrice();
+
+
             CreateThreedsPaymentRequest request = new CreateThreedsPaymentRequest();
             request.setLocale(Locale.TR.getValue());
             request.setConversationId(conversationId);
