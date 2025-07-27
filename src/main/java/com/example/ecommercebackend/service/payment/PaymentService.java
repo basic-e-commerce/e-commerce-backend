@@ -157,7 +157,9 @@ public class PaymentService {
                 order.getCustomerCoupon().setUsedAt(Instant.now());
                 order.getCustomerCoupon().getCoupon().setTimesUsed(order.getCustomerCoupon().getCoupon().getTimesUsed()+1);
             }
-            Set<Sell> collect = order.getOrderItems().stream().map(x->sellService.save(x,"asd")).collect(Collectors.toSet());
+            Set<Sell> collect = order.getOrderItems().stream().map(
+                    x->sellService.save(x,"asd")
+            ).collect(Collectors.toSet());
             payment.setSells(collect);
 
             Invoice invoice = order.getInvoice();

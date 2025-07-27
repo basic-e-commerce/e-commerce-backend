@@ -100,7 +100,9 @@ public class IyzicoPayment implements PaymentStrategy {
         String paymentId = collections.get("paymentId");
         String conversationId = collections.get("conversationId");
         String mdStatus = collections.get("mdStatus");
+        String conversationdata = collections.get("conversationData");
         System.out.println("mdstatus: "+mdStatus);
+        System.out.println("conversationdata: "+conversationdata);
 
         if (!"success".equalsIgnoreCase(status)) {
             return new PayCallBackDto(
@@ -121,6 +123,7 @@ public class IyzicoPayment implements PaymentStrategy {
             System.out.println("status: "+threedsPayment.getStatus());
             System.out.println("paymentId: "+threedsPayment.getPaymentId());
             System.out.println("conversationId: "+threedsPayment.getConversationId());
+
 
             if (threedsPayment.getStatus().equals("success")) {
                 return new PayCallBackDto(
