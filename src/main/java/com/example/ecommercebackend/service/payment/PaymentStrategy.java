@@ -21,4 +21,5 @@ public interface PaymentStrategy {
     PayCallBackDto payCallBack(PaymentComplateDto paymentComplateDto);
     InstallmentInfoDto getBin(String bin, BigDecimal price);
     String refund(String paymentId,BigDecimal refundAmount);
+
 }

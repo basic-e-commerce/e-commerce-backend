@@ -24,7 +24,8 @@ public class AddressBuilder {
                 addressCreateDto.getAddressLine1(),
                 addressCreateDto.getPostalCode(),
                 addressCreateDto.getPhoneNo(),
-                isReceiptAddress
+                isReceiptAddress,
+                true
         );
     }
 
@@ -40,7 +41,8 @@ public class AddressBuilder {
                 merchantCreateDto.getAddressLine1(),
                 merchantCreateDto.getPostalCode(),
                 merchantCreateDto.getPhoneNo(),
-                isReceiptAddress
+                isReceiptAddress,
+                true
         );
     }
 
@@ -56,7 +58,8 @@ public class AddressBuilder {
                 merchantCreateDto.getAddressLine1(),
                 merchantCreateDto.getPostalCode(),
                 merchantCreateDto.getPhoneNo(),
-                isReceiptAddress
+                isReceiptAddress,
+                true
         );
     }
 }

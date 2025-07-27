@@ -26,11 +26,11 @@ public class MerchantController {
         this.merchantService = merchantService;
     }
 
-    @PostMapping
-    @RateLimit(limit = 1, duration = 1, unit = TimeUnit.SECONDS)
-    public ResponseEntity<MerchantResponseDto> createMerchant(@ModelAttribute MerchantCreateDto merchantCreateDto) {
-        return new ResponseEntity<>(merchantService.createMerchant(merchantCreateDto), HttpStatus.CREATED);
-    }
+//    @PostMapping
+//    @RateLimit(limit = 1, duration = 1, unit = TimeUnit.SECONDS)
+//    public ResponseEntity<MerchantResponseDto> createMerchant(@ModelAttribute MerchantCreateDto merchantCreateDto) {
+//        return new ResponseEntity<>(merchantService.createMerchant(merchantCreateDto), HttpStatus.CREATED);
+//    }
 
     @PutMapping
     @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)

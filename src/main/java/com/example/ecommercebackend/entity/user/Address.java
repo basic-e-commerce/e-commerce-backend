@@ -36,6 +36,8 @@ public class Address {
 
     private Boolean isRecipientAddress;
     private String geliverId;
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean isActive;
 
     private Instant createdAt = Instant.now();
     private Instant updatedAt = Instant.now();
@@ -45,7 +47,7 @@ public class Address {
         updatedAt = Instant.now();
     }
 
-    public Address(String title, Country country, String firstName, String lastName, String username, City city, District district, String addressLine1, String postalCode, String phoneNo, Boolean isRecipientAddress) {
+    public Address(String title, Country country, String firstName, String lastName, String username, City city, District district, String addressLine1, String postalCode, String phoneNo, Boolean isRecipientAddress, Boolean isActive) {
         this.title = title;
         this.country = country;
         this.firstName = firstName;
@@ -57,6 +59,7 @@ public class Address {
         this.postalCode = postalCode;
         this.phoneNo = phoneNo;
         this.isRecipientAddress = isRecipientAddress;
+        this.isActive = isActive;
         String uuid = UUID.randomUUID().toString();
         this.shortName = firstName+"-"+lastName+"-"+uuid.substring(0,8);
     }
@@ -190,5 +193,13 @@ public class Address {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
     }
 }
