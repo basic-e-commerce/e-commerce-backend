@@ -29,9 +29,8 @@ public class MerchantUpdateDto {
     private String wpLink;
     private String footerDescription;
     private LinkedList<OpenCloseHour> openCloseHours;
-    private List<AddressApiDto> sendAddresses;
 
-    public MerchantUpdateDto(String name, String firstName, String lastName, String title, String countryName, String city, Integer districtId, String addressLine1, String postalCode, String phoneNo, String phoneNoLink, String email, String emailLink, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword, String instagram, String instagramLink, String wpLink, String footerDescription, LinkedList<OpenCloseHour> openCloseHours, List<AddressApiDto> sendAddresses) {
+    public MerchantUpdateDto(String name, String firstName, String lastName, String title, String countryName, String city, Integer districtId, String addressLine1, String postalCode, String phoneNo, String phoneNoLink, String email, String emailLink, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword, String instagram, String instagramLink, String wpLink, String footerDescription, LinkedList<OpenCloseHour> openCloseHours) {
         this.name = name;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -53,7 +52,6 @@ public class MerchantUpdateDto {
         this.wpLink = wpLink;
         this.footerDescription = footerDescription;
         this.openCloseHours = openCloseHours;
-        this.sendAddresses = sendAddresses;
     }
 
     public String getName() {
@@ -142,13 +140,5 @@ public class MerchantUpdateDto {
 
     public void setDistrictId(Integer districtId) {
         this.districtId = districtId;
-    }
-
-    public List<AddressApiDto> getSendAddresses() {
-        return sendAddresses;
-    }
-
-    public void setSendAddresses(List<AddressApiDto> sendAddresses) {
-        this.sendAddresses = sendAddresses;
     }
 }

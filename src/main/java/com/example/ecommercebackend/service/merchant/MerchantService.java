@@ -85,11 +85,6 @@ public class MerchantService {
                 merchantCreateDto.getPhoneNo());
         Address address = addressService.updateAddressById(merchant.getAddress().getId(),addressCreateDto);
 
-        merchant.setSendingAddresses(null);
-        List<Address> sendingAddresses = merchantCreateDto.getSendAddresses().stream().map(x->{
-            return addressService.createAddress(x,merchantCreateDto,false);
-        }).collect(Collectors.toCollection(ArrayList::new));
-
         merchant.setAddress(address);
         merchant.setName(merchantCreateDto.getName());
         merchant.setPhoneNo(merchantCreateDto.getPhoneNo());
@@ -104,7 +99,7 @@ public class MerchantService {
         merchant.setWpLink(merchantCreateDto.getWpLink());
         merchant.setFooterDescription(merchantCreateDto.getFooterDescription());
         merchant.setOpenCloseHours(merchantCreateDto.getOpenCloseHours());
-        merchant.setSendingAddresses(sendingAddresses);
+
         return merchantBuilder.merchantToMerchantResponseDto(merchantRepository.save(merchant));
     }
 

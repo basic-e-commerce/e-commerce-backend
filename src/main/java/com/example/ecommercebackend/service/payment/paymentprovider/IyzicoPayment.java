@@ -228,9 +228,9 @@ public class IyzicoPayment implements PaymentStrategy {
         CreateRefundV2Request createRefundV2Request = new CreateRefundV2Request();
         createRefundV2Request.setPaymentId(paymentId);
         createRefundV2Request.setPrice(refundAmount);
+        createRefundV2Request.setConversationId(UUID.randomUUID().toString());
 
         Refund refund = Refund.createV2(createRefundV2Request, options);
-        System.out.println(refund.getPaymentId());
 
         return refund.getPaymentId();
     }
