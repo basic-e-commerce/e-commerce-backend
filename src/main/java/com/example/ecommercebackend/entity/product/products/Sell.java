@@ -19,22 +19,30 @@ public class Sell {
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
     private Product product;  // Burada Product entity'si ile ilişkilendirdik
+    private Integer orderItemId;
 
     @Column(nullable = false)
     private BigDecimal price;
 
     @Column(nullable = false)
+    private BigDecimal paidPrice;
+
+    @Column(nullable = false)
     private Integer quantity;
 
-    private String transactionId;
+    private String paymentTransactionId;
+    private String basketId;
 
     private Instant sellDate = Instant.now();
 
-    public Sell(Product product, BigDecimal price, Integer quantity, String transactionId) {
+    public Sell(Product product, Integer orderItemId, BigDecimal price, BigDecimal paidPrice, Integer quantity, String paymentTransactionId, String basketId) {
         this.product = product;
+        this.orderItemId = orderItemId;
         this.price = price;
+        this.paidPrice = paidPrice;
         this.quantity = quantity;
-        this.transactionId = transactionId;
+        this.paymentTransactionId = paymentTransactionId;
+        this.basketId = basketId;
     }
 
     public Sell() {
@@ -83,11 +91,35 @@ public class Sell {
         this.id = id;
     }
 
-    public String getTransactionId() {
-        return transactionId;
+    public String getPaymentTransactionId() {
+        return paymentTransactionId;
     }
 
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public void setPaymentTransactionId(String paymentTransactionId) {
+        this.paymentTransactionId = paymentTransactionId;
+    }
+
+    public BigDecimal getPaidPrice() {
+        return paidPrice;
+    }
+
+    public void setPaidPrice(BigDecimal paidPrice) {
+        this.paidPrice = paidPrice;
+    }
+
+    public String getBasketId() {
+        return basketId;
+    }
+
+    public void setBasketId(String basketId) {
+        this.basketId = basketId;
+    }
+
+    public Integer getOrderItemId() {
+        return orderItemId;
+    }
+
+    public void setOrderItemId(Integer orderItemId) {
+        this.orderItemId = orderItemId;
     }
 }

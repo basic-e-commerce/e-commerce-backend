@@ -4,10 +4,7 @@ package com.example.ecommercebackend.service.payment.paymentprovider;
 import com.example.ecommercebackend.builder.payment.PaymentBuilder;
 import com.example.ecommercebackend.dto.payment.CreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
-import com.example.ecommercebackend.dto.payment.response.InstallmentInfoDto;
-import com.example.ecommercebackend.dto.payment.response.InstallmentPriceDto;
-import com.example.ecommercebackend.dto.payment.response.PayCallBackDto;
-import com.example.ecommercebackend.dto.payment.response.ProcessCreditCardDto;
+import com.example.ecommercebackend.dto.payment.response.*;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.category.Category;
 import com.example.ecommercebackend.entity.product.order.Order;
@@ -94,24 +91,14 @@ public class IyzicoPayment implements PaymentStrategy {
 
 
     @Override
-    public PayCallBackDto payCallBack(Map<String, String> collections, Payment payment) {
-        System.out.println("----------------------------------------");
-        for (Map.Entry<String, String> entry : collections.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
-        }
-        System.out.println("----------------------------------------");
-        String status = collections.get("status");
-        String paymentId = collections.get("paymentId");
-        String conversationId = collections.get("conversationId");
-        String mdStatus = collections.get("mdStatus");
-        String conversationdata = collections.get("conversationData");
-        System.out.println("mdstatus: "+mdStatus);
-        System.out.println("conversationdata: "+conversationdata);
+    public PayCallBackDto payCallBack(PaymentComplateDto paymentComplateDto) {
 
-        if (!"success".equalsIgnoreCase(status)) {
+
+        if (!"success".equalsIgnoreCase(paymentComplateDto.getStatus())) {
             return new PayCallBackDto(
-                    conversationId,
-                    status
+                    paymentComplateDto.getConversationId(),
+                    paymentComplateDto.getStatus(),
+                    null
             );
         }else{
             System.out.println("Bir kısım başarılı");
@@ -119,22 +106,25 @@ public class IyzicoPayment implements PaymentStrategy {
             Options options = getOptions();
 
             CreateThreedsPaymentRequestV2 createThreedsPaymentRequestV2 = new CreateThreedsPaymentRequestV2();
-            createThreedsPaymentRequestV2.setPaymentId(paymentId);
-            createThreedsPaymentRequestV2.setConversationId(conversationId);
+            createThreedsPaymentRequestV2.setPaymentId(paymentComplateDto.getPaymentId());
+            createThreedsPaymentRequestV2.setConversationId(paymentComplateDto.getConversationId());
+            createThreedsPaymentRequestV2.setPaidPrice(paymentComplateDto.getPaidPrice());
+            createThreedsPaymentRequestV2.setCurrency(paymentComplateDto.getCurrency());
+            createThreedsPaymentRequestV2.setBasketId(paymentComplateDto.getBasketId());
+            createThreedsPaymentRequestV2.setLocale(Locale.TR.getValue());
+
+            ThreedsPayment threedsPayment =ThreedsPayment.createV2(createThreedsPaymentRequestV2, options);
 
 
 
+//            CreateThreedsPaymentRequest request = new CreateThreedsPaymentRequest();
+//            request.setLocale(Locale.TR.getValue());
+//            request.setConversationId(conversationId);
+//            request.setPaymentId(paymentId);
+//
+//            ThreedsPayment threedsPayment = ThreedsPayment.create(request,options);
 
 
-
-
-
-            CreateThreedsPaymentRequest request = new CreateThreedsPaymentRequest();
-            request.setLocale(Locale.TR.getValue());
-            request.setConversationId(conversationId);
-            request.setPaymentId(paymentId);
-
-            ThreedsPayment threedsPayment = ThreedsPayment.create(request,options);
             System.out.println("status: " + threedsPayment.getStatus());
             System.out.println("price: " + threedsPayment.getPrice());
             System.out.println("paidPrice: " + threedsPayment.getPaidPrice());
@@ -178,18 +168,25 @@ public class IyzicoPayment implements PaymentStrategy {
                 }
             }
 
-
-
-
             if (threedsPayment.getStatus().equals("success")) {
                 return new PayCallBackDto(
-                        conversationId,
-                        status
+                        threedsPayment.getConversationId(),
+                        threedsPayment.getStatus(),
+                        threedsPayment.getPaymentItems().stream().map(x->{
+                            return new OrderItemTansactionId(
+                                    x.getItemId(),
+                                    x.getPaymentTransactionId(),
+                                    x.getPrice(),
+                                    x.getPaidPrice(),
+                                    threedsPayment.getBasketId()
+                            );
+                        }).toList()
                 );
             }else
                 return new PayCallBackDto(
-                        conversationId,
-                        status
+                        threedsPayment.getConversationId(),
+                        threedsPayment.getStatus(),
+                        new ArrayList<>()
                 );
         }
 

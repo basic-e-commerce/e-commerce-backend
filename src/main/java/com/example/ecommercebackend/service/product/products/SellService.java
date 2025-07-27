@@ -3,6 +3,7 @@ package com.example.ecommercebackend.service.product.products;
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.sell.SellBuilder;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
+import com.example.ecommercebackend.dto.payment.response.OrderItemTansactionId;
 import com.example.ecommercebackend.dto.product.card.ProductCardItemDto;
 import com.example.ecommercebackend.dto.product.products.LowStockNotification;
 import com.example.ecommercebackend.dto.product.products.ProductAdminDetailDto;
@@ -59,7 +60,7 @@ public class SellService {
     }
 
     @Transactional
-    public Sell save(OrderItem orderItem,String transactionId) {
+    public Sell save(OrderItem orderItem, OrderItemTansactionId orderItemTansactionId) {
         Product product = orderItem.getProduct();
         System.out.println("sell product: " + product.getProductName());
         System.out.println("sell product quantity: : " + product.getQuantity());
@@ -75,9 +76,12 @@ public class SellService {
 
         Sell sell = new Sell(
                 save,
-                orderItem.getPrice(),
+                Integer.valueOf(orderItemTansactionId.getOrderItemId()),
+                orderItemTansactionId.getPrice(),
+                orderItemTansactionId.getPaidPrice(),
                 orderItem.getQuantity(),
-                transactionId
+                orderItemTansactionId.getPaymentTransactionId(),
+                orderItemTansactionId.getBasketId()
         );
         return sellRepository.save(sell);
     }

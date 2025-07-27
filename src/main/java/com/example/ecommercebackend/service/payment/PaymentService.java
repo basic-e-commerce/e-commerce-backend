@@ -8,6 +8,7 @@ import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.invoice.Invoice;
 import com.example.ecommercebackend.entity.product.order.Order;
+import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import com.example.ecommercebackend.entity.product.products.Sell;
 import com.example.ecommercebackend.entity.user.Customer;
@@ -28,10 +29,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -143,7 +141,16 @@ public class PaymentService {
         collections.forEach((key, value) -> System.out.println(key + ": " + value));
         Payment payment = paymentRepository.findByConversationId(collections.get("conversationId")).orElseThrow(()-> new NotFoundException("Ödeme bulunamadı"));
         PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
-        PayCallBackDto payCallBackDto = paymentStrategy.payCallBack(collections,payment);
+
+        PayCallBackDto payCallBackDto = paymentStrategy.payCallBack(
+                new PaymentComplateDto(
+                collections.get("status"),
+                payment.getConversationId(),
+                collections.get("paymentId"),
+                payment.getOrder().getCustomerPrice(),
+                payment.getOrder().getOrderCode(),
+                "tr"
+        ));
 
         if (payCallBackDto.getStatus().equals("success")) {
             payment.setPaymentStatus(Payment.PaymentStatus.SUCCESS);
@@ -156,10 +163,17 @@ public class PaymentService {
                 order.getCustomerCoupon().setUsedAt(Instant.now());
                 order.getCustomerCoupon().getCoupon().setTimesUsed(order.getCustomerCoupon().getCoupon().getTimesUsed()+1);
             }
-            Set<Sell> collect = order.getOrderItems().stream().map(
-                    x->sellService.save(x,"asd")
-            ).collect(Collectors.toSet());
-            payment.setSells(collect);
+            Set<Sell> sells = new HashSet<>();
+
+            for (OrderItem orderItem : order.getOrderItems()) {
+                for (OrderItemTansactionId orderItemTansactionId: payCallBackDto.getOrderItemTansactionIds()){
+                    if (Integer.valueOf(orderItemTansactionId.getOrderItemId()).equals(orderItem.getId())){
+                        sells.add(sellService.save(orderItem,orderItemTansactionId));
+                    }
+                }
+            }
+
+            payment.setSells(sells);
 
             Invoice invoice = order.getInvoice();
             invoice.setPayment(payment);

@@ -1,12 +1,18 @@
 package com.example.ecommercebackend.dto.payment.response;
 
+import org.apache.tika.sax.Link;
+
+import java.util.List;
+
 public class PayCallBackDto {
     private String conversationId;
     private String status;
+    private List<OrderItemTansactionId> orderItemTansactionIds;
 
-    public PayCallBackDto(String conversationId, String status) {
+    public PayCallBackDto(String conversationId, String status, List<OrderItemTansactionId> orderItemTansactionIds) {
         this.conversationId = conversationId;
         this.status = status;
+        this.orderItemTansactionIds = orderItemTansactionIds;
     }
 
     public String getConversationId() {
@@ -23,5 +29,13 @@ public class PayCallBackDto {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public List<OrderItemTansactionId> getOrderItemTansactionIds() {
+        return orderItemTansactionIds;
+    }
+
+    public void setOrderItemTansactionIds(List<OrderItemTansactionId> orderItemTansactionIds) {
+        this.orderItemTansactionIds = orderItemTansactionIds;
     }
 }
