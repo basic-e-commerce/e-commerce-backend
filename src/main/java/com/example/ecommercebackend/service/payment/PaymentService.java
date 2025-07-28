@@ -269,8 +269,16 @@ public class PaymentService {
         for (OrderItem orderItem : orderItems) {
             OrderItem current = null;
             OrderItemRefundDto currentRefundDto = null;
+            System.out.println("orderItem: "+ orderItem.getId());
             for (OrderItemRefundDto orderItemRefundDto : orderItemRefund.getOrderItemRefundDtos()) {
+
+                System.out.println("orderItemRefundDtoproductId:"+orderItemRefundDto.productId());
+                System.out.println("orderItemproductId:"+orderItem.getProduct().getId());
+
                 if (orderItemRefundDto.orderItemId() == orderItem.getId() && orderItemRefundDto.productId() == orderItem.getProduct().getId()){
+                    System.out.println("idordrıtem:"+orderItem.getId());
+                    System.out.println("orderItemRefundDtoproductId:"+orderItemRefundDto.productId());
+                    System.out.println("orderItemproductId:"+orderItem.getProduct().getId());
                     current = orderItem;
                     currentRefundDto = orderItemRefundDto;
 
