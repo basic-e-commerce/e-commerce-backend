@@ -105,6 +105,7 @@ public class OrderPackageService {
         orderPackage.setStatusCode(OrderPackage.StatusCode.valueOf(webhookTrackUpdatedPayload.getData().getTrackingStatus().getTrackingStatusCode()));
         orderPackage.setUpdateAt(Instant.parse(webhookTrackUpdatedPayload.getData().getTrackingStatus().getUpdateAt()));
         orderPackage.setLocation(webhookTrackUpdatedPayload.getData().getTrackingStatus().getLocationName());
+        orderPackage.setResponsiveLabelURL(webhookTrackUpdatedPayload.getData().getTrackingUrl());
         orderPackageRepository.save(orderPackage);
         return "Sipariş paketi güncellendi";
     }
