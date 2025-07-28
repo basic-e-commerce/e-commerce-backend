@@ -424,10 +424,10 @@ public class OrderService {
                         if (isProductInCoupon) {
                             System.out.println("fiçeride");
                             BigDecimal substractDiscountPrice =  orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-                            BigDecimal divide = orderItem.getPrice().subtract(substractDiscountPrice);
-                            orderPrice = orderPrice.add(divide);
+                            BigDecimal discountPrice = orderItem.getPrice().subtract(substractDiscountPrice);
+                            orderPrice = orderPrice.add(discountPrice);
                             System.out.println("orderprice: "+ orderPrice);
-                            orderItem.setDiscountPrice(divide);
+                            orderItem.setDiscountPrice(discountPrice);
                             orderItem.setSubstractDiscountPrice(substractDiscountPrice);
                         } else {
                             orderPrice = orderPrice.add(orderItem.getPrice());
@@ -437,10 +437,11 @@ public class OrderService {
                     }else{
                         System.out.println("fiçeride");
                         BigDecimal substractDiscountPrice =orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-                        BigDecimal divide = orderItem.getPrice().subtract(substractDiscountPrice);
-                        orderPrice = orderPrice.add(divide);
+                        BigDecimal discountPrice = orderItem.getPrice().subtract(substractDiscountPrice);
+                        orderPrice = orderPrice.add(discountPrice);
                         System.out.println("orderprice: "+ orderPrice);
-                        orderItem.setDiscountPrice(substractDiscountPrice);
+                        orderItem.setDiscountPrice(discountPrice);
+                        orderItem.setSubstractDiscountPrice(substractDiscountPrice);
                     }
                 }
 
@@ -465,9 +466,9 @@ public class OrderService {
 
                     for (OrderItem orderItem: orderItems) {
                         if (coupon.getProducts().contains(orderItem.getProduct())) {
-                            BigDecimal subtract = orderItem.getPrice().subtract(substract);
-                            orderPrice = orderPrice.add(subtract);
-                            orderItem.setDiscountPrice(subtract);
+                            BigDecimal discountPrice = orderItem.getPrice().subtract(substract);
+                            orderPrice = orderPrice.add(discountPrice);
+                            orderItem.setDiscountPrice(discountPrice);
                             orderItem.setSubstractDiscountPrice(substract);
                         }else{
                             orderPrice = orderPrice.add(orderItem.getPrice());
@@ -482,9 +483,10 @@ public class OrderService {
                             .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
 
                     for (OrderItem orderItem: orderItems) {
-                        BigDecimal subtract = orderItem.getPrice().subtract(substract);
-                        orderPrice = orderPrice.add(subtract);
-                        orderItem.setDiscountPrice(subtract);
+                        BigDecimal discountPrice = orderItem.getPrice().subtract(substract);
+                        orderPrice = orderPrice.add(discountPrice);
+                        orderItem.setDiscountPrice(discountPrice);
+                        orderItem.setSubstractDiscountPrice(substract);
                     }
                 }
 
