@@ -2,6 +2,7 @@ package com.example.ecommercebackend.controller.payment;
 
 import com.example.ecommercebackend.anotation.RateLimit;
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
+import com.example.ecommercebackend.dto.payment.refund.RefundCreateDto;
 import com.example.ecommercebackend.dto.payment.response.InstallmentInfoDto;
 import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemRefundDto;
@@ -48,7 +49,7 @@ public class PaymentController {
     }
 
     @PostMapping("/refund")
-    public ResponseEntity<String> refund(@RequestParam(required = false) String orderCode, @RequestBody(required = false) List<OrderItemRefundDto> orderItemRefundDtos,@RequestParam BigDecimal refundAmount){
-        return new ResponseEntity<>(paymentService.refund(orderCode,orderItemRefundDtos,refundAmount),HttpStatus.OK);
+    public ResponseEntity<String> refund(@RequestBody(required = false) RefundCreateDto orderItemRefundDtos){
+        return new ResponseEntity<>(paymentService.refund(orderItemRefundDtos),HttpStatus.OK);
     }
 }

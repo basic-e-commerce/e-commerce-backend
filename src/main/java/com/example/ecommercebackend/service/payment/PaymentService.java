@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.payment;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
+import com.example.ecommercebackend.dto.payment.refund.RefundCreateDto;
 import com.example.ecommercebackend.dto.payment.response.*;
 import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
 import com.example.ecommercebackend.dto.product.order.OrderItemCreateDto;
@@ -259,8 +260,8 @@ public class PaymentService {
     }
 
 
-    public String refund(@NotNullParam String orderCode,@NotNullParam List<OrderItemRefundDto> orderItemRefundDtos, @NotNullParam BigDecimal refundAmount){
-        Order order = orderService.findByOrderCode(orderCode);
+    public String refund(RefundCreateDto orderItemRefund){
+        Order order = orderService.findByOrderCode(orderItemRefund.getOrderCode());
         Set<OrderItem> orderItems = order.getOrderItems();
         Set<OrderItem> refundItems = new HashSet<>();
 
@@ -268,7 +269,7 @@ public class PaymentService {
         for (OrderItem orderItem : orderItems) {
             OrderItem current = null;
             OrderItemRefundDto currentRefundDto = null;
-            for (OrderItemRefundDto orderItemRefundDto : orderItemRefundDtos) {
+            for (OrderItemRefundDto orderItemRefundDto : orderItemRefund.getOrderItemRefundDtos()) {
                 if (orderItemRefundDto.orderItemId() == orderItem.getId() && orderItemRefundDto.productId() == orderItem.getProduct().getId()){
                     current = orderItem;
                     currentRefundDto = orderItemRefundDto;
@@ -299,14 +300,14 @@ public class PaymentService {
                     .map(OrderItem::getDiscountPrice)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            if (refundAmount.compareTo(maxRefundAmount) > 0) {
+            if (orderItemRefund.getRefundAmount().compareTo(maxRefundAmount) > 0) {
                 throw new BadRequestException("Talep edilen iade tutarı, izin verilen maksimum iade tutarını aşıyor!");
             }
 
             Payment payment = order.getPayments();
             PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
 
-            Refund refund = paymentStrategy.refund(payment.getPaymentId(), refundAmount);
+            Refund refund = paymentStrategy.refund(payment.getPaymentId(), orderItemRefund.getRefundAmount());
             order.setRefundPrice(refund.getPrice());
             order.setRefundOrderItems(refundItems);
             order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
@@ -315,11 +316,11 @@ public class PaymentService {
             Order save = orderService.save(order);
 
             Set<Sell> refundSells = save.getRefundOrderItems().stream().map(x-> {
-                return sellService.saveRefund(x,new OrderItemTansactionId(String.valueOf(x.getId()),refund.getPaymentTransactionId(),x.getPrice(),x.getDiscountPrice(),orderCode));
+                return sellService.saveRefund(x,new OrderItemTansactionId(String.valueOf(x.getId()),refund.getPaymentTransactionId(),x.getPrice(),x.getDiscountPrice(),orderItemRefund.getOrderCode()));
             }).collect(Collectors.toSet());
             order.getPayments().setRefundSells(refundSells);
             orderService.save(order);
-            return "İade başarıyla yapıldı: "+ refundAmount;
+            return "İade başarıyla yapıldı: "+ orderItemRefund.getRefundAmount();
 
         }else
             throw new BadRequestException("İade Edilecek ürün bulunamamıştır");
