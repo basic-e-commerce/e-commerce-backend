@@ -254,6 +254,10 @@ public class ShippingCargoService {
                 .bodyToMono(String.class)
                 .block();
 
+        System.out.println("----------------------");
+        System.out.println(responseJson);
+        System.out.println("----------------------");
+
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(responseJson);

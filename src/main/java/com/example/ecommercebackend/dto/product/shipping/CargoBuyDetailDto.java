@@ -6,15 +6,15 @@ public class CargoBuyDetailDto {
     @JsonProperty("result")
     private boolean result;
 
-    @JsonProperty("additionalMessage")
-    private String additionalMessage;
+    @JsonProperty("message")
+    private String message;
 
     @JsonProperty("data")
     private CargoBuyDetailDataDto data;
 
-    public CargoBuyDetailDto(boolean result, String additionalMessage, CargoBuyDetailDataDto data) {
+    public CargoBuyDetailDto(boolean result, String message, CargoBuyDetailDataDto data) {
         this.result = result;
-        this.additionalMessage = additionalMessage;
+        this.message = message;
         this.data = data;
     }
 
@@ -29,12 +29,12 @@ public class CargoBuyDetailDto {
         this.result = result;
     }
 
-    public String getAdditionalMessage() {
-        return additionalMessage;
+    public String getMessage() {
+        return message;
     }
 
-    public void setAdditionalMessage(String additionalMessage) {
-        this.additionalMessage = additionalMessage;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public CargoBuyDetailDataDto getData() {
