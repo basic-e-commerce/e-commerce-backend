@@ -10,10 +10,10 @@ public class CargoCancelDetailDataDto {
     private String id;
 
     @JsonProperty("createdAt")
-    private Instant createdAt;
+    private String createdAt;
 
     @JsonProperty("updatedAt")
-    private Instant updatedAt;
+    private String updatedAt;
 
     @JsonProperty("amount")
     private BigDecimal amount;
@@ -97,7 +97,7 @@ public class CargoCancelDetailDataDto {
     private boolean hidePackageContentOnTag;
 
     @JsonProperty("shipmentDate")
-    private Instant shipmentDate;
+    private String shipmentDate;
 
     @JsonProperty("invoiceGenerated")
     private boolean invoiceGenerated;
@@ -160,7 +160,7 @@ public class CargoCancelDetailDataDto {
     private String lastErrorCode;
 
     @JsonProperty("cancelDate")
-    private Instant cancelDate;
+    private String cancelDate;
 
     @JsonProperty("isReturned")
     private boolean isReturned;
@@ -175,12 +175,12 @@ public class CargoCancelDetailDataDto {
     private Boolean isRecipientSmsActivated;
 
     @JsonProperty("packageAcceptedAt")
-    private Instant packageAcceptedAt;
+    private String packageAcceptedAt;
 
     @JsonProperty("tenantId")
     private String tenantId;
 
-    public CargoCancelDetailDataDto(String id, Instant createdAt, Instant updatedAt, BigDecimal amount, String currency, BigDecimal amountLocal, BigDecimal amountVat, BigDecimal amountLocalVat, BigDecimal amountTax, BigDecimal amountLocalTax, BigDecimal totalAmount, BigDecimal totalAmountLocal, BigDecimal amountOld, BigDecimal amountLocalOld, BigDecimal discountRate, BigDecimal bonusBalance, BigDecimal length, BigDecimal width, BigDecimal height, BigDecimal desi, BigDecimal oldDesi, String distanceUnit, BigDecimal weight, BigDecimal oldWeight, String massUnit, boolean useWeightOfItems, boolean useDimensionsOfItems, String trackingStatus, String labelFileType, boolean hidePackageContentOnTag, Instant shipmentDate, boolean invoiceGenerated, String refundInvoiceID, boolean productPaymentOnDelivery, String orderID, String order, String senderAddress, String recipientAddress, boolean createReturnLabel, String statusCode, String offers, String acceptedOffer, boolean enableAutomation, long organizationShipmentID, String providerBranchName, String providerInvoiceNo, String providerReceiptNo, String providerSerialNo, boolean hasError, String lastErrorMessage, String lastErrorCode, Instant cancelDate, boolean isReturned, boolean isReturn, boolean isTrackingOnly, Boolean isRecipientSmsActivated, Instant packageAcceptedAt, String tenantId) {
+    public CargoCancelDetailDataDto(String id, String createdAt, String updatedAt, BigDecimal amount, String currency, BigDecimal amountLocal, BigDecimal amountVat, BigDecimal amountLocalVat, BigDecimal amountTax, BigDecimal amountLocalTax, BigDecimal totalAmount, BigDecimal totalAmountLocal, BigDecimal amountOld, BigDecimal amountLocalOld, BigDecimal discountRate, BigDecimal bonusBalance, BigDecimal length, BigDecimal width, BigDecimal height, BigDecimal desi, BigDecimal oldDesi, String distanceUnit, BigDecimal weight, BigDecimal oldWeight, String massUnit, boolean useWeightOfItems, boolean useDimensionsOfItems, String trackingStatus, String labelFileType, boolean hidePackageContentOnTag, String shipmentDate, boolean invoiceGenerated, String refundInvoiceID, boolean productPaymentOnDelivery, String orderID, String order, String senderAddress, String recipientAddress, boolean createReturnLabel, String statusCode, String offers, String acceptedOffer, boolean enableAutomation, long organizationShipmentID, String providerBranchName, String providerInvoiceNo, String providerReceiptNo, String providerSerialNo, boolean hasError, String lastErrorMessage, String lastErrorCode, String cancelDate, boolean isReturned, boolean isReturn, boolean isTrackingOnly, Boolean isRecipientSmsActivated, String packageAcceptedAt, String tenantId) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -252,19 +252,19 @@ public class CargoCancelDetailDataDto {
         this.id = id;
     }
 
-    public Instant getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -484,11 +484,11 @@ public class CargoCancelDetailDataDto {
         this.hidePackageContentOnTag = hidePackageContentOnTag;
     }
 
-    public Instant getShipmentDate() {
+    public String getShipmentDate() {
         return shipmentDate;
     }
 
-    public void setShipmentDate(Instant shipmentDate) {
+    public void setShipmentDate(String shipmentDate) {
         this.shipmentDate = shipmentDate;
     }
 
@@ -652,11 +652,11 @@ public class CargoCancelDetailDataDto {
         this.lastErrorCode = lastErrorCode;
     }
 
-    public Instant getCancelDate() {
+    public String getCancelDate() {
         return cancelDate;
     }
 
-    public void setCancelDate(Instant cancelDate) {
+    public void setCancelDate(String cancelDate) {
         this.cancelDate = cancelDate;
     }
 
@@ -692,11 +692,11 @@ public class CargoCancelDetailDataDto {
         isRecipientSmsActivated = recipientSmsActivated;
     }
 
-    public Instant getPackageAcceptedAt() {
+    public String getPackageAcceptedAt() {
         return packageAcceptedAt;
     }
 
-    public void setPackageAcceptedAt(Instant packageAcceptedAt) {
+    public void setPackageAcceptedAt(String packageAcceptedAt) {
         this.packageAcceptedAt = packageAcceptedAt;
     }
 
