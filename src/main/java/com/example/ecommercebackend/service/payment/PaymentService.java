@@ -260,79 +260,152 @@ public class PaymentService {
     }
 
 
-    public String refund(RefundCreateDto orderItemRefund){
+    public String refund(RefundCreateDto orderItemRefund) {
         Order order = orderService.findByOrderCode(orderItemRefund.getOrderCode());
         Set<OrderItem> orderItems = order.getOrderItems();
         Set<OrderItem> refundItems = new HashSet<>();
 
+        for (OrderItemRefundDto refundDto : orderItemRefund.getOrderItemRefundDtos()) {
+            // Siparişte böyle bir item var mı?
+            OrderItem matchingOrderItem = orderItems.stream()
+                    .filter(orderItem ->
+                            orderItem.getId() == refundDto.orderItemId() &&
+                                    orderItem.getProduct().getId() == refundDto.productId())
+                    .findFirst()
+                    .orElseThrow(() -> new BadRequestException(
+                            "Siparişte bu ürün kalemi bulunmamaktadır! OrderItemId: " +
+                                    refundDto.orderItemId() + ", ProductId: " + refundDto.productId()
+                    ));
 
-        for (OrderItem orderItem : orderItems) {
-            OrderItem current = null;
-            OrderItemRefundDto currentRefundDto = null;
-            System.out.println("orderItem: "+ orderItem.getId());
-            for (OrderItemRefundDto orderItemRefundDto : orderItemRefund.getOrderItemRefundDtos()) {
+            BigDecimal eachPrice = matchingOrderItem.getPrice().divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()));
+            BigDecimal eachDiscountPrice = matchingOrderItem.getDiscountPrice().divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()));
 
-                System.out.println("orderItemRefundDtoproductId:"+orderItemRefundDto.productId());
-                System.out.println("orderItemproductId:"+orderItem.getProduct().getId());
+            OrderItem refundOrderItem = new OrderItem();
+            refundOrderItem.setProduct(matchingOrderItem.getProduct());
+            refundOrderItem.setQuantity(refundDto.quantity());
+            refundOrderItem.setPrice(eachPrice.multiply(BigDecimal.valueOf(refundDto.quantity())));
+            refundOrderItem.setDiscountPrice(eachDiscountPrice.multiply(BigDecimal.valueOf(refundDto.quantity())));
+            refundOrderItem.setRefund(true);
 
-                if (orderItemRefundDto.orderItemId() == orderItem.getId() && orderItemRefundDto.productId() == orderItem.getProduct().getId()){
-                    System.out.println("idordrıtem:"+orderItem.getId());
-                    System.out.println("orderItemRefundDtoproductId:"+orderItemRefundDto.productId());
-                    System.out.println("orderItemproductId:"+orderItem.getProduct().getId());
-                    current = orderItem;
-                    currentRefundDto = orderItemRefundDto;
-
-                }
-            }
-            if (current != null){
-                BigDecimal eachPriceProductOrderItem = current.getPrice().divide(BigDecimal.valueOf(current.getQuantity()));
-                BigDecimal eachDiscountPriceProductOrderItem = current.getDiscountPrice().divide(BigDecimal.valueOf(current.getQuantity()));
-
-                OrderItem refundOrderItem = new OrderItem();
-                refundOrderItem.setProduct(current.getProduct());
-                refundOrderItem.setQuantity(currentRefundDto.quantity());
-                refundOrderItem.setPrice(eachPriceProductOrderItem.multiply(BigDecimal.valueOf(currentRefundDto.quantity())));
-                refundOrderItem.setDiscountPrice(eachDiscountPriceProductOrderItem.multiply(BigDecimal.valueOf(currentRefundDto.quantity())));
-                refundOrderItem.setRefund(true);
-
-                // Geçerli ise işleme ekle
-                refundItems.add(refundOrderItem);
-            }else{
-                throw new BadRequestException("Siparişte bu ürün kalemi bulunmamaktadır!");
-            }
+            refundItems.add(refundOrderItem);
         }
 
-
-        if (!refundItems.isEmpty()){
-            BigDecimal maxRefundAmount = refundItems.stream()
-                    .map(OrderItem::getDiscountPrice)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-            if (orderItemRefund.getRefundAmount().compareTo(maxRefundAmount) > 0) {
-                throw new BadRequestException("Talep edilen iade tutarı, izin verilen maksimum iade tutarını aşıyor!");
-            }
-
-            Payment payment = order.getPayments();
-            PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
-
-            Refund refund = paymentStrategy.refund(payment.getPaymentId(), orderItemRefund.getRefundAmount());
-            order.setRefundPrice(refund.getPrice());
-            order.setRefundOrderItems(refundItems);
-            order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
-            order.getOrderStatus().setColor(OrderStatus.Color.BLUE);
-            order.getPayments().setPaymentStatus(Payment.PaymentStatus.REFUNDED);
-            Order save = orderService.save(order);
-
-            Set<Sell> refundSells = save.getRefundOrderItems().stream().map(x-> {
-                return sellService.saveRefund(x,new OrderItemTansactionId(String.valueOf(x.getId()),refund.getPaymentTransactionId(),x.getPrice(),x.getDiscountPrice(),orderItemRefund.getOrderCode()));
-            }).collect(Collectors.toSet());
-            order.getPayments().setRefundSells(refundSells);
-            orderService.save(order);
-            return "İade başarıyla yapıldı: "+ orderItemRefund.getRefundAmount();
-
-        }else
+        if (refundItems.isEmpty()) {
             throw new BadRequestException("İade Edilecek ürün bulunamamıştır");
+        }
+
+        BigDecimal maxRefundAmount = refundItems.stream()
+                .map(OrderItem::getDiscountPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if (orderItemRefund.getRefundAmount().compareTo(maxRefundAmount) > 0) {
+            throw new BadRequestException("Talep edilen iade tutarı, izin verilen maksimum iade tutarını aşıyor!");
+        }
+
+        Payment payment = order.getPayments();
+        PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
+
+        Refund refund = paymentStrategy.refund(payment.getPaymentId(), orderItemRefund.getRefundAmount());
+        order.setRefundPrice(refund.getPrice());
+        order.setRefundOrderItems(refundItems);
+        order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
+        order.getOrderStatus().setColor(OrderStatus.Color.BLUE);
+        order.getPayments().setPaymentStatus(Payment.PaymentStatus.REFUNDED);
+
+        Order savedOrder = orderService.save(order);
+
+        Set<Sell> refundSells = savedOrder.getRefundOrderItems().stream()
+                .map(item -> sellService.saveRefund(item, new OrderItemTansactionId(
+                        String.valueOf(item.getId()),
+                        refund.getPaymentTransactionId(),
+                        item.getPrice(),
+                        item.getDiscountPrice(),
+                        orderItemRefund.getOrderCode()
+                )))
+                .collect(Collectors.toSet());
+
+        order.getPayments().setRefundSells(refundSells);
+        orderService.save(order);
+
+        return "İade başarıyla yapıldı: " + orderItemRefund.getRefundAmount();
     }
+
+
+
+
+//    public String refund(RefundCreateDto orderItemRefund){
+//        Order order = orderService.findByOrderCode(orderItemRefund.getOrderCode());
+//        Set<OrderItem> orderItems = order.getOrderItems();
+//        Set<OrderItem> refundItems = new HashSet<>();
+//
+//
+//        for (OrderItem orderItem : orderItems) {
+//            OrderItem current = null;
+//            OrderItemRefundDto currentRefundDto = null;
+//            System.out.println("orderItem: "+ orderItem.getId());
+//            for (OrderItemRefundDto orderItemRefundDto : orderItemRefund.getOrderItemRefundDtos()) {
+//
+//                System.out.println("orderItemRefundDtoproductId:"+orderItemRefundDto.productId());
+//                System.out.println("orderItemproductId:"+orderItem.getProduct().getId());
+//
+//                if (orderItemRefundDto.orderItemId() == orderItem.getId() && orderItemRefundDto.productId() == orderItem.getProduct().getId()){
+//                    System.out.println("idordrıtem:"+orderItem.getId());
+//                    System.out.println("orderItemRefundDtoproductId:"+orderItemRefundDto.productId());
+//                    System.out.println("orderItemproductId:"+orderItem.getProduct().getId());
+//                    current = orderItem;
+//                    currentRefundDto = orderItemRefundDto;
+//
+//                }
+//            }
+//            if (current != null){
+//                BigDecimal eachPriceProductOrderItem = current.getPrice().divide(BigDecimal.valueOf(current.getQuantity()));
+//                BigDecimal eachDiscountPriceProductOrderItem = current.getDiscountPrice().divide(BigDecimal.valueOf(current.getQuantity()));
+//
+//                OrderItem refundOrderItem = new OrderItem();
+//                refundOrderItem.setProduct(current.getProduct());
+//                refundOrderItem.setQuantity(currentRefundDto.quantity());
+//                refundOrderItem.setPrice(eachPriceProductOrderItem.multiply(BigDecimal.valueOf(currentRefundDto.quantity())));
+//                refundOrderItem.setDiscountPrice(eachDiscountPriceProductOrderItem.multiply(BigDecimal.valueOf(currentRefundDto.quantity())));
+//                refundOrderItem.setRefund(true);
+//
+//                // Geçerli ise işleme ekle
+//                refundItems.add(refundOrderItem);
+//            }else{
+//                throw new BadRequestException("Siparişte bu ürün kalemi bulunmamaktadır!");
+//            }
+//        }
+//
+//
+//        if (!refundItems.isEmpty()){
+//            BigDecimal maxRefundAmount = refundItems.stream()
+//                    .map(OrderItem::getDiscountPrice)
+//                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+//
+//            if (orderItemRefund.getRefundAmount().compareTo(maxRefundAmount) > 0) {
+//                throw new BadRequestException("Talep edilen iade tutarı, izin verilen maksimum iade tutarını aşıyor!");
+//            }
+//
+//            Payment payment = order.getPayments();
+//            PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
+//
+//            Refund refund = paymentStrategy.refund(payment.getPaymentId(), orderItemRefund.getRefundAmount());
+//            order.setRefundPrice(refund.getPrice());
+//            order.setRefundOrderItems(refundItems);
+//            order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
+//            order.getOrderStatus().setColor(OrderStatus.Color.BLUE);
+//            order.getPayments().setPaymentStatus(Payment.PaymentStatus.REFUNDED);
+//            Order save = orderService.save(order);
+//
+//            Set<Sell> refundSells = save.getRefundOrderItems().stream().map(x-> {
+//                return sellService.saveRefund(x,new OrderItemTansactionId(String.valueOf(x.getId()),refund.getPaymentTransactionId(),x.getPrice(),x.getDiscountPrice(),orderItemRefund.getOrderCode()));
+//            }).collect(Collectors.toSet());
+//            order.getPayments().setRefundSells(refundSells);
+//            orderService.save(order);
+//            return "İade başarıyla yapıldı: "+ orderItemRefund.getRefundAmount();
+//
+//        }else
+//            throw new BadRequestException("İade Edilecek ürün bulunamamıştır");
+//    }
 
     public void cancel(String orderCode){
         Order order = orderService.findByOrderCode(orderCode);
