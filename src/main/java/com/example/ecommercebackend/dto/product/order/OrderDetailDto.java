@@ -3,11 +3,8 @@ package com.example.ecommercebackend.dto.product.order;
 import com.example.ecommercebackend.dto.product.coupon.CouponResponseDto;
 import com.example.ecommercebackend.dto.product.invoice.InvoiceResponseDto;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
-import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
-import com.example.ecommercebackend.entity.product.order.OrderStatus;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.List;
 
 public class OrderDetailDto {

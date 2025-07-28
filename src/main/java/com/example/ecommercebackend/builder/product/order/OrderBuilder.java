@@ -39,6 +39,7 @@ public class OrderBuilder {
                             x.getProduct().getProductName(),
                             x.getQuantity(),
                             coverImage,
+                            x.getPrice(),
                             x.getDiscountPrice(),
                             x.getId());
                 }).toList()
@@ -76,7 +77,7 @@ public class OrderBuilder {
                     if (orderItem.getProduct().getCoverImage() != null) {
                         coverImage = orderItem.getProduct().getCoverImage().getUrl();
                     }
-                    return new OrderItemResponseDto(orderItem.getProduct().getId(), orderItem.getProduct().getProductName(), orderItem.getQuantity(), coverImage,orderItem.getDiscountPrice(),orderItem.getId());
+                    return new OrderItemResponseDto(orderItem.getProduct().getId(), orderItem.getProduct().getProductName(), orderItem.getQuantity(), coverImage,orderItem.getPrice(),orderItem.getDiscountPrice(),orderItem.getId());
                 }).toList(),
                 order.getRefundOrderItems().stream().map(orderItem -> {
 
@@ -84,7 +85,7 @@ public class OrderBuilder {
                     if (orderItem.getProduct().getCoverImage() != null) {
                         coverImage = orderItem.getProduct().getCoverImage().getUrl();
                     }
-                    return new OrderItemResponseDto(orderItem.getProduct().getId(), orderItem.getProduct().getProductName(), orderItem.getQuantity(), coverImage,orderItem.getDiscountPrice(),orderItem.getId());
+                    return new OrderItemResponseDto(orderItem.getProduct().getId(), orderItem.getProduct().getProductName(), orderItem.getQuantity(), coverImage,orderItem.getPrice(),orderItem.getDiscountPrice(),orderItem.getId());
                 }).toList(),
                 installment,
                 new OrderStatusResponse(
@@ -107,6 +108,7 @@ public class OrderBuilder {
                                                         y.getQuantity() != null ? y.getQuantity() : null,
                                                         y.getProduct() != null && y.getProduct().getCoverImage() != null
                                                                 ? y.getProduct().getCoverImage().getUrl() : null,
+                                                        y.getPrice() != null ? y.getPrice() : null,
                                                         y.getDiscountPrice() != null ? y.getDiscountPrice() : null,
                                                         y.getId() != null ? y.getId() : null
                                                 )).collect(Collectors.toSet()),

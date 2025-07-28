@@ -1135,6 +1135,7 @@ public class OrderService {
                             x.getProduct().getProductName(),
                             x.getQuantity(),
                             x.getProduct().getCoverImage().getUrl(),
+                            x.getPrice(),
                             x.getDiscountPrice(),
                             x.getId()
                     );
