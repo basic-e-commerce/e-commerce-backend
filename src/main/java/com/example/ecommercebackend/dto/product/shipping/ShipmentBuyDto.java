@@ -9,10 +9,10 @@ public class ShipmentBuyDto {
     private String id;
 
     @JsonProperty("createdAt")
-    private Instant createdAt;
+    private String createdAt;
 
     @JsonProperty("updatedAt")
-    private Instant updatedAt;
+    private String updatedAt;
 
     @JsonProperty("test")
     private boolean test;
@@ -206,7 +206,7 @@ public class ShipmentBuyDto {
     @JsonProperty("tenantId")
     private String tenantId;
 
-    public ShipmentBuyDto(String id, Instant createdAt, Instant updatedAt, boolean test, String amount, String currency, String amountLocal, String amountVat, String amountLocalVat, String amountTax, String amountLocalTax, String totalAmount, String totalAmountLocal, String amountOld, String amountLocalOld, String discountRate, String bonusBalance, String length, String width, String height, String desi, String oldDesi, String distanceUnit, String weight, String oldWeight, String massUnit, boolean useWeightOfItems, boolean useDimensionsOfItems, String trackingStatus, String barcode, String labelFileType, String labelURL, String responsiveLabelURL, boolean hidePackageContentOnTag, String shipmentDate, boolean invoiceGenerated, String refundInvoiceID, boolean productPaymentOnDelivery, String orderID, Object order, String senderAddressID, Object senderAddress, String recipientAddressID, Object recipientAddress, boolean createReturnLabel, String statusCode, Object offers, String acceptedOfferID, Object acceptedOffer, String providerCode, String providerServiceCode, boolean enableAutomation, int organizationShipmentID, String providerBranchName, String providerInvoiceNo, String providerReceiptNo, String providerSerialNo, boolean hasError, String lastErrorMessage, String lastErrorCode, String cancelDate, boolean isReturned, boolean isReturn, boolean isTrackingOnly, boolean isRecipientSmsActivated, String packageAcceptedAt, String tenantId) {
+    public ShipmentBuyDto(String id, String createdAt, String updatedAt, boolean test, String amount, String currency, String amountLocal, String amountVat, String amountLocalVat, String amountTax, String amountLocalTax, String totalAmount, String totalAmountLocal, String amountOld, String amountLocalOld, String discountRate, String bonusBalance, String length, String width, String height, String desi, String oldDesi, String distanceUnit, String weight, String oldWeight, String massUnit, boolean useWeightOfItems, boolean useDimensionsOfItems, String trackingStatus, String barcode, String labelFileType, String labelURL, String responsiveLabelURL, boolean hidePackageContentOnTag, String shipmentDate, boolean invoiceGenerated, String refundInvoiceID, boolean productPaymentOnDelivery, String orderID, Object order, String senderAddressID, Object senderAddress, String recipientAddressID, Object recipientAddress, boolean createReturnLabel, String statusCode, Object offers, String acceptedOfferID, Object acceptedOffer, String providerCode, String providerServiceCode, boolean enableAutomation, int organizationShipmentID, String providerBranchName, String providerInvoiceNo, String providerReceiptNo, String providerSerialNo, boolean hasError, String lastErrorMessage, String lastErrorCode, String cancelDate, boolean isReturned, boolean isReturn, boolean isTrackingOnly, boolean isRecipientSmsActivated, String packageAcceptedAt, String tenantId) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -287,19 +287,19 @@ public class ShipmentBuyDto {
         this.id = id;
     }
 
-    public Instant getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 

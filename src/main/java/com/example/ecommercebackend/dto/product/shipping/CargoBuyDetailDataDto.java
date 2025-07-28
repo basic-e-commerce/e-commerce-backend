@@ -2,17 +2,16 @@ package com.example.ecommercebackend.dto.product.shipping;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.Instant;
 
 public class CargoBuyDetailDataDto {
     @JsonProperty("id")
     private String id;
 
     @JsonProperty("createdAt")
-    private Instant createdAt;
+    private String createdAt;
 
     @JsonProperty("updatedAt")
-    private Instant updatedAt;
+    private String updatedAt;
 
     @JsonProperty("amount")
     private String amount;
@@ -101,7 +100,7 @@ public class CargoBuyDetailDataDto {
     @JsonProperty("invoiceNewDebt")
     private String invoiceNewDebt;
 
-    public CargoBuyDetailDataDto(String id, Instant createdAt, Instant updatedAt, String amount, String currency, String amountLocal, String currencyLocal, String amountVat, String amountLocalVat, String amountTax, String amountLocalTax, String totalAmount, String totalAmountLocal, String amountOld, String amountLocalOld, String discountRate, String bonusBalance, String offerID, ShipmentBuyDto shipment, String description, boolean isRefund, boolean isCustomAccountCharge, boolean isPayed, String payedVia, String transactionType, String invoiceID, String cancelDescription, boolean isCanceled, String oldBalance, String newBalance, String invoiceOldDebt, String invoiceNewDebt) {
+    public CargoBuyDetailDataDto(String id, String createdAt, String updatedAt, String amount, String currency, String amountLocal, String currencyLocal, String amountVat, String amountLocalVat, String amountTax, String amountLocalTax, String totalAmount, String totalAmountLocal, String amountOld, String amountLocalOld, String discountRate, String bonusBalance, String offerID, ShipmentBuyDto shipment, String description, boolean isRefund, boolean isCustomAccountCharge, boolean isPayed, String payedVia, String transactionType, String invoiceID, String cancelDescription, boolean isCanceled, String oldBalance, String newBalance, String invoiceOldDebt, String invoiceNewDebt) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -147,19 +146,19 @@ public class CargoBuyDetailDataDto {
         this.id = id;
     }
 
-    public Instant getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 
