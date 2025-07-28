@@ -259,7 +259,7 @@ public class PaymentService {
     }
 
 
-    public String refund(String orderCode, List<OrderItemRefundDto> orderItemRefundDtos, BigDecimal refundAmount){
+    public String refund(@NotNullParam String orderCode,@NotNullParam List<OrderItemRefundDto> orderItemRefundDtos, @NotNullParam BigDecimal refundAmount){
         Order order = orderService.findByOrderCode(orderCode);
         Set<OrderItem> orderItems = order.getOrderItems();
         Set<OrderItem> refundItems = new HashSet<>();
@@ -278,8 +278,6 @@ public class PaymentService {
             if (current != null){
                 BigDecimal eachPriceProductOrderItem = current.getPrice().divide(BigDecimal.valueOf(current.getQuantity()));
                 BigDecimal eachDiscountPriceProductOrderItem = current.getDiscountPrice().divide(BigDecimal.valueOf(current.getQuantity()));
-
-
 
                 OrderItem refundOrderItem = new OrderItem();
                 refundOrderItem.setProduct(current.getProduct());

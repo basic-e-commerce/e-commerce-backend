@@ -140,6 +140,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/payment").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v1/payment/payCallBack").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/payment/bin").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/payment/refund").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/sell").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/sell/day-sell").hasAuthority("ADMIN")

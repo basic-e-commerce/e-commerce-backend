@@ -4,6 +4,7 @@ import com.example.ecommercebackend.anotation.RateLimit;
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.response.InstallmentInfoDto;
 import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
+import com.example.ecommercebackend.dto.product.orderitem.OrderItemRefundDto;
 import com.example.ecommercebackend.service.payment.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -43,5 +45,10 @@ public class PaymentController {
     @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
     public ResponseEntity<InstallmentInfoDto> getBin(@RequestParam String bin, @RequestParam BigDecimal amount) {
         return new ResponseEntity<>(paymentService.getBin(bin,amount),HttpStatus.OK);
+    }
+
+    @PostMapping("/refund")
+    public ResponseEntity<String> refund(@RequestParam(required = false) String orderCode, @RequestBody(required = false) List<OrderItemRefundDto> orderItemRefundDtos,@RequestParam BigDecimal refundAmount){
+        return new ResponseEntity<>(paymentService.refund(orderCode,orderItemRefundDtos,refundAmount),HttpStatus.OK);
     }
 }
