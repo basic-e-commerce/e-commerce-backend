@@ -88,6 +88,35 @@ public class SellService {
         return sellRepository.save(sell);
     }
 
+    @Transactional
+    public Sell saveRefund(OrderItem orderItem, OrderItemTansactionId orderItemTansactionId) {
+        Product product = orderItem.getProduct();
+        System.out.println("sell product: " + product.getProductName());
+        System.out.println("sell product quantity: : " + product.getQuantity());
+
+        System.out.println("orderItem quantity: : " + orderItem.getQuantity());
+        System.out.println("kalan quantity: " + (product.getQuantity() - orderItem.getQuantity()));
+
+        product.setQuantity(product.getQuantity() - orderItem.getQuantity());
+        if (product.getQuantity() <= 0) {
+            product.setDisableOutOfStock(true);
+        }
+        Product save = productService.save(product);
+
+        Sell sell = new Sell(
+                save,
+                Integer.valueOf(orderItemTansactionId.getOrderItemId()),
+                orderItemTansactionId.getPrice(),
+                orderItemTansactionId.getPaidPrice(),
+                orderItem.getQuantity(),
+                orderItemTansactionId.getPaymentTransactionId(),
+                orderItemTansactionId.getBasketId(),
+                true,
+                false
+        );
+        return sellRepository.save(sell);
+    }
+
     public List<ProductSellDto> getSellProducts(ProductSellFilterRequestDto productSellFilterRequestDto, int page, int size) {
         Sort sort = Sort.unsorted();
         if (productSellFilterRequestDto.getSortBy() != null) {

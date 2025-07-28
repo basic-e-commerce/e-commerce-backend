@@ -83,7 +83,7 @@ public class OrderStatus {
     public enum Status {
         PENDING("Ürün Ödeme sürecindedir"),
         APPROVED("Ürün ödemesi yapıldı, Kargo için Hazırlanıyor"),
-        RETURNED("Iade sipariş"),
+        REFUNDED("Iade sipariş"),
         CANCEL("İptal Edilen Sipariş");
 
         private String message;

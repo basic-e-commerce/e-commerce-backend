@@ -19,13 +19,20 @@ public class OrderItem {
     private Product product;
 
     @Column(name = "price", nullable = false)
-    private BigDecimal price;
+    private BigDecimal price;  // içerideki ürünleri compare fiyatıyla miktarın çarpımı sonucu oluşan fiyat
 
     @Column(name = "discount_price")
-    private BigDecimal discountPrice;
+    private BigDecimal discountPrice;   // kupon vs kullanıldıktan sonra
+
+    private BigDecimal substractDiscountPrice = BigDecimal.ZERO;  // toplam indirim yapılan tutar
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
+
+    @Column(name = "is_refund",columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isRefund = false;
+    @Column(name = "is_cancel",columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isCancel = false;
 
     public OrderItem(Product product, BigDecimal price, Integer quantity) {
         this.product = product;
@@ -74,5 +81,29 @@ public class OrderItem {
 
     public void setDiscountPrice(BigDecimal discountPrice) {
         this.discountPrice = discountPrice;
+    }
+
+    public BigDecimal getSubstractDiscountPrice() {
+        return substractDiscountPrice;
+    }
+
+    public void setSubstractDiscountPrice(BigDecimal substractDiscountPrice) {
+        this.substractDiscountPrice = substractDiscountPrice;
+    }
+
+    public Boolean getRefund() {
+        return isRefund;
+    }
+
+    public void setRefund(Boolean refund) {
+        isRefund = refund;
+    }
+
+    public Boolean getCancel() {
+        return isCancel;
+    }
+
+    public void setCancel(Boolean cancel) {
+        isCancel = cancel;
     }
 }

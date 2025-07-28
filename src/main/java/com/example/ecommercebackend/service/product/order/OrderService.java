@@ -104,72 +104,124 @@ public class OrderService {
         this.couponService = couponService;
     }
 
+    private Coupon isCouponValidationNew(Coupon coupon,List<CardItem> items) {
+        if (!coupon.getActive()){
+            System.out.println("Kupon aktif değildir");
+            return null;
+        }
+
+        if (coupon.getTimesUsed() >= coupon.getTotalUsageLimit()){
+            System.out.println("Kuponun Kullanım Limiti Dolmuştur");
+            return null;
+        }
+
+        Instant now = Instant.now();
+
+        if (coupon.getCouponStartDate() != null && now.isBefore(coupon.getCouponStartDate())) {
+            System.out.println("Kupon henüz geçerli değildir!");
+            return null;
+        }
+
+        if (coupon.getCouponEndDate() != null && now.isAfter(coupon.getCouponEndDate())) {
+            System.out.println("Kuponun geçerlilik süresi sona ermiştir!");
+            return null;
+        }
+
+        if (coupon.getProductAssigned()){
+            List<Product> couponProducts = new ArrayList<>(coupon.getProducts());
+            boolean flag = false;
+            for (CardItem item : items) {
+                for (Product couponProduct : couponProducts) {
+                    if (couponProduct.getId() == item.getProduct().getId()) {
+                        flag = true;
+                    }
+                }
+            }
+            if (!flag)
+                return null;
+        }
+
+        return coupon;
+    }
 
     @Transactional
     public Order createOrder(@NotNullParam OrderCreateDto orderCreateDto) {
-        // Authentication nesnesini güvenlik bağlamından alıyoruz
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
-
         OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
-        if (principal instanceof Customer customer) {
-            System.out.println("OrderCode: "+ orderCreateDto.getCode());
 
-            Set<OrderItem> savedOrderItems = createOrderItemWithCustomer(customer.getCard());
+        if (authentication.getPrincipal() instanceof Customer customer1) {
+            Customer customer = customerRepository.findById(customer1.getId()).get();
 
-            CustomerCoupon customerCoupon = null;
+            if (customer.getCard().getItems().isEmpty())
+                throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
+
             Coupon coupon = null;
-            if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
-                customerCoupon = customerCouponService.findCouponByCodeAndActive(orderCreateDto.getCode(), customer);
 
+            if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
+                coupon = couponService.findByCode(orderCreateDto.getCode());
+            }
+
+            if (coupon != null) {
+                coupon = isCouponValidationNew(coupon, customer.getCard().getItems());
+            }
+
+            if (coupon == null) {
+                customer.getCard().setCoupon(null);
+                customerRepository.save(customer);
+            }
+
+            CustomerCoupon customerCoupon;
+            if (coupon != null){
+                customerCoupon = customerCouponService.findCouponAndCustomer(coupon, customer);
                 if (customerCoupon != null) {
-                    if (customerCoupon.getUsed())
-                        throw new ResourceAlreadyExistException("Bu kupon kullanılmıştır!");
+                    if (customerCoupon.getUsed()){
+                        customer.getCard().setCoupon(null);
+                        customerRepository.save(customer);
+                        throw new BadRequestException("Bu kupon kullanılmıştır!");
+                    }
+                    customerCoupon.setUpdateAt(Instant.now());
                 }else {
                     customerCoupon = new CustomerCoupon(
                             customer,
                             coupon,
                             BigDecimal.ZERO,
+                            Instant.now(),
                             Instant.now()
                     );
                 }
-                coupon = couponService.findByCodeNull(orderCreateDto.getCode());
-                customerCoupon.setCoupon(coupon);
-                if (coupon != null) {
-                    isCouponValidation(coupon,savedOrderItems,customer);
-                }
+            }else{
+                customerCoupon = null;
             }
 
-            if (customer.getCard().getItems().isEmpty())
-                throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
+            Set<OrderItem> orderItems = createOrderItemWithCustomer(customer.getCard());
+            BigDecimal orderPrice = orderPrice(orderItems,coupon);
+            TotalProcessDto totalPriceWithCargo = processTotalPrice(orderItems);
 
-            BigDecimal orderPrice = orderPrice(savedOrderItems,coupon);
-
-            TotalProcessDto totalPriceDto = processTotalPrice(savedOrderItems);
-
-            BigDecimal totalTax = calculateTax(totalPriceDto.getSavedOrderItems());
-
-            Invoice invoice = getInvoice(totalPriceDto.getTotalPrice(),totalTax,orderCreateDto);
-
-            Invoice saveInvoicce = invoiceService.save(invoice);
+            BigDecimal totalTax = calculateTax(totalPriceWithCargo.getSavedOrderItems());
+            Invoice invoice = getInvoice(
+                    totalPriceWithCargo.getTotalPrice(),
+                    totalTax,
+                    orderCreateDto);
 
             Order order = saveOrder(
                     customer,
                     orderCreateDto.getAddress(),
-                    totalPriceDto.getSavedOrderItems(),
+                    totalPriceWithCargo.getSavedOrderItems(),
                     orderStatus,
-                    totalPriceDto.getTotalPrice(),
+                    totalPriceWithCargo.getTotalPrice(),
                     orderPrice,
-                    saveInvoicce,
+                    invoice,
                     customerCoupon
             );
 
             return orderRepository.save(order);
-        }
 
-        if (authentication instanceof AnonymousAuthenticationToken) {
-            if (orderCreateDto.getOrderItemCreateDtos().isEmpty())
-                throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
+        } else if (authentication.getPrincipal().equals("anonymousUser")) {
+
+            if (orderCreateDto.getOrderItemCreateDtos() == null || orderCreateDto.getOrderItemCreateDtos().isEmpty()){
+                throw new BadRequestException("Lütfen sepete ürün ekleyiniz!");
+            }
+
             for (OrderItemCreateDto item : orderCreateDto.getOrderItemCreateDtos()) {
                 if (item.quantity() <= 0) {
                     throw new BadRequestException("Sepette 0 ve altında ürün sayısı bulunamaz");
@@ -184,8 +236,8 @@ public class OrderService {
                 TotalProcessDto totalProcessDto = processTotalPrice(savedOrderItems);
                 BigDecimal totalTax = calculateTax(totalProcessDto.getSavedOrderItems());
                 Invoice invoice = getInvoice(totalProcessDto.getTotalPrice(),totalTax,orderCreateDto);
-                Invoice saveInvoicce = invoiceService.save(invoice);
-                Order order = saveOrder(customer, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalProcessDto.getTotalPrice(), orderPrice, saveInvoicce,null);
+                Invoice saveInvoice = invoiceService.save(invoice);
+                Order order = saveOrder(customer, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalProcessDto.getTotalPrice(), orderPrice, saveInvoice,null);
                 return orderRepository.save(order);
 
             }else {
@@ -204,13 +256,126 @@ public class OrderService {
                 TotalProcessDto totalProcessDto = processTotalPrice(savedOrderItems);
                 BigDecimal totalTax = calculateTax(totalProcessDto.getSavedOrderItems());
                 Invoice invoice = getInvoice(totalProcessDto.getTotalPrice(),totalTax,orderCreateDto);
-                Invoice saveInvoicce = invoiceService.save(invoice);
-                Order order = saveOrder(guest, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalProcessDto.getTotalPrice(), orderPrice, saveInvoicce,null);
+                Invoice saveInvoice = invoiceService.save(invoice);
+                Order order = saveOrder(guest, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalProcessDto.getTotalPrice(), orderPrice, saveInvoice,null);
                 return orderRepository.save(order);
             }
-        }else
-            throw new BadRequestException("Geçersiz Kullanıcı");
+
+        }else{
+            throw new BadRequestException("Geçersiz Kullanıcı Tipi!");
+        }
+
+
     }
+
+//
+//    @Transactional
+//    public Order createOrder(@NotNullParam OrderCreateDto orderCreateDto) {
+//        // Authentication nesnesini güvenlik bağlamından alıyoruz
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Object principal = authentication.getPrincipal();
+//
+//        OrderStatus orderStatus = orderStatusService.createOrderStatus(OrderStatus.Status.PENDING, OrderStatus.Privacy.PUBLIC,OrderStatus.Color.RED);
+//        if (principal instanceof Customer customer) {
+//            System.out.println("OrderCode: "+ orderCreateDto.getCode());
+//
+//            Set<OrderItem> savedOrderItems = createOrderItemWithCustomer(customer.getCard());
+//
+//            CustomerCoupon customerCoupon = null;
+//            Coupon coupon = null;
+//            if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
+//                customerCoupon = customerCouponService.findCouponByCodeAndActive(orderCreateDto.getCode(), customer);
+//
+//                if (customerCoupon != null) {
+//                    if (customerCoupon.getUsed())
+//                        throw new ResourceAlreadyExistException("Bu kupon kullanılmıştır!");
+//                }else {
+//                    customerCoupon = new CustomerCoupon(
+//                            customer,
+//                            coupon,
+//                            BigDecimal.ZERO,
+//                            Instant.now(),
+//                            Instant.now()
+//                    );
+//                }
+//                coupon = couponService.findByCodeNull(orderCreateDto.getCode());
+//                customerCoupon.setCoupon(coupon);
+//                if (coupon != null) {
+//                    isCouponValidation(coupon,savedOrderItems,customer);
+//                }
+//            }
+//
+//            if (customer.getCard().getItems().isEmpty())
+//                throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
+//
+//            BigDecimal orderPrice = orderPrice(savedOrderItems,coupon);
+//
+//            TotalProcessDto totalPriceDto = processTotalPrice(savedOrderItems);
+//
+//            BigDecimal totalTax = calculateTax(totalPriceDto.getSavedOrderItems());
+//
+//            Invoice invoice = getInvoice(totalPriceDto.getTotalPrice(),totalTax,orderCreateDto);
+//
+//            Invoice saveInvoicce = invoiceService.save(invoice);
+//
+//            Order order = saveOrder(
+//                    customer,
+//                    orderCreateDto.getAddress(),
+//                    totalPriceDto.getSavedOrderItems(),
+//                    orderStatus,
+//                    totalPriceDto.getTotalPrice(),
+//                    orderPrice,
+//                    saveInvoicce,
+//                    customerCoupon
+//            );
+//
+//            return orderRepository.save(order);
+//        }
+//
+//        if (authentication instanceof AnonymousAuthenticationToken) {
+//            if (orderCreateDto.getOrderItemCreateDtos().isEmpty())
+//                throw new BadRequestException("Lütfen Sepete Ürün Ekleyiniz");
+//            for (OrderItemCreateDto item : orderCreateDto.getOrderItemCreateDtos()) {
+//                if (item.quantity() <= 0) {
+//                    throw new BadRequestException("Sepette 0 ve altında ürün sayısı bulunamaz");
+//                }
+//            }
+//
+//            if (customerRepository.findByUsername(orderCreateDto.getAddress().username()).isPresent()){
+//                Customer customer = customerRepository.findByUsername(orderCreateDto.getAddress().username()).get();
+//                Set<OrderItem> savedOrderItems = createOrderItemWithAnon(orderCreateDto);
+//
+//                BigDecimal orderPrice = orderPrice(savedOrderItems,null);
+//                TotalProcessDto totalProcessDto = processTotalPrice(savedOrderItems);
+//                BigDecimal totalTax = calculateTax(totalProcessDto.getSavedOrderItems());
+//                Invoice invoice = getInvoice(totalProcessDto.getTotalPrice(),totalTax,orderCreateDto);
+//                Invoice saveInvoicce = invoiceService.save(invoice);
+//                Order order = saveOrder(customer, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalProcessDto.getTotalPrice(), orderPrice, saveInvoicce,null);
+//                return orderRepository.save(order);
+//
+//            }else {
+//                Guest guest = guestService.findByUsernameOrNull(orderCreateDto.getAddress().username());
+//                if (guest == null){
+//                    guest = guestService.save(orderCreateDto.getAddress().firstName(),
+//                            orderCreateDto.getAddress().lastName(),
+//                            orderCreateDto.getAddress().phoneNo(),
+//                            orderCreateDto.getAddress().username(),
+//                            false,
+//                            false);
+//                }
+//
+//                Set<OrderItem> savedOrderItems = createOrderItemWithAnon(orderCreateDto);
+//                BigDecimal orderPrice = orderPrice(savedOrderItems,null);
+//                TotalProcessDto totalProcessDto = processTotalPrice(savedOrderItems);
+//                BigDecimal totalTax = calculateTax(totalProcessDto.getSavedOrderItems());
+//                Invoice invoice = getInvoice(totalProcessDto.getTotalPrice(),totalTax,orderCreateDto);
+//                Invoice saveInvoicce = invoiceService.save(invoice);
+//                Order order = saveOrder(guest, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalProcessDto.getTotalPrice(), orderPrice, saveInvoicce,null);
+//                return orderRepository.save(order);
+//            }
+//        }else
+//            throw new BadRequestException("Geçersiz Kullanıcı");
+//    }
 
     private BigDecimal calculateTax(Set<OrderItem> savedOrderItems) {
         BigDecimal totalTaxAmount = BigDecimal.ZERO;
@@ -258,20 +423,24 @@ public class OrderService {
 
                         if (isProductInCoupon) {
                             System.out.println("fiçeride");
-                            BigDecimal divide = orderItem.getPrice().subtract(orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
+                            BigDecimal substractDiscountPrice =  orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                            BigDecimal divide = orderItem.getPrice().subtract(substractDiscountPrice);
                             orderPrice = orderPrice.add(divide);
                             System.out.println("orderprice: "+ orderPrice);
                             orderItem.setDiscountPrice(divide);
+                            orderItem.setSubstractDiscountPrice(substractDiscountPrice);
                         } else {
                             orderPrice = orderPrice.add(orderItem.getPrice());
                             orderItem.setDiscountPrice(orderItem.getPrice());
+                            orderItem.setSubstractDiscountPrice(BigDecimal.ZERO);
                         }
                     }else{
                         System.out.println("fiçeride");
-                        BigDecimal divide = orderItem.getPrice().subtract(orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
+                        BigDecimal substractDiscountPrice =orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                        BigDecimal divide = orderItem.getPrice().subtract(substractDiscountPrice);
                         orderPrice = orderPrice.add(divide);
                         System.out.println("orderprice: "+ orderPrice);
-                        orderItem.setDiscountPrice(divide);
+                        orderItem.setDiscountPrice(substractDiscountPrice);
                     }
                 }
 
@@ -299,9 +468,11 @@ public class OrderService {
                             BigDecimal subtract = orderItem.getPrice().subtract(substract);
                             orderPrice = orderPrice.add(subtract);
                             orderItem.setDiscountPrice(subtract);
+                            orderItem.setSubstractDiscountPrice(substract);
                         }else{
                             orderPrice = orderPrice.add(orderItem.getPrice());
                             orderItem.setDiscountPrice(orderItem.getPrice());
+                            orderItem.setSubstractDiscountPrice(BigDecimal.ZERO);
                         }
                     }
                 }else{
@@ -326,6 +497,7 @@ public class OrderService {
             for (OrderItem orderItem: orderItems) {
                 orderPrice = orderPrice.add(orderItem.getPrice());
                 orderItem.setDiscountPrice(orderItem.getPrice());
+                orderItem.setSubstractDiscountPrice(BigDecimal.ZERO);
             }
 
             return orderPrice;
@@ -336,7 +508,10 @@ public class OrderService {
         Set<OrderItem> orderItems = new HashSet<>();
         for (CardItem cardItem: card.getItems()){
             BigDecimal orderItemPrice = cardItem.getProduct().getComparePrice().multiply(new BigDecimal(cardItem.getQuantity()));
-            OrderItem orderItem = new OrderItem(cardItem.getProduct(),orderItemPrice, cardItem.getQuantity());
+            OrderItem orderItem = new OrderItem(
+                    cardItem.getProduct(),
+                    orderItemPrice,
+                    cardItem.getQuantity());
             orderItems.add(orderItem);
         }
         return orderItemService.saveOrderItems(orderItems);
@@ -490,7 +665,7 @@ public class OrderService {
     private TotalProcessDto processTotalPrice(Set<OrderItem> savedOrderItems) {
         Merchant merchant = merchantService.getMerchant();
         BigDecimal kargoPrice = merchant.getShippingFee();
-        System.out.println("******************** kargoprice : "+ kargoPrice);
+        System.out.println("******************** kargoprice: "+ kargoPrice);
         BigDecimal minPrice = merchant.getMinOrderAmount();
         BigDecimal totalPrice = BigDecimal.valueOf(0);
 

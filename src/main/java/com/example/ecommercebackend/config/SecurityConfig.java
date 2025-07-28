@@ -191,6 +191,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/shipping-cargo/offer-approve").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/shipping-cargo/offer-cancel").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/shipping-cargo/detail").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/shipping-cargo/refund").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/shipping-cargo/cancel").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/product-template").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/product-template/list").hasAuthority("ADMIN")

@@ -34,4 +34,14 @@ public class ShippingCargoController {
     public ResponseEntity<CargoDetailDto> getDetail(@RequestParam(required = false) String id){
         return new ResponseEntity<>(shippingCargoService.getCargoDetail(id),HttpStatus.OK);
     }
+
+    @PutMapping("/refund")
+    public ResponseEntity<CargoBuyDetailDto> getCargoRefund(@RequestParam(required = false) String id,@RequestBody(required = false) CargoRefundDto requestDto){
+        return new ResponseEntity<>(shippingCargoService.getCargoRefund(id,requestDto),HttpStatus.OK);
+    }
+
+    @DeleteMapping("/cancel")
+    public ResponseEntity<CargoCancelDetailDto> getCargoCancel(@RequestParam(required = false) String id){
+        return new ResponseEntity<>(shippingCargoService.cancelCargoShipment(id),HttpStatus.OK);
+    }
 }

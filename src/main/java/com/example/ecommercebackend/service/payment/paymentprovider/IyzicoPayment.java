@@ -260,7 +260,10 @@ public class IyzicoPayment implements PaymentStrategy {
             if (!cancel.getConversationId().equals(uuid)) {
                 throw new BadRequestException("Ödeme tutarsızlığı bulunmaktadır!");
             }
-        }
+        }else if (cancel.getStatus().equals("failure")) {
+            throw new BadRequestException("İptal işlemi başarısız! "+cancel.getErrorMessage());
+        }else
+            throw new BadRequestException("Bilinmeyen hata!");
         return cancel;
     }
 

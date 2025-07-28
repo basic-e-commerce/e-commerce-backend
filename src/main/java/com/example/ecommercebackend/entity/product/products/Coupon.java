@@ -36,6 +36,7 @@ public class Coupon {
     private Integer totalUsageLimit; // Genel kullanım limiti (opsiyonel)
 
     private BigDecimal minOrderAmountLimit;
+    private BigDecimal maxOrderAmountLimit;
 
     private Instant couponStartDate;
     private Instant couponEndDate;
@@ -76,7 +77,7 @@ public class Coupon {
     @JoinColumn(name = "updated_by")
     private Admin updatedBy;
 
-    public Coupon(String code, String description, DiscountType discountType, BigDecimal discountValue, int timesUsed, Integer totalUsageLimit, BigDecimal minOrderAmountLimit, Instant couponStartDate, Instant couponEndDate, Boolean isActive, Boolean isCustomerAssigned, Boolean isProductAssigned) {
+    public Coupon(String code, String description, DiscountType discountType, BigDecimal discountValue, int timesUsed, Integer totalUsageLimit, BigDecimal minOrderAmountLimit, BigDecimal maxOrderAmountLimit, Instant couponStartDate, Instant couponEndDate, Boolean isActive, Boolean isCustomerAssigned, Boolean isProductAssigned) {
         this.code = code;
         this.description = description;
         this.discountType = discountType;
@@ -84,6 +85,7 @@ public class Coupon {
         this.timesUsed = timesUsed;
         this.totalUsageLimit = totalUsageLimit;
         this.minOrderAmountLimit = minOrderAmountLimit;
+        this.maxOrderAmountLimit = maxOrderAmountLimit;
         this.couponStartDate = couponStartDate;
         this.couponEndDate = couponEndDate;
         this.isActive = isActive;
@@ -146,6 +148,14 @@ public class Coupon {
 
     public void setProductAssigned(Boolean productAssigned) {
         isProductAssigned = productAssigned;
+    }
+
+    public BigDecimal getMaxOrderAmountLimit() {
+        return maxOrderAmountLimit;
+    }
+
+    public void setMaxOrderAmountLimit(BigDecimal maxOrderAmountLimit) {
+        this.maxOrderAmountLimit = maxOrderAmountLimit;
     }
 
     public enum DiscountType{

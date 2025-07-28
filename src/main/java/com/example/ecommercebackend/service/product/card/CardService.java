@@ -11,6 +11,7 @@ import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.NotFoundException;
+import com.example.ecommercebackend.exception.UnAuthorizedException;
 import com.example.ecommercebackend.repository.product.card.CardRepository;
 import com.example.ecommercebackend.service.product.products.CouponService;
 import com.example.ecommercebackend.service.product.products.CustomerCouponService;
@@ -55,7 +56,7 @@ public class CardService {
 
         // 2. Kullanıcının müşteri olup olmadığını kontrol et
         if (!(principal instanceof Customer customer)) {
-            throw new BadRequestException("Authentication failed");
+            throw new UnAuthorizedException("Lütfen giriş yapınız");
         }
 
         // 3. Müşterinin sepetini al

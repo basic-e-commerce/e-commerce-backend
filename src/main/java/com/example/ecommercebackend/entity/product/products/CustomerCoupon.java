@@ -25,13 +25,15 @@ public class CustomerCoupon {
     private Boolean isUsed = false;
     private BigDecimal discountPrice;
     private Instant createAt;
+    private Instant updateAt;
     private Instant usedAt;
 
-    public CustomerCoupon(Customer customer, Coupon coupon, BigDecimal discountPrice, Instant createAt) {
+    public CustomerCoupon(Customer customer, Coupon coupon, BigDecimal discountPrice, Instant createAt, Instant updateAt) {
         this.customer = customer;
         this.coupon = coupon;
         this.discountPrice = discountPrice;
         this.createAt = createAt;
+        this.updateAt = updateAt;
     }
 
     public CustomerCoupon() {
@@ -91,5 +93,13 @@ public class CustomerCoupon {
 
     public void setDiscountPrice(BigDecimal discountPrice) {
         this.discountPrice = discountPrice;
+    }
+
+    public Instant getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(Instant updateAt) {
+        this.updateAt = updateAt;
     }
 }

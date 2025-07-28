@@ -6,11 +6,13 @@ import com.example.ecommercebackend.exception.BadRequestException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.cdimascio.dotenv.Dotenv;
+import jdk.jfr.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
@@ -226,6 +228,93 @@ public class ShippingCargoService {
         }
 
     }
+    public CargoBuyDetailDto getCargoRefund(@NotNullParam String id,@NotNullParam CargoRefundDto cargoRefundDto) {
+        WebClient webClient = webClientBuilder
+                .baseUrl("https://api.geliver.io/api/v1")
+                .build();
+
+        String responseJson = webClient.post()
+                .uri("/shipments/{id}", id)
+                .header("Authorization", "Bearer " + apiKey)
+                .header("Content-Type", "application/json")
+                .bodyValue(cargoRefundDto)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, r ->
+                        r.bodyToMono(String.class).flatMap(resp -> {
+                            log.error("4xx Client Error: {}", resp);
+                            return Mono.error(new BadRequestException("API 4xx error: " + resp));
+                        })
+                )
+                .onStatus(HttpStatusCode::is5xxServerError, r ->
+                        r.bodyToMono(String.class).flatMap(resp -> {
+                            log.error("5xx Server Error: {}", resp);
+                            return Mono.error(new BadRequestException("API 5xx error: " + resp));
+                        })
+                )
+                .bodyToMono(String.class)
+                .block();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(responseJson);
+
+            boolean result = root.path("result").asBoolean(false);
+            String message = root.path("additionalMessage").asText(null);
+
+            if (!result) {
+                throw new BadRequestException("Shipment bilgisi alınamadı: " + message);
+            }
+
+            log.info("Shipment {} başarıyla alındı: {}", id, message);
+            return mapper.readValue(responseJson, CargoBuyDetailDto.class);
+
+        } catch (Exception e) {
+            throw new BadRequestException("API yanıtı işlenemedi: " + e.getMessage());
+        }
+    }
+
+    public CargoCancelDetailDto cancelCargoShipment(@NotNullParam String id) {
+        WebClient webClient = webClientBuilder
+                .baseUrl("https://api.geliver.io/api/v1")
+                .build();
+
+        String responseJson = webClient.delete()
+                .uri("/shipments/{id}", id)
+                .header("Authorization", "Bearer " + apiKey)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, r ->
+                        r.bodyToMono(String.class).flatMap(resp -> {
+                            log.error("4xx Client Error: {}", resp);
+                            return Mono.error(new BadRequestException("API 4xx error: " + resp));
+                        })
+                )
+                .onStatus(HttpStatusCode::is5xxServerError, r ->
+                        r.bodyToMono(String.class).flatMap(resp -> {
+                            log.error("5xx Server Error: {}", resp);
+                            return Mono.error(new BadRequestException("API 5xx error: " + resp));
+                        })
+                )
+                .bodyToMono(String.class)
+                .block();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(responseJson);
+
+            boolean result = root.path("result").asBoolean(false);
+            String message = root.path("additionalMessage").asText(null);
+
+            if (!result) {
+                throw new BadRequestException("Silme işlemi başarısız: " + message);
+            }
+
+            log.info("Shipment {} başarıyla silindi: {}", id, message);
+            return mapper.readValue(responseJson, CargoCancelDetailDto.class);
+        } catch (Exception e) {
+            throw new BadRequestException("Silme yanıtı işlenemedi: " + e.getMessage());
+        }
+    }
+
 
     public ShipmentsListResponseDto listShipments(
             Integer limit,
@@ -284,6 +373,10 @@ public class ShippingCargoService {
             throw new BadRequestException("Failed to parse API response: " + e.getMessage());
         }
     }
+
+
+
+
 
 
 
