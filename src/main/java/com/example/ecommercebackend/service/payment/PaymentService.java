@@ -219,8 +219,8 @@ public class PaymentService {
     }
 
 
-    public BigDecimal maxRefund(RefundCreateDto orderItemRefund){
-        Order order = orderService.findByOrderCode(orderItemRefund.getOrderCode());
+    public BigDecimal maxRefund(@NotNullParam String orderCode){
+        Order order = orderService.findByOrderCode(orderCode);
         return order.getCustomerPrice().subtract(order.getRefundPrice());
     }
 
