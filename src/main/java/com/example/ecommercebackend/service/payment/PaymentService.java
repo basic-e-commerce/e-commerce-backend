@@ -281,7 +281,6 @@ Kuruş farkı toleransı aşan geçersiz istek
 
 
 
-
             BigDecimal unitPrice = matchingOrderItem.getPrice()
                     .divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()), 2, RoundingMode.HALF_UP);
 

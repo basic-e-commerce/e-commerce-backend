@@ -28,6 +28,7 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -90,19 +91,18 @@ public class CardItemService {
                 productQuantityDtos.add(productQuantityDto);
             }
 
-            List<CardResponseDetails> cardResponseDetails = new ArrayList<>();
-            for (CardItem cardItem : cardItems) {
-                CardResponseDetails cardResponseDetail = new CardResponseDetails(
-                        cardItem.getProduct().getId(),
-                        cardItem.getProduct().getProductName(),
-                        cardItem.getProduct().getProductLinkName(),
-                        cardItem.getProduct().getSalePrice(),
-                        cardItem.getProduct().getComparePrice(),
-                        cardItem.getProduct().getCoverImage().getUrl(),
-                        cardItem.getQuantity()
-                );
-                cardResponseDetails.add(cardResponseDetail);
-            }
+            List<CardResponseDetails> cardResponseDetails = cardItems.stream()
+                    .sorted(Comparator.comparing(cardItem -> cardItem.getProduct().getComparePrice()))
+                    .map(cardItem -> new CardResponseDetails(
+                            cardItem.getProduct().getId(),
+                            cardItem.getProduct().getProductName(),
+                            cardItem.getProduct().getProductLinkName(),
+                            cardItem.getProduct().getSalePrice(),
+                            cardItem.getProduct().getComparePrice(),
+                            cardItem.getProduct().getCoverImage().getUrl(),
+                            cardItem.getQuantity()
+                    ))
+                    .collect(Collectors.toList());
 
 
             BigDecimal totalWithOutTax = getTotalWithOutTax(productQuantityDtos);
