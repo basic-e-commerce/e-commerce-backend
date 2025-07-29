@@ -10,11 +10,13 @@ public class RefundCreateDto {
     private List<OrderItemRefundDto> orderItemRefundDtos;
     private BigDecimal refundAmount;
     private String orderCode;
+    private Boolean isIncludeShippingFee;
 
-    public RefundCreateDto(List<OrderItemRefundDto> orderItemRefundDtos, BigDecimal refundAmount, String orderCode) {
+    public RefundCreateDto(List<OrderItemRefundDto> orderItemRefundDtos, BigDecimal refundAmount, String orderCode, Boolean isIncludeShippingFee) {
         this.orderItemRefundDtos = orderItemRefundDtos;
         this.refundAmount = refundAmount;
         this.orderCode = orderCode;
+        this.isIncludeShippingFee = isIncludeShippingFee;
     }
 
     public List<OrderItemRefundDto> getOrderItemRefundDtos() {
@@ -39,5 +41,13 @@ public class RefundCreateDto {
 
     public void setOrderCode(String orderCode) {
         this.orderCode = orderCode;
+    }
+
+    public Boolean getIncludeShippingFee() {
+        return isIncludeShippingFee;
+    }
+
+    public void setIncludeShippingFee(Boolean includeShippingFee) {
+        isIncludeShippingFee = includeShippingFee;
     }
 }

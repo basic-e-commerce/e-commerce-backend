@@ -211,7 +211,8 @@ public class OrderService {
                     totalPriceWithCargo.getTotalPrice(),
                     orderPrice,
                     invoice,
-                    customerCoupon
+                    customerCoupon,
+                    totalPriceWithCargo.getShippingFee()
             );
 
             return orderRepository.save(order);
@@ -237,7 +238,7 @@ public class OrderService {
                 BigDecimal totalTax = calculateTax(totalProcessDto.getSavedOrderItems());
                 Invoice invoice = getInvoice(totalProcessDto.getTotalPrice(),totalTax,orderCreateDto);
                 Invoice saveInvoice = invoiceService.save(invoice);
-                Order order = saveOrder(customer, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalProcessDto.getTotalPrice(), orderPrice, saveInvoice,null);
+                Order order = saveOrder(customer, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalProcessDto.getTotalPrice(), orderPrice, saveInvoice,null,totalProcessDto.getShippingFee());
                 return orderRepository.save(order);
 
             }else {
@@ -257,7 +258,7 @@ public class OrderService {
                 BigDecimal totalTax = calculateTax(totalProcessDto.getSavedOrderItems());
                 Invoice invoice = getInvoice(totalProcessDto.getTotalPrice(),totalTax,orderCreateDto);
                 Invoice saveInvoice = invoiceService.save(invoice);
-                Order order = saveOrder(guest, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalProcessDto.getTotalPrice(), orderPrice, saveInvoice,null);
+                Order order = saveOrder(guest, orderCreateDto.getAddress(), savedOrderItems, orderStatus, totalProcessDto.getTotalPrice(), orderPrice, saveInvoice,null,totalProcessDto.getShippingFee());
                 return orderRepository.save(order);
             }
 
@@ -538,7 +539,7 @@ public class OrderService {
 
 
 
-    public Order saveOrder(User user, AddressOrderCreateDto addressOrderCreateDto, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal orderPrice,Invoice invoice,CustomerCoupon customerCoupon) {
+    public Order saveOrder(User user, AddressOrderCreateDto addressOrderCreateDto, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal orderPrice,Invoice invoice,CustomerCoupon customerCoupon,BigDecimal shippingFee) {
         Order order = new Order(
                 user,
                 customerCoupon,
@@ -559,6 +560,7 @@ public class OrderService {
                 orderStatus,
                 totalPrice,
                 orderPrice,
+                shippingFee,
                 invoice);
         order.setPayments(null);
         order.setCity(addressOrderCreateDto.city());
@@ -677,8 +679,10 @@ public class OrderService {
         }
         if (totalPrice.compareTo(minPrice) < 0) {
             totalPrice = totalPrice.add(kargoPrice);
+        }else{
+            kargoPrice = BigDecimal.ZERO;
         }
-        return new TotalProcessDto(totalPrice,savedOrderItems);
+        return new TotalProcessDto(totalPrice,savedOrderItems,kargoPrice);
     }
 
     public void isCouponValidation(Coupon coupon,Set<OrderItem> savedOrderItems, Customer customer) {

@@ -21,6 +21,7 @@ import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.payment.PaymentRepository;
 import com.example.ecommercebackend.service.invoice.InvoiceService;
 import com.example.ecommercebackend.service.mail.MailService;
+import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.example.ecommercebackend.service.product.card.CardService;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import com.example.ecommercebackend.service.product.products.SellService;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
@@ -45,14 +47,16 @@ public class PaymentService {
     private final MailService mailService;
     private final CardService cardService;
     private final PaymentStrategy paymentStrategy;
+    private final MerchantService merchantService;
 
-    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MailService mailService, CardService cardService, PaymentStrategy paymentStrategy) {
+    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MailService mailService, CardService cardService, PaymentStrategy paymentStrategy, MerchantService merchantService) {
         this.orderService = orderService;
         this.paymentRepository = paymentRepository;
         this.sellService = sellService;
         this.mailService = mailService;
         this.cardService = cardService;
         this.paymentStrategy = paymentStrategy;
+        this.merchantService = merchantService;
     }
 
     @Transactional
@@ -215,55 +219,30 @@ public class PaymentService {
     }
 
 
-    public BigDecimal maxRefund(String orderCode, List<OrderItemRefundDto> orderItemRefundDtos){
-        Order order = orderService.findByOrderCode(orderCode);
-        Set<OrderItem> orderItems = order.getOrderItems();
-        Set<OrderItem> refundItems = new HashSet<>();
-
-        for (OrderItem orderItem : orderItems) {
-            OrderItem current = null;
-            OrderItemRefundDto currentRefundDto = null;
-            for (OrderItemRefundDto orderItemRefundDto : orderItemRefundDtos) {
-                if (orderItemRefundDto.orderItemId() == orderItem.getId() && orderItemRefundDto.productId() == orderItem.getProduct().getId()){
-                    current = orderItem;
-                    currentRefundDto = orderItemRefundDto;
-
-                }
-            }
-            if (current != null){
-                BigDecimal eachPriceProductOrderItem = current.getPrice().divide(BigDecimal.valueOf(current.getQuantity()));
-                BigDecimal eachDiscountPriceProductOrderItem = current.getDiscountPrice().divide(BigDecimal.valueOf(current.getQuantity()));
-
-
-
-                OrderItem refundOrderItem = new OrderItem();
-                refundOrderItem.setProduct(current.getProduct());
-                refundOrderItem.setQuantity(currentRefundDto.quantity());
-                refundOrderItem.setPrice(eachPriceProductOrderItem.multiply(BigDecimal.valueOf(currentRefundDto.quantity())));
-                refundOrderItem.setDiscountPrice(eachDiscountPriceProductOrderItem.multiply(BigDecimal.valueOf(currentRefundDto.quantity())));
-                refundOrderItem.setRefund(true);
-
-                // Geçerli ise işleme ekle
-                refundItems.add(refundOrderItem);
-            }else{
-                throw new BadRequestException("Siparişte bu ürün kalemi bulunmamaktadır!");
-            }
-        }
-
-        if (!refundItems.isEmpty()){
-            return refundItems.stream()
-                    .map(OrderItem::getDiscountPrice)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-        }else
-            throw new BadRequestException("İade Edilecek ürün bulunamamıştır");
-
+    public BigDecimal maxRefund(RefundCreateDto orderItemRefund){
+        Order order = orderService.findByOrderCode(orderItemRefund.getOrderCode());
+        return order.getCustomerPrice().subtract(order.getRefundPrice());
     }
 
+
+    /*
+    %100 iade senaryosu
+
+Parça iade (partial refund)
+
+Fazla tutar talebi (geçersiz olmalı)
+
+Kuruş farkı olan geçerli istek
+
+Kuruş farkı toleransı aşan geçersiz istek
+     */
 
     public String refund(RefundCreateDto orderItemRefund) {
         Order order = orderService.findByOrderCode(orderItemRefund.getOrderCode());
         Set<OrderItem> orderItems = order.getOrderItems();
         Set<OrderItem> refundItems = new HashSet<>();
+
+        BigDecimal calculatedRefundAmount = BigDecimal.ZERO;
 
         for (OrderItemRefundDto refundDto : orderItemRefund.getOrderItemRefundDtos()) {
             // Siparişte böyle bir item var mı?
@@ -277,14 +256,22 @@ public class PaymentService {
                                     refundDto.orderItemId() + ", ProductId: " + refundDto.productId()
                     ));
 
-            BigDecimal eachPrice = matchingOrderItem.getPrice().divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()));
-            BigDecimal eachDiscountPrice = matchingOrderItem.getDiscountPrice().divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()));
+            BigDecimal unitPrice = matchingOrderItem.getPrice()
+                    .divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()), 2, RoundingMode.HALF_UP);
+
+            BigDecimal unitDiscountPrice = matchingOrderItem.getDiscountPrice()
+                    .divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()), 2, RoundingMode.HALF_UP);
+
+            BigDecimal refundPrice = unitPrice.multiply(BigDecimal.valueOf(refundDto.quantity())).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal refundDiscountPrice = unitDiscountPrice.multiply(BigDecimal.valueOf(refundDto.quantity())).setScale(2, RoundingMode.HALF_UP);
+            calculatedRefundAmount = calculatedRefundAmount.add(refundDiscountPrice);
+
 
             OrderItem refundOrderItem = new OrderItem();
             refundOrderItem.setProduct(matchingOrderItem.getProduct());
             refundOrderItem.setQuantity(refundDto.quantity());
-            refundOrderItem.setPrice(eachPrice.multiply(BigDecimal.valueOf(refundDto.quantity())));
-            refundOrderItem.setDiscountPrice(eachDiscountPrice.multiply(BigDecimal.valueOf(refundDto.quantity())));
+            refundOrderItem.setPrice(refundPrice);
+            refundOrderItem.setDiscountPrice(refundDiscountPrice);
             refundOrderItem.setRefund(true);
 
             refundItems.add(refundOrderItem);
@@ -294,24 +281,42 @@ public class PaymentService {
             throw new BadRequestException("İade Edilecek ürün bulunamamıştır");
         }
 
-        BigDecimal maxRefundAmount = refundItems.stream()
-                .map(OrderItem::getDiscountPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Kargo ücreti de iade edilecekse ekle
+        if (orderItemRefund.getIncludeShippingFee()) {
+            BigDecimal shippingPrice = order.getShippingFee() != null ? order.getShippingFee() : BigDecimal.ZERO;
+            calculatedRefundAmount = calculatedRefundAmount.add(shippingPrice);
+        }
 
-        if (orderItemRefund.getRefundAmount().compareTo(maxRefundAmount) > 0) {
-            throw new BadRequestException("Talep edilen iade tutarı, izin verilen maksimum iade tutarını aşıyor!");
+        BigDecimal tolerance = new BigDecimal("0.01");
+        BigDecimal requestedRefund = orderItemRefund.getRefundAmount().setScale(2, RoundingMode.HALF_UP);
+
+        if (requestedRefund.subtract(calculatedRefundAmount).abs().compareTo(tolerance) > 0) {
+            throw new BadRequestException("Talep edilen iade tutarı, ürünlerin iade edilebilir toplamından farklı.");
+        }
+
+        // Toplam iade miktarının müşteri ödemesini aşmadığını kontrol et
+        BigDecimal newTotalRefunded = order.getRefundPrice().add(requestedRefund).setScale(2, RoundingMode.HALF_UP);
+        if (newTotalRefunded.compareTo(order.getCustomerPrice()) > 0) {
+            throw new BadRequestException("Toplam iade miktarı, müşterinin ödediği tutarı aşamaz.");
         }
 
         Payment payment = order.getPayments();
         PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
 
         Refund refund = paymentStrategy.refund(payment.getPaymentId(), orderItemRefund.getRefundAmount());
-        order.setRefundPrice(refund.getPrice());
-        order.setRefundOrderItems(refundItems);
-        order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
-        order.getOrderStatus().setColor(OrderStatus.Color.BLUE);
-        order.getPayments().setPaymentStatus(Payment.PaymentStatus.REFUNDED);
 
+        order.setRefundPrice(order.getRefundPrice().add(refund.getPrice()));
+        if (order.getCustomerPrice().subtract(order.getRefundPrice()).abs().compareTo(tolerance) <= 0) {
+            order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
+            order.getOrderStatus().setColor(OrderStatus.Color.BLUE);
+            order.getPayments().setPaymentStatus(Payment.PaymentStatus.REFUNDED);
+        }else{
+            order.getOrderStatus().setStatus(OrderStatus.Status.PARTIAL_REFUNDED);
+            order.getOrderStatus().setColor(OrderStatus.Color.TURQUISE);
+            order.getPayments().setPaymentStatus(Payment.PaymentStatus.PARTIAL_REFUNDED);
+
+        }
+        order.setRefundOrderItems(refundItems);
         Order savedOrder = orderService.save(order);
 
         Set<Sell> refundSells = savedOrder.getRefundOrderItems().stream()

@@ -83,6 +83,7 @@ public class OrderStatus {
     public enum Status {
         PENDING("Ürün Ödeme sürecindedir"),
         APPROVED("Ürün ödemesi yapıldı, Kargo için Hazırlanıyor"),
+        PARTIAL_REFUNDED("Siparişi bir kısım ödemesi yapıldı"),
         REFUNDED("Iade sipariş"),
         CANCEL("İptal Edilen Sipariş");
 
@@ -102,6 +103,7 @@ public class OrderStatus {
         RED,
         GREEN,
         BLUE,
+        TURQUISE
     }
 
     @PreUpdate

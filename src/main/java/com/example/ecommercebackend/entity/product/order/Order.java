@@ -95,6 +95,9 @@ public class Order {
     @Column(name = "refund_price", columnDefinition = "NUMERIC DEFAULT 0", nullable = false)
     private BigDecimal refundPrice = BigDecimal.ZERO;
 
+    @Column(name = "shipping_fee", columnDefinition = "NUMERIC DEFAULT 0", nullable = false)
+    private BigDecimal shippingFee;
+
     @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Payment payments;
 
@@ -124,7 +127,7 @@ public class Order {
         this.orderCode = UUID.randomUUID().toString();
     }
 
-    public Order(User user, CustomerCoupon customerCoupon, String geliverId, String firstName, String lastName, String username, String countryName, String countryIso, String city,String cityCode, String district,Integer districtID, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price, Invoice invoice) {
+    public Order(User user, CustomerCoupon customerCoupon, String geliverId, String firstName, String lastName, String username, String countryName, String countryIso, String city, String cityCode, String district, Integer districtID, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price, BigDecimal shippingFee, Invoice invoice) {
         this.user = user;
         this.customerCoupon = customerCoupon;
         this.geliverId = geliverId;
@@ -144,6 +147,7 @@ public class Order {
         this.orderStatus = orderStatus;
         this.totalPrice = totalPrice;
         this.price = price;
+        this.shippingFee = shippingFee;
         this.invoice = invoice;
     }
 
@@ -404,5 +408,13 @@ public class Order {
 
     public void setRefundOrderItems(Set<OrderItem> refundOrderItems) {
         this.refundOrderItems = refundOrderItems;
+    }
+
+    public BigDecimal getShippingFee() {
+        return shippingFee;
+    }
+
+    public void setShippingFee(BigDecimal shippingFee) {
+        this.shippingFee = shippingFee;
     }
 }

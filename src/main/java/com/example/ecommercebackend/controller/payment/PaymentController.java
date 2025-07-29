@@ -52,4 +52,9 @@ public class PaymentController {
     public ResponseEntity<String> refund(@RequestBody(required = false) RefundCreateDto orderItemRefundDtos){
         return new ResponseEntity<>(paymentService.refund(orderItemRefundDtos),HttpStatus.OK);
     }
+
+    @GetMapping("/max-refund")
+    public ResponseEntity<BigDecimal> maxRefund(@RequestBody(required = false) RefundCreateDto orderItemRefundDtos){
+        return new ResponseEntity<>(paymentService.maxRefund(orderItemRefundDtos),HttpStatus.OK);
+    }
 }
