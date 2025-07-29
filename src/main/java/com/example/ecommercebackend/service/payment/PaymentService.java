@@ -245,16 +245,42 @@ Kuruş farkı toleransı aşan geçersiz istek
         BigDecimal calculatedRefundAmount = BigDecimal.ZERO;
 
         for (OrderItemRefundDto refundDto : orderItemRefund.getOrderItemRefundDtos()) {
-            // Siparişte böyle bir item var mı?
+
+            Integer refundOrderItemId = refundDto.orderItemId();
+            Integer refundProductId = refundDto.productId();
+
+
+
+            System.out.println("İade talebi kontrol ediliyor -> OrderItemId: " + refundOrderItemId + ", ProductId: " + refundProductId);
+
             OrderItem matchingOrderItem = orderItems.stream()
+                    .peek(orderItem -> {
+                        System.out.println("Kontrol edilen OrderItem -> Id: " + orderItem.getId()
+                                + ", ProductId: " + orderItem.getProduct().getId());
+                    })
                     .filter(orderItem ->
-                            orderItem.getId() == refundDto.orderItemId() &&
-                                    orderItem.getProduct().getId() == refundDto.productId())
+                            orderItem.getId().equals(refundOrderItemId) &&
+                                    orderItem.getProduct().getId() == refundProductId)
                     .findFirst()
-                    .orElseThrow(() -> new BadRequestException(
-                            "Siparişte bu ürün kalemi bulunmamaktadır! OrderItemId: " +
-                                    refundDto.orderItemId() + ", ProductId: " + refundDto.productId()
-                    ));
+                    .orElseThrow(() -> {
+                        System.err.println("UYARI: Eşleşen OrderItem bulunamadı! İstenen -> OrderItemId: "
+                                + refundOrderItemId + ", ProductId: " + refundProductId);
+                        return new BadRequestException(
+                                "Siparişte bu ürün kalemi bulunmamaktadır! OrderItemId: " +
+                                        refundOrderItemId + ", ProductId: " + refundProductId
+                        );
+                    });
+
+            System.out.println("Eşleşen OrderItem bulundu -> Id: " + matchingOrderItem.getId()
+                    + ", ProductId: " + matchingOrderItem.getProduct().getId());
+
+
+
+
+
+
+
+
 
             BigDecimal unitPrice = matchingOrderItem.getPrice()
                     .divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()), 2, RoundingMode.HALF_UP);
