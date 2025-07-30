@@ -133,6 +133,7 @@ public class OrderBuilder {
                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                                 : null
                 ),
+                order.getShippingFee(),
                 order.getCreatedAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         );
         InvoiceResponseDto invoiceResponseDto = new InvoiceResponseDto(

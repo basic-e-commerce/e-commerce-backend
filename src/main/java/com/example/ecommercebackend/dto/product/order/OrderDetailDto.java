@@ -20,9 +20,10 @@ public class OrderDetailDto {
     private int installment;
     private InvoiceResponseDto invoiceResponseDto;
     private OrderStatusResponse orderStatusResponse;
+    private BigDecimal shippingFee;
     private String createdAt;
 
-    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, List<OrderItemResponseDto> refundItemResponseDtos, int installment, OrderStatusResponse orderStatusResponse, String createdAt) {
+    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, List<OrderItemResponseDto> refundItemResponseDtos, int installment, OrderStatusResponse orderStatusResponse, BigDecimal shippingFee, String createdAt) {
         this.id = id;
         this.orderCode = orderCode;
         this.firstName = firstName;
@@ -34,6 +35,7 @@ public class OrderDetailDto {
         this.refundItemResponseDtos = refundItemResponseDtos;
         this.installment = installment;
         this.orderStatusResponse = orderStatusResponse;
+        this.shippingFee = shippingFee;
         this.createdAt = createdAt;
     }
 
@@ -139,5 +141,13 @@ public class OrderDetailDto {
 
     public void setRefundItemResponseDtos(List<OrderItemResponseDto> refundItemResponseDtos) {
         this.refundItemResponseDtos = refundItemResponseDtos;
+    }
+
+    public BigDecimal getShippingFee() {
+        return shippingFee;
+    }
+
+    public void setShippingFee(BigDecimal shippingFee) {
+        this.shippingFee = shippingFee;
     }
 }
