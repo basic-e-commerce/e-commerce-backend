@@ -125,8 +125,40 @@ public class OrderBuilder {
                                                 : null,
                                         x.getCanceled()
                                 )).toList(),
-                        order.getOrderStatus() != null && order.getOrderStatus().getColor() != null
-                                ? order.getOrderStatus().getColor().name() : null,
+                        Optional.ofNullable(order.getOrderStatus())
+                                .map(OrderStatus::getOrderRefundPackages)
+                                .orElse(Collections.emptyList())
+                                .stream()
+                                .sorted(Comparator.comparing(OrderPackage::getCreateAt))
+                                .map(x -> new OrderPackageResponseDto(
+                                        x.getId(),
+                                        Optional.ofNullable(x.getOrderItems())
+                                                .orElse(Collections.emptySet())
+                                                .stream()
+                                                .map(y -> new OrderItemResponseDto(
+                                                        y.getProduct() != null ? y.getProduct().getId() : null,
+                                                        y.getProduct() != null ? y.getProduct().getProductName() : null,
+                                                        y.getQuantity() != null ? y.getQuantity() : null,
+                                                        y.getProduct() != null && y.getProduct().getCoverImage() != null
+                                                                ? y.getProduct().getCoverImage().getUrl() : null,
+                                                        y.getPrice() != null ? y.getPrice() : null,
+                                                        y.getDiscountPrice() != null ? y.getDiscountPrice() : null,
+                                                        y.getId() != null ? y.getId() : null
+                                                )).collect(Collectors.toSet()),
+                                        x.getShipmentId(),
+                                        x.getStatusCode() != null ? x.getStatusCode().name() : null,
+                                        x.getCargoId(),
+                                        x.getCargoCompany() != null ? x.getCargoCompany().name() : null,
+                                        x.getCargoStatus() != null ? x.getCargoStatus().getValue() : null,
+                                        x.getLocation(),
+                                        x.getUpdateAt() != null
+                                                ? x.getUpdateAt()
+                                                .atZone(ZoneId.of("Europe/Istanbul"))
+                                                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                                                : null,
+                                        x.getCanceled()
+                                )).toList(),
+                        order.getOrderStatus() != null && order.getOrderStatus().getColor() != null ? order.getOrderStatus().getColor().name() : null,
                         order.getOrderStatus() != null && order.getOrderStatus().getCreatedAt() != null
                                 ? order.getOrderStatus().getCreatedAt()
                                 .atZone(ZoneId.of("Europe/Istanbul"))

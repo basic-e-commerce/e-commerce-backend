@@ -6,13 +6,15 @@ public class OrderStatusResponse {
     private Integer id;
     private String status;
     private List<OrderPackageResponseDto> orderPackages;
+    private List<OrderPackageResponseDto> refundOrderPackages;
     private String color;
     private String createdAt;
 
-    public OrderStatusResponse(Integer id, String status, List<OrderPackageResponseDto> orderPackages, String color, String createdAt) {
+    public OrderStatusResponse(Integer id, String status, List<OrderPackageResponseDto> orderPackages, List<OrderPackageResponseDto> refundOrderPackages, String color, String createdAt) {
         this.id = id;
         this.status = status;
         this.orderPackages = orderPackages;
+        this.refundOrderPackages = refundOrderPackages;
         this.color = color;
         this.createdAt = createdAt;
     }
@@ -55,5 +57,13 @@ public class OrderStatusResponse {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<OrderPackageResponseDto> getRefundOrderPackages() {
+        return refundOrderPackages;
+    }
+
+    public void setRefundOrderPackages(List<OrderPackageResponseDto> refundOrderPackages) {
+        this.refundOrderPackages = refundOrderPackages;
     }
 }
