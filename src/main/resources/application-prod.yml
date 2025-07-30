@@ -1,6 +1,10 @@
 spring:
   application:
     name: e-commerce-basic
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 10MB
 
 
   # http://localhost:8080/oauth2/authorization/google
