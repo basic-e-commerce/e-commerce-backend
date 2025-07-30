@@ -720,18 +720,23 @@ public class OrderService {
     }
 
     private Specification<Order> filterOrders(OrderStatus.Status status, OrderPackage.StatusCode statusCode, Payment.PaymentStatus paymentStatus) {
-        if (!(status == null)){
-            System.out.println("status: "+status);
-            System.out.println("statusCode: "+statusCode);
-            return Specification.where(hasStatus(status).and(hasStatusCode(statusCode)).and(hasPaymentStatus(paymentStatus)));
+        Specification<Order> spec = Specification.where(null); // boş başla
 
-        }else{
-            System.out.println("status: "+status);
-            System.out.println("statusCode: "+statusCode);
-            return Specification.where(hasStatus(null));
-
+        if (status != null) {
+            spec = spec.and(hasStatus(status));
         }
+
+        if (statusCode != null) {
+            spec = spec.and(hasStatusCode(statusCode));
+        }
+
+        if (paymentStatus != null) {
+            spec = spec.and(hasPaymentStatus(paymentStatus));
+        }
+
+        return spec;
     }
+
 
 
 
