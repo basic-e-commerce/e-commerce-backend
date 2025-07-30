@@ -720,22 +720,29 @@ public class OrderService {
     }
 
     private Specification<Order> filterOrders(OrderStatus.Status status, OrderPackage.StatusCode statusCode, Payment.PaymentStatus paymentStatus) {
-        Specification<Order> spec = Specification.where(null); // boş başla
+        Specification<Order> spec = Specification.where(null);
 
         if (status != null) {
             spec = spec.and(hasStatus(status));
+        } else {
+            spec = spec.and(hasNullStatus());
         }
 
         if (statusCode != null) {
             spec = spec.and(hasStatusCode(statusCode));
+        } else {
+            spec = spec.and(hasNullStatusCode());
         }
 
         if (paymentStatus != null) {
             spec = spec.and(hasPaymentStatus(paymentStatus));
+        } else {
+            spec = spec.and(hasNullPaymentStatus());
         }
 
         return spec;
     }
+
 
 
 
@@ -819,6 +826,30 @@ public class OrderService {
             return cb.equal(packageJoin.get("statusCode"), statusCode);
         };
     }
+
+    private Specification<Order> hasNullStatus() {
+        return (root, query, cb) -> {
+            Join<Order, OrderStatus> statusJoin = root.join("orderStatus", JoinType.LEFT);
+            return cb.isNull(statusJoin.get("status"));
+        };
+    }
+
+    private Specification<Order> hasNullStatusCode() {
+        return (root, query, cb) -> {
+            Join<Order, OrderStatus> statusJoin = root.join("orderStatus", JoinType.LEFT);
+            // OrderStatus'tan OrderPackage ilişkisi
+            SetJoin<OrderStatus, OrderPackage> packages = statusJoin.joinSet("orderPackages", JoinType.LEFT);
+            return cb.isNull(packages.get("statusCode"));
+        };
+    }
+
+    private Specification<Order> hasNullPaymentStatus() {
+        return (root, query, cb) -> {
+            Join<Order, Payment> paymentJoin = root.join("payments", JoinType.LEFT);
+            return cb.isNull(paymentJoin.get("paymentStatus"));
+        };
+    }
+
 
 
 
