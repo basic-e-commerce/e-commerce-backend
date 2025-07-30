@@ -10,6 +10,7 @@ import com.example.ecommercebackend.dto.product.products.productTemplate.CargoOf
 import com.example.ecommercebackend.dto.product.shipping.*;
 import com.example.ecommercebackend.dto.user.address.AddressOrderCreateDto;
 import com.example.ecommercebackend.entity.merchant.Merchant;
+import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.card.Card;
 import com.example.ecommercebackend.entity.product.card.CardItem;
 import com.example.ecommercebackend.entity.product.invoice.CorporateInvoice;
@@ -709,7 +710,7 @@ public class OrderService {
         }
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        return orderRepository.findAll(filterOrders(orderFilterRequest.getPaymentStatus(),orderFilterRequest.getStatusCode()),pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
+        return orderRepository.findAll(filterOrders(orderFilterRequest.getOrderStatus(),orderFilterRequest.getStatusCode(),orderFilterRequest.getPaymentStatus()),pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
     }
 
     public List<Order> filterGuestSuccessOrder(User user){
@@ -718,11 +719,11 @@ public class OrderService {
         return orderRepository.findAll(specification,sort);
     }
 
-    private Specification<Order> filterOrders(String status, OrderPackage.StatusCode statusCode) {
-        if (!(status == null || status.isEmpty())){
+    private Specification<Order> filterOrders(OrderStatus.Status status, OrderPackage.StatusCode statusCode, Payment.PaymentStatus paymentStatus) {
+        if (!(status == null)){
             System.out.println("status: "+status);
             System.out.println("statusCode: "+statusCode);
-            return Specification.where(hasStatus(OrderStatus.Status.valueOf(status)).and(hasStatusCode(statusCode)));
+            return Specification.where(hasStatus(status).and(hasStatusCode(statusCode)).and(hasPaymentStatus(paymentStatus)));
 
         }else{
             System.out.println("status: "+status);
@@ -731,6 +732,8 @@ public class OrderService {
 
         }
     }
+
+
 
     private Specification<Order> filterGuestSuccessOrders(User user) {
         return Specification.where(hasStatus(OrderStatus.Status.APPROVED)).and(hasUser(user));
@@ -776,6 +779,17 @@ public class OrderService {
         Specification<Order> where = Specification.where(hasStatus(OrderStatus.Status.APPROVED).and(hasDateBetween(startDate, endDate)));
         return orderRepository.findAll(where, sort);
     }
+
+    private Specification<Order> hasPaymentStatus(Payment.PaymentStatus paymentStatus) {
+        return (root, query, cb) -> {
+            if (paymentStatus == null) {
+                return cb.conjunction(); // filtre yoksa tüm kayıtlar
+            }
+            Join<Order, Payment> paymentJoin = root.join("payments", JoinType.INNER);
+            return cb.equal(paymentJoin.get("paymentStatus"), paymentStatus);
+        };
+    }
+
 
     public Specification<Order> hasStatus(OrderStatus.Status status) {
         return (root, query, cb) -> {
