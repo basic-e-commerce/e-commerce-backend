@@ -838,7 +838,7 @@ public class OrderService {
         return (root, query, cb) -> {
             Join<Order, OrderStatus> statusJoin = root.join("orderStatus", JoinType.LEFT);
             // OrderStatus'tan OrderPackage ilişkisi
-            SetJoin<OrderStatus, OrderPackage> packages = statusJoin.joinSet("orderPackages", JoinType.LEFT);
+            ListJoin<OrderStatus, OrderPackage> packages = statusJoin.joinList("orderPackages", JoinType.LEFT);
             return cb.isNull(packages.get("statusCode"));
         };
     }
