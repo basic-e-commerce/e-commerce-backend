@@ -1189,6 +1189,10 @@ public class OrderService {
                 refundOrderItem.setProduct(matchingOrderItem.getProduct());
                 refundOrderItem.setQuantity(refundDto.quantity());
                 refundOrderItem.setRefund(true);
+                refundOrderItem.setPrice(matchingOrderItem.getPrice()
+                        .divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(refundDto.quantity())));
+                refundOrderItem.setDiscountPrice(matchingOrderItem.getDiscountPrice()
+                        .divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(refundDto.quantity())));
 
                 refundItems.add(refundOrderItem);
             }
