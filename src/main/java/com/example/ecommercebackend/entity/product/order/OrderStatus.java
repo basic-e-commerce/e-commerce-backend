@@ -20,10 +20,10 @@ public class OrderStatus {
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
 
-    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<OrderPackage> orderPackages = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<OrderPackage> orderRefundPackages = new ArrayList<>();
 
     @Column(name = "receipt_address_id")
