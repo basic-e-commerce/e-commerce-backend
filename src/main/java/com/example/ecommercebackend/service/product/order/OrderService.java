@@ -2,7 +2,9 @@ package com.example.ecommercebackend.service.product.order;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.order.OrderBuilder;
+import com.example.ecommercebackend.dto.payment.refund.RefundCreateDto;
 import com.example.ecommercebackend.dto.product.order.*;
+import com.example.ecommercebackend.dto.product.orderitem.OrderItemRefundDto;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
 import com.example.ecommercebackend.dto.product.products.productTemplate.CargoOfferDesiRequestAdminDto;
 import com.example.ecommercebackend.dto.product.shipping.*;
@@ -21,6 +23,7 @@ import com.example.ecommercebackend.entity.product.products.Coupon;
 import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.products.ProductTemplate;
+import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.entity.user.Guest;
 import com.example.ecommercebackend.entity.user.User;
@@ -685,45 +688,7 @@ public class OrderService {
         return new TotalProcessDto(totalPrice,savedOrderItems,kargoPrice);
     }
 
-    public void isCouponValidation(Coupon coupon,Set<OrderItem> savedOrderItems, Customer customer) {
-        if (!coupon.getActive())
-            throw new BadRequestException("Kullanılan Kupon Aktif değildir!");
 
-        System.out.println("coupon.getTimesUsed():"+coupon.getTimesUsed());
-        System.out.println("coupon.getTotalUsageLimit(): "+coupon.getTotalUsageLimit());
-        if (coupon.getTimesUsed() >= coupon.getTotalUsageLimit())
-            throw new BadRequestException("Kuponun Kullanım Limiti Dolmuştur");
-
-        Instant now = Instant.now();
-
-        if (coupon.getCouponStartDate() != null && now.isBefore(coupon.getCouponStartDate())) {
-            throw new BadRequestException("Kupon henüz geçerli değildir!");
-        }
-
-        if (coupon.getCouponEndDate() != null && now.isAfter(coupon.getCouponEndDate())) {
-            throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
-        }
-        BigDecimal totalValue = BigDecimal.valueOf(0);
-        System.out.println("TOTAL VALUE: "+totalValue);
-        System.out.println("size: "+savedOrderItems.size());
-        for (OrderItem orderItem: savedOrderItems) {
-            System.out.println(orderItem.getPrice());
-            totalValue = totalValue.add(orderItem.getPrice());
-            System.out.println("TOTAL VALUE: "+totalValue);
-        }
-        if (totalValue.compareTo(coupon.getMinOrderAmountLimit()) < 0) {
-            throw new BadRequestException("Sipariş tutarı kuponun minimum limiti olan " + coupon.getMinOrderAmountLimit() + " TL'den küçük.");
-        }
-
-        if (customer != null) {
-            if (coupon.getCustomerAssigned()){
-                if (!coupon.getCustomers().contains(customer)){
-                    throw new BadRequestException("Kullanıcı bu kupona sahip değildir!");
-                }
-            }
-        }
-
-    }
 
     public Order findByOrderCode(String orderCode) {
         return orderRepository.findByOrderCode(orderCode).orElseThrow(()-> new NotFoundException("Order "+ ExceptionMessage.NOT_FOUND.getMessage()));
@@ -1157,9 +1122,146 @@ public class OrderService {
         );
     }
 
+    public String cargoRefund(String orderCode, RefundCreateDto refundCreateDto) {
+        Order order = findByOrderCode(orderCode);
+        Set<OrderItem> orderItems = order.getOrderItems();
+        Set<OrderItem> refundOrderItems = order.getRefundOrderItems();
+        Set<OrderItem> refundItems = new HashSet<>();
+        OrderPackage orderPackage = order.getOrderStatus().getOrderPackages().get(0);
+        Merchant merchant = merchantService.getMerchant();
 
-    public String cargoCancel(Integer orderPackageId) {
-        OrderPackage orderPackage = orderPackageService.findById(orderPackageId);
+        for (OrderItemRefundDto refundDto : refundCreateDto.getOrderItemRefundDtos()) {
+
+            Integer refundOrderItemId = refundDto.orderItemId();
+            int refundProductId = refundDto.productId();
+
+            System.out.println("İade talebi kontrol ediliyor -> OrderItemId: " + refundOrderItemId + ", ProductId: " + refundProductId);
+
+            OrderItem matchingOrderItem = null;
+
+            for (OrderItem orderItem : orderItems) {
+                System.out.println("Kontrol edilen OrderItem -> Id: " + orderItem.getId()
+                        + ", ProductId: " + orderItem.getProduct().getId());
+
+                if (orderItem.getId().equals(refundOrderItemId) &&
+                        orderItem.getProduct().getId() == refundProductId) {
+                    matchingOrderItem = orderItem;
+                    break;
+                }
+            }
+
+            OrderItem matchingRefundOrderItem = null;
+
+            for (OrderItem refundOrderItem : refundOrderItems) {
+                System.out.println("Kontrol edilen OrderItem -> Id: " + refundOrderItem.getId()
+                        + ", ProductId: " + refundOrderItem.getProduct().getId());
+
+                if (refundOrderItem.getId().equals(refundOrderItemId) &&
+                        refundOrderItem.getProduct().getId() == refundProductId) {
+                    matchingRefundOrderItem = refundOrderItem;
+                    break;
+                }
+            }
+
+            if (matchingOrderItem == null) {
+                System.err.println("UYARI: Eşleşen OrderItem bulunamadı! İstenen -> OrderItemId: "
+                        + refundOrderItemId + ", ProductId: " + refundProductId);
+                throw new BadRequestException(
+                        "Siparişte bu ürün kalemi bulunmamaktadır! OrderItemId: " +
+                                refundOrderItemId + ", ProductId: " + refundProductId
+                );
+            }else{
+                if (matchingRefundOrderItem != null) {
+                    if ((matchingOrderItem.getQuantity()-refundDto.quantity()-matchingRefundOrderItem.getQuantity()) < 0)
+                        throw new BadRequestException("Siparişte verilen miktardan fazla iade edemezsiniz!");
+                }
+            }
+
+            System.out.println("Eşleşen OrderItem bulundu -> Id: " + matchingOrderItem.getId()
+                    + ", ProductId: " + matchingOrderItem.getProduct().getId());
+
+            if (matchingRefundOrderItem != null) {
+                matchingRefundOrderItem.setQuantity(matchingRefundOrderItem.getQuantity()+refundDto.quantity());
+                refundItems.add(matchingRefundOrderItem);
+            }else{
+                OrderItem refundOrderItem = new OrderItem();
+                refundOrderItem.setProduct(matchingOrderItem.getProduct());
+                refundOrderItem.setQuantity(refundDto.quantity());
+                refundOrderItem.setRefund(true);
+
+                refundItems.add(refundOrderItem);
+            }
+
+        }
+        if (refundItems.isEmpty()) {
+            throw new BadRequestException("İade Edilecek ürün bulunamamıştır");
+        }
+
+        Address defaultSendingAddress = merchant.getDefaultSendingAddress();
+        CargoRefundDto cargoRefundDto = new CargoRefundDto(
+            true,
+                refundCreateDto.getWillAccept(),
+                orderPackage.getCargoCompany(),
+                1,
+                new ShippingSenderAddress(
+                      defaultSendingAddress.getShortName(),
+                      defaultSendingAddress.getPhoneNo(),
+                      defaultSendingAddress.getAddressLine1(),
+                      defaultSendingAddress.getCountry().getIso(),
+                      defaultSendingAddress.getCity().getCityCode(),
+                      defaultSendingAddress.getDistrict().getName()
+                )
+        );
+
+        CargoBuyDetailDto cargoRefund = shippingCargoService.getCargoRefund(orderPackage.getShipmentId(), cargoRefundDto);
+
+
+        boolean allProductsFullyRefunded = true;
+
+        for (OrderItem orderItem : order.getOrderItems()) {
+            boolean matched = false;
+            for (OrderItem refundOrderItem : order.getRefundOrderItems()) {
+                if (Objects.equals(refundOrderItem.getProduct().getId(), orderItem.getProduct().getId())) {
+                    if (Objects.equals(refundOrderItem.getQuantity(), orderItem.getQuantity())) {
+                        matched = true;
+                        break;
+                    }
+                }
+            }
+            if (!matched) {
+                allProductsFullyRefunded = false;
+                break;
+            }
+        }
+
+        if (allProductsFullyRefunded){
+            order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
+            order.getOrderStatus().setColor(OrderStatus.Color.BLUE);
+        }else{
+            order.getOrderStatus().setStatus(OrderStatus.Status.PARTIAL_REFUNDED);
+            order.getOrderStatus().setColor(OrderStatus.Color.TURQUISE);
+        }
+
+        order.setRefundOrderItems(refundItems);
+        orderRepository.save(order);
+
+        return "Verilen siparişler başarıyla iade eildi!";
+
+    }
+
+
+    public String cargoCancel(String orderCode,Integer orderPackageId) {
+        Order order = findByOrderCode(orderCode);
+        OrderPackage orderPackage = order.getOrderStatus().getOrderPackages().stream().filter(x-> orderPackageId == x.getId()).findFirst().orElse(null);
+        if (orderPackage == null) {
+            throw new BadRequestException("Siparişin kargosu bulunamadı!");
+        }
+
+        order.getOrderStatus().setColor(OrderStatus.Color.RED);
+        order.getOrderStatus().setStatus(OrderStatus.Status.CANCEL);
+        order.getOrderStatus().setUpdatedAt(Instant.now());
+        orderRepository.save(order);
+
         OfferCancelDto offerCancelDto = shippingCargoService.offerCancel(orderPackage.getShipmentId());
         orderPackage.setUpdateAt(Instant.now());
         orderPackage.setCanceled(true);

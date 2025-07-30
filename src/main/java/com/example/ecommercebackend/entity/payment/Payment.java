@@ -216,6 +216,6 @@ public class Payment {
     }
 
     public enum PaymentStatus {
-        SUCCESS,PROCESS,FAILED,REFUNDED,PARTIAL_REFUNDED;
+        SUCCESS,PROCESS,FAILED,REFUNDED,PARTIAL_REFUNDED, CANCEL;
     }
 }

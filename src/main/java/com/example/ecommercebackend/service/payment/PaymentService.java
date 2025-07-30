@@ -13,6 +13,7 @@ import com.example.ecommercebackend.entity.product.invoice.Invoice;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
+import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.products.Sell;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
@@ -25,6 +26,7 @@ import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.example.ecommercebackend.service.product.card.CardService;
 import com.example.ecommercebackend.service.product.order.OrderService;
 import com.example.ecommercebackend.service.product.products.SellService;
+import com.iyzipay.model.Cancel;
 import com.iyzipay.model.Refund;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -247,9 +249,7 @@ Kuruş farkı toleransı aşan geçersiz istek
         for (OrderItemRefundDto refundDto : orderItemRefund.getOrderItemRefundDtos()) {
 
             Integer refundOrderItemId = refundDto.orderItemId();
-            Integer refundProductId = refundDto.productId();
-
-
+            int refundProductId = refundDto.productId();
 
             System.out.println("İade talebi kontrol ediliyor -> OrderItemId: " + refundOrderItemId + ", ProductId: " + refundProductId);
 
@@ -273,12 +273,6 @@ Kuruş farkı toleransı aşan geçersiz istek
 
             System.out.println("Eşleşen OrderItem bulundu -> Id: " + matchingOrderItem.getId()
                     + ", ProductId: " + matchingOrderItem.getProduct().getId());
-
-
-
-
-
-
 
 
             BigDecimal unitPrice = matchingOrderItem.getPrice()
@@ -327,20 +321,78 @@ Kuruş farkı toleransı aşan geçersiz istek
 
         Payment payment = order.getPayments();
         PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
-
         Refund refund = paymentStrategy.refund(payment.getPaymentId(), orderItemRefund.getRefundAmount());
 
         order.setRefundPrice(order.getRefundPrice().add(refund.getPrice()));
-        if (order.getCustomerPrice().subtract(order.getRefundPrice()).abs().compareTo(tolerance) <= 0) {
+
+
+//        if (order.getCustomerPrice().subtract(order.getRefundPrice()).abs().compareTo(tolerance) <= 0) {
+//            order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
+//            order.getOrderStatus().setColor(OrderStatus.Color.BLUE);
+//            order.getPayments().setPaymentStatus(Payment.PaymentStatus.REFUNDED);
+//        }else{
+//            order.getOrderStatus().setStatus(OrderStatus.Status.PARTIAL_REFUNDED);
+//            order.getOrderStatus().setColor(OrderStatus.Color.TURQUISE);
+//            order.getPayments().setPaymentStatus(Payment.PaymentStatus.PARTIAL_REFUNDED);
+//
+//        }
+//        Boolean flag = true;
+//
+//        for (OrderItem orderItem : orderItems) {
+//            for (OrderItem refundOrderItem : order.getRefundOrderItems()) {
+//                if(refundOrderItem.getProduct().getId() == orderItem.getProduct().getId()){
+//                    if (refundOrderItem.getQuantity() == orderItem.getQuantity()) {
+//                        flag = true;
+//                    }else{
+//                        flag = false;
+//                    }
+//                }
+//            }
+//        }
+//
+//        if (!flag) {
+//            order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
+//            order.getOrderStatus().setColor(OrderStatus.Color.BLUE);
+//            order.getPayments().setPaymentStatus(Payment.PaymentStatus.REFUNDED);
+//        }
+
+        boolean allProductsFullyRefunded = true;
+
+        for (OrderItem orderItem : order.getOrderItems()) {
+            boolean matched = false;
+            for (OrderItem refundOrderItem : order.getRefundOrderItems()) {
+                if (Objects.equals(refundOrderItem.getProduct().getId(), orderItem.getProduct().getId())) {
+                    if (Objects.equals(refundOrderItem.getQuantity(), orderItem.getQuantity())) {
+                        matched = true;
+                        break;
+                    }
+                }
+            }
+            if (!matched) {
+                allProductsFullyRefunded = false;
+                break;
+            }
+        }
+
+        BigDecimal difference = order.getCustomerPrice().subtract(order.getRefundPrice()).abs();
+
+        if (allProductsFullyRefunded) {
+            // Ürünlerin hepsi iade edilmiş, tutar farkı varsa bile önemli değil
             order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
             order.getOrderStatus().setColor(OrderStatus.Color.BLUE);
             order.getPayments().setPaymentStatus(Payment.PaymentStatus.REFUNDED);
-        }else{
+        } else if (difference.compareTo(tolerance) <= 0) {
+            // Tutar tamamen iade edilmiş ama ürünler eksik iade edilmiş
+            order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
+            order.getOrderStatus().setColor(OrderStatus.Color.BLUE);
+            order.getPayments().setPaymentStatus(Payment.PaymentStatus.REFUNDED);
+        } else {
+            // Hem ürün hem para kısmı eksik iade edilmiş
             order.getOrderStatus().setStatus(OrderStatus.Status.PARTIAL_REFUNDED);
             order.getOrderStatus().setColor(OrderStatus.Color.TURQUISE);
             order.getPayments().setPaymentStatus(Payment.PaymentStatus.PARTIAL_REFUNDED);
-
         }
+
         order.setRefundOrderItems(refundItems);
         Order savedOrder = orderService.save(order);
 
@@ -360,85 +412,192 @@ Kuruş farkı toleransı aşan geçersiz istek
         return "İade başarıyla yapıldı: " + orderItemRefund.getRefundAmount();
     }
 
+    /*
+
+    public String refund(RefundCreateDto orderItemRefund) {
+        Order order = orderService.findByOrderCode(orderItemRefund.getOrderCode());
+        Set<OrderItem> orderItems = order.getOrderItems();
+        Set<OrderItem> refundItems = new HashSet<>();
+
+        BigDecimal calculatedRefundAmount = BigDecimal.ZERO;
+
+        for (OrderItemRefundDto refundDto : orderItemRefund.getOrderItemRefundDtos()) {
+
+            Integer refundOrderItemId = refundDto.orderItemId();
+            int refundProductId = refundDto.productId();
+
+            System.out.println("İade talebi kontrol ediliyor -> OrderItemId: " + refundOrderItemId + ", ProductId: " + refundProductId);
+
+            OrderItem matchingOrderItem = orderItems.stream()
+                    .peek(orderItem -> {
+                        System.out.println("Kontrol edilen OrderItem -> Id: " + orderItem.getId()
+                                + ", ProductId: " + orderItem.getProduct().getId());
+                    })
+                    .filter(orderItem ->
+                            orderItem.getId().equals(refundOrderItemId) &&
+                                    orderItem.getProduct().getId() == refundProductId)
+                    .findFirst()
+                    .orElseThrow(() -> {
+                        System.err.println("UYARI: Eşleşen OrderItem bulunamadı! İstenen -> OrderItemId: "
+                                + refundOrderItemId + ", ProductId: " + refundProductId);
+                        return new BadRequestException(
+                                "Siparişte bu ürün kalemi bulunmamaktadır! OrderItemId: " +
+                                        refundOrderItemId + ", ProductId: " + refundProductId
+                        );
+                    });
+
+            System.out.println("Eşleşen OrderItem bulundu -> Id: " + matchingOrderItem.getId()
+                    + ", ProductId: " + matchingOrderItem.getProduct().getId());
 
 
+            BigDecimal unitPrice = matchingOrderItem.getPrice()
+                    .divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()), 2, RoundingMode.HALF_UP);
 
-//    public String refund(RefundCreateDto orderItemRefund){
-//        Order order = orderService.findByOrderCode(orderItemRefund.getOrderCode());
-//        Set<OrderItem> orderItems = order.getOrderItems();
-//        Set<OrderItem> refundItems = new HashSet<>();
-//
-//
-//        for (OrderItem orderItem : orderItems) {
-//            OrderItem current = null;
-//            OrderItemRefundDto currentRefundDto = null;
-//            System.out.println("orderItem: "+ orderItem.getId());
-//            for (OrderItemRefundDto orderItemRefundDto : orderItemRefund.getOrderItemRefundDtos()) {
-//
-//                System.out.println("orderItemRefundDtoproductId:"+orderItemRefundDto.productId());
-//                System.out.println("orderItemproductId:"+orderItem.getProduct().getId());
-//
-//                if (orderItemRefundDto.orderItemId() == orderItem.getId() && orderItemRefundDto.productId() == orderItem.getProduct().getId()){
-//                    System.out.println("idordrıtem:"+orderItem.getId());
-//                    System.out.println("orderItemRefundDtoproductId:"+orderItemRefundDto.productId());
-//                    System.out.println("orderItemproductId:"+orderItem.getProduct().getId());
-//                    current = orderItem;
-//                    currentRefundDto = orderItemRefundDto;
-//
-//                }
-//            }
-//            if (current != null){
-//                BigDecimal eachPriceProductOrderItem = current.getPrice().divide(BigDecimal.valueOf(current.getQuantity()));
-//                BigDecimal eachDiscountPriceProductOrderItem = current.getDiscountPrice().divide(BigDecimal.valueOf(current.getQuantity()));
-//
-//                OrderItem refundOrderItem = new OrderItem();
-//                refundOrderItem.setProduct(current.getProduct());
-//                refundOrderItem.setQuantity(currentRefundDto.quantity());
-//                refundOrderItem.setPrice(eachPriceProductOrderItem.multiply(BigDecimal.valueOf(currentRefundDto.quantity())));
-//                refundOrderItem.setDiscountPrice(eachDiscountPriceProductOrderItem.multiply(BigDecimal.valueOf(currentRefundDto.quantity())));
-//                refundOrderItem.setRefund(true);
-//
-//                // Geçerli ise işleme ekle
-//                refundItems.add(refundOrderItem);
-//            }else{
-//                throw new BadRequestException("Siparişte bu ürün kalemi bulunmamaktadır!");
-//            }
-//        }
-//
-//
-//        if (!refundItems.isEmpty()){
-//            BigDecimal maxRefundAmount = refundItems.stream()
-//                    .map(OrderItem::getDiscountPrice)
-//                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-//
-//            if (orderItemRefund.getRefundAmount().compareTo(maxRefundAmount) > 0) {
-//                throw new BadRequestException("Talep edilen iade tutarı, izin verilen maksimum iade tutarını aşıyor!");
-//            }
-//
-//            Payment payment = order.getPayments();
-//            PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
-//
-//            Refund refund = paymentStrategy.refund(payment.getPaymentId(), orderItemRefund.getRefundAmount());
-//            order.setRefundPrice(refund.getPrice());
-//            order.setRefundOrderItems(refundItems);
-//            order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
-//            order.getOrderStatus().setColor(OrderStatus.Color.BLUE);
-//            order.getPayments().setPaymentStatus(Payment.PaymentStatus.REFUNDED);
-//            Order save = orderService.save(order);
-//
-//            Set<Sell> refundSells = save.getRefundOrderItems().stream().map(x-> {
-//                return sellService.saveRefund(x,new OrderItemTansactionId(String.valueOf(x.getId()),refund.getPaymentTransactionId(),x.getPrice(),x.getDiscountPrice(),orderItemRefund.getOrderCode()));
-//            }).collect(Collectors.toSet());
-//            order.getPayments().setRefundSells(refundSells);
-//            orderService.save(order);
-//            return "İade başarıyla yapıldı: "+ orderItemRefund.getRefundAmount();
-//
-//        }else
-//            throw new BadRequestException("İade Edilecek ürün bulunamamıştır");
-//    }
+            BigDecimal unitDiscountPrice = matchingOrderItem.getDiscountPrice()
+                    .divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()), 2, RoundingMode.HALF_UP);
 
-    public void cancel(String orderCode){
+            BigDecimal refundPrice = unitPrice.multiply(BigDecimal.valueOf(refundDto.quantity())).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal refundDiscountPrice = unitDiscountPrice.multiply(BigDecimal.valueOf(refundDto.quantity())).setScale(2, RoundingMode.HALF_UP);
+            calculatedRefundAmount = calculatedRefundAmount.add(refundDiscountPrice);
+
+
+            OrderItem refundOrderItem = new OrderItem();
+            refundOrderItem.setProduct(matchingOrderItem.getProduct());
+            refundOrderItem.setQuantity(refundDto.quantity());
+            refundOrderItem.setPrice(refundPrice);
+            refundOrderItem.setDiscountPrice(refundDiscountPrice);
+            refundOrderItem.setRefund(true);
+
+            refundItems.add(refundOrderItem);
+        }
+
+        if (refundItems.isEmpty()) {
+            throw new BadRequestException("İade Edilecek ürün bulunamamıştır");
+        }
+
+        // Kargo ücreti de iade edilecekse ekle
+        if (orderItemRefund.getIncludeShippingFee()) {
+            BigDecimal shippingPrice = order.getShippingFee() != null ? order.getShippingFee() : BigDecimal.ZERO;
+            calculatedRefundAmount = calculatedRefundAmount.add(shippingPrice);
+        }
+
+        BigDecimal tolerance = new BigDecimal("0.01");
+        BigDecimal requestedRefund = orderItemRefund.getRefundAmount().setScale(2, RoundingMode.HALF_UP);
+
+        if (requestedRefund.subtract(calculatedRefundAmount).abs().compareTo(tolerance) > 0) {
+            throw new BadRequestException("Talep edilen iade tutarı, ürünlerin iade edilebilir toplamından farklı.");
+        }
+
+        // Toplam iade miktarının müşteri ödemesini aşmadığını kontrol et
+        BigDecimal newTotalRefunded = order.getRefundPrice().add(requestedRefund).setScale(2, RoundingMode.HALF_UP);
+        if (newTotalRefunded.compareTo(order.getCustomerPrice()) > 0) {
+            throw new BadRequestException("Toplam iade miktarı, müşterinin ödediği tutarı aşamaz.");
+        }
+
+        Payment payment = order.getPayments();
+        PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
+        Refund refund = paymentStrategy.refund(payment.getPaymentId(), orderItemRefund.getRefundAmount());
+        order.setRefundPrice(order.getRefundPrice().add(refund.getPrice()));
+
+        BigDecimal difference = order.getCustomerPrice().subtract(order.getRefundPrice()).abs();
+
+        if (difference.compareTo(tolerance) <= 0) {
+            order.getPayments().setPaymentStatus(Payment.PaymentStatus.REFUNDED);
+        } else {
+            order.getPayments().setPaymentStatus(Payment.PaymentStatus.PARTIAL_REFUNDED);
+        }
+
+        Order savedOrder = orderService.save(order);
+
+        Set<Sell> refundSells = savedOrder.getRefundOrderItems().stream()
+                .map(item -> sellService.saveRefund(item, new OrderItemTansactionId(
+                        String.valueOf(item.getId()),
+                        refund.getPaymentTransactionId(),
+                        item.getPrice(),
+                        item.getDiscountPrice(),
+                        orderItemRefund.getOrderCode()
+                )))
+                .collect(Collectors.toSet());
+
+        order.getPayments().setRefundSells(refundSells);
+        orderService.save(order);
+
+        return "İade başarıyla yapıldı: " + orderItemRefund.getRefundAmount();
+    }
+
+    public String cancel(String orderCode){
         Order order = orderService.findByOrderCode(orderCode);
+        if (order.getPayments().getPaymentStatus().equals(Payment.PaymentStatus.SUCCESS)) {
+
+            PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
+            Cancel cancel = paymentStrategy.cancel(order.getPayments().getPaymentId());
+
+            if (cancel != null) {
+                if (cancel.getStatus().equals("success")){
+                    order.getOrderStatus().setColor(OrderStatus.Color.RED);
+                    order.getPayments().setPaymentStatus(Payment.PaymentStatus.CANCEL);
+
+                    order.setRefundPrice(order.getCustomerPrice());
+                    Order save = orderService.save(order);
+
+                    Set<Sell> refundSells = save.getRefundOrderItems().stream()
+                            .map(item -> sellService.saveCancel(item, new OrderItemTansactionId(
+                                    String.valueOf(item.getId()),
+                                    cancel.getPaymentId(),
+                                    item.getPrice(),
+                                    item.getDiscountPrice(),
+                                    orderCode
+                            )))
+                            .collect(Collectors.toSet());
+
+                    order.getPayments().setRefundSells(refundSells);
+                    orderService.save(order);
+                }
+            }else
+                throw new BadRequestException("İptal isteği 3. parti ödeme sistemi tarafından kabul edilmemiştir.");
+
+            return "Sipariş iptali başarılıdır. " + cancel.getPrice();
+        }else{
+            throw new BadRequestException("Ödeme zaten başarısız!");
+        }
+    }
+     */
+
+    public String cancel(String orderCode){
+        Order order = orderService.findByOrderCode(orderCode);
+        if (order.getPayments().getPaymentStatus().equals(Payment.PaymentStatus.SUCCESS)) {
+
+            PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
+            Cancel cancel = paymentStrategy.cancel(order.getPayments().getPaymentId());
+
+            if (cancel != null) {
+                if (cancel.getStatus().equals("success")){
+                    order.getOrderStatus().setColor(OrderStatus.Color.RED);
+                    order.getPayments().setPaymentStatus(Payment.PaymentStatus.CANCEL);
+
+                    order.setRefundPrice(order.getCustomerPrice());
+                    Order save = orderService.save(order);
+
+                    Set<Sell> refundSells = save.getRefundOrderItems().stream()
+                            .map(item -> sellService.saveCancel(item, new OrderItemTansactionId(
+                                    String.valueOf(item.getId()),
+                                    cancel.getPaymentId(),
+                                    item.getPrice(),
+                                    item.getDiscountPrice(),
+                                    orderCode
+                            )))
+                            .collect(Collectors.toSet());
+
+                    order.getPayments().setRefundSells(refundSells);
+                    orderService.save(order);
+                }
+            }else
+                throw new BadRequestException("İptal isteği 3. parti ödeme sistemi tarafından kabul edilmemiştir.");
+
+            return "Sipariş iptali başarılıdır. " + cancel.getPrice();
+        }else{
+            throw new BadRequestException("Ödeme zaten başarısız!");
+        }
 
 
 

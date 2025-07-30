@@ -5,6 +5,7 @@ import com.example.ecommercebackend.entity.user.Address;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,6 +40,12 @@ public class Merchant {
     @ElementCollection
     @CollectionTable(name = "merchant_open_close_hours", joinColumns = @JoinColumn(name = "merchant_id"))
     private List<OpenCloseHour> openCloseHours = new LinkedList<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<CustomCargoContract> customCargoContracts = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private CustomCargoContract defaultCustomCargoContract;
 
     public Merchant(
             String name,
@@ -199,5 +206,21 @@ public class Merchant {
 
     public void setDefaultSendingAddress(Address defaultSendingAddress) {
         this.defaultSendingAddress = defaultSendingAddress;
+    }
+
+    public List<CustomCargoContract> getCustomCargoContracts() {
+        return customCargoContracts;
+    }
+
+    public void setCustomCargoContracts(List<CustomCargoContract> customCargoContracts) {
+        this.customCargoContracts = customCargoContracts;
+    }
+
+    public CustomCargoContract getDefaultCustomCargoContract() {
+        return defaultCustomCargoContract;
+    }
+
+    public void setDefaultCustomCargoContract(CustomCargoContract defaultCustomCargoContract) {
+        this.defaultCustomCargoContract = defaultCustomCargoContract;
     }
 }

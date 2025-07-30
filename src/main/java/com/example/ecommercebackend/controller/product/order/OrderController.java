@@ -79,8 +79,8 @@ public class OrderController {
     }
 
     @PostMapping("/cargo-cancel")
-    public ResponseEntity<String> cargoCancel(@RequestParam(required = false) Integer orderPackageId){
-        return new ResponseEntity<>(orderService.cargoCancel(orderPackageId),HttpStatus.OK);
+    public ResponseEntity<String> cargoCancel(@RequestParam(required = false) String orderCode,@RequestParam(required = false) Integer orderPackageId){
+        return new ResponseEntity<>(orderService.cargoCancel(orderCode,orderPackageId),HttpStatus.OK);
     }
 
     @PostMapping("/cargo-manuel")

@@ -11,12 +11,14 @@ public class RefundCreateDto {
     private BigDecimal refundAmount;
     private String orderCode;
     private Boolean isIncludeShippingFee;
+    private Boolean willAccept;
 
-    public RefundCreateDto(List<OrderItemRefundDto> orderItemRefundDtos, BigDecimal refundAmount, String orderCode, Boolean isIncludeShippingFee) {
+    public RefundCreateDto(List<OrderItemRefundDto> orderItemRefundDtos, BigDecimal refundAmount, String orderCode, Boolean isIncludeShippingFee, Boolean willAccept) {
         this.orderItemRefundDtos = orderItemRefundDtos;
         this.refundAmount = refundAmount;
         this.orderCode = orderCode;
         this.isIncludeShippingFee = isIncludeShippingFee;
+        this.willAccept = willAccept;
     }
 
     public List<OrderItemRefundDto> getOrderItemRefundDtos() {
@@ -49,5 +51,13 @@ public class RefundCreateDto {
 
     public void setIncludeShippingFee(Boolean includeShippingFee) {
         isIncludeShippingFee = includeShippingFee;
+    }
+
+    public Boolean getWillAccept() {
+        return willAccept;
+    }
+
+    public void setWillAccept(Boolean willAccept) {
+        this.willAccept = willAccept;
     }
 }

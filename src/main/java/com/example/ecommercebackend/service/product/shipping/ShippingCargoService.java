@@ -3,6 +3,8 @@ package com.example.ecommercebackend.service.product.shipping;
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.dto.product.shipping.*;
 import com.example.ecommercebackend.exception.BadRequestException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -319,6 +321,106 @@ public class ShippingCargoService {
             throw new BadRequestException("Silme yanıtı işlenemedi: " + e.getMessage());
         }
     }
+
+    public CustomCargoContractResponseDto createCustomCargoContract(CustomCargoContractRequestDto customCargoContractRequestDto){
+        WebClient webClient = webClientBuilder
+                .baseUrl("https://api.geliver.io/api/v1")
+                .build();
+
+        String responseJson = webClient.post()
+                .uri("/provideraccounts")
+                .header("Authorization", "Bearer " + apiKey)
+                .bodyValue(customCargoContractRequestDto)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, r ->
+                        r.bodyToMono(String.class).flatMap(resp -> {
+                            log.error("4xx Client Error: {}", resp);
+                            return Mono.error(new BadRequestException("API 4xx error: " + resp));
+                        })
+                )
+                .onStatus(HttpStatusCode::is5xxServerError, r ->
+                        r.bodyToMono(String.class).flatMap(resp -> {
+                            log.error("5xx Server Error: {}", resp);
+                            return Mono.error(new BadRequestException("API 5xx error: " + resp));
+                        })
+                )
+                .bodyToMono(String.class)
+                .block();
+
+        System.out.println(responseJson);
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(responseJson);
+
+            boolean result = root.path("result").asBoolean(false);
+
+            if (!result) {
+                throw new BadRequestException("Özel kargo anlaşması ekleme isteği başarısız.");
+            }
+
+            CustomCargoContractResponseDto customCargoContractResponseDto = mapper.readValue(responseJson, CustomCargoContractResponseDto.class);
+            log.info("Özel Kargo anlaşması yapıldı!");
+            return customCargoContractResponseDto;
+
+        } catch (JsonMappingException e) {
+            throw new BadRequestException("3. parti işlem hatası");
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("3. parti işlem hatası 2");
+        }
+    }
+
+    public CustomCargoContractResponseDto deleteCustomCargoContract(String providerAccountId){
+        WebClient webClient = webClientBuilder
+                .baseUrl("https://api.geliver.io/api/v1")
+                .build();
+
+        String responseJson = webClient.delete()
+                .uri("/provideraccounts/%s?isDeleteAccountConnection=true".formatted(providerAccountId))
+                .header("Authorization", "Bearer " + apiKey)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, r ->
+                        r.bodyToMono(String.class).flatMap(resp -> {
+                            log.error("4xx Client Error: {}", resp);
+                            return Mono.error(new BadRequestException("API 4xx error: " + resp));
+                        })
+                )
+                .onStatus(HttpStatusCode::is5xxServerError, r ->
+                        r.bodyToMono(String.class).flatMap(resp -> {
+                            log.error("5xx Server Error: {}", resp);
+                            return Mono.error(new BadRequestException("API 5xx error: " + resp));
+                        })
+                )
+                .bodyToMono(String.class)
+                .block();
+
+        System.out.println(responseJson);
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(responseJson);
+
+            boolean result = root.path("result").asBoolean(false);
+
+            if (!result) {
+                throw new BadRequestException("Anlaşmayı silme işlemi başarısız.");
+            }
+
+            CustomCargoContractResponseDto customCargoContractResponseDto = mapper.readValue(responseJson, CustomCargoContractResponseDto.class);
+            log.info("Özel Kargo anlaşması yapıldı!");
+            return customCargoContractResponseDto;
+
+        } catch (JsonMappingException e) {
+            throw new BadRequestException("3. parti işlem hatası");
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("3. parti işlem hatası 2");
+        }
+
+    }
+
+
+
+
 
 
     public ShipmentsListResponseDto listShipments(
