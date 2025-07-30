@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.controller.product.order;
 
 import com.example.ecommercebackend.anotation.RateLimit;
+import com.example.ecommercebackend.dto.payment.refund.RefundCreateDto;
 import com.example.ecommercebackend.dto.product.order.*;
 import com.example.ecommercebackend.dto.product.products.ProductFilterRequest;
 import com.example.ecommercebackend.dto.product.products.productTemplate.CargoOfferDesiRequestAdminDto;
@@ -87,6 +88,12 @@ public class OrderController {
     public ResponseEntity<OrderPackageResponseDto> manuelCargo(@RequestParam(required = false) String orderCode,@RequestBody(required = false) OrderPackageRequestDto orderPackageRequestDto){
         return new ResponseEntity<>(orderService.cargoManuel(orderCode,orderPackageRequestDto),HttpStatus.OK);
     }
+
+    @PostMapping("/cargo-refund")
+    public ResponseEntity<String> cargoRefund(@RequestParam(required = false) String orderCode,@RequestBody(required = false) RefundCreateDto refundCreateDto){
+        return new ResponseEntity<>(orderService.cargoRefund(orderCode,refundCreateDto),HttpStatus.OK);
+    }
+
 
 
 

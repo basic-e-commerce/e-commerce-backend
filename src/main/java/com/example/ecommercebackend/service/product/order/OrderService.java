@@ -1127,6 +1127,7 @@ public class OrderService {
         Set<OrderItem> orderItems = order.getOrderItems();
         Set<OrderItem> refundOrderItems = order.getRefundOrderItems();
         Set<OrderItem> refundItems = new HashSet<>();
+
         OrderPackage orderPackage = order.getOrderStatus().getOrderPackages().get(0);
         Merchant merchant = merchantService.getMerchant();
 
@@ -1193,6 +1194,7 @@ public class OrderService {
             }
 
         }
+
         if (refundItems.isEmpty()) {
             throw new BadRequestException("İade Edilecek ürün bulunamamıştır");
         }
@@ -1213,14 +1215,43 @@ public class OrderService {
                 )
         );
 
-        CargoBuyDetailDto cargoRefund = shippingCargoService.getCargoRefund(orderPackage.getShipmentId(), cargoRefundDto);
+        order.setRefundOrderItems(refundItems);
+        Order saveOrder = orderRepository.save(order);
 
+        CargoBuyDetailDto cargoRefund = shippingCargoService.getCargoRefund(orderPackage.getShipmentId(), cargoRefundDto);
+        OrderPackage refundOrderPackage = new OrderPackage();
+        refundOrderPackage.setLength(orderPackage.getLength());
+        refundOrderPackage.setWeight(orderPackage.getWeight());
+        refundOrderPackage.setWidth(orderPackage.getWidth());
+        refundOrderPackage.setHeight(orderPackage.getHeight());
+        refundOrderPackage.setDistanceUnit(orderPackage.getDistanceUnit());
+        refundOrderPackage.setMassUnit(orderPackage.getMassUnit());
+        refundOrderPackage.setStatusCode(OrderPackage.StatusCode.PRE_TRANSIT);
+        refundOrderPackage.setCargoCompany(orderPackage.getCargoCompany());
+        refundOrderPackage.setCargoStatus(OrderPackage.CargoStatus.information_received);
+        refundOrderPackage.setProductPaymentOnDelivery(orderPackage.getProductPaymentOnDelivery());
+        refundOrderPackage.setCreateAt(Instant.now());
+        refundOrderPackage.setUpdateAt(Instant.now());
+
+        refundOrderPackage.setShipmentId(cargoRefund.getData().getShipment().getId());
+        Set<OrderItem> refundOrderItemed = new HashSet<>(saveOrder.getRefundOrderItems());
+        refundOrderPackage.setOrderItems(refundOrderItemed);
+        refundOrderPackage.setResponsiveLabelURL(cargoRefund.getData().getShipment().getResponsiveLabelURL());
+        refundOrderPackage.setCargoId(cargoRefund.getData().getShipment().getId());
+        refundOrderPackage.setBarcode(cargoRefund.getData().getShipment().getBarcode());
+        refundOrderPackage.setCanceled(false);
+        refundOrderPackage.setLocation(orderPackage.getLocation());
+
+        OrderPackage saveRefundOrderPackage = orderPackageService.createOrderPackage(refundOrderPackage);
+        List<OrderPackage> refundSaveOrderPAckage = new ArrayList<>();
+        refundSaveOrderPAckage.add(saveRefundOrderPackage);
+        saveOrder.getOrderStatus().setOrderRefundPackages(refundSaveOrderPAckage);
 
         boolean allProductsFullyRefunded = true;
 
-        for (OrderItem orderItem : order.getOrderItems()) {
+        for (OrderItem orderItem : saveOrder.getOrderItems()) {
             boolean matched = false;
-            for (OrderItem refundOrderItem : order.getRefundOrderItems()) {
+            for (OrderItem refundOrderItem : saveOrder.getRefundOrderItems()) {
                 if (Objects.equals(refundOrderItem.getProduct().getId(), orderItem.getProduct().getId())) {
                     if (Objects.equals(refundOrderItem.getQuantity(), orderItem.getQuantity())) {
                         matched = true;
@@ -1235,15 +1266,14 @@ public class OrderService {
         }
 
         if (allProductsFullyRefunded){
-            order.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
-            order.getOrderStatus().setColor(OrderStatus.Color.BLUE);
+            saveOrder.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
+            saveOrder.getOrderStatus().setColor(OrderStatus.Color.BLUE);
         }else{
-            order.getOrderStatus().setStatus(OrderStatus.Status.PARTIAL_REFUNDED);
-            order.getOrderStatus().setColor(OrderStatus.Color.TURQUISE);
+            saveOrder.getOrderStatus().setStatus(OrderStatus.Status.PARTIAL_REFUNDED);
+            saveOrder.getOrderStatus().setColor(OrderStatus.Color.TURQUISE);
         }
 
-        order.setRefundOrderItems(refundItems);
-        orderRepository.save(order);
+        orderRepository.save(saveOrder);
 
         return "Verilen siparişler başarıyla iade eildi!";
 

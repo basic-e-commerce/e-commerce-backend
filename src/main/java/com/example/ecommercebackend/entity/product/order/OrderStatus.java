@@ -23,6 +23,9 @@ public class OrderStatus {
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     private List<OrderPackage> orderPackages = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<OrderPackage> orderRefundPackages = new ArrayList<>();
+
     @Column(name = "receipt_address_id")
     private String receiptAddressId;
 
@@ -73,6 +76,14 @@ public class OrderStatus {
 
     public void setSenderAddressId(String senderAddressId) {
         this.senderAddressId = senderAddressId;
+    }
+
+    public List<OrderPackage> getOrderRefundPackages() {
+        return orderRefundPackages;
+    }
+
+    public void setOrderRefundPackages(List<OrderPackage> orderRefundPackages) {
+        this.orderRefundPackages = orderRefundPackages;
     }
 
     public enum Privacy {
