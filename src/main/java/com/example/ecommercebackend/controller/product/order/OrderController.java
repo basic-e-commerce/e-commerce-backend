@@ -90,8 +90,8 @@ public class OrderController {
     }
 
     @PostMapping("/cargo-refund")
-    public ResponseEntity<String> cargoRefund(@RequestParam(required = false) String orderCode,@RequestBody(required = false) RefundCreateDto refundCreateDto){
-        return new ResponseEntity<>(orderService.cargoRefund(orderCode,refundCreateDto),HttpStatus.OK);
+    public ResponseEntity<String> cargoRefund(@RequestBody(required = false) RefundCreateDto refundCreateDto){
+        return new ResponseEntity<>(orderService.cargoRefund(refundCreateDto),HttpStatus.OK);
     }
 
 

@@ -1122,8 +1122,8 @@ public class OrderService {
         );
     }
 
-    public String cargoRefund(String orderCode, RefundCreateDto refundCreateDto) {
-        Order order = findByOrderCode(orderCode);
+    public String cargoRefund(RefundCreateDto refundCreateDto) {
+        Order order = findByOrderCode(refundCreateDto.getOrderCode());
         Set<OrderItem> orderItems = order.getOrderItems();
         Set<OrderItem> refundOrderItems = order.getRefundOrderItems();
         Set<OrderItem> refundItems = new HashSet<>();
