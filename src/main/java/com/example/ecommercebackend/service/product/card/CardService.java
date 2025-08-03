@@ -218,7 +218,6 @@ public class CardService {
             }
 
         } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
-            BigDecimal discountValue = coupon.getDiscountValue();
 
             if (coupon.getProductAssigned()) {
                 int orderItemSize = 0;
@@ -254,6 +253,7 @@ public class CardService {
             throw new BadRequestException("Geçersiz kupon tipi!");
 
 
+        System.out.println("ORderprice:::" + orderPrice);
         // orderPrice hesaplandıktan sonra kontroller
         // Minimum sepet tutarı kontrolü
         if (coupon.getMinOrderAmountLimit() != null &&
