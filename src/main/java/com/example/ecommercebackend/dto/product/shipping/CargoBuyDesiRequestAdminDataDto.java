@@ -1,7 +1,10 @@
 package com.example.ecommercebackend.dto.product.shipping;
 
+import com.example.ecommercebackend.dto.product.orderitem.OrderItemRequestDto;
 import com.example.ecommercebackend.entity.product.order.OrderPackage;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
 
 public class CargoBuyDesiRequestAdminDataDto {
 
@@ -26,7 +29,9 @@ public class CargoBuyDesiRequestAdminDataDto {
     @JsonProperty("massUnit")
     private String massUnit;
 
-    public CargoBuyDesiRequestAdminDataDto(OrderPackage.CargoCompany cargoCompany, Double length, Double height, Double width, String distanceUnit, Double weight, String massUnit) {
+    private List<OrderItemRequestDto> orderItems;
+
+    public CargoBuyDesiRequestAdminDataDto(OrderPackage.CargoCompany cargoCompany, Double length, Double height, Double width, String distanceUnit, Double weight, String massUnit, List<OrderItemRequestDto> orderItems) {
         this.cargoCompany = cargoCompany;
         this.length = length;
         this.height = height;
@@ -34,6 +39,7 @@ public class CargoBuyDesiRequestAdminDataDto {
         this.distanceUnit = distanceUnit;
         this.weight = weight;
         this.massUnit = massUnit;
+        this.orderItems = orderItems;
     }
 
     public OrderPackage.CargoCompany getCargoCompany() {
@@ -90,5 +96,13 @@ public class CargoBuyDesiRequestAdminDataDto {
 
     public void setMassUnit(String massUnit) {
         this.massUnit = massUnit;
+    }
+
+    public List<OrderItemRequestDto> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItemRequestDto> orderItems) {
+        this.orderItems = orderItems;
     }
 }

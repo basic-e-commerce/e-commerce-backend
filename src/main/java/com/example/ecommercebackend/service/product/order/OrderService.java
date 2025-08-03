@@ -5,6 +5,7 @@ import com.example.ecommercebackend.builder.product.order.OrderBuilder;
 import com.example.ecommercebackend.dto.payment.refund.RefundCreateDto;
 import com.example.ecommercebackend.dto.product.order.*;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemRefundDto;
+import com.example.ecommercebackend.dto.product.orderitem.OrderItemRequestDto;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
 import com.example.ecommercebackend.dto.product.products.productTemplate.CargoOfferDesiRequestAdminDto;
 import com.example.ecommercebackend.dto.product.shipping.*;
@@ -1176,6 +1177,8 @@ public class OrderService {
 
     public List<OfferApproveUserDto> buyOneStepCargo(@NotNullParam CargoBuyDesiRequestAdminDto cargoOfferDesiRequestAdminDto) {
         Order order = findByOrderCode(cargoOfferDesiRequestAdminDto.getOrderCode());
+
+        validateAllItemsFullyShipped(order,cargoOfferDesiRequestAdminDto);
         String senderAddressId = merchantService.getMerchant().getDefaultSendingAddress().getGeliverId();
 
         if (senderAddressId == null){
@@ -1209,6 +1212,7 @@ public class OrderService {
         }
 
         for (CargoBuyDesiRequestAdminDataDto cargoBuyDesiRequestAdminDataDto: cargoOfferDesiRequestAdminDto.getCargoBuyDesiRequestAdminDataDto()){
+
             CargoBuyRequestDto cargoBuyRequestDto = new CargoBuyRequestDto(
                     cargoBuyDesiRequestAdminDataDto.getCargoCompany(),
                     new ShipmentBuyRequestDto(
@@ -1229,10 +1233,10 @@ public class OrderService {
                             cargoBuyDesiRequestAdminDataDto.getDistanceUnit(),
                             String.valueOf(cargoBuyDesiRequestAdminDataDto.getWeight()),
                             cargoBuyDesiRequestAdminDataDto.getMassUnit(),
-                            order.getOrderItems().stream().map(x-> {
+                            cargoBuyDesiRequestAdminDataDto.getOrderItems().stream().map(x-> {
                                 return new CargoOfferRequestItem(
-                                        x.getProduct().getProductName(),
-                                        x.getQuantity()
+                                        productService.findProductById(x.getProductId()).getProductName(),
+                                        x.getProductQuantity()
                                 );
                             }).toList(),
                             false,
@@ -1298,6 +1302,7 @@ public class OrderService {
     public List<OfferApproveUserDto> buyContractCargo(@NotNullParam CargoBuyDesiRequestAdminDto cargoOfferDesiRequestAdminDto){
         Merchant merchant = merchantService.getMerchant();
         Order order = findByOrderCode(cargoOfferDesiRequestAdminDto.getOrderCode());
+        validateAllItemsFullyShipped(order,cargoOfferDesiRequestAdminDto);
         String senderAddressId = merchant.getDefaultSendingAddress().getGeliverId();
         String providerAccountId = merchant.getDefaultCustomCargoContract().getCargoContractId();
         if (providerAccountId == null)
@@ -1355,10 +1360,10 @@ public class OrderService {
                             cargoBuyDesiRequestAdminDataDto.getDistanceUnit(),
                             String.valueOf(cargoBuyDesiRequestAdminDataDto.getWeight()),
                             cargoBuyDesiRequestAdminDataDto.getMassUnit(),
-                            order.getOrderItems().stream().map(x-> {
+                            cargoBuyDesiRequestAdminDataDto.getOrderItems().stream().map(x-> {
                                 return new CargoOfferRequestItem(
-                                        x.getProduct().getProductName(),
-                                        x.getQuantity()
+                                        productService.findProductById(x.getProductId()).getProductName(),
+                                        x.getProductQuantity()
                                 );
                             }).toList(),
                             false,
@@ -1419,6 +1424,50 @@ public class OrderService {
         }).toList();
 
     }
+
+    /**
+     * Siparişteki tüm ürünlerin eksiksiz ve fazlasız şekilde kargoya verildiğini doğrular.
+     * Aksi takdirde BadRequestException fırlatır.
+     *
+     * @param order Sipariş nesnesi
+     * @param dto Kargo desi istek DTO'su
+     */
+    public void validateAllItemsFullyShipped(Order order, CargoBuyDesiRequestAdminDto dto) {
+        Map<Integer, Integer> orderItemQuantities = order.getOrderItems().stream()
+                .collect(Collectors.toMap(
+                        oi -> oi.getProduct().getId(),
+                        OrderItem::getQuantity
+                ));
+
+        Map<Integer, Integer> requestedQuantities = new HashMap<>();
+
+        for (CargoBuyDesiRequestAdminDataDto cargoDto : dto.getCargoBuyDesiRequestAdminDataDto()) {
+            for (OrderItemRequestDto itemDto : cargoDto.getOrderItems()) {
+                requestedQuantities.merge(
+                        itemDto.getProductId(),
+                        itemDto.getProductQuantity(),
+                        Integer::sum
+                );
+            }
+        }
+
+        for (Map.Entry<Integer, Integer> entry : orderItemQuantities.entrySet()) {
+            Integer productId = entry.getKey();
+            int orderedQuantity = entry.getValue();
+            int requestedQuantity = requestedQuantities.getOrDefault(productId, -1);
+
+            if (requestedQuantity == -1) {
+                throw new BadRequestException("Ürün eksik: " + productId + " hiç kargoya verilmemiş.");
+            }
+
+            if (orderedQuantity != requestedQuantity) {
+                throw new BadRequestException("Ürün miktarı uyuşmuyor (Ürün ID: " + productId +
+                        ") — Sipariş: " + orderedQuantity + ", Kargoya verilen: " + requestedQuantity);
+            }
+        }
+
+    }
+
 
     public String cargoRefund(RefundCreateDto refundCreateDto) {
         Order order = findByOrderCode(refundCreateDto.getOrderCode());
