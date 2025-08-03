@@ -270,10 +270,10 @@ public class OrderService {
             if (coupon != null){
                 customerCoupon = customerCouponService.findCouponAndCustomer(coupon, customer);
                 if (customerCoupon != null) {
-                    if (customerCoupon.getUsed()){
+                    if (customerCoupon.getUsedQuantity() >= coupon.getUserTimeUsed()){
                         customer.getCard().setCoupon(null);
                         customerRepository.save(customer);
-                        throw new BadRequestException("Bu kupon kullanılmıştır!");
+                        throw new BadRequestException("Bu kuponun kullanım hakkı bitmiştir!");
                     }
                     customerCoupon.setUpdateAt(Instant.now());
                 }else {
