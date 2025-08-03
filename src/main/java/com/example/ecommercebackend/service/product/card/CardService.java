@@ -126,6 +126,7 @@ public class CardService {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof Customer customer) {
             Coupon coupon = couponService.findByCodeNull(code);
+            System.out.println("kupon kodu: "+coupon.getCode());
 
             CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
             if (customerCoupon != null) {
