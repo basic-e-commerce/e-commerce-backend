@@ -196,6 +196,7 @@ public class CardService {
             BigDecimal discountValue = coupon.getDiscountValue(); // Örneğin %10 ise 10 gelir
 
             for (CardItem orderItem : items) {
+                BigDecimal cardPrice = orderItem.getProduct().getComparePrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
 
                 if (coupon.getProductAssigned()) {
                     boolean isProductInCoupon = coupon.getProducts().stream()
@@ -203,17 +204,17 @@ public class CardService {
 
                     if (isProductInCoupon) {
                         System.out.println("fiçeride");
-                        BigDecimal substractDiscountPrice = orderItem.getProduct().getComparePrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-                        BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substractDiscountPrice);
+                        BigDecimal substractDiscountPrice = cardPrice.multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                        BigDecimal discountPrice = cardPrice.subtract(substractDiscountPrice);
                         orderPrice = orderPrice.add(discountPrice);
                     } else {
-                        orderPrice = orderPrice.add(orderItem.getProduct().getComparePrice());
+                        orderPrice = orderPrice.add(cardPrice);
                     }
                 } else {
                     System.out.println("subst");
-                    BigDecimal substractDiscountPrice = orderItem.getProduct().getComparePrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                    BigDecimal substractDiscountPrice = cardPrice.multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
                     System.out.println(substractDiscountPrice);
-                    BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substractDiscountPrice);
+                    BigDecimal discountPrice = cardPrice.subtract(substractDiscountPrice);
                     System.out.println(discountPrice);
                     orderPrice = orderPrice.add(discountPrice);
                 }
@@ -232,11 +233,13 @@ public class CardService {
                         .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
 
                 for (CardItem orderItem : items) {
+                    BigDecimal cardPrice = orderItem.getProduct().getComparePrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
+
                     if (coupon.getProducts().contains(orderItem.getProduct())) {
-                        BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substract);
+                        BigDecimal discountPrice = cardPrice.subtract(substract);
                         orderPrice = orderPrice.add(discountPrice);
                     } else {
-                        orderPrice = orderPrice.add(orderItem.getProduct().getComparePrice());
+                        orderPrice = orderPrice.add(cardPrice);
                     }
                 }
             } else {
@@ -246,7 +249,8 @@ public class CardService {
                         .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
 
                 for (CardItem orderItem : items) {
-                    BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substract);
+                    BigDecimal cardPrice = orderItem.getProduct().getComparePrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
+                    BigDecimal discountPrice = cardPrice.subtract(substract);
                     orderPrice = orderPrice.add(discountPrice);
                 }
             }
