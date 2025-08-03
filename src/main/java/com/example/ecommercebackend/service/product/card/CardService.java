@@ -11,6 +11,7 @@ import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.NotFoundException;
+import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.exception.UnAuthorizedException;
 import com.example.ecommercebackend.repository.product.card.CardRepository;
 import com.example.ecommercebackend.service.product.products.CouponService;
@@ -23,7 +24,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -123,15 +126,14 @@ public class CardService {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof Customer customer) {
             Coupon coupon = couponService.findByCodeNull(code);
-            CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
 
-            if (customerCoupon != null){
-                if (customerCoupon.getUsed()){
-                    throw new NotFoundException("Bu kupon Kullanılmıştır!");
-                }
+            CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
+            if (customerCoupon != null) {
+                if (customerCoupon.getUsedQuantity() >= coupon.getUserTimeUsed())
+                    return null;
             }
 
-            isCouponValidation(coupon,customer);
+            isCouponValidationNew(coupon,customer.getCard().getItems(), customer);
             customer.getCard().setCoupon(coupon);
             cardRepository.save(customer.getCard());
             return "Kupon Eklendi!";
@@ -148,14 +150,15 @@ public class CardService {
         }else
             throw new BadRequestException("Lütfen giriş yapınız!");
     }
-    public void isCouponValidation(Coupon coupon,Customer customer) {
-        if (!coupon.getActive())
-            throw new BadRequestException("Kullanılan Kupon Aktif değildir!");
+    private void isCouponValidationNew(Coupon coupon,List<CardItem> items,Customer customer) {
+        if (!coupon.getActive()){
+            System.out.println("Kupon aktif değildir");
+            throw new BadRequestException("Kupon aktif değildir");
+        }
 
-        System.out.println("couponcoupon.getTimesUsed():"+coupon.getTimesUsed());
-        System.out.println("coupon.getTotalUsageLimit(): "+coupon.getTotalUsageLimit());
-        if (coupon.getTimesUsed() >= coupon.getTotalUsageLimit())
+        if (coupon.getTimesUsed() >= coupon.getTotalUsageLimit()){
             throw new BadRequestException("Kuponun Kullanım Limiti Dolmuştur");
+        }
 
         Instant now = Instant.now();
 
@@ -167,14 +170,101 @@ public class CardService {
             throw new BadRequestException("Kuponun geçerlilik süresi sona ermiştir!");
         }
 
-        System.out.println("totalprice: "+ totalPrice(customer.getCard()));
-        if (totalPrice(customer.getCard()).compareTo(coupon.getMinOrderAmountLimit()) < 0) {
-            throw new BadRequestException("Sipariş tutarı kuponun minimum limiti olan " + coupon.getMinOrderAmountLimit() + " TL'den küçük.");
+        if (coupon.getProductAssigned()){
+            List<Product> couponProducts = new ArrayList<>(coupon.getProducts());
+            boolean flag = false;
+            for (CardItem item : items) {
+                for (Product couponProduct : couponProducts) {
+                    if (couponProduct.getId() == item.getProduct().getId()) {
+                        flag = true;
+                    }
+                }
+            }
+            if (!flag)
+                throw new BadRequestException("Sepette kupon için geçerli ürün bulunamamaktadır!");
         }
 
-        if (coupon.getCustomerAssigned()){
-            if (!coupon.getCustomers().contains(customer))
-                throw new BadRequestException("Bu Kupon Kullanılamamaktadır!");
+        CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
+        if (customerCoupon != null) {
+            if (customerCoupon.getUsedQuantity() >= coupon.getUserTimeUsed())
+                throw new ResourceAlreadyExistException("Bu kupon limitlerince kullanılmıştır!");
+        }
+
+        BigDecimal orderPrice = BigDecimal.valueOf(0);
+
+        if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
+            BigDecimal discountValue = coupon.getDiscountValue(); // Örneğin %10 ise 10 gelir
+
+            for (CardItem orderItem : items) {
+
+                if (coupon.getProductAssigned()) {
+                    boolean isProductInCoupon = coupon.getProducts().stream()
+                            .anyMatch(product -> product.equals(orderItem.getProduct()));
+
+                    if (isProductInCoupon) {
+                        System.out.println("fiçeride");
+                        BigDecimal substractDiscountPrice = orderItem.getProduct().getComparePrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                        BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substractDiscountPrice);
+                        orderPrice = orderPrice.add(discountPrice);
+                    } else {
+                        orderPrice = orderPrice.add(orderItem.getProduct().getComparePrice());
+                    }
+                } else {
+                    System.out.println("fiçeride");
+                    BigDecimal substractDiscountPrice = orderItem.getProduct().getComparePrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                    BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substractDiscountPrice);
+                    orderPrice = orderPrice.add(discountPrice);
+                }
+            }
+
+        } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
+            BigDecimal discountValue = coupon.getDiscountValue();
+
+            if (coupon.getProductAssigned()) {
+                int orderItemSize = 0;
+                for (CardItem orderItem : items) {
+                    if (coupon.getProducts().contains(orderItem.getProduct())) {
+                        orderItemSize += 1;
+                    }
+                }
+                BigDecimal substract = coupon.getDiscountValue()
+                        .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
+
+                for (CardItem orderItem : items) {
+                    if (coupon.getProducts().contains(orderItem.getProduct())) {
+                        BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substract);
+                        orderPrice = orderPrice.add(discountPrice);
+                    } else {
+                        orderPrice = orderPrice.add(orderItem.getProduct().getComparePrice());
+                    }
+                }
+            } else {
+                int orderItemSize = items.size();
+
+                BigDecimal substract = coupon.getDiscountValue()
+                        .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
+
+                for (CardItem orderItem : items) {
+                    BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substract);
+                    orderPrice = orderPrice.add(discountPrice);
+                }
+            }
+
+        } else
+            throw new BadRequestException("Geçersiz kupon tipi!");
+
+
+        // orderPrice hesaplandıktan sonra kontroller
+        // Minimum sepet tutarı kontrolü
+        if (coupon.getMinOrderAmountLimit() != null &&
+                orderPrice.compareTo(coupon.getMinOrderAmountLimit()) < 0) {
+            throw new BadRequestException("Sepet minimum tutara sahip değildir!");
+        }
+
+        // Maksimum sepet tutarı kontrolü
+        if (coupon.getMaxOrderAmountLimit() != null &&
+                orderPrice.compareTo(coupon.getMaxOrderAmountLimit()) > 0) {
+            throw new BadRequestException("Sepet maksimum tutardan yüksektir!");
         }
 
     }

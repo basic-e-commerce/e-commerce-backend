@@ -6,6 +6,7 @@ import com.example.ecommercebackend.dto.product.coupon.CouponResponseDto;
 import com.example.ecommercebackend.dto.product.products.ProductQuantityDto;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.product.card.CardItem;
+import com.example.ecommercebackend.entity.product.order.OrderItem;
 import com.example.ecommercebackend.entity.product.products.Coupon;
 import com.example.ecommercebackend.entity.product.products.CustomerCoupon;
 import com.example.ecommercebackend.entity.product.products.Product;
@@ -14,9 +15,11 @@ import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.card.CardItemRepository;
+import com.example.ecommercebackend.repository.product.products.CustomerCouponRepository;
 import com.example.ecommercebackend.repository.product.products.ProductRepository;
 import com.example.ecommercebackend.repository.user.CustomerRepository;
 import com.example.ecommercebackend.service.merchant.MerchantService;
+import com.example.ecommercebackend.service.product.products.CustomerCouponService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,13 +42,15 @@ public class CardItemService {
     private final ProductRepository productRepository;
     private final MerchantService merchantService;
     private final CustomerRepository customerRepository;
+    private final CustomerCouponService customerCouponService;
 
 
-    public CardItemService(CardItemRepository cardItemRepository, ProductRepository productRepository, MerchantService merchantService, CustomerRepository customerRepository) {
+    public CardItemService(CardItemRepository cardItemRepository, ProductRepository productRepository, MerchantService merchantService, CustomerRepository customerRepository, CustomerCouponService customerCouponService) {
         this.cardItemRepository = cardItemRepository;
         this.productRepository = productRepository;
         this.merchantService = merchantService;
         this.customerRepository = customerRepository;
+        this.customerCouponService = customerCouponService;
     }
 
 
@@ -59,7 +64,7 @@ public class CardItemService {
             Coupon coupon = customer.getCard().getCoupon();
 
             if (coupon != null) {
-                coupon = isCouponValidationNew(coupon,customer.getCard().getItems());
+                coupon = isCouponValidationNew(coupon,customer.getCard().getItems(),customer);
             }
 
             if (coupon == null) {
@@ -247,7 +252,7 @@ public class CardItemService {
         }
     }
 
-    private Coupon isCouponValidationNew(Coupon coupon,List<CardItem> items) {
+    private Coupon isCouponValidationNew(Coupon coupon,List<CardItem> items,Customer customer) {
         if (!coupon.getActive()){
             System.out.println("Kupon aktif değildir");
             return null;
@@ -283,6 +288,97 @@ public class CardItemService {
             if (!flag)
                 return null;
         }
+        CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
+        if (customerCoupon != null) {
+            if (customerCoupon.getUsedQuantity() >= coupon.getUserTimeUsed())
+                return null;
+        }
+
+        BigDecimal orderPrice = BigDecimal.valueOf(0);
+
+        if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
+            BigDecimal discountValue = coupon.getDiscountValue(); // Örneğin %10 ise 10 gelir
+            System.out.println("kupon 3");
+            if (discountValue == null) {
+                return null;
+            }
+            System.out.println("kupon 4");
+            for (CardItem orderItem : items) {
+
+                if (coupon.getProductAssigned()) {
+                    boolean isProductInCoupon = coupon.getProducts().stream()
+                            .anyMatch(product -> product.equals(orderItem.getProduct()));
+
+                    if (isProductInCoupon) {
+                        System.out.println("fiçeride");
+                        BigDecimal substractDiscountPrice = orderItem.getProduct().getComparePrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                        BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substractDiscountPrice);
+                        orderPrice = orderPrice.add(discountPrice);
+                    } else {
+                        orderPrice = orderPrice.add(orderItem.getProduct().getComparePrice());
+                    }
+                } else {
+                    System.out.println("fiçeride");
+                    BigDecimal substractDiscountPrice = orderItem.getProduct().getComparePrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                    BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substractDiscountPrice);
+                    orderPrice = orderPrice.add(discountPrice);
+                }
+            }
+
+        } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
+            BigDecimal discountValue = coupon.getDiscountValue();
+
+            if (discountValue == null) {
+                return null;
+            }
+
+            if (coupon.getProductAssigned()) {
+                int orderItemSize = 0;
+                for (CardItem orderItem : items) {
+                    if (coupon.getProducts().contains(orderItem.getProduct())) {
+                        orderItemSize += 1;
+                    }
+                }
+                BigDecimal substract = coupon.getDiscountValue()
+                        .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
+
+                for (CardItem orderItem : items) {
+                    if (coupon.getProducts().contains(orderItem.getProduct())) {
+                        BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substract);
+                        orderPrice = orderPrice.add(discountPrice);
+                    } else {
+                        orderPrice = orderPrice.add(orderItem.getProduct().getComparePrice());
+                    }
+                }
+            } else {
+                int orderItemSize = items.size();
+
+                BigDecimal substract = coupon.getDiscountValue()
+                        .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
+
+                for (CardItem orderItem : items) {
+                    BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substract);
+                    orderPrice = orderPrice.add(discountPrice);
+                }
+            }
+
+        } else
+            return null;
+
+
+        // orderPrice hesaplandıktan sonra kontroller
+        // Minimum sepet tutarı kontrolü
+        if (coupon.getMinOrderAmountLimit() != null &&
+                orderPrice.compareTo(coupon.getMinOrderAmountLimit()) < 0) {
+            return null;
+        }
+
+        // Maksimum sepet tutarı kontrolü
+        if (coupon.getMaxOrderAmountLimit() != null &&
+                orderPrice.compareTo(coupon.getMaxOrderAmountLimit()) > 0) {
+            return null;
+        }
+
 
         return coupon;
     }

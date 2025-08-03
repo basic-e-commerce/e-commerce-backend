@@ -469,8 +469,6 @@ public class ShippingCargoService {
 
     }
 
-
-
     public OfferApproveDto buyContractCargo(CargoBuyContractRequestDto cargoBuyRequestDto){
 
         WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();

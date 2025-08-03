@@ -24,6 +24,7 @@ public class CustomerCoupon {
 
     private Boolean isUsed = false;
     private BigDecimal discountPrice;
+    private Integer usedQuantity = 0;
     private Instant createAt;
     private Instant updateAt;
     private Instant usedAt;
@@ -101,5 +102,13 @@ public class CustomerCoupon {
 
     public void setUpdateAt(Instant updateAt) {
         this.updateAt = updateAt;
+    }
+
+    public Integer getUsedQuantity() {
+        return usedQuantity;
+    }
+
+    public void setUsedQuantity(Integer usedQuantity) {
+        this.usedQuantity = usedQuantity;
     }
 }

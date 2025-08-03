@@ -73,6 +73,11 @@ public class CouponService {
         } else
             throw new BadRequestException("Geçersiz İndirim tipi! Lütfen PERCENTAGE yada FIXEDAMOUNT seçiniz!");
 
+        if (couponCreateDto.getMinOrderAmountLimit() != null &&
+                couponCreateDto.getMaxOrderAmountLimit() != null &&
+                couponCreateDto.getMinOrderAmountLimit().compareTo(couponCreateDto.getMaxOrderAmountLimit()) > 0) {
+            throw new BadRequestException("Minimum sepet tutarı, maksimumdan büyük olamaz!");
+        }
 
         if (couponCreateDto.getTatalUsageLimit()<=0){
             throw new BadRequestException("toplam kullanım limiti 0 dan yüksek değer olmalıdır");
@@ -81,9 +86,22 @@ public class CouponService {
 
         if (couponCreateDto.getMinOrderAmountLimit() != null &&
                 couponCreateDto.getMinOrderAmountLimit().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Minimum sepet tutarı 0 dan büyük olmak zorundadır!");
+            throw new BadRequestException("Minimum sepet tutarı 0 dan büyük olmak zorundadır!");
         }else
             coupon.setMinOrderAmountLimit(couponCreateDto.getMinOrderAmountLimit());
+
+        if (couponCreateDto.getMaxOrderAmountLimit() != null &&
+                couponCreateDto.getMaxOrderAmountLimit().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BadRequestException("Maksimum sepet tutarı 0'dan büyük olmak zorundadır!");
+        } else {
+            coupon.setMaxOrderAmountLimit(couponCreateDto.getMaxOrderAmountLimit());
+        }
+
+        if (couponCreateDto.getUserTimeUsed() > 1)
+            coupon.setUserTimeUsed(couponCreateDto.getUserTimeUsed());
+        else
+            coupon.setUserTimeUsed(1);
+
 
         Instant now = Instant.now();
         Instant startDate = couponCreateDto.getStartDate();
@@ -107,9 +125,7 @@ public class CouponService {
         // Setleme
         coupon.setCouponStartDate(startDate);
         coupon.setCouponEndDate(endDate);
-
         coupon.setActive(couponCreateDto.getActive());
-
         Set<Product> products = new HashSet<>();
 
         coupon.setProductAssigned(couponCreateDto.getProductAssigned());
