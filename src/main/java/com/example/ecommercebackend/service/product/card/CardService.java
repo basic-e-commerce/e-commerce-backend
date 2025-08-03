@@ -210,9 +210,11 @@ public class CardService {
                         orderPrice = orderPrice.add(orderItem.getProduct().getComparePrice());
                     }
                 } else {
-                    System.out.println("fiçeride");
+                    System.out.println("subst");
                     BigDecimal substractDiscountPrice = orderItem.getProduct().getComparePrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                    System.out.println(substractDiscountPrice);
                     BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substractDiscountPrice);
+                    System.out.println(discountPrice);
                     orderPrice = orderPrice.add(discountPrice);
                 }
             }
