@@ -1530,6 +1530,10 @@ public class OrderService {
                         OrderItem::getQuantity
                 ));
 
+        System.out.println("===> Siparişteki ürün miktarları:");
+        orderItemQuantities.forEach((id, qty) ->
+                System.out.println("Product ID: " + id + ", Ordered Quantity: " + qty));
+
         Map<Integer, Integer> requestedQuantities = new HashMap<>();
 
         for (CargoBuyDesiRequestAdminDataDto cargoDto : dto.getCargoBuyDesiRequestAdminDataDto()) {
@@ -1539,13 +1543,22 @@ public class OrderService {
                         itemDto.getProductQuantity(),
                         Integer::sum
                 );
+                System.out.println("===> Kargoya eklenen ürün: Product ID: " + itemDto.getProductId()
+                        + ", Quantity: " + itemDto.getProductQuantity());
             }
         }
+
+        System.out.println("===> Toplam kargoya verilen ürün miktarları:");
+        requestedQuantities.forEach((id, qty) ->
+                System.out.println("Product ID: " + id + ", Total Requested Quantity: " + qty));
 
         for (Map.Entry<Integer, Integer> entry : orderItemQuantities.entrySet()) {
             Integer productId = entry.getKey();
             int orderedQuantity = entry.getValue();
             int requestedQuantity = requestedQuantities.getOrDefault(productId, -1);
+
+            System.out.println("Kontrol ediliyor: Product ID: " + productId +
+                    ", Ordered: " + orderedQuantity + ", Requested: " + requestedQuantity);
 
             if (requestedQuantity == -1) {
                 throw new BadRequestException("Ürün eksik: " + productId + " hiç kargoya verilmemiş.");
@@ -1556,8 +1569,8 @@ public class OrderService {
                         ") — Sipariş: " + orderedQuantity + ", Kargoya verilen: " + requestedQuantity);
             }
         }
-
     }
+
 
 
     public String cargoRefund(RefundCreateDto refundCreateDto) {
