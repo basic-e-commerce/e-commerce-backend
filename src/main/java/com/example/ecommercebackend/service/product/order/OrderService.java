@@ -1091,6 +1091,7 @@ public class OrderService {
                 ProductTemplate.MassUnit.valueOf(cargoOfferDesiRequestAdminDto.getMassUnit()),
                 shipment.getId(),
                 shipment.getResponsiveLabelURL(),
+                new BigDecimal(offerApproveDto.getData().getTotalAmount()),
                 OrderPackage.CargoCompany.valueOf(shipment.getProviderServiceCode()),
                 OrderPackage.CargoStatus.information_received,
                 shipment.getId(),
@@ -1133,6 +1134,7 @@ public class OrderService {
                 orderPackageRequestDto.getMassUnit(),
                 orderPackageRequestDto.getCargoId(),
                 orderPackageRequestDto.getResponsiveLabelURL(),
+                orderPackageRequestDto.getAmount(),
                 orderPackageRequestDto.getCargoCompany(),
                 OrderPackage.CargoStatus.delivery_scheduled,
                 orderPackageRequestDto.getCargoId(),
@@ -1170,6 +1172,252 @@ public class OrderService {
                 Instant.now().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 false
         );
+    }
+
+    public List<OfferApproveUserDto> buyOneStepCargo(@NotNullParam CargoBuyDesiRequestAdminDto cargoOfferDesiRequestAdminDto) {
+        Order order = findByOrderCode(cargoOfferDesiRequestAdminDto.getOrderCode());
+        String senderAddressId = merchantService.getMerchant().getDefaultSendingAddress().getGeliverId();
+
+        if (senderAddressId == null){
+            Merchant merchant = merchantService.getMerchant();
+            AddressApiDto addressApiDto = new AddressApiDto(
+                    merchant.getAddress().getFirstName()+ " " + merchant.getAddress().getLastName(),
+                    merchant.getEmail(),
+                    merchant.getPhoneNo(),
+                    merchant.getAddress().getAddressLine1(),
+                    "",
+                    merchant.getAddress().getCountry().getIso(),
+                    merchant.getAddress().getCity().getName(),
+                    merchant.getAddress().getCity().getCityCode(),
+                    merchant.getAddress().getDistrict().getName(),
+                    merchant.getAddress().getDistrict().getDistrictId(),
+                    merchant.getAddress().getPostalCode(),
+                    false,
+                    merchant.getAddress().getShortName()
+            );
+            shippingAddressService.createSendingAddress(addressApiDto);
+        }
+
+        String receiptAddress = order.getGeliverId();
+        if (receiptAddress == null){
+            AddressApiDto addressApiDto = buildAddressDto(order);
+            try {
+                receiptAddress = shippingAddressService.createReceivingAddress(addressApiDto).getId();
+            } catch (JsonProcessingException e) {
+                throw new BadRequestException("Müşteri adresi oluşturulamadı");
+            }
+        }
+
+        for (CargoBuyDesiRequestAdminDataDto cargoBuyDesiRequestAdminDataDto: cargoOfferDesiRequestAdminDto.getCargoBuyDesiRequestAdminDataDto()){
+            CargoBuyRequestDto cargoBuyRequestDto = new CargoBuyRequestDto(
+                    cargoBuyDesiRequestAdminDataDto.getCargoCompany(),
+                    new ShipmentBuyRequestDto(
+                            true,
+                            senderAddressId,
+                            receiptAddress,
+                            new CargoBuyRecipientAddress(
+                                    order.getFirstName() + " "+ order.getLastName(),
+                                    order.getPhoneNumber(),
+                                    order.getAddressLine1(),
+                                    order.getCountryIso(),
+                                    order.getCityCode(),
+                                    order.getDistrict()
+                            ),
+                            String.valueOf(cargoBuyDesiRequestAdminDataDto.getLength()),
+                            String.valueOf(cargoBuyDesiRequestAdminDataDto.getHeight()),
+                            String.valueOf(cargoBuyDesiRequestAdminDataDto.getWidth()),
+                            cargoBuyDesiRequestAdminDataDto.getDistanceUnit(),
+                            String.valueOf(cargoBuyDesiRequestAdminDataDto.getWeight()),
+                            cargoBuyDesiRequestAdminDataDto.getMassUnit(),
+                            order.getOrderItems().stream().map(x-> {
+                                return new CargoOfferRequestItem(
+                                        x.getProduct().getProductName(),
+                                        x.getQuantity()
+                                );
+                            }).toList(),
+                            false,
+                            false,
+                            new CargoOfferRequestOrder(
+                                    "API",
+                                    domain,
+                                    order.getOrderCode(),
+                                    order.getTotalPrice(),
+                                    "TL"
+                            )
+                    )
+
+            );
+
+            OfferApproveDto offerApproveDto = shippingCargoService.buyOneStepCargo(cargoBuyRequestDto);
+            ShipmentDto shipment = offerApproveDto.getData().getShipment();
+
+            OrderPackage orderPackage = new OrderPackage(
+                    new HashSet<>(order.getOrderItems()),
+                    order.getFirstName()+ " " + order.getLastName(),
+                    cargoBuyDesiRequestAdminDataDto.getLength(),
+                    cargoBuyDesiRequestAdminDataDto.getWidth(),
+                    cargoBuyDesiRequestAdminDataDto.getHeight(),
+                    cargoBuyDesiRequestAdminDataDto.getWeight(),
+                    ProductTemplate.DistanceUnit.valueOf(cargoBuyDesiRequestAdminDataDto.getDistanceUnit()),
+                    ProductTemplate.MassUnit.valueOf(cargoBuyDesiRequestAdminDataDto.getMassUnit()),
+                    shipment.getId(),
+                    shipment.getResponsiveLabelURL(),
+                    new BigDecimal(offerApproveDto.getData().getTotalAmount()),
+                    OrderPackage.CargoCompany.valueOf(shipment.getProviderServiceCode()),
+                    OrderPackage.CargoStatus.information_received,
+                    shipment.getId(),
+                    shipment.getBarcode(),
+                    shipment.isProductPaymentOnDelivery(),
+                    offerApproveDto.getData().isCanceled(),
+                    offerApproveDto.getData().isRefund(),
+                    "Depo"
+            );
+            order.getOrderStatus().getOrderPackages().add(orderPackage);
+        }
+        Order saveOrder = orderRepository.save(order);
+
+
+        return saveOrder.getOrderStatus().getOrderPackages().stream().map(x->{
+            return new OfferApproveUserDto(
+                    new ShipmentUserDto(
+                            String.valueOf(x.getId()),
+                            x.getCreateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            x.getUpdateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            true,
+                            x.getBarcode(),
+                            null,
+                            x.getResponsiveLabelURL(),
+                            x.getStatusCode().name(),
+                            x.getResponsiveLabelURL()
+                    )
+            );
+        }).toList();
+    }
+
+
+    public List<OfferApproveUserDto> buyContractCargo(@NotNullParam CargoBuyDesiRequestAdminDto cargoOfferDesiRequestAdminDto){
+        Merchant merchant = merchantService.getMerchant();
+        Order order = findByOrderCode(cargoOfferDesiRequestAdminDto.getOrderCode());
+        String senderAddressId = merchant.getDefaultSendingAddress().getGeliverId();
+        String providerAccountId = merchant.getDefaultCustomCargoContract().getCargoContractId();
+        if (providerAccountId == null)
+            throw new NotFoundException("Sistemde kayıtlı kargo anlaşması bulunamamaktadır!");
+
+        if (senderAddressId == null){
+
+            AddressApiDto addressApiDto = new AddressApiDto(
+                    merchant.getAddress().getFirstName()+ " " + merchant.getAddress().getLastName(),
+                    merchant.getEmail(),
+                    merchant.getPhoneNo(),
+                    merchant.getAddress().getAddressLine1(),
+                    "",
+                    merchant.getAddress().getCountry().getIso(),
+                    merchant.getAddress().getCity().getName(),
+                    merchant.getAddress().getCity().getCityCode(),
+                    merchant.getAddress().getDistrict().getName(),
+                    merchant.getAddress().getDistrict().getDistrictId(),
+                    merchant.getAddress().getPostalCode(),
+                    false,
+                    merchant.getAddress().getShortName()
+            );
+            shippingAddressService.createSendingAddress(addressApiDto);
+        }
+
+        String receiptAddress = order.getGeliverId();
+        if (receiptAddress == null){
+            AddressApiDto addressApiDto = buildAddressDto(order);
+            try {
+                receiptAddress = shippingAddressService.createReceivingAddress(addressApiDto).getId();
+            } catch (JsonProcessingException e) {
+                throw new BadRequestException("Müşteri adresi oluşturulamadı");
+            }
+        }
+
+        for (CargoBuyDesiRequestAdminDataDto cargoBuyDesiRequestAdminDataDto: cargoOfferDesiRequestAdminDto.getCargoBuyDesiRequestAdminDataDto()){
+            CargoBuyContractRequestDto cargoBuyRequestDto = new CargoBuyContractRequestDto(
+                    providerAccountId,
+                    cargoBuyDesiRequestAdminDataDto.getCargoCompany(),
+                    new ShipmentBuyRequestDto(
+                            true,
+                            senderAddressId,
+                            receiptAddress,
+                            new CargoBuyRecipientAddress(
+                                    order.getFirstName() + " "+ order.getLastName(),
+                                    order.getPhoneNumber(),
+                                    order.getAddressLine1(),
+                                    order.getCountryIso(),
+                                    order.getCityCode(),
+                                    order.getDistrict()
+                            ),
+                            String.valueOf(cargoBuyDesiRequestAdminDataDto.getLength()),
+                            String.valueOf(cargoBuyDesiRequestAdminDataDto.getHeight()),
+                            String.valueOf(cargoBuyDesiRequestAdminDataDto.getWidth()),
+                            cargoBuyDesiRequestAdminDataDto.getDistanceUnit(),
+                            String.valueOf(cargoBuyDesiRequestAdminDataDto.getWeight()),
+                            cargoBuyDesiRequestAdminDataDto.getMassUnit(),
+                            order.getOrderItems().stream().map(x-> {
+                                return new CargoOfferRequestItem(
+                                        x.getProduct().getProductName(),
+                                        x.getQuantity()
+                                );
+                            }).toList(),
+                            false,
+                            false,
+                            new CargoOfferRequestOrder(
+                                    "API",
+                                    domain,
+                                    order.getOrderCode(),
+                                    order.getTotalPrice(),
+                                    "TL"
+                            )
+                    )
+
+            );
+
+            OfferApproveDto offerApproveDto = shippingCargoService.buyContractCargo(cargoBuyRequestDto);
+            ShipmentDto shipment = offerApproveDto.getData().getShipment();
+
+            OrderPackage orderPackage = new OrderPackage(
+                    new HashSet<>(order.getOrderItems()),
+                    order.getFirstName()+ " " + order.getLastName(),
+                    cargoBuyDesiRequestAdminDataDto.getLength(),
+                    cargoBuyDesiRequestAdminDataDto.getWidth(),
+                    cargoBuyDesiRequestAdminDataDto.getHeight(),
+                    cargoBuyDesiRequestAdminDataDto.getWeight(),
+                    ProductTemplate.DistanceUnit.valueOf(cargoBuyDesiRequestAdminDataDto.getDistanceUnit()),
+                    ProductTemplate.MassUnit.valueOf(cargoBuyDesiRequestAdminDataDto.getMassUnit()),
+                    shipment.getId(),
+                    shipment.getResponsiveLabelURL(),
+                    new BigDecimal(offerApproveDto.getData().getTotalAmount()),
+                    OrderPackage.CargoCompany.valueOf(shipment.getProviderServiceCode()),
+                    OrderPackage.CargoStatus.information_received,
+                    shipment.getId(),
+                    shipment.getBarcode(),
+                    shipment.isProductPaymentOnDelivery(),
+                    offerApproveDto.getData().isCanceled(),
+                    offerApproveDto.getData().isRefund(),
+                    "Depo"
+            );
+            order.getOrderStatus().getOrderPackages().add(orderPackage);
+        }
+        Order saveOrder = orderRepository.save(order);
+
+        return saveOrder.getOrderStatus().getOrderPackages().stream().map(x->{
+            return new OfferApproveUserDto(
+                    new ShipmentUserDto(
+                            String.valueOf(x.getId()),
+                            x.getCreateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            x.getUpdateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            true,
+                            x.getBarcode(),
+                            null,
+                            x.getResponsiveLabelURL(),
+                            x.getStatusCode().name(),
+                            x.getResponsiveLabelURL()
+                    )
+            );
+        }).toList();
+
     }
 
     public String cargoRefund(RefundCreateDto refundCreateDto) {

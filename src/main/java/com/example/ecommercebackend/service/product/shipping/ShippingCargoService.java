@@ -419,7 +419,107 @@ public class ShippingCargoService {
     }
 
 
+    public OfferApproveDto buyOneStepCargo(CargoBuyRequestDto cargoBuyRequestDto){
 
+        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+
+        String responseJson = webClient.post()
+                .uri("/transactions")
+                .header("Authorization", "Bearer %s".formatted(apiKey))
+                .header("Content-Type", "application/json")
+                .bodyValue(cargoBuyRequestDto)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, r ->
+                        r.bodyToMono(String.class)
+                                .map(resp -> {
+                                    log.error("4xx Client Error: {}", resp);
+                                    return new BadRequestException("API 4xx error: " + resp);
+                                })
+                )
+                .onStatus(HttpStatusCode::is5xxServerError, r ->
+                        r.bodyToMono(String.class)
+                                .map(resp -> {
+                                    log.error("5xx Server Error: {}", resp);
+                                    return new BadRequestException("API 5xx error: " + resp);
+                                })
+                )
+                .bodyToMono(String.class)
+                .block();
+        System.out.println(responseJson);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            JsonNode root = mapper.readTree(responseJson);
+
+            boolean result = root.get("result").asBoolean();
+            String message = root.get("message").asText();
+
+            if (result) {
+                return mapper.readValue(responseJson, OfferApproveDto.class);
+            } else {
+                log.error("buyOneStepCargo methodu çalışmadı. Hata kodu mesajı {}", message);
+                throw new BadRequestException("3. parti servis hatası");
+            }
+
+        } catch (Exception e) {
+            log.error("offer approve Json dönüştürülemedi! " + e.getMessage());
+            throw new BadRequestException("3. Parti Servis Hatası");
+        }
+
+    }
+
+
+
+    public OfferApproveDto buyContractCargo(CargoBuyContractRequestDto cargoBuyRequestDto){
+
+        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+
+        String responseJson = webClient.post()
+                .uri("/transactions")
+                .header("Authorization", "Bearer %s".formatted(apiKey))
+                .header("Content-Type", "application/json")
+                .bodyValue(cargoBuyRequestDto)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, r ->
+                        r.bodyToMono(String.class)
+                                .map(resp -> {
+                                    log.error("4xx Client Error: {}", resp);
+                                    return new BadRequestException("API 4xx error: " + resp);
+                                })
+                )
+                .onStatus(HttpStatusCode::is5xxServerError, r ->
+                        r.bodyToMono(String.class)
+                                .map(resp -> {
+                                    log.error("5xx Server Error: {}", resp);
+                                    return new BadRequestException("API 5xx error: " + resp);
+                                })
+                )
+                .bodyToMono(String.class)
+                .block();
+        System.out.println(responseJson);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            JsonNode root = mapper.readTree(responseJson);
+
+            boolean result = root.get("result").asBoolean();
+            String message = root.get("message").asText();
+
+            if (result) {
+                return mapper.readValue(responseJson, OfferApproveDto.class);
+            } else {
+                log.error("buyContractCargo methodu çalışmadı. Hata kodu mesajı {}", message);
+                throw new BadRequestException("3. parti servis hatası");
+            }
+
+        } catch (Exception e) {
+            log.error("offer approve Json dönüştürülemedi! " + e.getMessage());
+            throw new BadRequestException("3. Parti Servis Hatası");
+        }
+
+    }
 
 
 

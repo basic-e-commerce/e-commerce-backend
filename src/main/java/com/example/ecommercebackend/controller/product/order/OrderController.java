@@ -5,6 +5,7 @@ import com.example.ecommercebackend.dto.payment.refund.RefundCreateDto;
 import com.example.ecommercebackend.dto.product.order.*;
 import com.example.ecommercebackend.dto.product.products.ProductFilterRequest;
 import com.example.ecommercebackend.dto.product.products.productTemplate.CargoOfferDesiRequestAdminDto;
+import com.example.ecommercebackend.dto.product.shipping.CargoBuyDesiRequestAdminDto;
 import com.example.ecommercebackend.dto.product.shipping.OfferApproveDto;
 import com.example.ecommercebackend.entity.product.order.OrderPackage;
 import com.example.ecommercebackend.entity.product.products.Product;
@@ -92,6 +93,16 @@ public class OrderController {
     @PostMapping("/cargo-refund")
     public ResponseEntity<String> cargoRefund(@RequestBody(required = false) RefundCreateDto refundCreateDto){
         return new ResponseEntity<>(orderService.cargoRefund(refundCreateDto),HttpStatus.OK);
+    }
+
+    @PostMapping("/cargo-one-step")
+    public ResponseEntity<List<OfferApproveUserDto>> buyOneStepCargo(@RequestBody(required = false) CargoBuyDesiRequestAdminDto cargoBuyDesiRequestAdminDto){
+        return new ResponseEntity<>(orderService.buyOneStepCargo(cargoBuyDesiRequestAdminDto),HttpStatus.OK);
+    }
+
+    @PostMapping("/cargo-contract")
+    public ResponseEntity<List<OfferApproveUserDto>> buyContractCargo(@RequestBody(required = false) CargoBuyDesiRequestAdminDto cargoBuyDesiRequestAdminDto){
+        return new ResponseEntity<>(orderService.buyContractCargo(cargoBuyDesiRequestAdminDto),HttpStatus.OK);
     }
 
 

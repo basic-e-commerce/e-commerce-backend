@@ -127,7 +127,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-offer").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/order/offer-approve").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-refund").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-cancel").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-one-step").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-contract").hasAuthority("ADMIN")
+
 
 
                         .requestMatchers(HttpMethod.PUT,"/api/v1/card").hasAuthority("CUSTOMER")

@@ -36,6 +36,8 @@ public class OrderPackage {
     private String shipmentId;
     private String responsiveLabelURL;
 
+    private BigDecimal orderPackagePrice;
+
     @Column(name = "status_code",nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusCode statusCode = StatusCode.PRE_TRANSIT;
@@ -61,7 +63,7 @@ public class OrderPackage {
     private Instant updateAt;
 
 
-    public OrderPackage(Set<OrderItem> orderItems, String packageName, double length, double width, double height, double weight, ProductTemplate.DistanceUnit distanceUnit, ProductTemplate.MassUnit massUnit, String shipmentId, String responsiveLabelURL, CargoCompany cargoCompany, CargoStatus cargoStatus, String cargoId, String barcode, Boolean productPaymentOnDelivery, Boolean isCanceled, Boolean isRefund, String location) {
+    public OrderPackage(Set<OrderItem> orderItems, String packageName, double length, double width, double height, double weight, ProductTemplate.DistanceUnit distanceUnit, ProductTemplate.MassUnit massUnit, String shipmentId, String responsiveLabelURL, BigDecimal orderPackagePrice, CargoCompany cargoCompany, CargoStatus cargoStatus, String cargoId, String barcode, Boolean productPaymentOnDelivery, Boolean isCanceled, Boolean isRefund, String location) {
         this.orderItems = orderItems;
         this.packageName = packageName;
         this.length = length;
@@ -72,6 +74,7 @@ public class OrderPackage {
         this.massUnit = massUnit;
         this.shipmentId = shipmentId;
         this.responsiveLabelURL = responsiveLabelURL;
+        this.orderPackagePrice = orderPackagePrice;
         this.cargoCompany = cargoCompany;
         this.cargoStatus = cargoStatus;
         this.cargoId = cargoId;
@@ -174,6 +177,14 @@ public class OrderPackage {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public BigDecimal getOrderPackagePrice() {
+        return orderPackagePrice;
+    }
+
+    public void setOrderPackagePrice(BigDecimal orderPackagePrice) {
+        this.orderPackagePrice = orderPackagePrice;
     }
 
     public enum StatusCode{
