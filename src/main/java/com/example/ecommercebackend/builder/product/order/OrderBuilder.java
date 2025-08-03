@@ -113,7 +113,7 @@ public class OrderBuilder {
                                                         y.getId() != null ? y.getId() : null
                                                 )).collect(Collectors.toSet()),
                                         x.getShipmentId(),
-                                        x.getStatusCode() != null ? x.getStatusCode().name() : null,
+                                        x.getOrderPackageStatusCode() != null ? x.getOrderPackageStatusCode().name() : null,
                                         x.getCargoId(),
                                         x.getCargoCompany() != null ? x.getCargoCompany().name() : null,
                                         x.getCargoStatus() != null ? x.getCargoStatus().getValue() : null,
@@ -146,7 +146,7 @@ public class OrderBuilder {
                                                         y.getId() != null ? y.getId() : null
                                                 )).collect(Collectors.toSet()),
                                         x.getShipmentId(),
-                                        x.getStatusCode() != null ? x.getStatusCode().name() : null,
+                                        x.getOrderPackageStatusCode() != null ? x.getOrderPackageStatusCode().name() : null,
                                         x.getCargoId(),
                                         x.getCargoCompany() != null ? x.getCargoCompany().name() : null,
                                         x.getCargoStatus() != null ? x.getCargoStatus().getValue() : null,

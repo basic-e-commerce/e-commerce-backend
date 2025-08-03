@@ -8,14 +8,14 @@ public class OrderFilterRequest {
     private String sortBy; // "price", "name" vb.
     private String sortDirection; // "asc" veya "desc"
     private Payment.PaymentStatus paymentStatus;
-    private OrderPackage.StatusCode statusCode;
+    private OrderPackage.OrderPackageStatusCode orderPackageStatusCode;
     private OrderStatus.Status orderStatus;
 
-    public OrderFilterRequest(String sortBy, String sortDirection, Payment.PaymentStatus paymentStatus, OrderPackage.StatusCode statusCode, OrderStatus.Status orderStatus) {
+    public OrderFilterRequest(String sortBy, String sortDirection, Payment.PaymentStatus paymentStatus, OrderPackage.OrderPackageStatusCode orderPackageStatusCode, OrderStatus.Status orderStatus) {
         this.sortBy = sortBy;
         this.sortDirection = sortDirection;
         this.paymentStatus = paymentStatus;
-        this.statusCode = statusCode;
+        this.orderPackageStatusCode = orderPackageStatusCode;
         this.orderStatus = orderStatus;
     }
 
@@ -43,12 +43,12 @@ public class OrderFilterRequest {
         this.paymentStatus = paymentStatus;
     }
 
-    public OrderPackage.StatusCode getStatusCode() {
-        return statusCode;
+    public OrderPackage.OrderPackageStatusCode getOrderPackageStatusCode() {
+        return orderPackageStatusCode;
     }
 
-    public void setStatusCode(OrderPackage.StatusCode statusCode) {
-        this.statusCode = statusCode;
+    public void setOrderPackageStatusCode(OrderPackage.OrderPackageStatusCode orderPackageStatusCode) {
+        this.orderPackageStatusCode = orderPackageStatusCode;
     }
 
     public OrderStatus.Status getOrderStatus() {

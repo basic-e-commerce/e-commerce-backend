@@ -38,9 +38,9 @@ public class OrderPackage {
 
     private BigDecimal orderPackagePrice;
 
-    @Column(name = "status_code",nullable = false)
+    @Column(name = "order_package_status_code",nullable = false)
     @Enumerated(EnumType.STRING)
-    private StatusCode statusCode = StatusCode.PRE_TRANSIT;
+    private OrderPackageStatusCode orderPackageStatusCode = OrderPackageStatusCode.PRE_TRANSIT;
 
     @Column(name = "cargo_company")
     @Enumerated(EnumType.STRING)
@@ -99,12 +99,12 @@ public class OrderPackage {
         this.updateAt = Instant.now();
     }
 
-    public StatusCode getStatusCode() {
-        return statusCode;
+    public OrderPackageStatusCode getOrderPackageStatusCode() {
+        return orderPackageStatusCode;
     }
 
-    public void setStatusCode(StatusCode statusCode) {
-        this.statusCode = statusCode;
+    public void setOrderPackageStatusCode(OrderPackageStatusCode orderPackageStatusCode) {
+        this.orderPackageStatusCode = orderPackageStatusCode;
     }
 
     public String getShipmentId() {
@@ -187,7 +187,7 @@ public class OrderPackage {
         this.orderPackagePrice = orderPackagePrice;
     }
 
-    public enum StatusCode{
+    public enum OrderPackageStatusCode{
         PRE_TRANSIT,
         TRANSIT,
         DELIVERED,

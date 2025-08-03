@@ -94,7 +94,7 @@ public class OrderStatus {
     public enum Status {
         PENDING("Ürün Ödeme sürecindedir"),
         APPROVED("Ürün ödemesi yapıldı, Kargo için Hazırlanıyor"),
-        PARTIAL_REFUNDED("Siparişi bir kısım ödemesi yapıldı"),
+        PARTIAL_REFUNDED("Siparişi bir kısım geri ödemesi yapıldı"),
         REFUNDED("Iade sipariş"),
         CANCEL("İptal Edilen Sipariş");
 

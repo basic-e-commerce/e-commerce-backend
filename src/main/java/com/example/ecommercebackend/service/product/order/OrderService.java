@@ -802,7 +802,7 @@ public class OrderService {
         }
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        return orderRepository.findAll(filterOrders(orderFilterRequest.getOrderStatus(),orderFilterRequest.getStatusCode(),orderFilterRequest.getPaymentStatus()),pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
+        return orderRepository.findAll(filterOrders(orderFilterRequest.getOrderStatus(),orderFilterRequest.getOrderPackageStatusCode(),orderFilterRequest.getPaymentStatus()),pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
     }
 
     public List<Order> filterGuestSuccessOrder(User user){
@@ -811,7 +811,7 @@ public class OrderService {
         return orderRepository.findAll(specification,sort);
     }
 
-    private Specification<Order> filterOrders(OrderStatus.Status status, OrderPackage.StatusCode statusCode, Payment.PaymentStatus paymentStatus) {
+    private Specification<Order> filterOrders(OrderStatus.Status status, OrderPackage.OrderPackageStatusCode orderPackageStatusCode, Payment.PaymentStatus paymentStatus) {
         Specification<Order> spec = Specification.where(null);
 
         if (status != null) {
@@ -820,8 +820,8 @@ public class OrderService {
             spec = spec.and(hasNullStatus());
         }
 
-        if (statusCode != null) {
-            spec = spec.and(hasStatusCode(statusCode));
+        if (orderPackageStatusCode != null) {
+            spec = spec.and(hasStatusCode(orderPackageStatusCode));
         } else {
             spec = spec.and(hasNullStatusCode());
         }
@@ -904,18 +904,18 @@ public class OrderService {
             return cb.equal(statusJoin.get("status"), status);
         };
     }
-    public Specification<Order> hasStatusCode(OrderPackage.StatusCode statusCode) {
+    public Specification<Order> hasStatusCode(OrderPackage.OrderPackageStatusCode orderPackageStatusCode) {
         return (root, query, cb) -> {
             Join<Order, OrderStatus> statusJoin = root.join("orderStatus", JoinType.LEFT);
 
-            if (statusCode == null) {
+            if (orderPackageStatusCode == null) {
                 // orderPackages ilişkisi boş olanları getir
                 return cb.isEmpty(statusJoin.get("orderPackages"));
             }
 
             // orderPackages içinde statusCode eşleşenleri getir
             Join<OrderStatus, OrderPackage> packageJoin = statusJoin.join("orderPackages", JoinType.LEFT);
-            return cb.equal(packageJoin.get("statusCode"), statusCode);
+            return cb.equal(packageJoin.get("orderPackageStatusCode"), orderPackageStatusCode);
         };
     }
 
@@ -1256,7 +1256,7 @@ public class OrderService {
                     );
                 }).collect(Collectors.toSet()),
                 saveOrderPackage.getShipmentId(),
-                saveOrderPackage.getStatusCode().name(),
+                saveOrderPackage.getOrderPackageStatusCode().name(),
                 saveOrderPackage.getCargoId(),
                 saveOrderPackage.getCargoCompany().name(),
                 saveOrderPackage.getCargoStatus().getValue(),
@@ -1382,7 +1382,7 @@ public class OrderService {
                             x.getBarcode(),
                             null,
                             x.getResponsiveLabelURL(),
-                            x.getStatusCode().name(),
+                            x.getOrderPackageStatusCode().name(),
                             x.getResponsiveLabelURL()
                     )
             );
@@ -1508,7 +1508,7 @@ public class OrderService {
                             x.getBarcode(),
                             null,
                             x.getResponsiveLabelURL(),
-                            x.getStatusCode().name(),
+                            x.getOrderPackageStatusCode().name(),
                             x.getResponsiveLabelURL()
                     )
             );
@@ -1668,7 +1668,7 @@ public class OrderService {
         refundOrderPackage.setHeight(orderPackage.getHeight());
         refundOrderPackage.setDistanceUnit(orderPackage.getDistanceUnit());
         refundOrderPackage.setMassUnit(orderPackage.getMassUnit());
-        refundOrderPackage.setStatusCode(OrderPackage.StatusCode.PRE_TRANSIT);
+        refundOrderPackage.setOrderPackageStatusCode(OrderPackage.OrderPackageStatusCode.PRE_TRANSIT);
         refundOrderPackage.setCargoCompany(orderPackage.getCargoCompany());
         refundOrderPackage.setCargoStatus(OrderPackage.CargoStatus.information_received);
         refundOrderPackage.setProductPaymentOnDelivery(orderPackage.getProductPaymentOnDelivery());
@@ -1738,7 +1738,7 @@ public class OrderService {
         orderPackage.setUpdateAt(Instant.now());
         orderPackage.setCanceled(true);
         orderPackage.setCargoStatus(OrderPackage.CargoStatus.cancel);
-        orderPackage.setStatusCode(OrderPackage.StatusCode.valueOf(offerCancelDto.getData().getStatusCode()));
+        orderPackage.setOrderPackageStatusCode(OrderPackage.OrderPackageStatusCode.valueOf(offerCancelDto.getData().getStatusCode()));
         orderPackageService.save(orderPackage);
         return "Kargo iptal edildi";
     }

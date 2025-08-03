@@ -52,7 +52,7 @@ public class OrderPackageService {
                     );
                 }).collect(Collectors.toSet()),
                 orderPackage.getShipmentId(),
-                orderPackage.getStatusCode().name(),
+                orderPackage.getOrderPackageStatusCode().name(),
                 orderPackage.getCargoId(),
                 orderPackage.getCargoCompany().name(),
                 orderPackage.getCargoStatus().getValue(),
@@ -103,7 +103,7 @@ public class OrderPackageService {
         System.out.println("gelen kargo ID : "+ webhookTrackUpdatedPayload.getData().getId());
         System.out.println("gelen kargo id 2 : "+ webhookTrackUpdatedPayload.getData().getTrackingStatus().getId());
         orderPackage.setCargoStatus(OrderPackage.CargoStatus.valueOf(webhookTrackUpdatedPayload.getData().getTrackingStatus().getTrackingSubStatusCode()));
-        orderPackage.setStatusCode(OrderPackage.StatusCode.valueOf(webhookTrackUpdatedPayload.getData().getTrackingStatus().getTrackingStatusCode()));
+        orderPackage.setOrderPackageStatusCode(OrderPackage.OrderPackageStatusCode.valueOf(webhookTrackUpdatedPayload.getData().getTrackingStatus().getTrackingStatusCode()));
         orderPackage.setUpdateAt(Instant.parse(webhookTrackUpdatedPayload.getData().getTrackingStatus().getUpdateAt()));
         orderPackage.setLocation(webhookTrackUpdatedPayload.getData().getTrackingStatus().getLocationName());
         orderPackage.setResponsiveLabelURL(webhookTrackUpdatedPayload.getData().getTrackingUrl());
