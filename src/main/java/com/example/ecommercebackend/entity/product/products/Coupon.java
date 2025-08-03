@@ -33,6 +33,7 @@ public class Coupon {
     @Column(nullable = false)
     private int timesUsed = 0;
 
+    @Column(nullable = false)
     private int userTimeUsed = 1;
 
     private Integer totalUsageLimit; // Genel kullanım limiti (opsiyonel)
