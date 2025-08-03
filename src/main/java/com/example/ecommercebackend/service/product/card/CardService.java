@@ -192,72 +192,10 @@ public class CardService {
 
         BigDecimal orderPrice = BigDecimal.valueOf(0);
 
-        if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
-            BigDecimal discountValue = coupon.getDiscountValue(); // Örneğin %10 ise 10 gelir
-
-            for (CardItem orderItem : items) {
-                BigDecimal cardPrice = orderItem.getProduct().getComparePrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
-
-                if (coupon.getProductAssigned()) {
-                    boolean isProductInCoupon = coupon.getProducts().stream()
-                            .anyMatch(product -> product.equals(orderItem.getProduct()));
-
-                    if (isProductInCoupon) {
-                        System.out.println("fiçeride");
-                        BigDecimal substractDiscountPrice = cardPrice.multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-                        BigDecimal discountPrice = cardPrice.subtract(substractDiscountPrice);
-                        orderPrice = orderPrice.add(discountPrice);
-                    } else {
-                        orderPrice = orderPrice.add(cardPrice);
-                    }
-                } else {
-                    System.out.println("subst");
-                    BigDecimal substractDiscountPrice = cardPrice.multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-                    System.out.println(substractDiscountPrice);
-                    BigDecimal discountPrice = cardPrice.subtract(substractDiscountPrice);
-                    System.out.println(discountPrice);
-                    orderPrice = orderPrice.add(discountPrice);
-                }
-            }
-
-        } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
-
-            if (coupon.getProductAssigned()) {
-                int orderItemSize = 0;
-                for (CardItem orderItem : items) {
-                    if (coupon.getProducts().contains(orderItem.getProduct())) {
-                        orderItemSize += 1;
-                    }
-                }
-                BigDecimal substract = coupon.getDiscountValue()
-                        .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
-
-                for (CardItem orderItem : items) {
-                    BigDecimal cardPrice = orderItem.getProduct().getComparePrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
-
-                    if (coupon.getProducts().contains(orderItem.getProduct())) {
-                        BigDecimal discountPrice = cardPrice.subtract(substract);
-                        orderPrice = orderPrice.add(discountPrice);
-                    } else {
-                        orderPrice = orderPrice.add(cardPrice);
-                    }
-                }
-            } else {
-                int orderItemSize = items.size();
-
-                BigDecimal substract = coupon.getDiscountValue()
-                        .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
-
-                for (CardItem orderItem : items) {
-                    BigDecimal cardPrice = orderItem.getProduct().getComparePrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
-                    BigDecimal discountPrice = cardPrice.subtract(substract);
-                    orderPrice = orderPrice.add(discountPrice);
-                }
-            }
-
-        } else
-            throw new BadRequestException("Geçersiz kupon tipi!");
-
+        for (CardItem orderItem : items) {
+            BigDecimal cardItemPrice = orderItem.getProduct().getComparePrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
+            orderPrice = orderPrice.add(cardItemPrice);
+        }
 
         System.out.println("ORderprice:::" + orderPrice);
         // orderPrice hesaplandıktan sonra kontroller
