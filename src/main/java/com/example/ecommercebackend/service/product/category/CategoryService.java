@@ -152,9 +152,14 @@ public class CategoryService {
 
     public CategoryDetailDto updateCategory(@NotNullParam CategoryUpdateDto categoryUpdateDto) {
         Category category = findCategoryById(categoryUpdateDto.getId());
-        category.setCategoryName(categoryUpdateDto.getName());
+
         if (!category.getCategoryName().equals(categoryUpdateDto.getName())) {
-            category.setCategoryLinkName(generateLinkName(categoryUpdateDto.getName()));
+            category.setCategoryName(categoryUpdateDto.getName());
+            String linkName = generateLinkName(categoryUpdateDto.getName());
+            if (existCategoryByLinkName(linkName)){
+                linkName+="-1";
+            }
+            category.setCategoryLinkName(linkName);
         }
         category.setCategoryDescription(categoryUpdateDto.getDescription());
 
