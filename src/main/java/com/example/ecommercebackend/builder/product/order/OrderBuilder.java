@@ -167,6 +167,7 @@ public class OrderBuilder {
                                 : null
                 ),
                 order.getPayments().getPaymentStatus(),
+                order.getCouponDiscount() != null ? order.getCouponDiscount() : BigDecimal.ZERO,
                 order.getRefundPrice() != null ? order.getRefundPrice() : BigDecimal.ZERO,
                 order.getShippingFee(),
                 order.getCreatedAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)

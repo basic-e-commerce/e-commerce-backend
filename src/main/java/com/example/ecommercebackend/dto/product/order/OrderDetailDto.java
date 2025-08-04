@@ -23,12 +23,12 @@ public class OrderDetailDto {
     private InvoiceResponseDto invoiceResponseDto;
     private OrderStatusResponse orderStatusResponse;
     private Payment.PaymentStatus paymentStatus;
-    private CustomerCouponDto customerCouponDto;
+    private BigDecimal substractDiscountPrice;
     private BigDecimal refundPrice;
     private BigDecimal shippingFee;
     private String createdAt;
 
-    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, List<OrderItemResponseDto> refundItemResponseDtos, int installment, OrderStatusResponse orderStatusResponse, Payment.PaymentStatus paymentStatus, BigDecimal refundPrice, BigDecimal shippingFee, String createdAt) {
+    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, List<OrderItemResponseDto> refundItemResponseDtos, int installment, OrderStatusResponse orderStatusResponse, Payment.PaymentStatus paymentStatus, BigDecimal substractDiscountPrice, BigDecimal refundPrice, BigDecimal shippingFee, String createdAt) {
         this.id = id;
         this.orderCode = orderCode;
         this.firstName = firstName;
@@ -41,6 +41,7 @@ public class OrderDetailDto {
         this.installment = installment;
         this.orderStatusResponse = orderStatusResponse;
         this.paymentStatus = paymentStatus;
+        this.substractDiscountPrice = substractDiscountPrice;
         this.refundPrice = refundPrice;
         this.shippingFee = shippingFee;
         this.createdAt = createdAt;
@@ -172,5 +173,13 @@ public class OrderDetailDto {
 
     public void setRefundPrice(BigDecimal refundPrice) {
         this.refundPrice = refundPrice;
+    }
+
+    public BigDecimal getSubstractDiscountPrice() {
+        return substractDiscountPrice;
+    }
+
+    public void setSubstractDiscountPrice(BigDecimal substractDiscountPrice) {
+        this.substractDiscountPrice = substractDiscountPrice;
     }
 }
