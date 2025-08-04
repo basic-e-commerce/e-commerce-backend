@@ -257,6 +257,7 @@ public class OrderService {
             if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
                 System.out.println("kupon kodu: "+ orderCreateDto.getCode());
                 coupon = couponService.findByCode(orderCreateDto.getCode());
+                System.out.println(coupon.getCode());
             }
 
             if (coupon != null) {
@@ -270,6 +271,7 @@ public class OrderService {
 
             CustomerCoupon customerCoupon;
             if (coupon != null){
+                System.out.println(coupon.getCode());
                 customerCoupon = customerCouponService.findCouponAndCustomer(coupon, customer);
                 if (customerCoupon != null) {
                     if (customerCoupon.getUsedQuantity() >= coupon.getUserTimeUsed()){
@@ -505,7 +507,6 @@ public class OrderService {
 
     public BigDecimal orderPrice(Set<OrderItem> orderItems,Coupon coupon) {
         BigDecimal orderPrice = BigDecimal.valueOf(0);
-        BigDecimal couponPrice = BigDecimal.ZERO;
 
         if (coupon != null) {
             if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
@@ -524,6 +525,7 @@ public class OrderService {
                         if (isProductInCoupon) {
                             System.out.println("fiçeride");
                             BigDecimal substractDiscountPrice =  orderItem.getPrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                            System.out.println("substractDiscountPrice: "+substractDiscountPrice);
                             BigDecimal discountPrice = orderItem.getPrice().subtract(substractDiscountPrice);
                             orderPrice = orderPrice.add(discountPrice);
                             System.out.println("orderprice: "+ orderPrice);
