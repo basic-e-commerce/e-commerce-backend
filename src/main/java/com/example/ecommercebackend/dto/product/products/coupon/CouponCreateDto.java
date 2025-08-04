@@ -19,8 +19,6 @@ public class CouponCreateDto {
     @NotNullField
     private Integer tatalUsageLimit;
     @NotNullField
-    private int userTimeUsed;
-    @NotNullField
     private BigDecimal minOrderAmountLimit;
     @NotNullField
     private BigDecimal maxOrderAmountLimit;
@@ -37,13 +35,12 @@ public class CouponCreateDto {
     @NotNullField
     private Boolean isProductAssigned;
 
-    public CouponCreateDto(String code, String description, BigDecimal discountValue, String discountType, Integer tatalUsageLimit, int userTimeUsed, BigDecimal minOrderAmountLimit, BigDecimal maxOrderAmountLimit, Instant startDate, Instant endDate, List<Integer> productIds, List<Integer> customerIds , Boolean isActive, Boolean isCustomerAssigned, Boolean isProductAssigned) {
+    public CouponCreateDto(String code, String description, BigDecimal discountValue, String discountType, Integer tatalUsageLimit, BigDecimal minOrderAmountLimit, BigDecimal maxOrderAmountLimit, Instant startDate, Instant endDate, List<Integer> productIds, List<Integer> customerIds , Boolean isActive, Boolean isCustomerAssigned, Boolean isProductAssigned) {
         this.code = code;
         this.description = description;
         this.discountValue = discountValue;
         this.discountType = discountType;
         this.tatalUsageLimit = tatalUsageLimit;
-        this.userTimeUsed = userTimeUsed;
         this.minOrderAmountLimit = minOrderAmountLimit;
         this.maxOrderAmountLimit = maxOrderAmountLimit;
         this.startDate = startDate;
@@ -166,13 +163,5 @@ public class CouponCreateDto {
 
     public void setMaxOrderAmountLimit(BigDecimal maxOrderAmountLimit) {
         this.maxOrderAmountLimit = maxOrderAmountLimit;
-    }
-
-    public int getUserTimeUsed() {
-        return userTimeUsed;
-    }
-
-    public void setUserTimeUsed(int userTimeUsed) {
-        this.userTimeUsed = userTimeUsed;
     }
 }

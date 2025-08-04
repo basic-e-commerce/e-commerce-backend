@@ -33,9 +33,6 @@ public class Coupon {
     @Column(nullable = false)
     private int timesUsed = 0;
 
-    @Column(name = "user_time_used")
-    private int userTimeUsed = 1;
-
     private Integer totalUsageLimit; // Genel kullanım limiti (opsiyonel)
 
     private BigDecimal minOrderAmountLimit;
@@ -159,14 +156,6 @@ public class Coupon {
 
     public void setMaxOrderAmountLimit(BigDecimal maxOrderAmountLimit) {
         this.maxOrderAmountLimit = maxOrderAmountLimit;
-    }
-
-    public int getUserTimeUsed() {
-        return userTimeUsed;
-    }
-
-    public void setUserTimeUsed(int userTimeUsed) {
-        this.userTimeUsed = userTimeUsed;
     }
 
     public enum DiscountType{

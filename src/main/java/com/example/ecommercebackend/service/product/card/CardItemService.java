@@ -294,7 +294,7 @@ public class CardItemService {
         }
         CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
         if (customerCoupon != null) {
-            if (customerCoupon.getUsedQuantity() >= coupon.getUserTimeUsed())
+            if (customerCoupon.getUsed())
                 return null;
         }
 

@@ -133,7 +133,7 @@ public class CardService {
 
             CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
             if (customerCoupon != null) {
-                if (customerCoupon.getUsedQuantity() >= coupon.getUserTimeUsed())
+                if (customerCoupon.getUsed())
                     return null;
             }
 
@@ -191,8 +191,8 @@ public class CardService {
 
         CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
         if (customerCoupon != null) {
-            if (customerCoupon.getUsedQuantity() >= coupon.getUserTimeUsed())
-                throw new ResourceAlreadyExistException("Bu kupon limitlerince kullanılmıştır!");
+            if (customerCoupon.getUsed())
+                throw new ResourceAlreadyExistException("Bu kupon kullanılmıştır!");
         }
 
         BigDecimal orderPrice = BigDecimal.valueOf(0);

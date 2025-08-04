@@ -97,12 +97,6 @@ public class CouponService {
             coupon.setMaxOrderAmountLimit(couponCreateDto.getMaxOrderAmountLimit());
         }
 
-        if (couponCreateDto.getUserTimeUsed() > 1)
-            coupon.setUserTimeUsed(couponCreateDto.getUserTimeUsed());
-        else
-            coupon.setUserTimeUsed(1);
-
-
         Instant now = Instant.now();
         Instant startDate = couponCreateDto.getStartDate();
 

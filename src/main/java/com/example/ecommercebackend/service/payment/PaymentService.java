@@ -175,7 +175,7 @@ public class PaymentService {
                 order.getCustomerCoupon().setUsed(true);
                 order.getCustomerCoupon().setUsedAt(Instant.now());
                 order.getCustomerCoupon().getCoupon().setTimesUsed(order.getCustomerCoupon().getCoupon().getTimesUsed()+1);
-                order.getCustomerCoupon().setUsedQuantity(order.getCustomerCoupon().getUsedQuantity()+1);
+
             }
             Set<Sell> sells = new HashSet<>();
 
