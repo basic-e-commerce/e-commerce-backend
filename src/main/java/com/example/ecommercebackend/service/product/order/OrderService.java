@@ -255,6 +255,7 @@ public class OrderService {
             Coupon coupon = null;
 
             if (orderCreateDto.getCode() != null && !orderCreateDto.getCode().isEmpty()) {
+                System.out.println("kupon kodu: "+ orderCreateDto.getCode());
                 coupon = couponService.findByCode(orderCreateDto.getCode());
             }
 
