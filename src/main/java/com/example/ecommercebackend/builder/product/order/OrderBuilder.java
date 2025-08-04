@@ -13,6 +13,7 @@ import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -165,6 +166,8 @@ public class OrderBuilder {
                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                                 : null
                 ),
+                order.getPayments().getPaymentStatus(),
+                order.getRefundPrice() != null ? order.getRefundPrice() : BigDecimal.ZERO,
                 order.getShippingFee(),
                 order.getCreatedAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         );

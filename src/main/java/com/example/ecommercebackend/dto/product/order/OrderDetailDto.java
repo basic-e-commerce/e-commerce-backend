@@ -3,6 +3,7 @@ package com.example.ecommercebackend.dto.product.order;
 import com.example.ecommercebackend.dto.product.coupon.CouponResponseDto;
 import com.example.ecommercebackend.dto.product.invoice.InvoiceResponseDto;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
+import com.example.ecommercebackend.entity.payment.Payment;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,10 +21,12 @@ public class OrderDetailDto {
     private int installment;
     private InvoiceResponseDto invoiceResponseDto;
     private OrderStatusResponse orderStatusResponse;
+    private Payment.PaymentStatus paymentStatus;
+    private BigDecimal refundPrice;
     private BigDecimal shippingFee;
     private String createdAt;
 
-    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, List<OrderItemResponseDto> refundItemResponseDtos, int installment, OrderStatusResponse orderStatusResponse, BigDecimal shippingFee, String createdAt) {
+    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, List<OrderItemResponseDto> refundItemResponseDtos, int installment, OrderStatusResponse orderStatusResponse, Payment.PaymentStatus paymentStatus, BigDecimal refundPrice, BigDecimal shippingFee, String createdAt) {
         this.id = id;
         this.orderCode = orderCode;
         this.firstName = firstName;
@@ -35,6 +38,8 @@ public class OrderDetailDto {
         this.refundItemResponseDtos = refundItemResponseDtos;
         this.installment = installment;
         this.orderStatusResponse = orderStatusResponse;
+        this.paymentStatus = paymentStatus;
+        this.refundPrice = refundPrice;
         this.shippingFee = shippingFee;
         this.createdAt = createdAt;
     }
@@ -149,5 +154,21 @@ public class OrderDetailDto {
 
     public void setShippingFee(BigDecimal shippingFee) {
         this.shippingFee = shippingFee;
+    }
+
+    public Payment.PaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(Payment.PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public BigDecimal getRefundPrice() {
+        return refundPrice;
+    }
+
+    public void setRefundPrice(BigDecimal refundPrice) {
+        this.refundPrice = refundPrice;
     }
 }
