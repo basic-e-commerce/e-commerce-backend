@@ -168,7 +168,12 @@ public class OrderBuilder {
                 ),
                 order.getPayments().getPaymentStatus(),
                 order.getCouponDiscount() != null ? order.getCouponDiscount() : BigDecimal.ZERO,
-                order.getCustomerCoupon() != null ? new CustomerCouponDto(order.getCustomerCoupon().getCoupon().getId(),order.getCustomerCoupon().getCoupon().getCode()) : null,
+                order.getCustomerCoupon() != null && order.getCustomerCoupon().getCoupon() != null
+                        ? new CustomerCouponDto(
+                        order.getCustomerCoupon().getCoupon().getId(),
+                        order.getCustomerCoupon().getCoupon().getCode()
+                )
+                        : null,
                 order.getRefundPrice() != null ? order.getRefundPrice() : BigDecimal.ZERO,
                 order.getShippingFee(),
                 order.getCreatedAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)

@@ -2032,7 +2032,7 @@ public class OrderService {
 
     public List<OrderDetailDto> getAllOrderByUsername(@NotNullParam String username) {
         Sort sort = Sort.by(Sort.Direction.DESC,"id");
-        Specification<Order> orderSpecification = null;
+        Specification<Order> orderSpecification;
         if (isEmail(username)) {
             orderSpecification = Specification.where(hasEmail(username));
         }else if (isPhoneNumber(username)) {
@@ -2059,66 +2059,6 @@ public class OrderService {
 
     private boolean isPhoneNumber(String input) {
         return input != null && input.matches("^\\+?[0-9]{10,15}$");
-    }
-
-
-
-    private BigDecimal getCouponDiscountAmount(Coupon coupon, List<CardResponseDetails> cardResponseDetails) {
-
-        if (coupon.getProductAssigned()){
-            BigDecimal totalPrice = BigDecimal.ZERO;
-
-            List<CardResponseDetails> discountProducts = new ArrayList<>();
-
-            for (CardResponseDetails productQuantityDtos : cardResponseDetails) {
-                for (Product product: coupon.getProducts()) {
-                    if (productQuantityDtos.getId() == product.getId()) {
-                        discountProducts.add(productQuantityDtos);
-                    }
-                }
-            }
-
-            for (CardResponseDetails cardResponseDetailsCouponProduct: discountProducts) {
-                totalPrice = totalPrice.add(cardResponseDetailsCouponProduct.getComparePrice().multiply(BigDecimal.valueOf(cardResponseDetailsCouponProduct.getQuantity())));
-            }
-
-            if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)){
-                BigDecimal discountAmount = totalPrice.subtract(coupon.getDiscountValue());
-                if (discountAmount.compareTo(BigDecimal.ZERO) < 0) { // discountAmount 0'dan küçüktür
-                    return totalPrice;
-                }else
-                    return coupon.getDiscountValue();
-
-            } else if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
-
-                BigDecimal percentage = coupon.getDiscountValue(); // Örn: %10 için 10
-                return totalPrice.multiply(percentage).divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP);
-            }else
-                throw new BadRequestException("Geçersiz indirim tipi");
-
-
-
-        }else{
-            BigDecimal totalPrice = BigDecimal.ZERO;
-            for (CardResponseDetails cardResponseDetailsCouponProduct: cardResponseDetails) {
-                totalPrice = totalPrice.add(cardResponseDetailsCouponProduct.getComparePrice().multiply(BigDecimal.valueOf(cardResponseDetailsCouponProduct.getQuantity())));
-            }
-
-            if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)){
-                BigDecimal discountAmount = totalPrice.subtract(coupon.getDiscountValue());
-                if (discountAmount.compareTo(BigDecimal.ZERO) < 0) { // discountAmount 0'dan küçüktür
-                    return totalPrice;
-                }else
-                    return coupon.getDiscountValue();
-
-            } else if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
-
-                BigDecimal percentage = coupon.getDiscountValue(); // Örn: %10 için 10
-                return totalPrice.multiply(percentage).divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP);
-            }else
-                throw new BadRequestException("Geçersiz indirim tipi");
-
-        }
     }
 
 
