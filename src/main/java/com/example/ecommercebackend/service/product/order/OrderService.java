@@ -155,74 +155,10 @@ public class OrderService {
 
         BigDecimal orderPrice = BigDecimal.valueOf(0);
 
-        if (coupon.getDiscountType().equals(Coupon.DiscountType.PERCENTAGE)) {
-            BigDecimal discountValue = coupon.getDiscountValue(); // Örneğin %10 ise 10 gelir
-            System.out.println("kupon 3");
-            if (discountValue == null) {
-                return null;
-            }
-            System.out.println("kupon 4");
-            for (CardItem orderItem : items) {
-
-                if (coupon.getProductAssigned()) {
-                    boolean isProductInCoupon = coupon.getProducts().stream()
-                            .anyMatch(product -> product.equals(orderItem.getProduct()));
-
-                    if (isProductInCoupon) {
-                        System.out.println("fiçeride");
-                        BigDecimal substractDiscountPrice = orderItem.getProduct().getComparePrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-                        BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substractDiscountPrice);
-                        orderPrice = orderPrice.add(discountPrice);
-                    } else {
-                        orderPrice = orderPrice.add(orderItem.getProduct().getComparePrice());
-                    }
-                } else {
-                    System.out.println("fiçeride");
-                    BigDecimal substractDiscountPrice = orderItem.getProduct().getComparePrice().multiply(discountValue).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-                    BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substractDiscountPrice);
-                    orderPrice = orderPrice.add(discountPrice);
-                }
-            }
-
-        } else if (coupon.getDiscountType().equals(Coupon.DiscountType.FIXEDAMOUNT)) {
-            BigDecimal discountValue = coupon.getDiscountValue();
-
-            if (discountValue == null) {
-                return null;
-            }
-
-            if (coupon.getProductAssigned()) {
-                int orderItemSize = 0;
-                for (CardItem orderItem : items) {
-                    if (coupon.getProducts().contains(orderItem.getProduct())) {
-                        orderItemSize += 1;
-                    }
-                }
-                BigDecimal substract = coupon.getDiscountValue()
-                        .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
-
-                for (CardItem orderItem : items) {
-                    if (coupon.getProducts().contains(orderItem.getProduct())) {
-                        BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substract);
-                        orderPrice = orderPrice.add(discountPrice);
-                    } else {
-                        orderPrice = orderPrice.add(orderItem.getProduct().getComparePrice());
-                    }
-                }
-            } else {
-                int orderItemSize = items.size();
-
-                BigDecimal substract = coupon.getDiscountValue()
-                        .divide(BigDecimal.valueOf(orderItemSize), 2, RoundingMode.HALF_UP);
-
-                for (CardItem orderItem : items) {
-                    BigDecimal discountPrice = orderItem.getProduct().getComparePrice().subtract(substract);
-                    orderPrice = orderPrice.add(discountPrice);
-                }
-            }
-
-        } else
-            return null;
+        for (CardItem orderItem : items) {
+            BigDecimal discountPrice = orderItem.getProduct().getComparePrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
+            orderPrice = orderPrice.add(discountPrice);
+        }
 
 
         // orderPrice hesaplandıktan sonra kontroller
@@ -265,6 +201,7 @@ public class OrderService {
             }
 
             if (coupon == null) {
+                System.out.println("kupon null mı");
                 customer.getCard().setCoupon(null);
                 customerRepository.save(customer);
             }
