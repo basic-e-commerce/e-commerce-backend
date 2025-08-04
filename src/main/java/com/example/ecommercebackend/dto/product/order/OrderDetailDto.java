@@ -24,11 +24,12 @@ public class OrderDetailDto {
     private OrderStatusResponse orderStatusResponse;
     private Payment.PaymentStatus paymentStatus;
     private BigDecimal substractDiscountPrice;
+    private CustomerCouponDto customerCouponDto;
     private BigDecimal refundPrice;
     private BigDecimal shippingFee;
     private String createdAt;
 
-    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, List<OrderItemResponseDto> refundItemResponseDtos, int installment, OrderStatusResponse orderStatusResponse, Payment.PaymentStatus paymentStatus, BigDecimal substractDiscountPrice, BigDecimal refundPrice, BigDecimal shippingFee, String createdAt) {
+    public OrderDetailDto(int id, String orderCode, String firstName, String lastName, BigDecimal totalPrice, BigDecimal customerPrice, AddressOrderDetailDto address, List<OrderItemResponseDto> orderItemResponseDtos, List<OrderItemResponseDto> refundItemResponseDtos, int installment, OrderStatusResponse orderStatusResponse, Payment.PaymentStatus paymentStatus, BigDecimal substractDiscountPrice, CustomerCouponDto customerCouponDto, BigDecimal refundPrice, BigDecimal shippingFee, String createdAt) {
         this.id = id;
         this.orderCode = orderCode;
         this.firstName = firstName;
@@ -42,6 +43,7 @@ public class OrderDetailDto {
         this.orderStatusResponse = orderStatusResponse;
         this.paymentStatus = paymentStatus;
         this.substractDiscountPrice = substractDiscountPrice;
+        this.customerCouponDto = customerCouponDto;
         this.refundPrice = refundPrice;
         this.shippingFee = shippingFee;
         this.createdAt = createdAt;
@@ -181,5 +183,13 @@ public class OrderDetailDto {
 
     public void setSubstractDiscountPrice(BigDecimal substractDiscountPrice) {
         this.substractDiscountPrice = substractDiscountPrice;
+    }
+
+    public CustomerCouponDto getCustomerCouponDto() {
+        return customerCouponDto;
+    }
+
+    public void setCustomerCouponDto(CustomerCouponDto customerCouponDto) {
+        this.customerCouponDto = customerCouponDto;
     }
 }
