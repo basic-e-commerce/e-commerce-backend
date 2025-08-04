@@ -27,7 +27,7 @@ public class Order {
     @JoinColumn(name = "user_id",referencedColumnName = "id")
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_coupon_id", referencedColumnName = "id")
     private CustomerCoupon customerCoupon;
 

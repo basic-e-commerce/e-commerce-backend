@@ -172,7 +172,6 @@ public class PaymentService {
             // update orderstatus approved,green
             Order order = payment.getOrder();
             if (order.getCustomerCoupon() != null) {
-                System.out.println("customercoupon null mı");
                 order.getCustomerCoupon().setUsed(true);
                 order.getCustomerCoupon().setUsedAt(Instant.now());
                 order.getCustomerCoupon().getCoupon().setTimesUsed(order.getCustomerCoupon().getCoupon().getTimesUsed()+1);
@@ -200,11 +199,10 @@ public class PaymentService {
             orderStatus.setColor(OrderStatus.Color.GREEN);
             orderService.updateOrderStatus(orderStatus);
 
-            Order save = orderService.save(order);
-            System.out.println("save order"+save.getFirstName());
+            System.out.println("save order"+order.getFirstName());
 
-            if (save.getUser() != null){
-                if (save.getUser() instanceof Customer customer){
+            if (order.getUser() != null){
+                if (order.getUser() instanceof Customer customer){
                     Card card = cardService.findByCustomer(customer);
                     card.getItems().clear();
                     card.setCoupon(null);
