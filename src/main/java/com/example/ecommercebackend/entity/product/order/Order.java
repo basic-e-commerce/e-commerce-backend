@@ -98,6 +98,9 @@ public class Order {
     @Column(name = "shipping_fee", columnDefinition = "NUMERIC DEFAULT 0", nullable = false)
     private BigDecimal shippingFee;
 
+    @Column(name = "coupon_discount", columnDefinition = "NUMERIC DEFAULT 0", nullable = false)
+    private BigDecimal couponDiscount;
+
     @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Payment payments;
 
@@ -127,7 +130,7 @@ public class Order {
         this.orderCode = UUID.randomUUID().toString();
     }
 
-    public Order(User user, CustomerCoupon customerCoupon, String geliverId, String firstName, String lastName, String username, String countryName, String countryIso, String city, String cityCode, String district, Integer districtID, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price, BigDecimal shippingFee, Invoice invoice) {
+    public Order(User user, CustomerCoupon customerCoupon, String geliverId, String firstName, String lastName, String username, String countryName, String countryIso, String city, String cityCode, String district, Integer districtID, String addressLine1, String postalCode, String phoneNumber, Set<OrderItem> orderItems, OrderStatus orderStatus, BigDecimal totalPrice, BigDecimal price, BigDecimal shippingFee, BigDecimal couponDiscount, Invoice invoice) {
         this.user = user;
         this.customerCoupon = customerCoupon;
         this.geliverId = geliverId;
@@ -148,6 +151,7 @@ public class Order {
         this.totalPrice = totalPrice;
         this.price = price;
         this.shippingFee = shippingFee;
+        this.couponDiscount = couponDiscount;
         this.invoice = invoice;
     }
 
@@ -416,5 +420,13 @@ public class Order {
 
     public void setShippingFee(BigDecimal shippingFee) {
         this.shippingFee = shippingFee;
+    }
+
+    public BigDecimal getCouponDiscount() {
+        return couponDiscount;
+    }
+
+    public void setCouponDiscount(BigDecimal couponDiscount) {
+        this.couponDiscount = couponDiscount;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.dto.product.order;
 
+import com.example.ecommercebackend.dto.product.coupon.CouponCustomerResponseDto;
 import com.example.ecommercebackend.dto.product.coupon.CouponResponseDto;
 import com.example.ecommercebackend.dto.product.invoice.InvoiceResponseDto;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
@@ -22,6 +23,7 @@ public class OrderDetailDto {
     private InvoiceResponseDto invoiceResponseDto;
     private OrderStatusResponse orderStatusResponse;
     private Payment.PaymentStatus paymentStatus;
+    private CustomerCouponDto customerCouponDto;
     private BigDecimal refundPrice;
     private BigDecimal shippingFee;
     private String createdAt;
