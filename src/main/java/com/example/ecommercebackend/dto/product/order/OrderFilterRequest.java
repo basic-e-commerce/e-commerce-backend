@@ -10,13 +10,15 @@ public class OrderFilterRequest {
     private Payment.PaymentStatus paymentStatus;
     private OrderPackage.OrderPackageStatusCode orderPackageStatusCode;
     private OrderStatus.Status orderStatus;
+    private Boolean refundOrder;
 
-    public OrderFilterRequest(String sortBy, String sortDirection, Payment.PaymentStatus paymentStatus, OrderPackage.OrderPackageStatusCode orderPackageStatusCode, OrderStatus.Status orderStatus) {
+    public OrderFilterRequest(String sortBy, String sortDirection, Payment.PaymentStatus paymentStatus, OrderPackage.OrderPackageStatusCode orderPackageStatusCode, OrderStatus.Status orderStatus, Boolean refundOrder) {
         this.sortBy = sortBy;
         this.sortDirection = sortDirection;
         this.paymentStatus = paymentStatus;
         this.orderPackageStatusCode = orderPackageStatusCode;
         this.orderStatus = orderStatus;
+        this.refundOrder = refundOrder;
     }
 
     public String getSortBy() {
@@ -57,5 +59,13 @@ public class OrderFilterRequest {
 
     public void setOrderStatus(OrderStatus.Status orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public Boolean getRefundOrder() {
+        return refundOrder;
+    }
+
+    public void setRefundOrder(Boolean refundOrder) {
+        this.refundOrder = refundOrder;
     }
 }

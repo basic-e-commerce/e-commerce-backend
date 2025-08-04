@@ -802,7 +802,7 @@ public class OrderService {
         }
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        return orderRepository.findAll(filterOrders(orderFilterRequest.getOrderStatus(),orderFilterRequest.getOrderPackageStatusCode(),orderFilterRequest.getPaymentStatus()),pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
+        return orderRepository.findAll(filterOrders(orderFilterRequest.getOrderStatus(),orderFilterRequest.getOrderPackageStatusCode(),orderFilterRequest.getPaymentStatus(),orderFilterRequest.getRefundOrder()),pageable).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
     }
 
     public List<Order> filterGuestSuccessOrder(User user){
@@ -811,28 +811,54 @@ public class OrderService {
         return orderRepository.findAll(specification,sort);
     }
 
-    private Specification<Order> filterOrders(OrderStatus.Status status, OrderPackage.OrderPackageStatusCode orderPackageStatusCode, Payment.PaymentStatus paymentStatus) {
+    private Specification<Order> filterOrders(OrderStatus.Status status, OrderPackage.OrderPackageStatusCode orderPackageStatusCode, Payment.PaymentStatus paymentStatus,Boolean refundOrder) {
         Specification<Order> spec = Specification.where(null);
 
-        if (status != null) {
-            spec = spec.and(hasStatus(status));
-        } else {
-            spec = spec.and(hasNullStatus());
-        }
+        if (refundOrder != null && refundOrder) {
+            spec = spec.and(hasRefundOrder());
+        }else {
+            if (status != null) {
+                spec = spec.and(hasStatus(status));
+            } else {
+                spec = spec.and(hasNullStatus());
+            }
 
-        if (orderPackageStatusCode != null) {
-            spec = spec.and(hasStatusCode(orderPackageStatusCode));
-        } else {
-            spec = spec.and(hasNullStatusCode());
-        }
+            if (orderPackageStatusCode != null) {
+                spec = spec.and(hasStatusCode(orderPackageStatusCode));
+            } else {
+                spec = spec.and(hasNullStatusCode());
+            }
 
-        if (paymentStatus != null) {
-            spec = spec.and(hasPaymentStatus(paymentStatus));
-        } else {
-            spec = spec.and(hasNullPaymentStatus());
+            if (paymentStatus != null) {
+                spec = spec.and(hasPaymentStatus(paymentStatus));
+            } else {
+                spec = spec.and(hasNullPaymentStatus());
+            }
         }
 
         return spec;
+    }
+
+    private Specification<Order> hasRefundOrder() {
+        return (root, query, cb) -> {
+            // Join with Payment and OrderStatus
+            Join<Order, Payment> paymentJoin = root.join("payments", JoinType.INNER);
+            Join<Order, OrderStatus> statusJoin = root.join("orderStatus", JoinType.INNER);
+
+            // Payment status IN (REFUNDED, PARTIAL_REFUNDED)
+            Predicate paymentPredicate = paymentJoin.get("paymentStatus").in(
+                    Payment.PaymentStatus.REFUNDED,
+                    Payment.PaymentStatus.PARTIAL_REFUNDED
+            );
+
+            // Order status IN (REFUNDED, PARTIAL_REFUNDED)
+            Predicate statusPredicate = statusJoin.get("status").in(
+                    OrderStatus.Status.REFUNDED,
+                    OrderStatus.Status.PARTIAL_REFUNDED
+            );
+
+            return cb.and(paymentPredicate, statusPredicate);
+        };
     }
 
     private Specification<Order> filterGuestSuccessOrders(User user) {
