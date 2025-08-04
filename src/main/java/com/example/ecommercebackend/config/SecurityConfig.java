@@ -129,6 +129,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-refund").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-one-step").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-contract").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-manuel").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-manuel-cancel").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-manuel-refund").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/order/username").permitAll()
 
 
 
@@ -203,6 +207,10 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/product-template").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/product-template/list").hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order-package/track-update").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/order-package/id").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/order-package/manuel-update").hasAuthority("ADMIN")
 
                         .anyRequest().permitAll())
                 .anonymous(anonymous -> anonymous

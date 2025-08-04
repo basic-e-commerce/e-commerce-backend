@@ -5,6 +5,7 @@ import com.example.ecommercebackend.dto.product.order.WebhookTrackUpdatedData;
 import com.example.ecommercebackend.dto.product.order.WebhookTrackUpdatedPayload;
 import com.example.ecommercebackend.dto.product.order.WebhookTrackingUpdatedStatus;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
+import com.example.ecommercebackend.dto.product.shipping.OrderPackageUpdateDto;
 import com.example.ecommercebackend.entity.product.order.OrderPackage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.order.OrderPackageRepository;
@@ -67,6 +68,18 @@ public class OrderPackageService {
     public OrderPackage getDetailsNull(Integer id) {
         return orderPackageRepository.findById(id).orElse(null);
     }
+
+    public String orderPackageUpdate(Integer orderPackageId, OrderPackageUpdateDto orderPackageUpdateDto){
+        OrderPackage orderPackage = findById(orderPackageId);
+        orderPackage.setOrderPackageStatusCode(orderPackageUpdateDto.getOrderPackageStatusCode());
+        orderPackage.setCargoStatus(orderPackageUpdateDto.getCargoStatus());
+        orderPackage.setLocation(orderPackageUpdateDto.getLocation());
+        orderPackage.setUpdateAt(Instant.now());
+        orderPackageRepository.save(orderPackage);
+
+        return "Kargo Güncellendi";
+    }
+
 
     public String trackUpdate(WebhookTrackUpdatedPayload webhookTrackUpdatedPayload) {
         if (webhookTrackUpdatedPayload == null) {

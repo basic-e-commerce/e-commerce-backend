@@ -6,6 +6,7 @@ import com.example.ecommercebackend.dto.product.order.*;
 import com.example.ecommercebackend.dto.product.products.ProductFilterRequest;
 import com.example.ecommercebackend.dto.product.products.productTemplate.CargoOfferDesiRequestAdminDto;
 import com.example.ecommercebackend.dto.product.shipping.CargoBuyDesiRequestAdminDto;
+import com.example.ecommercebackend.dto.product.shipping.CargoManuelDesiRequestAdminDto;
 import com.example.ecommercebackend.dto.product.shipping.OfferApproveDto;
 import com.example.ecommercebackend.entity.product.order.OrderPackage;
 import com.example.ecommercebackend.entity.product.products.Product;
@@ -85,10 +86,21 @@ public class OrderController {
         return new ResponseEntity<>(orderService.cargoCancel(orderCode,orderPackageId),HttpStatus.OK);
     }
 
-    @PostMapping("/cargo-manuel")
-    public ResponseEntity<OrderPackageResponseDto> manuelCargo(@RequestParam(required = false) String orderCode,@RequestBody(required = false) OrderPackageRequestDto orderPackageRequestDto){
-        return new ResponseEntity<>(orderService.cargoManuel(orderCode,orderPackageRequestDto),HttpStatus.OK);
+    @PostMapping("/cargo-manuel-cancel")
+    public ResponseEntity<String> cargoManuelCancel(@RequestParam(required = false) String orderCode,@RequestParam(required = false) Integer orderPackageId){
+        return new ResponseEntity<>(orderService.cargoManuelCancel(orderCode,orderPackageId),HttpStatus.OK);
     }
+
+    @PostMapping("/cargo-manuel-refund")
+    public ResponseEntity<String> manuelCargoRefund(@RequestBody(required = false) RefundCreateDto refundCreateDto){
+        return new ResponseEntity<>(orderService.cargoManuelRefund(refundCreateDto),HttpStatus.OK);
+    }
+
+    @PostMapping("/cargo-manuel")
+    public ResponseEntity<List<OfferApproveUserDto>> manuelCargo(@RequestBody(required = false) CargoManuelDesiRequestAdminDto cargoManuelDesiRequestAdminDto){
+        return new ResponseEntity<>(orderService.cargoManuel(cargoManuelDesiRequestAdminDto),HttpStatus.OK);
+    }
+
 
     @PostMapping("/cargo-refund")
     public ResponseEntity<String> cargoRefund(@RequestBody(required = false) RefundCreateDto refundCreateDto){
@@ -104,6 +116,13 @@ public class OrderController {
     public ResponseEntity<List<OfferApproveUserDto>> buyContractCargo(@RequestBody(required = false) CargoBuyDesiRequestAdminDto cargoBuyDesiRequestAdminDto){
         return new ResponseEntity<>(orderService.buyContractCargo(cargoBuyDesiRequestAdminDto),HttpStatus.OK);
     }
+
+    @GetMapping("/username")
+    public ResponseEntity<List<OrderDetailDto>> getAllOrderByUsername(@RequestParam(required = false) String username){
+        return new ResponseEntity<>(orderService.getAllOrderByUsername(username),HttpStatus.OK);
+    }
+
+
 
 
 

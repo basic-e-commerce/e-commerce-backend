@@ -6,6 +6,7 @@ import com.example.ecommercebackend.entity.product.products.ProductTemplate;
 import java.math.BigDecimal;
 
 public class OrderPackageRequestDto {
+
     private String packageName;
     private double length;  // cm
     private double width;

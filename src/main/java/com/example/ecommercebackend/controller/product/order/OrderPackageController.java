@@ -2,6 +2,7 @@ package com.example.ecommercebackend.controller.product.order;
 
 import com.example.ecommercebackend.dto.product.order.OrderPackageResponseDto;
 import com.example.ecommercebackend.dto.product.order.WebhookTrackUpdatedPayload;
+import com.example.ecommercebackend.dto.product.shipping.OrderPackageUpdateDto;
 import com.example.ecommercebackend.entity.product.order.OrderPackage;
 import com.example.ecommercebackend.service.product.order.OrderPackageService;
 import org.springframework.http.HttpStatus;
@@ -25,5 +26,10 @@ public class OrderPackageController {
     @GetMapping("/id")
     public ResponseEntity<OrderPackageResponseDto> getDetails(@RequestParam Integer id) {
         return new ResponseEntity<>(orderPackageService.getDetails(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/manuel-update")
+    public ResponseEntity<String> orderPackageUpdate(@RequestParam(required = false) Integer orderPackageId, @RequestBody(required = false)OrderPackageUpdateDto orderPackageUpdateDto){
+        return new ResponseEntity<>(orderPackageService.orderPackageUpdate(orderPackageId, orderPackageUpdateDto), HttpStatus.OK);
     }
 }

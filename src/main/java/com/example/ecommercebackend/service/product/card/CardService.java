@@ -49,7 +49,6 @@ public class CardService {
     Senaryo şu şekilde olacak
     eğer kullanıcı giriş yapmışsa kullanıcının zaten bir sepeti vardır.
     Dışarıdan bize liste şeklinde productId ve quantity (eklenecek olan sayı) gelecek  + veya - şeklinde
-
      */
 
     public CardResponseDto updateCard(CardCreateDto cardCreateDto) {
@@ -155,6 +154,7 @@ public class CardService {
         }else
             throw new BadRequestException("Lütfen giriş yapınız!");
     }
+
     private void isCouponValidationNew(Coupon coupon,List<CardItem> items,Customer customer) {
         if (!coupon.getActive()){
             System.out.println("Kupon aktif değildir");

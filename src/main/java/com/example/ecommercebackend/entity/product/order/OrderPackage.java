@@ -5,12 +5,13 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "order_package")
 public class OrderPackage {
+
+    private Boolean isManuel;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_package_seq")
     @SequenceGenerator(name = "order_package_seq", sequenceName = "order_package_seq", allocationSize = 1)
@@ -63,7 +64,8 @@ public class OrderPackage {
     private Instant updateAt;
 
 
-    public OrderPackage(Set<OrderItem> orderItems, String packageName, double length, double width, double height, double weight, ProductTemplate.DistanceUnit distanceUnit, ProductTemplate.MassUnit massUnit, String shipmentId, String responsiveLabelURL, BigDecimal orderPackagePrice, CargoCompany cargoCompany, CargoStatus cargoStatus, String cargoId, String barcode, Boolean productPaymentOnDelivery, Boolean isCanceled, Boolean isRefund, String location) {
+    public OrderPackage(Boolean isManuel, Set<OrderItem> orderItems, String packageName, double length, double width, double height, double weight, ProductTemplate.DistanceUnit distanceUnit, ProductTemplate.MassUnit massUnit, String shipmentId, String responsiveLabelURL, BigDecimal orderPackagePrice, CargoCompany cargoCompany, CargoStatus cargoStatus, String cargoId, String barcode, Boolean productPaymentOnDelivery, Boolean isCanceled, Boolean isRefund, String location) {
+        this.isManuel = isManuel;
         this.orderItems = orderItems;
         this.packageName = packageName;
         this.length = length;
@@ -185,6 +187,14 @@ public class OrderPackage {
 
     public void setOrderPackagePrice(BigDecimal orderPackagePrice) {
         this.orderPackagePrice = orderPackagePrice;
+    }
+
+    public Boolean getManuel() {
+        return isManuel;
+    }
+
+    public void setManuel(Boolean manuel) {
+        isManuel = manuel;
     }
 
     public enum OrderPackageStatusCode{
