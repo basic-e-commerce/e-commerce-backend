@@ -804,7 +804,7 @@ public class OrderService {
                     OrderStatus.Status.PARTIAL_REFUNDED
             );
 
-            return cb.and(paymentPredicate, statusPredicate);
+            return cb.or(paymentPredicate, statusPredicate);
         };
     }
 
@@ -1381,7 +1381,7 @@ public class OrderService {
 
         orderRepository.save(saveOrder);
 
-        return "Verilen siparişler başarıyla iade eildi!";
+        return "Verilen siparişler başarıyla iade edildi!";
     }
 
     public String cargoManuelCancel(String orderCode,Integer orderPackageId){
