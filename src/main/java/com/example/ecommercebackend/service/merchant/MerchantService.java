@@ -100,8 +100,15 @@ public class MerchantService {
     }
 
     public Merchant getMerchant() {
+        Merchant merchant1= merchantRepository.findById(1L).orElse(null);
         Merchant merchant = merchantRepository.findAll().stream().findFirst().orElseThrow(() -> new NotFoundException("Merchant " + ExceptionMessage.NOT_FOUND.getMessage()));
         System.out.println("------------------");
+        if (merchant1 != null) {
+            System.out.println("Merchant: "+merchant1.getEmail());
+            System.out.println("Merchant: "+merchant1.getName());
+            System.out.println("Merchant: "+merchant1.getEmailPassword());
+        }else
+            System.out.println("null");
         System.out.println("Merchant: "+merchant.getEmail());
         System.out.println("Merchant: "+merchant.getName());
         System.out.println("Merchant: "+merchant.getEmailPassword());
