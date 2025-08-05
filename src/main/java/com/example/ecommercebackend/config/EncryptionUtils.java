@@ -25,6 +25,7 @@ public class EncryptionUtils {
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             byte[] encryptedBytes = cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8));
+            System.out.println("::::::::::::::::encrypt");
             return Base64.getEncoder().encodeToString(encryptedBytes);
         } catch (Exception e) {
             throw new RuntimeException("Encryption error", e);
@@ -37,6 +38,7 @@ public class EncryptionUtils {
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             byte[] decodedBytes = Base64.getDecoder().decode(strToDecrypt);
             byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+            System.out.println("::::::::::::::::decrypt");
             return new String(decryptedBytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException("Decryption error", e);
