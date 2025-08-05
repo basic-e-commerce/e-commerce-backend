@@ -44,6 +44,7 @@ public class JavaMailStrategy implements IMailStrategy {
         String email = merchant.getEmail();
         System.out.println("gönderici:"+email);
         String mailPassword = merchant.getEmailPassword();
+        System.out.println("mailPassword: "+mailPassword);
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
