@@ -32,7 +32,6 @@ public class Merchant {
     private CoverImage coverImage;
     @Convert(converter = EncryptedStringConverter.class)
     private String phoneNo;
-    @Convert(converter = EncryptedStringConverter.class)
     private String email;
     private BigDecimal minOrderAmount;
     private BigDecimal shippingFee;
