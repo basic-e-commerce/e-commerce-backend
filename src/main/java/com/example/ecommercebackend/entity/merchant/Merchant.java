@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.entity.merchant;
 
+import com.example.ecommercebackend.config.EncryptedStringConverter;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.user.Address;
 import jakarta.persistence.*;
@@ -29,10 +30,13 @@ public class Merchant {
 
     @OneToOne
     private CoverImage coverImage;
+    @Convert(converter = EncryptedStringConverter.class)
     private String phoneNo;
+    @Convert(converter = EncryptedStringConverter.class)
     private String email;
     private BigDecimal minOrderAmount;
     private BigDecimal shippingFee;
+    @Convert(converter = EncryptedStringConverter.class)
     private String emailPassword;
     private String instagram;
     private String instagramLink;

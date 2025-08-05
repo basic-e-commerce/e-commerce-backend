@@ -1,5 +1,6 @@
 package com.example.ecommercebackend;
 
+import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.dto.product.shipping.CityDto;
 import com.example.ecommercebackend.dto.product.shipping.DistrictDto;
 import com.example.ecommercebackend.entity.merchant.Merchant;
@@ -130,12 +131,12 @@ public class ECommerceBackendApplication {
 						countryRepository.findByUpperName("TURKIYE").get(),
 						"demo",
 						"demo",
-						"demo@gmail.com",
+						EncryptionUtils.encrypt("demo@gmail.com"),
 						cityRepository.findByCityCode("34").orElse(null),
 						districtRepository.findByDistrictId(107062).orElse(null),
-						"address line 1",
+						EncryptionUtils.encrypt("address line 1"),
 						"34000",
-						"+905559876758",
+						EncryptionUtils.encrypt("+905559876758"),
 						false,
 						true
 				);
@@ -148,23 +149,23 @@ public class ECommerceBackendApplication {
 								countryRepository.findByUpperName("TURKIYE").get(),
 								"demo",
 								"demo",
-								"demo@gmail.com",
+								EncryptionUtils.encrypt("demo@gmail.com"),
 								cityRepository.findByCityCode("34").orElse(null),
 								districtRepository.findByDistrictId(107062).orElse(null),
-								"address line 1",
+								EncryptionUtils.encrypt("address line 1"),
 								"34000",
-								"5559876758",
+								EncryptionUtils.encrypt("+905559876758"),
 								false,
 								true
 								),
 						"addresslink",
 						sendingAddress,
 						null,
-						"+905098765432",
-						"feminizmturkiye2000@gmail.com",
+						EncryptionUtils.encrypt("+905098765432"),
+						EncryptionUtils.encrypt("feminizmturkiye2000@gmail.com"),
 						BigDecimal.valueOf(1000),
 						BigDecimal.valueOf(75),
-						"izcb abhl kkto upek",
+						EncryptionUtils.encrypt("izcb abhl kkto upek"),
 						"instagram",
 						"instagram link",
 						"footerdesc",
