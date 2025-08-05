@@ -1799,6 +1799,9 @@ public class OrderService {
         if (!refundOrderItems.isEmpty())
             throw new BadRequestException("Bu ürün için iade yapılmıştır!");
 
+        if(order.getOrderStatus().getOrderPackages().isEmpty())
+            throw new BadRequestException("Bu sipariş için kargo oluşturulmamıştır!");
+
         OrderPackage orderPackage = order.getOrderStatus().getOrderPackages().get(0);
         Merchant merchant = merchantService.getMerchant();
 
@@ -1894,6 +1897,7 @@ public class OrderService {
         Order saveOrder = orderRepository.save(order);
 
         CargoBuyDetailDto cargoRefund = shippingCargoService.getCargoRefund(orderPackage.getShipmentId(), cargoRefundDto);
+
         OrderPackage refundOrderPackage = new OrderPackage();
         refundOrderPackage.setManuel(false);
         refundOrderPackage.setLength(orderPackage.getLength());
@@ -1908,8 +1912,8 @@ public class OrderService {
         refundOrderPackage.setProductPaymentOnDelivery(orderPackage.getProductPaymentOnDelivery());
         refundOrderPackage.setCreateAt(Instant.now());
         refundOrderPackage.setUpdateAt(Instant.now());
-
         refundOrderPackage.setShipmentId(cargoRefund.getData().getShipment().getId());
+
         Set<OrderItem> refundOrderItemed = new HashSet<>(saveOrder.getRefundOrderItems());
         refundOrderPackage.setOrderItems(refundOrderItemed);
         refundOrderPackage.setResponsiveLabelURL(cargoRefund.getData().getShipment().getResponsiveLabelURL());
@@ -1951,7 +1955,7 @@ public class OrderService {
 
         orderRepository.save(saveOrder);
 
-        return "Verilen siparişler başarıyla iade eildi!";
+        return "Başarılı bir şekilde iade kargosu oluşturuldu!";
 
     }
 
