@@ -28,7 +28,6 @@ public abstract class User implements UserDetails {
     private String phoneNumber;
 
     @Column(name = "username", nullable = false, unique = true, length = 255)
-    @Convert(converter = EncryptedStringConverter.class)
     private String username;
 
     @Column(name = "password", nullable = false)
