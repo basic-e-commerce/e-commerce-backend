@@ -3,10 +3,7 @@ package com.example.ecommercebackend.controller.user;
 import com.example.ecommercebackend.anotation.RateLimit;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
-import com.example.ecommercebackend.dto.user.customer.CustomerCreateDto;
-import com.example.ecommercebackend.dto.user.customer.CustomerProfileDto;
-import com.example.ecommercebackend.dto.user.customer.CustomerUpdateDto;
-import com.example.ecommercebackend.dto.user.customer.PasswordUpdateDto;
+import com.example.ecommercebackend.dto.user.customer.*;
 import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.service.user.CustomerService;
@@ -44,8 +41,8 @@ public class CustomerController {
 
     @RateLimit(limit = 3, duration = 1, unit = TimeUnit.SECONDS)
     @GetMapping
-    public ResponseEntity<List<Customer>> getAll(){
-        return new ResponseEntity<>(customerService.getAll(),HttpStatus.OK);
+    public ResponseEntity<List<CustomerResponseDto>> getAll(@RequestBody(required = false)CustomerFilterRequestDto customerFilterRequestDto){
+        return new ResponseEntity<>(customerService.getAll(customerFilterRequestDto),HttpStatus.OK);
     }
     @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
     @GetMapping("/profile")
