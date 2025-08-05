@@ -245,7 +245,8 @@ public class SellService {
                 totalSuccessOrder,
                 averageOrderAmount,
                 refundPrice,
-                shippingFee
+                shippingFee,
+                refundOrders.size()
         );
     }
 

@@ -11,8 +11,9 @@ public class ProductDaySellAdmin {
     private BigDecimal averageOrderAmount;
     private BigDecimal refundPrice;
     private BigDecimal shippingFee;
+    private Integer refundOrders;
 
-    public ProductDaySellAdmin(List<ProductDaySell> productDaySells, Integer totalQuantity, BigDecimal totalPrice, Integer totalOrder, BigDecimal averageOrderAmount, BigDecimal refundPrice, BigDecimal shippingFee) {
+    public ProductDaySellAdmin(List<ProductDaySell> productDaySells, Integer totalQuantity, BigDecimal totalPrice, Integer totalOrder, BigDecimal averageOrderAmount, BigDecimal refundPrice, BigDecimal shippingFee, Integer refundOrders) {
         this.productDaySells = productDaySells;
         this.totalQuantity = totalQuantity;
         this.totalPrice = totalPrice;
@@ -20,6 +21,7 @@ public class ProductDaySellAdmin {
         this.averageOrderAmount = averageOrderAmount;
         this.refundPrice = refundPrice;
         this.shippingFee = shippingFee;
+        this.refundOrders = refundOrders;
     }
 
     public List<ProductDaySell> getProductDaySells() {
@@ -76,5 +78,13 @@ public class ProductDaySellAdmin {
 
     public void setShippingFee(BigDecimal shippingFee) {
         this.shippingFee = shippingFee;
+    }
+
+    public Integer getRefundOrders() {
+        return refundOrders;
+    }
+
+    public void setRefundOrders(Integer refundOrders) {
+        this.refundOrders = refundOrders;
     }
 }
