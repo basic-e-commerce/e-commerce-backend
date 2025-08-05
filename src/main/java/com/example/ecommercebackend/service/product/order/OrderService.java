@@ -788,23 +788,15 @@ public class OrderService {
 
     private Specification<Order> hasRefundOrder() {
         return (root, query, cb) -> {
-            // Join with Payment and OrderStatus
-            Join<Order, Payment> paymentJoin = root.join("payments", JoinType.INNER);
+            // Siparişin orderStatus alanına INNER JOIN yapılıyor
             Join<Order, OrderStatus> statusJoin = root.join("orderStatus", JoinType.INNER);
 
-            // Payment status IN (REFUNDED, PARTIAL_REFUNDED)
-            Predicate paymentPredicate = paymentJoin.get("paymentStatus").in(
-                    Payment.PaymentStatus.REFUNDED,
-                    Payment.PaymentStatus.PARTIAL_REFUNDED
-            );
+            // orderStatus.status IN (REFUNDED, PARTIAL_REFUNDED)
 
-            // Order status IN (REFUNDED, PARTIAL_REFUNDED)
-            Predicate statusPredicate = statusJoin.get("status").in(
+            return statusJoin.get("status").in(
                     OrderStatus.Status.REFUNDED,
                     OrderStatus.Status.PARTIAL_REFUNDED
-            );
-
-            return cb.or(paymentPredicate, statusPredicate);
+            ); // cb.or(statusPredicate) yerine direkt predicate dönebiliriz
         };
     }
 
