@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.dto.merchant.merchant;
 
 
+import com.example.ecommercebackend.anotation.ValidPhoneNumber;
 import com.example.ecommercebackend.entity.merchant.OpenCloseHour;
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -16,6 +17,7 @@ public class MerchantUpdateDto {
     private Integer districtId;
     private String addressLine1;
     private String postalCode;
+    @ValidPhoneNumber
     private String phoneNo;
     private String email;
     private BigDecimal minOrderAmount;

@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.dto.user.address;
 
+import com.example.ecommercebackend.anotation.ValidPhoneNumber;
 import com.example.ecommercebackend.entity.product.shipping.Country;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -14,6 +15,7 @@ public class AddressCreateDto {
     private Integer districtId;
     private String addressLine1;
     private String postalCode;
+    @ValidPhoneNumber
     private String phoneNo;
 
     public AddressCreateDto(String title, String firstName, String lastName, String username, String countryName, String cityCode, Integer districtId, String addressLine1, String postalCode, String phoneNo) {

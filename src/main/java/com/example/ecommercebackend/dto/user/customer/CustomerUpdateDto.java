@@ -1,12 +1,14 @@
 package com.example.ecommercebackend.dto.user.customer;
 
 import com.example.ecommercebackend.anotation.NotNullField;
+import com.example.ecommercebackend.anotation.ValidPhoneNumber;
 
 public class CustomerUpdateDto {
     @NotNullField
     private String name;
     @NotNullField
     private String lastName;
+    @ValidPhoneNumber
     private String phoneNumber;
 
     public CustomerUpdateDto(String name, String lastName, String phoneNumber) {

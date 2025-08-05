@@ -1,10 +1,12 @@
 package com.example.ecommercebackend.dto.product.shipping;
 
+import com.example.ecommercebackend.anotation.ValidPhoneNumber;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AddressApiDto {
     private String name;
     private String email;
+    @ValidPhoneNumber
     private String phone;
     private String address1;
     private String address2;

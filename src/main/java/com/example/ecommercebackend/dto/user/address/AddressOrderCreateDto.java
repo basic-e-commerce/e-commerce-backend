@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.dto.user.address;
 
 import com.example.ecommercebackend.anotation.NotNullField;
+import com.example.ecommercebackend.anotation.ValidPhoneNumber;
 
 public record AddressOrderCreateDto(@NotNullField String firstName,
                                     @NotNullField String lastName,
@@ -13,6 +14,6 @@ public record AddressOrderCreateDto(@NotNullField String firstName,
                                     @NotNullField Integer districtId,
                                     @NotNullField String addressLine1,
                                     @NotNullField String postalCode,
-                                    @NotNullField String phoneNo,
+                                    @NotNullField @ValidPhoneNumber String phoneNo,
                                     String geliverId) {
 }
