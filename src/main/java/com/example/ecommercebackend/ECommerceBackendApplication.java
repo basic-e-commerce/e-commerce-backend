@@ -140,6 +140,8 @@ public class ECommerceBackendApplication {
 						false,
 						true
 				);
+
+
 				sendingAddress.add(address);
 
 				Merchant merchant = new Merchant(
