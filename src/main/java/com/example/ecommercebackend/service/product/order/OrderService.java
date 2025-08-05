@@ -1239,6 +1239,9 @@ public class OrderService {
         Set<OrderItem> refundOrderItems = order.getRefundOrderItems();
         Set<OrderItem> refundItems = new HashSet<>();
 
+        if (order.getOrderStatus().getOrderPackages().isEmpty())
+            throw new BadRequestException("KArgoya verilmiş herhangi bir sipariş bulunamamaktadır!");
+
         OrderPackage orderPackage = order.getOrderStatus().getOrderPackages().get(0);
 
         for (OrderItemRefundDto refundDto : refundCreateDto.getOrderItemRefundDtos()) {

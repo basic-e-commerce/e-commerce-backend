@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.product.order;
 
 import com.example.ecommercebackend.dto.product.order.WebhookTrackUpdatedPayload;
 import com.example.ecommercebackend.entity.product.order.OrderStatus;
+import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.order.OrderStatusRepository;
 import org.springframework.stereotype.Service;
 
@@ -25,4 +26,7 @@ public class OrderStatusService {
         return orderStatusRepository.save(orderStatus);
     }
 
+    public OrderStatus findById(Integer orderStatusId) {
+        return orderStatusRepository.findById(orderStatusId).orElseThrow(() -> new NotFoundException("Order status bulunamadı!"));
+    }
 }

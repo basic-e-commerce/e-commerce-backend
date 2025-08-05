@@ -7,6 +7,7 @@ import com.example.ecommercebackend.dto.product.order.WebhookTrackingUpdatedStat
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
 import com.example.ecommercebackend.dto.product.shipping.OrderPackageUpdateDto;
 import com.example.ecommercebackend.entity.product.order.OrderPackage;
+import com.example.ecommercebackend.entity.product.order.OrderStatus;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.repository.product.order.OrderPackageRepository;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,11 @@ import java.util.stream.Collectors;
 @Service
 public class OrderPackageService {
     private final OrderPackageRepository orderPackageRepository;
+    private final OrderStatusService orderStatusService;
 
-    public OrderPackageService(OrderPackageRepository orderPackageRepository) {
+    public OrderPackageService(OrderPackageRepository orderPackageRepository, OrderStatusService orderStatusService) {
         this.orderPackageRepository = orderPackageRepository;
+        this.orderStatusService = orderStatusService;
     }
 
     public OrderPackage createOrderPackage(OrderPackage orderPackage) {
@@ -70,6 +73,7 @@ public class OrderPackageService {
     }
 
     public String orderPackageUpdate(Integer orderPackageId, OrderPackageUpdateDto orderPackageUpdateDto){
+
         OrderPackage orderPackage = findById(orderPackageId);
         orderPackage.setOrderPackageStatusCode(orderPackageUpdateDto.getOrderPackageStatusCode());
         orderPackage.setCargoStatus(orderPackageUpdateDto.getCargoStatus());
