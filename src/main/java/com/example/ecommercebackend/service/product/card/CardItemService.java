@@ -419,6 +419,10 @@ public class CardItemService {
         return cardItemRepository.findAll();
     }
 
+    public List<CardItem> findAllBetween(Instant start, Instant end) {
+        return cardItemRepository.findAllByUpdateAtBetween(start, end);
+    }
+
     public Merchant getMerchant() {
         return merchantService.getMerchant();
     }

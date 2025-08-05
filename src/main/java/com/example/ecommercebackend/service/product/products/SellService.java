@@ -321,8 +321,8 @@ public class SellService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductCardItemDto> cardItemContainsProduct() {
-        List<CardItem> cardItems = cardItemService.findAll();
+    public List<ProductCardItemDto> cardItemContainsProduct(TimeDto timeDto) {
+        List<CardItem> cardItems = cardItemService.findAllBetween(timeDto.getStartDate(),timeDto.getEndDate());
 
         Map<Product,ProductCardItemDto> productListMap = new HashMap<>();
 
@@ -331,22 +331,24 @@ public class SellService {
             ProductCardItemDto productCardItemDto = productListMap.get(product);
 
             if (productCardItemDto == null) {
-                ProductCardItemDto dto = new ProductCardItemDto(
-                        cardItem.getProduct().getId(),
-                        cardItem.getProduct().getProductName(),
-                        new ImageDetailDto(
-                                cardItem.getProduct().getCoverImage().getId(),
-                                cardItem.getProduct().getCoverImage().getName(),
-                                cardItem.getProduct().getCoverImage().getResolution(),
-                                cardItem.getProduct().getCoverImage().getName(),
-                                cardItem.getProduct().getCoverImage().getUrl(),
-                                0
-                        ),
-                        1
-                );
+                ProductCardItemDto dto = new ProductCardItemDto();
+                dto.setProductId(product.getId());
+                dto.setProductName(product.getProductName());
+                dto.setCoverImage(new ImageDetailDto(
+                        product.getCoverImage().getId(),
+                        product.getCoverImage().getName(),
+                        product.getCoverImage().getResolution(),
+                        product.getCoverImage().getName(),
+                        product.getCoverImage().getUrl(),
+                        0
+                ));
+                dto.setInCardItem(1);
+                dto.setQuantity(cardItem.getQuantity());
+
                 productListMap.put(product, dto);
             }else {
-                productCardItemDto.setQuantity(productCardItemDto.getQuantity() + 1);
+                productCardItemDto.setInCardItem(productCardItemDto.getInCardItem() + 1);
+                productCardItemDto.setQuantity(productCardItemDto.getQuantity() + cardItem.getQuantity());
             }
         }
         return new ArrayList<>(productListMap.values())

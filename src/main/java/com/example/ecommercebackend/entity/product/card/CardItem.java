@@ -4,6 +4,8 @@ package com.example.ecommercebackend.entity.product.card;
 import com.example.ecommercebackend.entity.product.products.Product;
 import jakarta.persistence.*;
 
+import java.time.Instant;
+
 /*
 CardItem sınıfı, sepetin içindeki ürünleri tutar. Bir sepetin birden fazla CardItem'ı olabilir, çünkü bir müşteri sepetine birden fazla ürün ekleyebilir. Her CardItem, bir Product nesnesini temsil eder ve bu ürünün sepetteki miktarını tutar.
 
@@ -30,12 +32,19 @@ public class CardItem {
     @Column(nullable = false)
     private Integer quantity = 0;
 
+    private Instant updateAt = Instant.now();
+
     public CardItem(Product product, Integer quantity) {
         this.product = product;
         this.quantity = quantity;
     }
     public CardItem() {
 
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updateAt = Instant.now();
     }
 
     public int getId() {
@@ -60,5 +69,13 @@ public class CardItem {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Instant getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(Instant updateAt) {
+        this.updateAt = updateAt;
     }
 }

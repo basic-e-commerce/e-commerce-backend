@@ -3,16 +3,21 @@ package com.example.ecommercebackend.dto.product.card;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
 
 public class ProductCardItemDto {
+    private Integer inCardItem;
     private Integer productId;
     private String productName;
     private ImageDetailDto coverImage;
     private Integer quantity;
 
-    public ProductCardItemDto(Integer productId, String productName, ImageDetailDto coverImage, Integer quantity) {
+    public ProductCardItemDto(Integer inCardItem, Integer productId, String productName, ImageDetailDto coverImage, Integer quantity) {
+        this.inCardItem = inCardItem;
         this.productId = productId;
         this.productName = productName;
         this.coverImage = coverImage;
         this.quantity = quantity;
+    }
+
+    public ProductCardItemDto() {
     }
 
     public Integer getProductId() {
@@ -45,5 +50,13 @@ public class ProductCardItemDto {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Integer getInCardItem() {
+        return inCardItem;
+    }
+
+    public void setInCardItem(Integer inCardItem) {
+        this.inCardItem = inCardItem;
     }
 }

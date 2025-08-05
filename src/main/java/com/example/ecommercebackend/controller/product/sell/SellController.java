@@ -54,8 +54,8 @@ public class SellController {
 
     @RateLimit(limit = 7, duration = 1, unit = TimeUnit.SECONDS)
     @GetMapping("/card-contain-product")
-    public ResponseEntity<List<ProductCardItemDto>> cardItemContainsProduct(){
-        return new ResponseEntity<>(sellService.cardItemContainsProduct(), HttpStatus.OK);
+    public ResponseEntity<List<ProductCardItemDto>> cardItemContainsProduct(@RequestBody(required = false) TimeDto timeDto) {
+        return new ResponseEntity<>(sellService.cardItemContainsProduct(timeDto), HttpStatus.OK);
     }
 
     @RateLimit(limit = 7, duration = 1, unit = TimeUnit.SECONDS)
