@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.entity.product.order;
 
+import com.example.ecommercebackend.config.EncryptedStringConverter;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.invoice.Invoice;
 import com.example.ecommercebackend.entity.product.products.Coupon;
@@ -65,12 +66,14 @@ public class Order {
     private Integer districtID;
 
     @Column(name = "address_line_1")
+    @Convert(converter = EncryptedStringConverter.class)
     private String addressLine1;
 
     @Column(name = "postal_code")
     private String postalCode;
 
     @Column(name = "phone_number")
+    @Convert(converter = EncryptedStringConverter.class)
     private String phoneNumber;
 
     @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)

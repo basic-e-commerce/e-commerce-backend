@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.entity.payment;
 
+import com.example.ecommercebackend.config.EncryptedStringConverter;
 import com.example.ecommercebackend.entity.product.order.Order;
 import com.example.ecommercebackend.entity.product.products.Sell;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,10 +21,12 @@ public class Payment {
     private String name;
     private String surname;
     private String username;
+    @Convert(converter = EncryptedStringConverter.class)
     private String phoneNo;
     private String country;
     private String city;
     private String zipCode;
+    @Convert(converter = EncryptedStringConverter.class)
     private String cardHolderName;
     private String conversationId;
     private String paymentUniqId;

@@ -1,7 +1,9 @@
 package com.example.ecommercebackend.entity.user;
 
+import com.example.ecommercebackend.config.EncryptedStringConverter;
 import com.example.ecommercebackend.entity.product.shipping.Country;
 import jakarta.persistence.*;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -30,8 +32,10 @@ public class Address {
     @ManyToOne
     private District district;
 
+    @Convert(converter = EncryptedStringConverter.class)
     private String addressLine1;
     private String postalCode;
+    @Convert(converter = EncryptedStringConverter.class)
     private String phoneNo;
 
     private Boolean isRecipientAddress;

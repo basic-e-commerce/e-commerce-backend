@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.entity.user;
 
+import com.example.ecommercebackend.config.EncryptedStringConverter;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,9 +24,11 @@ public abstract class User implements UserDetails {
     private String lastName;
 
     @Column(name = "phone_number", length = 100)
+    @Convert(converter = EncryptedStringConverter.class)
     private String phoneNumber;
 
     @Column(name = "username", nullable = false, unique = true, length = 255)
+    @Convert(converter = EncryptedStringConverter.class)
     private String username;
 
     @Column(name = "password", nullable = false)
