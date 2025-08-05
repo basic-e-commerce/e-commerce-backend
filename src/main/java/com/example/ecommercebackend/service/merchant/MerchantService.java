@@ -100,7 +100,13 @@ public class MerchantService {
     }
 
     public Merchant getMerchant() {
-        return merchantRepository.findAll().stream().findFirst().orElseThrow(()-> new NotFoundException("Merchant "+ ExceptionMessage.NOT_FOUND.getMessage()));
+        Merchant merchant = merchantRepository.findAll().stream().findFirst().orElseThrow(() -> new NotFoundException("Merchant " + ExceptionMessage.NOT_FOUND.getMessage()));
+        System.out.println("------------------");
+        System.out.println("Merchant: "+merchant.getEmail());
+        System.out.println("Merchant: "+merchant.getName());
+        System.out.println("Merchant: "+merchant.getEmailPassword());
+        System.out.println("------------------");
+        return merchant;
     }
     public List<Merchant> getMerchants() {
         return merchantRepository.findAll();
