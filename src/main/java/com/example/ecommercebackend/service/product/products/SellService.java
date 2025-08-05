@@ -176,6 +176,8 @@ public class SellService {
         }
 
         List<Order> orders = orderService.findSuccessOrderBetweenDates(startInstant, endInstant);
+        List<Order> refundOrders = orderService.findRefundOrderBetweenDates(startInstant, endInstant);
+
 
         Map<String, List<Order>> ordersByPeriod = orders.stream()
                 .filter(order -> !order.getCreatedAt().isBefore(minInstant))
@@ -225,12 +227,25 @@ public class SellService {
                 ? BigDecimal.ZERO
                 : totalPrice.divide(BigDecimal.valueOf(totalSuccessOrder), 2, RoundingMode.HALF_UP);
 
+        // Yeni alanlar: iade edilen toplam tutar ve kargo ücreti
+        BigDecimal refundPrice = refundOrders.stream()
+                .map(Order::getRefundPrice)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal shippingFee = orders.stream()
+                .map(Order::getShippingFee)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         return new ProductDaySellAdmin(
                 report.stream().sorted(Comparator.comparing(ProductDaySell::getDate)).toList(),
                 totalQuantity,
                 totalPrice,
                 totalSuccessOrder,
-                averageOrderAmount
+                averageOrderAmount,
+                refundPrice,
+                shippingFee
         );
     }
 

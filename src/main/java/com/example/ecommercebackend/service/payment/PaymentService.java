@@ -358,10 +358,8 @@ Kuruş farkı toleransı aşan geçersiz istek
             order.getPayments().setPaymentStatus(Payment.PaymentStatus.PARTIAL_REFUNDED);
         }
 
-        order.setRefundOrderItems(refundItems);
-        Order savedOrder = orderService.save(order);
 
-        Set<Sell> refundSells = savedOrder.getRefundOrderItems().stream()
+        Set<Sell> refundSells = refundItems.stream()
                 .map(item -> sellService.saveRefund(item, new OrderItemTansactionId(
                         String.valueOf(item.getId()),
                         refund.getPaymentTransactionId(),

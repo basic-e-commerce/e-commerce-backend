@@ -841,7 +841,13 @@ public class OrderService {
 
     public List<Order> findSuccessOrderBetweenDates(Instant startDate, Instant endDate) {
         Sort sort = Sort.by(Sort.Direction.DESC,"createdAt");
-        Specification<Order> where = Specification.where(hasStatus(OrderStatus.Status.APPROVED).and(hasDateBetween(startDate, endDate)));
+        Specification<Order> where = Specification.where(hasPaymentStatus(Payment.PaymentStatus.SUCCESS).and(hasDateBetween(startDate, endDate)));
+        return orderRepository.findAll(where, sort);
+    }
+
+    public List<Order> findRefundOrderBetweenDates(Instant startDate, Instant endDate) {
+        Sort sort = Sort.by(Sort.Direction.DESC,"createdAt");
+        Specification<Order> where = Specification.where(hasRefundPaymentStatus().and(hasDateBetween(startDate, endDate)));
         return orderRepository.findAll(where, sort);
     }
 
@@ -855,6 +861,16 @@ public class OrderService {
         };
     }
 
+    public Specification<Order> hasRefundPaymentStatus() {
+        return (root, query, cb) -> {
+            Join<Order, Payment> paymentJoin = root.join("payments", JoinType.INNER);
+            return paymentJoin.get("paymentStatus").in(
+                    Payment.PaymentStatus.REFUNDED,
+                    Payment.PaymentStatus.PARTIAL_REFUNDED
+            );
+        };
+    }
+
 
     public Specification<Order> hasStatus(OrderStatus.Status status) {
         return (root, query, cb) -> {
@@ -865,6 +881,18 @@ public class OrderService {
             return cb.equal(statusJoin.get("status"), status);
         };
     }
+
+    public Specification<Order> hasRefundStatus() {
+        return (root, query, cb) -> {
+            Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
+            return statusJoin.get("status").in(
+                    OrderStatus.Status.REFUNDED,
+                    OrderStatus.Status.PARTIAL_REFUNDED
+            );
+        };
+    }
+
+
     public Specification<Order> hasStatusCode(OrderPackage.OrderPackageStatusCode orderPackageStatusCode) {
         return (root, query, cb) -> {
             Join<Order, OrderStatus> statusJoin = root.join("orderStatus", JoinType.LEFT);
@@ -1767,6 +1795,9 @@ public class OrderService {
         Set<OrderItem> orderItems = order.getOrderItems();
         Set<OrderItem> refundOrderItems = order.getRefundOrderItems();
         Set<OrderItem> refundItems = new HashSet<>();
+
+        if (!refundOrderItems.isEmpty())
+            throw new BadRequestException("Bu ürün için iade yapılmıştır!");
 
         OrderPackage orderPackage = order.getOrderStatus().getOrderPackages().get(0);
         Merchant merchant = merchantService.getMerchant();
