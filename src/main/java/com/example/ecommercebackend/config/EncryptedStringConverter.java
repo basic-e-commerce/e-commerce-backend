@@ -1,25 +1,20 @@
 package com.example.ecommercebackend.config;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Convert;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter
 public class EncryptedStringConverter implements AttributeConverter<String, String> {
 
-    private final EncryptionUtils encryptionUtils;
-
-    public EncryptedStringConverter(EncryptionUtils encryptionUtils) {
-        this.encryptionUtils = encryptionUtils;
-    }
-
     @Override
     public String convertToDatabaseColumn(String attribute) {
-        return encryptionUtils.encrypt(attribute);
+        if (attribute == null) return null;
+        return EncryptionUtils.encrypt(attribute);  // statik method
     }
 
     @Override
     public String convertToEntityAttribute(String dbData) {
-        return encryptionUtils.decrypt(dbData);
+        if (dbData == null) return null;
+        return EncryptionUtils.decrypt(dbData);    // statik method
     }
 }

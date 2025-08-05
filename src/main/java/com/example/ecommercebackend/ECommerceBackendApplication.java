@@ -16,6 +16,7 @@ import com.example.ecommercebackend.repository.user.AdminRepository;
 import com.example.ecommercebackend.repository.user.CityRepository;
 import com.example.ecommercebackend.repository.user.DistrictRepository;
 import com.example.ecommercebackend.repository.user.RoleRepository;
+import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.example.ecommercebackend.service.product.shipping.ShippingAddressService;
 import com.example.ecommercebackend.service.user.CityService;
 import com.example.ecommercebackend.service.user.DistrictService;
@@ -50,7 +51,8 @@ public class ECommerceBackendApplication {
 								  DistrictRepository districtRepository,
 								  ShippingAddressService shippingAddressService,
 								  CityService cityService,
-								  DistrictService districtService) {
+								  DistrictService districtService,
+								  MerchantService merchantService) {
 		return args -> {
 
 			System.out.println(1);
@@ -82,6 +84,26 @@ public class ECommerceBackendApplication {
 				turkey.setNumCode((short) 792);
 				turkey.setPhoneCode(90);
 				countryRepository.save(turkey);
+			}
+
+			List<CityDto> cities = new ArrayList<>();
+			if (cityService.getAll().isEmpty()) {
+				shippingAddressService.getCities().forEach(x -> {
+					System.out.println(x.getName());
+					cities.add(cityService.save(x));
+				});
+			}
+
+
+			System.out.println(6);
+			if (districtService.getAll().isEmpty()) {
+				for (CityDto cityDto : cities) {
+					List<DistrictDto> districts = shippingAddressService.getDistricts(cityDto.getCityCode());
+					for (DistrictDto districtDto : districts) {
+						System.out.println(districtDto.getName());
+						districtService.createNotThr(districtDto);
+					}
+				}
 			}
 
 
@@ -148,31 +170,18 @@ public class ECommerceBackendApplication {
 						"footerdesc",
 						openCloseHours
 				);
-				merchantRepository.save(merchant);
+				Merchant save = merchantRepository.save(merchant);
+				merchantService.selectDefaultSendingAddress(save.getSendingAddresses().getFirst().getId());
 			}
 
 			System.out.println(5);
 
 
-			List<CityDto> cities = new ArrayList<>();
-			if (cityService.getAll().isEmpty()) {
-				shippingAddressService.getCities().forEach(x -> {
-					System.out.println(x.getName());
-					cities.add(cityService.save(x));
-				});
-			}
 
 
-			System.out.println(6);
-			if (districtService.getAll().isEmpty()) {
-				for (CityDto cityDto : cities) {
-					List<DistrictDto> districts = shippingAddressService.getDistricts(cityDto.getCityCode());
-					for (DistrictDto districtDto : districts) {
-						System.out.println(districtDto.getName());
-						districtService.createNotThr(districtDto);
-					}
-				}
-			}
+
+
+
 
 
 
