@@ -1,6 +1,6 @@
 package com.example.ecommercebackend.builder.product.order;
 
-import com.example.ecommercebackend.config.EncryptionUtils;
+
 import com.example.ecommercebackend.dto.product.invoice.CorporateInvoiceResponseDto;
 import com.example.ecommercebackend.dto.product.invoice.InvoiceResponseDto;
 import com.example.ecommercebackend.dto.product.order.*;
@@ -70,8 +70,8 @@ public class OrderBuilder {
                         order.getInvoice().getCountryName(),
                         order.getInvoice().getCity(),
                         order.getInvoice().getPostalCode(),
-                        EncryptionUtils.decrypt(order.getInvoice().getPhoneNumber()),
-                        EncryptionUtils.decrypt(order.getInvoice().getAddressLine1())
+                        order.getInvoice().getPhoneNumber(),
+                        order.getInvoice().getAddressLine1()
                 ),
                 order.getOrderItems().stream().map(orderItem -> {
 
@@ -187,10 +187,10 @@ public class OrderBuilder {
                 order.getInvoice().getUsername(),
                 order.getInvoice().getCountryName(),
                 order.getInvoice().getCity(),
-                EncryptionUtils.decrypt(order.getInvoice().getAddressLine1()),
+                order.getInvoice().getAddressLine1(),
                 order.getInvoice().getPostalCode(),
-                EncryptionUtils.decrypt(order.getInvoice().getPhoneNumber()),
-                "oluşturulma tarihi"
+                order.getInvoice().getPhoneNumber(),
+                order.getInvoice().getCreatedAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                 );
 
         Invoice invoice = (Invoice) Hibernate.unproxy(order.getInvoice());
