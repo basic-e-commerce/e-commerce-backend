@@ -273,14 +273,21 @@ public class CustomerService {
 
     public Set<AddressDetailDto> getAddresses(){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println("get 1");
 
+        System.out.println("get 2");
         if (principal instanceof Customer customer){
+            System.out.println("get 3");
             Customer customer1 = findByUsername(customer.getUsername());
+            System.out.println("get 4");
             Set<Address> addresses = customer1.getAddresses();
+            System.out.println("get 5");
             return addresses.stream().map(x-> {
-                return new AddressDetailDto(x.getId(),
+                return new AddressDetailDto(
+                        x.getId(),
                         x.getTitle(),
-                        x.getFirstName(),x.getLastName(),
+                        x.getFirstName(),
+                        x.getLastName(),
                         x.getUsername(),
                         x.getCountry().getUpperName(),
                         x.getCountry().getIso(),
@@ -289,8 +296,8 @@ public class CustomerService {
                         x.getDistrict().getName(),
                         x.getDistrict().getDistrictId(),
                         x.getPostalCode(),
-                        EncryptionUtils.decrypt(x.getPhoneNo()),
-                        EncryptionUtils.decrypt(x.getAddressLine1()),
+                        x.getPhoneNo(),
+                        x.getAddressLine1(),
                         x.getGeliverId());
             }).collect(Collectors.toSet());
         }else
