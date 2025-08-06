@@ -471,7 +471,15 @@ public class ProductService {
     public Specification<Product> likeTitle(String keyword) {
         return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             if (keyword == null || keyword.trim().isEmpty()) return null;
-            return cb.like(cb.lower(root.get("productName")), "%" + keyword.toLowerCase() + "%");
+
+            String normalized = keyword.toLowerCase(); // frontend'den gelen kelimeyi lowercase yap
+
+            Expression<String> title = root.get("productName");
+
+            // PostgreSQL'deki unaccent(lower(product_name)) ifadesi
+            Expression<String> unaccentedTitle = cb.function("unaccent", String.class, cb.lower(title));
+
+            return cb.like(unaccentedTitle, "%" + normalized + "%");
         };
     }
 
