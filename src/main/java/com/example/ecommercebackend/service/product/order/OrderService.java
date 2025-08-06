@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.product.order;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.product.order.OrderBuilder;
+import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.dto.payment.refund.RefundCreateDto;
 import com.example.ecommercebackend.dto.product.card.CardResponseDetails;
 import com.example.ecommercebackend.dto.product.order.*;
@@ -998,8 +999,8 @@ public class OrderService {
             AddressApiDto addressApiDto = new AddressApiDto(
                     merchant.getAddress().getFirstName()+ " " + merchant.getAddress().getLastName(),
                     merchant.getEmail(),
-                    merchant.getPhoneNo(),
-                    merchant.getAddress().getAddressLine1(),
+                    EncryptionUtils.decrypt(merchant.getPhoneNo()),
+                    EncryptionUtils.decrypt(merchant.getAddress().getAddressLine1()),
                     "",
                     merchant.getAddress().getCountry().getIso(),
                     merchant.getAddress().getCity().getName(),
@@ -1035,8 +1036,8 @@ public class OrderService {
         CargoOfferRequestRecipientAddress recipientAddress = new CargoOfferRequestRecipientAddress(
                 order.getFirstName() +" "+ order.getLastName(),
                 order.getUsername(),
-                order.getPhoneNumber(),
-                order.getAddressLine1(),
+                EncryptionUtils.decrypt(order.getPhoneNumber()),
+                EncryptionUtils.decrypt(order.getAddressLine1()),
                 order.getCountryIso(),
                 order.getCityCode(),
                 order.getDistrict()
