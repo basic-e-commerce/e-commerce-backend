@@ -38,8 +38,6 @@ public class EncryptionUtils {
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             byte[] decodedBytes = Base64.getDecoder().decode(strToDecrypt);
             byte[] decryptedBytes = cipher.doFinal(decodedBytes);
-            System.out.println("::::::::::::::::decrypt");
-            System.out.println(Arrays.toString(decryptedBytes));
             return new String(decryptedBytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException("Decryption error", e);

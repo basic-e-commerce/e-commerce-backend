@@ -65,6 +65,8 @@ public class PaymentService {
     @Transactional
     public String processCreditCardPayment(@NotNullParam OrderCreateDto orderCreateDto,@NotNullParam HttpServletRequest httpServletRequest) {
         Order order = orderService.createOrder(orderCreateDto);
+        System.out.println("numara: "+order.getPhoneNumber());
+        System.out.println("adress: "+order.getAddressLine1());
 
         System.out.println("payment 10");
         String conversationId = UUID.randomUUID().toString();
