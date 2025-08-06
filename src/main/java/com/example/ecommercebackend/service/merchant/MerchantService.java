@@ -2,7 +2,6 @@ package com.example.ecommercebackend.service.merchant;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.merchant.MerchantBuilder;
-import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.dto.file.CoverImageRequestDto;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
@@ -210,8 +209,8 @@ public class MerchantService {
                     x.getDistrict().getName(),
                     x.getDistrict().getDistrictId(),
                     x.getPostalCode(),
-                    EncryptionUtils.decrypt(x.getPhoneNo()),
-                    EncryptionUtils.decrypt(x.getAddressLine1()),
+                    x.getPhoneNo(),
+                    x.getAddressLine1(),
                     x.getGeliverId()
             );
         }).toList();
