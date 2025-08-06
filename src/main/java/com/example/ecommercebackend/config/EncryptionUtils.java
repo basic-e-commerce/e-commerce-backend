@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Base64;
 
 public class EncryptionUtils {
@@ -39,6 +40,7 @@ public class EncryptionUtils {
             byte[] decodedBytes = Base64.getDecoder().decode(strToDecrypt);
             byte[] decryptedBytes = cipher.doFinal(decodedBytes);
             System.out.println("::::::::::::::::decrypt");
+            System.out.println(Arrays.toString(decryptedBytes));
             return new String(decryptedBytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException("Decryption error", e);

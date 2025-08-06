@@ -44,31 +44,6 @@ public class MerchantService {
         this.merchantImageService = merchantImageService;
         this.shippingAddressService = shippingAddressService;
     }
-//    public MerchantResponseDto createMerchant(MerchantCreateDto merchantCreateDto) {
-//        AddressCreateDto addressCreateDto = new AddressCreateDto(
-//                merchantCreateDto.getTitle(),
-//                merchantCreateDto.getFirstName(),
-//                merchantCreateDto.getLastName(),
-//                merchantCreateDto.getEmail(),
-//                merchantCreateDto.getCountryName(),
-//                merchantCreateDto.getCityCode(),
-//                merchantCreateDto.getDistrictId(),
-//                merchantCreateDto.getAddressLine1(),
-//                merchantCreateDto.getPostalCode(),
-//                merchantCreateDto.getPhoneNo());
-//        Address address = addressService.createAddress(addressCreateDto,false);
-//        List<Address> sendingAddresses = merchantCreateDto.getSendAddresses().stream().map(x->{
-//            return addressService.createAddress(x,merchantCreateDto,false);
-//        }).collect(Collectors.toCollection(ArrayList::new));
-//
-//        Merchant merchant = merchantBuilder.merchantCreateDtoToMerchant(merchantCreateDto, address,sendingAddresses);
-//        Merchant save = merchantRepository.save(merchant);
-//
-//        CoverImageRequestDto coverImageRequestDto = new CoverImageRequestDto(merchantCreateDto.getImage());
-//        CoverImage coverImage = merchantImageService.save(coverImageRequestDto, save.getId());
-//        merchant.setCoverImage(coverImage);
-//        return merchantBuilder.merchantToMerchantResponseDto(merchantRepository.save(merchant));
-//    }
 
     public MerchantResponseDto updateMerchant(MerchantUpdateDto merchantCreateDto) {
         Merchant merchant= getMerchant();
