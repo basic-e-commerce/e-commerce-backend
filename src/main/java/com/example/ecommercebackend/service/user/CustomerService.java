@@ -443,7 +443,7 @@ public class CustomerService {
         if (principal instanceof Customer customer){
             String phone = "";
             if (customer.getPhoneNumber() != null){
-                phone =EncryptionUtils.decrypt(customer.getPhoneNumber());
+                phone = customer.getPhoneNumber();
             }
             return new CustomerProfileDto(customer.getFirstName(),customer.getLastName(),customer.getUsername(),phone);
         }else
