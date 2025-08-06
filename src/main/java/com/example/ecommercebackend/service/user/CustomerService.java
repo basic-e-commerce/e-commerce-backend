@@ -231,51 +231,41 @@ public class CustomerService {
 
         if (principal instanceof Customer customer){
             Customer customer1 = findByUsername(customer.getUsername());
+            System.out.println(1);
             String newTitle = addressCreateDto.getTitle().trim().toLowerCase();
-
+            System.out.println(2);
             boolean titleExists = customer1.getAddresses().stream()
                     .anyMatch(address -> address.getTitle() != null &&
                             address.getTitle().trim().equalsIgnoreCase(newTitle));
-
+            System.out.println(3);
             if (titleExists)
                 throw new ResourceAlreadyExistException("Address "+ExceptionMessage.ALREADY_EXISTS.getMessage());
-
+            System.out.println(4);
             Address address = addressService.createAddress(addressCreateDto,true);
+            System.out.println(5);
             customer1.getAddresses().add(address);
+            System.out.println(6);
             customerRepository.save(customer1);
+            System.out.println(7);
 
-            AddressApiDto addressApiDto = new AddressApiDto(
-                    address.getFirstName() + " "+ address.getLastName(),
-                    customer.getUsername(),
-                    EncryptionUtils.decrypt(address.getPhoneNo()),
-                    EncryptionUtils.decrypt(address.getAddressLine1()),
-                    "",
+            System.out.println(8);
+
+            return new AddressDetailDto(
+                    address.getId(),
+                    address.getTitle(),
+                    address.getFirstName(),
+                    address.getLastName(),
+                    address.getUsername(),
+                    address.getCountry().getUpperName(),
                     address.getCountry().getIso(),
                     address.getCity().getName(),
                     address.getCity().getCityCode(),
                     address.getDistrict().getName(),
                     address.getDistrict().getDistrictId(),
                     address.getPostalCode(),
-                    true,
-                    address.getFirstName() + "-"+ address.getLastName()+"-"+UUID.randomUUID()
-            );
-
-            Address save = addressService.save(address);
-            return new AddressDetailDto(address.getId(),
-                    save.getTitle(),
-                    save.getFirstName(),
-                    save.getLastName(),
-                    save.getUsername(),
-                    save.getCountry().getUpperName(),
-                    save.getCountry().getIso(),
-                    save.getCity().getName(),
-                    save.getCity().getCityCode(),
-                    save.getDistrict().getName(),
-                    save.getDistrict().getDistrictId(),
-                    save.getPostalCode(),
-                    save.getPhoneNo(),
-                    save.getAddressLine1(),
-                    save.getGeliverId()
+                    address.getPhoneNo(),
+                    address.getAddressLine1(),
+                    address.getGeliverId()
             );
         }else
             throw new BadRequestException("Customer Not Authenticated");
