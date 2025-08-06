@@ -991,6 +991,7 @@ public class OrderService {
 
     public CargoOfferResponsesUserDto cargoOffer(String orderCode, List<CargoOfferDesiRequestAdminDto> cargoOfferDesiRequestAdminDtos) {
         List<CargoOfferResponseDto> cargoOfferResponseDtos = new ArrayList<>();
+        System.out.println(1);
         Order order = findByOrderCode(orderCode);
         String senderAddressId = merchantService.getMerchant().getDefaultSendingAddress().getGeliverId();
 

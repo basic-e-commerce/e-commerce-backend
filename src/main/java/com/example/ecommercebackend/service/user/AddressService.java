@@ -153,6 +153,8 @@ public class AddressService {
 
     public Address updateAddressById(Integer id, AddressCreateDto addressCreateDto) {
         Address address = findAddressById(id);
+        System.out.println(address.getPhoneNo());
+        System.out.println(address.getAddressLine1());
         Country country = countryService.findCountryByUpperName(addressCreateDto.getCountryName());
 
         boolean isUpdated = false;
