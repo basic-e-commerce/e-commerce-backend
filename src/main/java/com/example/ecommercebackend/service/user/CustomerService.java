@@ -260,14 +260,6 @@ public class CustomerService {
                     address.getFirstName() + "-"+ address.getLastName()+"-"+UUID.randomUUID()
             );
 
-            try {
-                AddressReceiptDto sendingAddress = shippingAddressService.createReceivingAddress(addressApiDto);
-                address.setGeliverId(sendingAddress.getId());
-
-            } catch (JsonProcessingException e) {
-                throw new BadRequestException("Json not serialize");
-            }
-
             Address save = addressService.save(address);
             return new AddressDetailDto(address.getId(),
                     save.getTitle(),
@@ -281,8 +273,8 @@ public class CustomerService {
                     save.getDistrict().getName(),
                     save.getDistrict().getDistrictId(),
                     save.getPostalCode(),
-                    EncryptionUtils.decrypt(save.getPhoneNo()),
-                    EncryptionUtils.decrypt(save.getAddressLine1()),
+                    save.getPhoneNo(),
+                    save.getAddressLine1(),
                     save.getGeliverId()
             );
         }else
