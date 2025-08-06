@@ -842,7 +842,7 @@ public class OrderService {
 
     public List<Order> findSuccessOrderBetweenDates(Instant startDate, Instant endDate) {
         Sort sort = Sort.by(Sort.Direction.DESC,"createdAt");
-        Specification<Order> where = Specification.where(hasPaymentStatus(Payment.PaymentStatus.SUCCESS).or(hasPaymentStatus(Payment.PaymentStatus.REFUNDED)).or(hasPaymentStatus(Payment.PaymentStatus.PARTIAL_REFUNDED)).and(hasDateBetween(startDate, endDate)));
+        Specification<Order> where = Specification.where(hasPaymentStatus(Payment.PaymentStatus.SUCCESS).or(hasPaymentStatus(Payment.PaymentStatus.REFUNDED)).or(hasPaymentStatus(Payment.PaymentStatus.PARTIAL_REFUNDED)).or(hasPaymentStatus(Payment.PaymentStatus.CANCEL)).and(hasDateBetween(startDate, endDate)));
         return orderRepository.findAll(where, sort);
     }
 
@@ -867,7 +867,8 @@ public class OrderService {
             Join<Order, Payment> paymentJoin = root.join("payments", JoinType.INNER);
             return paymentJoin.get("paymentStatus").in(
                     Payment.PaymentStatus.REFUNDED,
-                    Payment.PaymentStatus.PARTIAL_REFUNDED
+                    Payment.PaymentStatus.PARTIAL_REFUNDED,
+                    Payment.PaymentStatus.CANCEL
             );
         };
     }
@@ -1414,8 +1415,13 @@ public class OrderService {
     public String cargoManuelCancel(String orderCode,Integer orderPackageId){
         Order order = findByOrderCode(orderCode);
         OrderPackage orderPackage = order.getOrderStatus().getOrderPackages().stream().filter(x-> orderPackageId == x.getId()).findFirst().orElse(null);
+
         if (orderPackage == null) {
-            throw new BadRequestException("Siparişin kargosu bulunamadı!");
+            order.getOrderStatus().setColor(OrderStatus.Color.RED);
+            order.getOrderStatus().setStatus(OrderStatus.Status.CANCEL);
+            order.getOrderStatus().setUpdatedAt(Instant.now());
+            orderRepository.save(order);
+            return "Sipariş iptal edildi!";
         }
 
         order.getOrderStatus().setColor(OrderStatus.Color.RED);
@@ -1969,9 +1975,19 @@ public class OrderService {
     }
 
 
-    public String cargoCancel(String orderCode,Integer orderPackageId) {
+    public String cargoCancel(@NotNullParam String orderCode,Integer orderPackageId) {
         Order order = findByOrderCode(orderCode);
+
+        if (orderPackageId == null) {
+            order.getOrderStatus().setColor(OrderStatus.Color.RED);
+            order.getOrderStatus().setStatus(OrderStatus.Status.CANCEL);
+            order.getOrderStatus().setUpdatedAt(Instant.now());
+            orderRepository.save(order);
+            return "Sipariş iptal edildi!";
+        }
+
         OrderPackage orderPackage = order.getOrderStatus().getOrderPackages().stream().filter(x-> orderPackageId == x.getId()).findFirst().orElse(null);
+
         if (orderPackage == null) {
             throw new BadRequestException("Siparişin kargosu bulunamadı!");
         }
