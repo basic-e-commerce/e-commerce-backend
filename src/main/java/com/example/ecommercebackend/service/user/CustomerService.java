@@ -342,8 +342,8 @@ public class CustomerService {
                     updateAddress.getDistrict().getName(),
                     updateAddress.getDistrict().getDistrictId(),
                     updateAddress.getPostalCode(),
-                    EncryptionUtils.decrypt(updateAddress.getPhoneNo()),
-                    EncryptionUtils.decrypt(updateAddress.getAddressLine1()),
+                    updateAddress.getPhoneNo(),
+                    updateAddress.getAddressLine1(),
                     updateAddress.getGeliverId()
             );
         }else
