@@ -188,8 +188,8 @@ public class MerchantService {
                 defaultaddress.getDistrict().getName(),
                 defaultaddress.getDistrict().getDistrictId(),
                 defaultaddress.getPostalCode(),
-                EncryptionUtils.decrypt(defaultaddress.getPhoneNo()),
-                EncryptionUtils.decrypt(defaultaddress.getAddressLine1()),
+                defaultaddress.getPhoneNo(),
+                defaultaddress.getAddressLine1(),
                 defaultaddress.getGeliverId()
         );
     }
