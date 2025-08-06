@@ -1885,6 +1885,8 @@ public class OrderService {
         }
 
         Address defaultSendingAddress = merchant.getDefaultSendingAddress();
+        System.out.println("defaultAddress: "+ defaultSendingAddress.getPhoneNo());
+        System.out.println("defaultAddress: "+ defaultSendingAddress.getAddressLine1());
         CargoRefundDto cargoRefundDto = new CargoRefundDto(
             true,
                 refundCreateDto.getWillAccept(),
@@ -1892,8 +1894,8 @@ public class OrderService {
                 1,
                 new ShippingSenderAddress(
                       defaultSendingAddress.getShortName(),
-                      defaultSendingAddress.getPhoneNo(),
-                      defaultSendingAddress.getAddressLine1(),
+                      EncryptionUtils.decrypt(defaultSendingAddress.getPhoneNo()),
+                      EncryptionUtils.decrypt(defaultSendingAddress.getAddressLine1()),
                       defaultSendingAddress.getCountry().getIso(),
                       defaultSendingAddress.getCity().getCityCode(),
                       defaultSendingAddress.getDistrict().getName()
