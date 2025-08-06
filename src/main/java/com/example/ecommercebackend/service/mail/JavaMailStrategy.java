@@ -1,5 +1,7 @@
 package com.example.ecommercebackend.service.mail;
 
+import com.example.ecommercebackend.config.EncryptedStringConverter;
+import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.service.merchant.MerchantService;
@@ -43,7 +45,7 @@ public class JavaMailStrategy implements IMailStrategy {
     public JavaMailSender createJavaMailSender(Merchant merchant) {
         String email = merchant.getEmail();
         System.out.println("gönderici:"+email);
-        String mailPassword = merchant.getEmailPassword();
+        String mailPassword = EncryptionUtils.decrypt(merchant.getEmailPassword());
         System.out.println("mailPassword: "+mailPassword);
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
