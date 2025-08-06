@@ -1041,8 +1041,8 @@ public class OrderService {
         CargoOfferRequestRecipientAddress recipientAddress = new CargoOfferRequestRecipientAddress(
                 order.getFirstName() +" "+ order.getLastName(),
                 order.getUsername(),
-                EncryptionUtils.decrypt(order.getPhoneNumber()),
-                EncryptionUtils.decrypt(order.getAddressLine1()),
+                order.getPhoneNumber(),
+                order.getAddressLine1(),
                 order.getCountryIso(),
                 order.getCityCode(),
                 order.getDistrict()
