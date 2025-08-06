@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.user;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.user.CustomerBuilder;
+import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.dto.product.shipping.AddressApiDto;
 import com.example.ecommercebackend.dto.product.shipping.AddressReceiptDto;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
@@ -246,8 +247,8 @@ public class CustomerService {
             AddressApiDto addressApiDto = new AddressApiDto(
                     address.getFirstName() + " "+ address.getLastName(),
                     customer.getUsername(),
-                    address.getPhoneNo(),
-                    address.getAddressLine1(),
+                    EncryptionUtils.decrypt(address.getPhoneNo()),
+                    EncryptionUtils.decrypt(address.getAddressLine1()),
                     "",
                     address.getCountry().getIso(),
                     address.getCity().getName(),
@@ -280,8 +281,8 @@ public class CustomerService {
                     save.getDistrict().getName(),
                     save.getDistrict().getDistrictId(),
                     save.getPostalCode(),
-                    save.getPhoneNo(),
-                    save.getAddressLine1(),
+                    EncryptionUtils.decrypt(save.getPhoneNo()),
+                    EncryptionUtils.decrypt(save.getAddressLine1()),
                     save.getGeliverId()
             );
         }else
@@ -306,8 +307,8 @@ public class CustomerService {
                         x.getDistrict().getName(),
                         x.getDistrict().getDistrictId(),
                         x.getPostalCode(),
-                        x.getPhoneNo(),
-                        x.getAddressLine1(),
+                        EncryptionUtils.decrypt(x.getPhoneNo()),
+                        EncryptionUtils.decrypt(x.getAddressLine1()),
                         x.getGeliverId());
             }).collect(Collectors.toSet());
         }else
@@ -352,8 +353,8 @@ public class CustomerService {
                     updateAddress.getDistrict().getName(),
                     updateAddress.getDistrict().getDistrictId(),
                     updateAddress.getPostalCode(),
-                    updateAddress.getPhoneNo(),
-                    updateAddress.getAddressLine1(),
+                    EncryptionUtils.decrypt(updateAddress.getPhoneNo()),
+                    EncryptionUtils.decrypt(updateAddress.getAddressLine1()),
                     updateAddress.getGeliverId()
             );
         }else
@@ -419,7 +420,7 @@ public class CustomerService {
     }
 
     public boolean existByPhoneNo(String phoneNo){
-        return customerRepository.existsByPhoneNumber(phoneNo);
+        return customerRepository.existsByPhoneNumber(EncryptionUtils.encrypt(phoneNo));
     }
 
     @Transactional
@@ -453,7 +454,7 @@ public class CustomerService {
         if (principal instanceof Customer customer){
             String phone = "";
             if (customer.getPhoneNumber() != null){
-                phone =customer.getPhoneNumber();
+                phone =EncryptionUtils.decrypt(customer.getPhoneNumber());
             }
             return new CustomerProfileDto(customer.getFirstName(),customer.getLastName(),customer.getUsername(),phone);
         }else

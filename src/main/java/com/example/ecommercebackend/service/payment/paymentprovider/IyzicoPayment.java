@@ -50,35 +50,32 @@ public class IyzicoPayment implements PaymentStrategy {
     @Override
     public ProcessCreditCardDto processCreditCardPayment(Order order, PaymentCreditCardRequestDto paymentCreditCardRequestDto, String conversationId, HttpServletRequest httpServletRequest) {
 
-        System.out.println(7);
         Options options = getOptions();
-
         CreatePaymentRequest request = getCreatePaymentRequest(order,conversationId,paymentCreditCardRequestDto);
-        System.out.println(8);
 
         PaymentCard paymentCard = getPaymentCard(paymentCreditCardRequestDto.getCreditCardRequestDto());
         request.setPaymentCard(paymentCard);
-        System.out.println(9);
+
 
         Buyer buyer = getBuyer(order,httpServletRequest);
         request.setBuyer(buyer);
-        System.out.println(10);
+
 
         Address shippingAddress = getShippingAddress(order);
         request.setShippingAddress(shippingAddress);
-        System.out.println(11);
+
 
         Address billingAddress = getBillingAddress(order);
         request.setBillingAddress(billingAddress);
-        System.out.println(12);
+
 
         List<BasketItem> basketItems = getBasketItems(order);
         request.setBasketItems(basketItems);
-        System.out.println(13);
+
 
         ThreedsInitialize threedsInitialize = ThreedsInitialize.create(request, options);
         System.out.println(threedsInitialize);
-        System.out.println(14);
+
 
         return new ProcessCreditCardDto(
                 threedsInitialize.getConversationId(),

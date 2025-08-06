@@ -29,6 +29,7 @@ public class TwilioStrategy implements IMailStrategy{
     @Override
     public String send(String to,String subject,String body) {
         Merchant merchant = merchantService.getMerchant();
+
         Email from1 = new Email(merchant.getEmail());
         Email to1 = new Email(to);
         Content content = new Content("text/html", body);

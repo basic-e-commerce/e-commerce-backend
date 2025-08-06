@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.builder.merchant;
 
+import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.dto.merchant.supplier.SupplierCreateDto;
 import com.example.ecommercebackend.dto.product.supplier.SupplierDetailDto;
 import com.example.ecommercebackend.entity.merchant.Supplier;
@@ -30,8 +31,8 @@ public class SupplierBuilder {
                 supplier.getId(),
                 supplier.getSupplierName(),
                 supplier.getCompany(),
-                supplier.getPhoneNumber(),
-                supplier.getAddressLine1()+" "+supplier.getCity()+"/"+supplier.getCountry().getName(),
+                EncryptionUtils.decrypt(supplier.getPhoneNumber()),
+                EncryptionUtils.decrypt(supplier.getAddressLine1())+" "+supplier.getCity()+"/"+supplier.getCountry().getName(),
                 supplier.getNote()
         );
     }

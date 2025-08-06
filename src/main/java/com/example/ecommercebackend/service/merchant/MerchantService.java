@@ -2,6 +2,7 @@ package com.example.ecommercebackend.service.merchant;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.merchant.MerchantBuilder;
+import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.dto.file.CoverImageRequestDto;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
@@ -75,20 +76,7 @@ public class MerchantService {
     }
 
     public Merchant getMerchant() {
-        Merchant merchant1= merchantRepository.findById(1L).orElse(null);
-        Merchant merchant = merchantRepository.findAll().stream().findFirst().orElseThrow(() -> new NotFoundException("Merchant " + ExceptionMessage.NOT_FOUND.getMessage()));
-        System.out.println("------------------");
-        if (merchant1 != null) {
-            System.out.println("Merchant: "+merchant1.getEmail());
-            System.out.println("Merchant: "+merchant1.getName());
-            System.out.println("Merchant: "+merchant1.getEmailPassword());
-        }else
-            System.out.println("null");
-        System.out.println("Merchant: "+merchant.getEmail());
-        System.out.println("Merchant: "+merchant.getName());
-        System.out.println("Merchant: "+merchant.getEmailPassword());
-        System.out.println("------------------");
-        return merchant;
+        return merchantRepository.findAll().stream().findFirst().orElseThrow(() -> new NotFoundException("Merchant " + ExceptionMessage.NOT_FOUND.getMessage()));
     }
     public List<Merchant> getMerchants() {
         return merchantRepository.findAll();
@@ -123,8 +111,8 @@ public class MerchantService {
         AddressApiDto addressApiDto = new AddressApiDto(
                 address.getFirstName()+ " "+ address.getLastName(),
                 merchant.getEmail(),
-                address.getPhoneNo(),
-                address.getAddressLine1(),
+                EncryptionUtils.decrypt(address.getPhoneNo()),
+                EncryptionUtils.decrypt(address.getAddressLine1()),
                 "",
                 address.getCountry().getIso(),
                 address.getCity().getName(),
@@ -152,8 +140,8 @@ public class MerchantService {
                 save.getDistrict().getName(),
                 save.getDistrict().getDistrictId(),
                 save.getPostalCode(),
-                save.getPhoneNo(),
-                save.getAddressLine1(),
+                EncryptionUtils.decrypt(save.getPhoneNo()),
+                EncryptionUtils.decrypt(save.getAddressLine1()),
                 save.getGeliverId()
         );
     }
@@ -200,8 +188,8 @@ public class MerchantService {
                 defaultaddress.getDistrict().getName(),
                 defaultaddress.getDistrict().getDistrictId(),
                 defaultaddress.getPostalCode(),
-                defaultaddress.getPhoneNo(),
-                defaultaddress.getAddressLine1(),
+                EncryptionUtils.decrypt(defaultaddress.getPhoneNo()),
+                EncryptionUtils.decrypt(defaultaddress.getAddressLine1()),
                 defaultaddress.getGeliverId()
         );
     }
@@ -222,8 +210,8 @@ public class MerchantService {
                     x.getDistrict().getName(),
                     x.getDistrict().getDistrictId(),
                     x.getPostalCode(),
-                    x.getPhoneNo(),
-                    x.getAddressLine1(),
+                    EncryptionUtils.decrypt(x.getPhoneNo()),
+                    EncryptionUtils.decrypt(x.getAddressLine1()),
                     x.getGeliverId()
             );
         }).toList();

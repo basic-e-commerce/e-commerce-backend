@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.builder.product.order;
 
+import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.dto.product.invoice.CorporateInvoiceResponseDto;
 import com.example.ecommercebackend.dto.product.invoice.InvoiceResponseDto;
 import com.example.ecommercebackend.dto.product.order.*;
@@ -69,8 +70,8 @@ public class OrderBuilder {
                         order.getInvoice().getCountryName(),
                         order.getInvoice().getCity(),
                         order.getInvoice().getPostalCode(),
-                        order.getInvoice().getPhoneNumber(),
-                        order.getInvoice().getAddressLine1()
+                        EncryptionUtils.decrypt(order.getInvoice().getPhoneNumber()),
+                        EncryptionUtils.decrypt(order.getInvoice().getAddressLine1())
                 ),
                 order.getOrderItems().stream().map(orderItem -> {
 
@@ -186,9 +187,9 @@ public class OrderBuilder {
                 order.getInvoice().getUsername(),
                 order.getInvoice().getCountryName(),
                 order.getInvoice().getCity(),
-                order.getInvoice().getAddressLine1(),
+                EncryptionUtils.decrypt(order.getInvoice().getAddressLine1()),
                 order.getInvoice().getPostalCode(),
-                order.getInvoice().getPhoneNumber(),
+                EncryptionUtils.decrypt(order.getInvoice().getPhoneNumber()),
                 "oluşturulma tarihi"
                 );
 

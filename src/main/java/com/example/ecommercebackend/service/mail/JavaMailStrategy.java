@@ -5,6 +5,8 @@ import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.service.merchant.MerchantService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -15,6 +17,7 @@ import java.util.Properties;
 @Service
 public class JavaMailStrategy implements IMailStrategy {
 
+    private static final Logger log = LoggerFactory.getLogger(JavaMailStrategy.class);
     private final MerchantService merchantService;
 
     public JavaMailStrategy(MerchantService merchantService) {
@@ -32,9 +35,8 @@ public class JavaMailStrategy implements IMailStrategy {
             message.setTo(to);
             message.setSubject(subject);
             message.setText(body);
-            System.out.println("bbbbbbbbbbbbbbbbbbbb");
             mailSender.send(message);
-            System.out.println("aaaaaaaaaaaaaaaaaaaaaaa");
+            log.info("Email sent: "+ to);
 
             return "Mail Gönderildi!";
         }catch (Exception e) {
@@ -44,21 +46,18 @@ public class JavaMailStrategy implements IMailStrategy {
 
     public JavaMailSender createJavaMailSender(Merchant merchant) {
         String email = merchant.getEmail();
-        System.out.println("gönderici:"+email);
         String mailPassword = EncryptionUtils.decrypt(merchant.getEmailPassword());
-        System.out.println("mailPassword: "+mailPassword);
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
         mailSender.setUsername(email);
         mailSender.setPassword(mailPassword);
-        System.out.println("-------11111");
+
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.ssl.enable", "false");
-
 
         return mailSender;
     }

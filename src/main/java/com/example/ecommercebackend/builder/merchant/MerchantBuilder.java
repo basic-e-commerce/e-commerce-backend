@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.builder.merchant;
 
+import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantResponseDto;
@@ -20,11 +21,11 @@ public class MerchantBuilder {
                 merchantCreateDto.getAddressLink(),
                 sendingAddresses,
                 null,
-                merchantCreateDto.getPhoneNo(),
+                EncryptionUtils.decrypt(merchantCreateDto.getPhoneNo()),
                 merchantCreateDto.getEmail(),
                 merchantCreateDto.getMinOrderAmount(),
                 merchantCreateDto.getShippingFee(),
-                merchantCreateDto.getEmailPassword(),
+                EncryptionUtils.decrypt(merchantCreateDto.getEmailPassword()),
                 merchantCreateDto.getInstagram(),
                 merchantCreateDto.getInstagramLink(),
                 merchantCreateDto.getFooterDescription(),
@@ -42,11 +43,11 @@ public class MerchantBuilder {
                 merchant.getAddress() != null ? merchant.getAddress().getAddressLine1() : null,
                 merchant.getAddress() != null ? merchant.getAddress().getPostalCode() : null,
                 merchant.getAddressLink(),
-                merchant.getPhoneNo(),
+                EncryptionUtils.decrypt(merchant.getPhoneNo()),
                 merchant.getEmail(),
                 merchant.getMinOrderAmount(),
                 merchant.getShippingFee(),
-                merchant.getEmailPassword(),
+                EncryptionUtils.decrypt(merchant.getEmailPassword()),
                 merchant.getInstagram(),
                 merchant.getInstagramLink(),
                 merchant.getFooterDescription(),

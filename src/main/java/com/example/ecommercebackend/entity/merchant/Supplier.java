@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.entity.merchant;
 
+import com.example.ecommercebackend.config.EncryptedStringConverter;
 import com.example.ecommercebackend.entity.product.products.Product;
 import com.example.ecommercebackend.entity.product.shipping.Country;
 import com.example.ecommercebackend.entity.user.Admin;
@@ -48,12 +49,16 @@ public class Supplier {
     private String company;
 
     @Column(name = "phone_number")
+
+    @Convert(converter = EncryptedStringConverter.class)
     private String phoneNumber;
 
     @Column(name = "address_line1", nullable = false)
+    @Convert(converter = EncryptedStringConverter.class)
     private String addressLine1;
 
     @Column(name = "address_line2")
+    @Convert(converter = EncryptedStringConverter.class)
     private String addressLine2;
 
     @ManyToOne

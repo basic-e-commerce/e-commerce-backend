@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.service.payment;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
+import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
 import com.example.ecommercebackend.dto.payment.refund.RefundCreateDto;
 import com.example.ecommercebackend.dto.payment.response.*;
@@ -71,7 +72,7 @@ public class PaymentService {
                 order.getFirstName(),
                 order.getLastName(),
                 order.getUsername(),
-                order.getPhoneNumber(),
+                EncryptionUtils.decrypt(order.getPhoneNumber()),
                 order.getCountry(),
                 order.getCity(),
                 order.getPostalCode(),
@@ -110,10 +111,7 @@ public class PaymentService {
 
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        System.out.println(18);
         BigDecimal finalTotalPrice = totalPrice;
-        System.out.println("------------------ finalTotal price: "+finalTotalPrice);
-        System.out.println(19);
 
         Future<ProcessCreditCardDto> future = executor.submit(() ->
                 paymentStrategy.processCreditCardPayment(order, orderCreateDto.getPaymentCreditCardRequestDto(), conversationId,httpServletRequest)

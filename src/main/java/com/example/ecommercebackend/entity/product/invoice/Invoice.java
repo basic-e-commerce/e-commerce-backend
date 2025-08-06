@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.entity.product.invoice;
 
+import com.example.ecommercebackend.config.EncryptedStringConverter;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.order.Order;
 import jakarta.persistence.*;
@@ -34,8 +35,10 @@ public abstract class Invoice {
     private String cityCode;
     private String district;
     private Integer districtId;
+    @Convert(converter = EncryptedStringConverter.class)
     private String addressLine1;
     private String postalCode;
+    @Convert(converter = EncryptedStringConverter.class)
     private String phoneNo;
 
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
