@@ -3,7 +3,7 @@ package com.example.ecommercebackend.config;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-@Converter
+@Converter(autoApply = false)
 public class EncryptedStringConverter implements AttributeConverter<String, String> {
 
     @Override
