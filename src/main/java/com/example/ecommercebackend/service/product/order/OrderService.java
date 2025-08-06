@@ -802,7 +802,7 @@ public class OrderService {
     }
 
     private Specification<Order> filterGuestSuccessOrders(User user) {
-        return Specification.where(hasStatus(OrderStatus.Status.APPROVED)).and(hasUser(user));
+        return Specification.where(hasStatus(OrderStatus.Status.APPROVED).or(hasStatus(OrderStatus.Status.REFUNDED)).or(hasStatus(OrderStatus.Status.PARTIAL_REFUNDED)).or(hasStatus(OrderStatus.Status.CANCEL))).and(hasUser(user));
     }
 
 
