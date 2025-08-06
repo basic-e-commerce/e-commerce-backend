@@ -88,6 +88,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/product/name/{linkName}").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/product/name/admin/{linkName}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/product").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/product/search").permitAll()
+
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/merchant").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/merchant").hasAuthority("ADMIN")
@@ -211,6 +213,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/order-package/track-update").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/order-package/id").permitAll()
                         .requestMatchers(HttpMethod.PUT,"/api/v1/order-package/manuel-update").hasAuthority("ADMIN")
+
 
                         .anyRequest().permitAll())
                 .anonymous(anonymous -> anonymous

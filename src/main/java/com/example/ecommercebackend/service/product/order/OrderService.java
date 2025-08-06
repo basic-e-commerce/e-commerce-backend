@@ -842,7 +842,7 @@ public class OrderService {
 
     public List<Order> findSuccessOrderBetweenDates(Instant startDate, Instant endDate) {
         Sort sort = Sort.by(Sort.Direction.DESC,"createdAt");
-        Specification<Order> where = Specification.where(hasPaymentStatus(Payment.PaymentStatus.SUCCESS).and(hasDateBetween(startDate, endDate)));
+        Specification<Order> where = Specification.where(hasPaymentStatus(Payment.PaymentStatus.SUCCESS).or(hasPaymentStatus(Payment.PaymentStatus.REFUNDED)).or(hasPaymentStatus(Payment.PaymentStatus.PARTIAL_REFUNDED)).and(hasDateBetween(startDate, endDate)));
         return orderRepository.findAll(where, sort);
     }
 

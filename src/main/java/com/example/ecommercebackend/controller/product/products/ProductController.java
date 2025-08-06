@@ -112,4 +112,9 @@ public class ProductController {
     public ResponseEntity<List<Product>> getAllProducts() {
         return new ResponseEntity<>(productService.findAll(),HttpStatus.OK);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductSmallDto>> searchProduct(@RequestParam(required = false) String searchTitle,@RequestParam(required = false,defaultValue = "0") Integer page,@RequestParam(required = false,defaultValue = "10") Integer size) {
+        return new ResponseEntity<>(productService.searchProduct(searchTitle,page,size),HttpStatus.OK);
+    }
 }

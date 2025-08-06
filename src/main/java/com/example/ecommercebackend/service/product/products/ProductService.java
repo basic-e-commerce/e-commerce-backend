@@ -468,6 +468,14 @@ public class ProductService {
                 cb.equal(root.get("isDeleted"), isDeleted);
     }
 
+    public Specification<Product> likeTitle(String keyword) {
+        return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            if (keyword == null || keyword.trim().isEmpty()) return null;
+            return cb.like(cb.lower(root.get("productName")), "%" + keyword.toLowerCase() + "%");
+        };
+    }
+
+
     public Specification<Product> isPublished(Boolean isPublished) {
         return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 cb.equal(root.get("published"), isPublished);
@@ -517,5 +525,20 @@ public class ProductService {
 
     public List<ProductAdminDetailDto> productToProductAdminDetailDto(List<Product> stockNotificationProducts) {
         return stockNotificationProducts.stream().map(productBuilder::productToProductAdmindetailDto).collect(Collectors.toList());
+    }
+
+    public List<ProductSmallDto> searchProduct(String searchTitle,Integer page,Integer size) {
+        Specification<Product> specification = Specification.where(likeTitle(searchTitle))
+                .and(isDisableOutOfStock(false))
+                .and(hasMinQuantity(0))
+                .and(hasProductType(ProductType.SIMPLE))
+                .and(isPublished(true))
+                .and(isDeleted(false));
+        Pageable pageable = PageRequest.of(page, size); // ilk sayfa, 10 sonuç
+        return productRepository
+                .findAll(specification, pageable)
+                .stream()
+                .map(productBuilder::productToProductSmallDto)
+                .collect(Collectors.toList());
     }
 }
