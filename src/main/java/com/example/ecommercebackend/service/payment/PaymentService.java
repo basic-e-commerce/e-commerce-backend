@@ -74,7 +74,7 @@ public class PaymentService {
                 order.getFirstName(),
                 order.getLastName(),
                 order.getUsername(),
-                EncryptionUtils.decrypt(order.getPhoneNumber()),
+                order.getPhoneNumber(),
                 order.getCountry(),
                 order.getCity(),
                 order.getPostalCode(),
