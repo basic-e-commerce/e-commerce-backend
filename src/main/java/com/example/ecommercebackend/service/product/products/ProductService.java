@@ -36,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.math.BigDecimal;
+import java.text.Normalizer;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -472,16 +473,25 @@ public class ProductService {
         return (Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             if (keyword == null || keyword.trim().isEmpty()) return null;
 
-            String normalized = keyword.toLowerCase(); // frontend'den gelen kelimeyi lowercase yap
+            // Kullanıcı aramasını normalize et
+            String normalized = normalizeText(keyword.trim());
 
+            // Veritabanı kolonu için unaccent(lower(...))
             Expression<String> title = root.get("productName");
-
-            // PostgreSQL'deki unaccent(lower(product_name)) ifadesi
             Expression<String> unaccentedTitle = cb.function("unaccent", String.class, cb.lower(title));
 
             return cb.like(unaccentedTitle, "%" + normalized + "%");
         };
     }
+
+
+    public static String normalizeText(String input) {
+        return Normalizer
+                .normalize(input, Normalizer.Form.NFD)         // aksanları ayırır
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "") // aksanları siler
+                .toLowerCase(Locale.ROOT);
+    }
+
 
 
     public Specification<Product> isPublished(Boolean isPublished) {
