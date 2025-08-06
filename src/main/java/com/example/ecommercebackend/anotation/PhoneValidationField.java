@@ -14,10 +14,17 @@ import java.util.regex.Pattern;
 @Component
 public class PhoneValidationField {
     private static final Pattern PHONE_PATTERN = Pattern.compile("^\\+90\\d{10}$");
+
     @Before("execution(* com.example.ecommercebackend.controller..*(..))")
     public void validateNotNullFields(JoinPoint joinPoint) throws IllegalAccessException {
         for (Object arg : joinPoint.getArgs()) {
             if (arg == null) continue;
+
+            // Sadece DTO paketindeki nesneleri kontrol et
+            String packageName = arg.getClass().getPackageName();
+            if (!packageName.startsWith("com.example.ecommercebackend.dto")) {
+                continue; // DTO değilse atla
+            }
 
             Field[] fields = arg.getClass().getDeclaredFields();
             for (Field field : fields) {
@@ -41,5 +48,6 @@ public class PhoneValidationField {
             }
         }
     }
+
 
 }
