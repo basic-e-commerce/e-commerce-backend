@@ -996,21 +996,21 @@ public class OrderService {
         String senderAddressId = merchantService.getMerchant().getDefaultSendingAddress().getGeliverId();
 
         if (senderAddressId == null){
-            Merchant merchant = merchantService.getMerchant();
+            Address defaultAddress = merchantService.getMerchant().getDefaultSendingAddress();
             AddressApiDto addressApiDto = new AddressApiDto(
-                    merchant.getAddress().getFirstName()+ " " + merchant.getAddress().getLastName(),
-                    merchant.getEmail(),
-                    EncryptionUtils.decrypt(merchant.getPhoneNo()),
-                    EncryptionUtils.decrypt(merchant.getAddress().getAddressLine1()),
+                    defaultAddress.getFirstName()+ " " + defaultAddress.getLastName(),
+                    defaultAddress.getUsername(),
+                    EncryptionUtils.decrypt(defaultAddress.getPhoneNo()),
+                    EncryptionUtils.decrypt(defaultAddress.getAddressLine1()),
                     "",
-                    merchant.getAddress().getCountry().getIso(),
-                    merchant.getAddress().getCity().getName(),
-                    merchant.getAddress().getCity().getCityCode(),
-                    merchant.getAddress().getDistrict().getName(),
-                    merchant.getAddress().getDistrict().getDistrictId(),
-                    merchant.getAddress().getPostalCode(),
+                    defaultAddress.getCountry().getIso(),
+                    defaultAddress.getCity().getName(),
+                    defaultAddress.getCity().getCityCode(),
+                    defaultAddress.getDistrict().getName(),
+                    defaultAddress.getDistrict().getDistrictId(),
+                    defaultAddress.getPostalCode(),
                     false,
-                    merchant.getAddress().getShortName()
+                    UUID.randomUUID().toString()
             );
             shippingAddressService.createSendingAddress(addressApiDto);
         }
