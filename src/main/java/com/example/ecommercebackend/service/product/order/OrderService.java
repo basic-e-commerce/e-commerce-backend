@@ -997,6 +997,8 @@ public class OrderService {
 
         if (senderAddressId == null){
             Address defaultAddress = merchantService.getMerchant().getDefaultSendingAddress();
+            System.out.println("adres: "+defaultAddress.getAddressLine1());
+            System.out.println("telefon: "+defaultAddress.getPhoneNo());
             AddressApiDto addressApiDto = new AddressApiDto(
                     defaultAddress.getFirstName()+ " " + defaultAddress.getLastName(),
                     defaultAddress.getUsername(),
@@ -1034,6 +1036,8 @@ public class OrderService {
             cargoOfferRequestItems.add(cargoOfferRequestItem);
         }
 
+        System.out.println("receipt: tel"+ order.getPhoneNumber());
+        System.out.println("receiptAddress: "+ order.getAddressLine1());
         CargoOfferRequestRecipientAddress recipientAddress = new CargoOfferRequestRecipientAddress(
                 order.getFirstName() +" "+ order.getLastName(),
                 order.getUsername(),
