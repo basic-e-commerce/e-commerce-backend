@@ -45,12 +45,20 @@ public class AddressService {
 
     public Address createAddress(AddressCreateDto addressCreateDto,Boolean isReceiptAddress) {
         Country country = countryService.findCountryByUpperName(addressCreateDto.getCountryName());
+        System.out.println(1);
         City city = cityService.findByCityCode(addressCreateDto.getCityCode());
+        System.out.println(2);
         District district = districtService.findByDistrictId(addressCreateDto.getDistrictId());
+        System.out.println(3);
         Address address = addressBuilder.addressCreateDtoToAddress(addressCreateDto,country,city,district,isReceiptAddress);
+        System.out.println(4);
         Address save = addressRepository.save(address);
 
+        System.out.println(5);
         if (isReceiptAddress){
+            System.out.println(6);
+            System.out.println(addressCreateDto.getPhoneNo() + "     " +addressCreateDto.getAddressLine1());
+
             Random random = new Random();
             AddressApiDto addressApiDto = new AddressApiDto(
                     addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName(),
@@ -68,6 +76,7 @@ public class AddressService {
                     addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName()+"-"+(100000+random.nextInt(90000))
             );
             try {
+                System.out.println(1);
                 addressApiDto.setShortName(address.getShortName());
                 AddressReceiptDto receivingAddress = shippingAddressService.createReceivingAddress(addressApiDto);
                 save.setGeliverId(receivingAddress.getId());
@@ -75,6 +84,7 @@ public class AddressService {
                 log.error("Address creation 3. parti yazılıma kaydedilemedi", e);
             }
         }else {
+            System.out.println(1);
             Random random = new Random();
             AddressApiDto addressApiDto = new AddressApiDto(
                     addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName(),
@@ -97,7 +107,7 @@ public class AddressService {
             save.setGeliverId(sendingAddress.getId());
         }
 
-        return save;
+        return addressRepository.save(save);
     }
 
     public Address createAddress(AddressApiDto addressApiDto, MerchantCreateDto merchantCreateDto,Boolean isReceiptAddress) {
