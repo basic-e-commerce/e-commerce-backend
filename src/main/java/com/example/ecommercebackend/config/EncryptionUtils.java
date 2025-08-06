@@ -23,10 +23,9 @@ public class EncryptionUtils {
 
     public static String encrypt(String strToEncrypt) {
         try {
-            Cipher cipher = Cipher.getInstance("AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             byte[] encryptedBytes = cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8));
-            System.out.println("::::::::::::::::encrypt");
             return Base64.getEncoder().encodeToString(encryptedBytes);
         } catch (Exception e) {
             throw new RuntimeException("Encryption error", e);
@@ -35,7 +34,7 @@ public class EncryptionUtils {
 
     public static String decrypt(String strToDecrypt) {
         try {
-            Cipher cipher = Cipher.getInstance("AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             byte[] decodedBytes = Base64.getDecoder().decode(strToDecrypt);
             byte[] decryptedBytes = cipher.doFinal(decodedBytes);
