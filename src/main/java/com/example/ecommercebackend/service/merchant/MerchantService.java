@@ -111,8 +111,8 @@ public class MerchantService {
         AddressApiDto addressApiDto = new AddressApiDto(
                 address.getFirstName()+ " "+ address.getLastName(),
                 merchant.getEmail(),
-                EncryptionUtils.decrypt(address.getPhoneNo()),
-                EncryptionUtils.decrypt(address.getAddressLine1()),
+                address.getPhoneNo(),
+                address.getAddressLine1(),
                 "",
                 address.getCountry().getIso(),
                 address.getCity().getName(),
@@ -121,7 +121,7 @@ public class MerchantService {
                 address.getDistrict().getDistrictId(),
                 address.getPostalCode(),
                 false,
-                address.getFirstName() + " " + address.getLastName() + " " + UUID.randomUUID()
+                UUID.randomUUID().toString()
         );
         AddressReceiptDto sendingAddress = shippingAddressService.createSendingAddress(addressApiDto);
         address.setGeliverId(sendingAddress.getId());
@@ -140,8 +140,8 @@ public class MerchantService {
                 save.getDistrict().getName(),
                 save.getDistrict().getDistrictId(),
                 save.getPostalCode(),
-                EncryptionUtils.decrypt(save.getPhoneNo()),
-                EncryptionUtils.decrypt(save.getAddressLine1()),
+                save.getPhoneNo(),
+                save.getAddressLine1(),
                 save.getGeliverId()
         );
     }
