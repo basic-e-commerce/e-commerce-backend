@@ -78,12 +78,11 @@ payment:
 domain:
   test: http://localhost:8083
   name: https://litysofttest1.site
+  namewww: https://www.localhost:8083
+
 
 server:
   port: 8083
-
-mail:
-  from: fatihgs133@gmail.com
 
 management:
   endpoints:

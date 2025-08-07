@@ -46,8 +46,8 @@ public class AuthenticationService {
     @Value("${cookie.refreshTokenCookie.refreshmaxAge}")
     private String maxAge;
 
-    @Value("${domain.test}")
-    private String domain;
+    @Value("${domain.name}")
+    private String domainName;
 
     public AuthenticationService(AuthenticationManager authenticationManager, JwtService jwtService, CustomerService customerService, AdminService adminService, RefreshTokenService refreshTokenService, RedisService redisService, MailService mailService, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
@@ -202,7 +202,7 @@ public class AuthenticationService {
         String generateCode = String.valueOf(100000 + (int)(Math.random() * 900000));
         redisService.saveData(generateCode,customer.getUsername(), Duration.ofMinutes(30));
         System.out.println("----------"+customer.getUsername());
-        String link = domain + "/password-reset/" + generateCode;
+        String link = domainName + "/password-reset/" + generateCode;
 
         String onayKodu = mailService.send(customer.getUsername(),"Şifre resetleme linki",link);
         System.out.println(onayKodu);

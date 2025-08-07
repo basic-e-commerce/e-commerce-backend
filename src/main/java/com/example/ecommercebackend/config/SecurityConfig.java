@@ -5,6 +5,7 @@ import com.example.ecommercebackend.config.emailpassword.CustomerUserDetailsServ
 import com.example.ecommercebackend.config.emailpassword.UsernamePasswordAuthenticationProvider;
 import com.example.ecommercebackend.filter.JwtValidationFilter;
 import org.apache.http.protocol.HTTP;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,6 +33,12 @@ public class SecurityConfig {
     private final CustomerUserDetailsService customerUserDetailService;
     private final AdminUserDetailsService adminUserDetailService;
     private final JwtValidationFilter jwtValidationFilter;
+
+    @Value("${domain.namewww}")
+    private String domainNameWWW;
+
+    @Value("${domain.name}")
+    private String domainName;
 
     public SecurityConfig(CustomerUserDetailsService customerUserDetailService, AdminUserDetailsService adminUserDetailService, JwtValidationFilter jwtValidationFilter) {
         this.customerUserDetailService = customerUserDetailService;
@@ -227,7 +234,7 @@ public class SecurityConfig {
     private CorsConfigurationSource corsConfigurationSource() {
         return request -> {
             CorsConfiguration ccfg = new CorsConfiguration();
-            ccfg.setAllowedOrigins(Arrays.asList("http://localhost:3000","http://localhost:5173","https://sandbox-api.iyzipay.com","https://litysofttest1.site","https://app.geliver.io","https://www.app.geliver.io"));
+            ccfg.setAllowedOrigins(Arrays.asList("http://localhost:3000","http://localhost:5173","https://sandbox-api.iyzipay.com",domainName,domainNameWWW,"https://app.geliver.io","https://www.app.geliver.io"));
             ccfg.setAllowedMethods(Collections.singletonList("*"));
             ccfg.setAllowCredentials(true);
             ccfg.setAllowedHeaders(Collections.singletonList("*"));

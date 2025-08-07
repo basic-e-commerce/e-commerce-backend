@@ -32,6 +32,7 @@ import com.iyzipay.model.Refund;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -51,6 +52,9 @@ public class PaymentService {
     private final CardService cardService;
     private final PaymentStrategy paymentStrategy;
     private final MerchantService merchantService;
+
+    @Value("${domain.name}")
+    private String domainName;
 
     public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MailService mailService, CardService cardService, PaymentStrategy paymentStrategy, MerchantService merchantService) {
         this.orderService = orderService;
@@ -211,12 +215,12 @@ public class PaymentService {
             }
 
             // create save
-            String redirectUrl = "https://litysofttest1.site/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
+            String redirectUrl = domainName+"/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
             //mailService.send(order.getUsername(),"Siparişiniz onaylandı","Order code: "+ order.getOrderCode());
             httpServletResponse.sendRedirect(redirectUrl);
         }else{
             payment.setPaymentStatus(Payment.PaymentStatus.FAILED);
-            String redirectUrl = "https://litysofttest1.site/failed-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
+            String redirectUrl = domainName+"/failed-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
             httpServletResponse.sendRedirect(redirectUrl);
         }
     }

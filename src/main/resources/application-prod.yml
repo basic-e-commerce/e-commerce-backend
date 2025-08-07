@@ -75,12 +75,11 @@ payment:
 domain:
   test: https://litysofttest1.site
   name: https://litysofttest1.site
+  namewww: https://www.litysofttest1.site
+
 
 server:
   port: 8083
-
-mail:
-  from: fatihgs133@gmail.com
 
 management:
   endpoints:

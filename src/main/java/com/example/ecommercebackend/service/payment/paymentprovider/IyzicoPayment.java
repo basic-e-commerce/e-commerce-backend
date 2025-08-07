@@ -36,10 +36,13 @@ public class IyzicoPayment implements PaymentStrategy {
     private String apiKey = "sandbox-JbYzNd3TVSGRKgrKKFiM5Ha7MJP7YZSo";
 
     @Value("${payment.iyzico.secretKey}")
-    private String apiSecret = "sandbox-mvXUSAUVAUhj7pNFFsbrKvWjGL5cEaUP";
+    private String iyzicoApiSecret = "sandbox-mvXUSAUVAUhj7pNFFsbrKvWjGL5cEaUP";
 
     @Value("${payment.iyzico.baseUrl}")
-    private String apiUrl = "https://sandbox-api.iyzipay.com";
+    private String iyzicoApiUrl = "https://sandbox-api.iyzipay.com";
+
+    @Value("${domain.name}")
+    private String domainName;
 
     @Transactional
     @Retryable(
@@ -268,8 +271,8 @@ public class IyzicoPayment implements PaymentStrategy {
     public Options getOptions() {
         Options options = new Options();
         options.setApiKey(apiKey);
-        options.setSecretKey(apiSecret);
-        options.setBaseUrl(apiUrl);
+        options.setSecretKey(iyzicoApiSecret);
+        options.setBaseUrl(iyzicoApiUrl);
         return options;
     }
 
@@ -291,7 +294,7 @@ public class IyzicoPayment implements PaymentStrategy {
         request.setBasketId(order.getOrderCode());
         request.setPaymentChannel(PaymentChannel.WEB.name());
         request.setPaymentGroup(PaymentGroup.PRODUCT.name());
-        request.setCallbackUrl("https://litysofttest1.site/api/v1/payment/payCallBack");
+        request.setCallbackUrl(domainName+"/api/v1/payment/payCallBack");
         return request;
     }
 

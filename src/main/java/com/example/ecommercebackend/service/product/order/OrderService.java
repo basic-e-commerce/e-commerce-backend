@@ -1997,11 +1997,11 @@ public class OrderService {
         order.getOrderStatus().setUpdatedAt(Instant.now());
         orderRepository.save(order);
 
-        OfferCancelDto offerCancelDto = shippingCargoService.offerCancel(orderPackage.getShipmentId());
+        shippingCargoService.offerCancel(orderPackage.getShipmentId());
         orderPackage.setUpdateAt(Instant.now());
         orderPackage.setCanceled(true);
         orderPackage.setCargoStatus(OrderPackage.CargoStatus.cancel);
-        orderPackage.setOrderPackageStatusCode(OrderPackage.OrderPackageStatusCode.valueOf(offerCancelDto.getData().getStatusCode()));
+        orderPackage.setOrderPackageStatusCode(OrderPackage.OrderPackageStatusCode.FAILURE);
         orderPackageService.save(orderPackage);
         return "Kargo iptal edildi";
     }

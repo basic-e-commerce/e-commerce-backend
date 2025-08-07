@@ -11,8 +11,6 @@ public class WebHandler implements WebMvcConfigurer {
     private String uploadFileDir;
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // /upload/** yolunu /var/www/uploads/ dizinine yönlendir
-        System.out.println("addResourceHandlers");
         registry.addResourceHandler("/api/v1/upload/**")
                 .addResourceLocations("file:"+uploadFileDir)
                 .setCachePeriod(3600)
