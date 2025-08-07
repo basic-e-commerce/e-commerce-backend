@@ -79,6 +79,12 @@ domain:
   test: http://localhost:8083
   name: https://litysofttest1.site
   namewww: https://www.localhost:8083
+  geliver: https://api.geliver.io/api/v1
+
+geliver:
+  cargo:
+    test: true
+
 
 
 server:

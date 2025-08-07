@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.service.product.shipping;
 
 import com.example.ecommercebackend.anotation.NotNullParam;
+import com.example.ecommercebackend.anotation.ValidPhoneNumber;
 import com.example.ecommercebackend.dto.product.shipping.*;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -8,9 +9,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.cdimascio.dotenv.Dotenv;
-import jdk.jfr.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,6 +25,9 @@ public class ShippingCargoService {
     private static final Logger log = LoggerFactory.getLogger(ShippingCargoService.class);
     private final WebClient.Builder webClientBuilder;
     private final String apiKey;
+
+    @Value("${domain.geliver}")
+    private String geliverDomain;
 
     public ShippingCargoService(WebClient.Builder webClientBuilder) {
         this.webClientBuilder = webClientBuilder;
@@ -41,7 +45,7 @@ public class ShippingCargoService {
      */
 
     public CargoOfferResponseDto getCreateCargoOffers(@NotNullParam CargoOfferRequestDto cargoOfferRequestDto){
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(geliverDomain).build();
         String responseJson = webClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/shipments")
@@ -90,7 +94,7 @@ public class ShippingCargoService {
     }
 
     public OfferApproveDto offerApprove(@NotNullParam String offerId) {
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(geliverDomain).build();
 
         // Request Body
         Map<String, String> body = Map.of("offerID", offerId);
@@ -142,7 +146,7 @@ public class ShippingCargoService {
 
 
     public OfferCancelDto offerCancel(@NotNullParam String shipmentId) {
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(geliverDomain).build();
 
         String responseJson = webClient.delete()
                 .uri("/shipments/%s".formatted(shipmentId))
@@ -186,7 +190,7 @@ public class ShippingCargoService {
     }
 
     public CargoDetailDto getCargoDetail(@NotNullParam String id){
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(geliverDomain).build();
 
         String responseJson = webClient.get()
                 .uri("/shipments/%s".formatted(id))
@@ -232,7 +236,7 @@ public class ShippingCargoService {
     }
     public CargoBuyDetailDto getCargoRefund(@NotNullParam String id,@NotNullParam CargoRefundDto cargoRefundDto) {
         WebClient webClient = webClientBuilder
-                .baseUrl("https://api.geliver.io/api/v1")
+                .baseUrl(geliverDomain)
                 .build();
 
         String responseJson = webClient.post()
@@ -281,7 +285,7 @@ public class ShippingCargoService {
 
     public CargoCancelDetailDto cancelCargoShipment(@NotNullParam String id) {
         WebClient webClient = webClientBuilder
-                .baseUrl("https://api.geliver.io/api/v1")
+                .baseUrl(geliverDomain)
                 .build();
 
         String responseJson = webClient.delete()
@@ -324,7 +328,7 @@ public class ShippingCargoService {
 
     public CustomCargoContractResponseDto createCustomCargoContract(CustomCargoContractRequestDto customCargoContractRequestDto){
         WebClient webClient = webClientBuilder
-                .baseUrl("https://api.geliver.io/api/v1")
+                .baseUrl(geliverDomain)
                 .build();
 
         String responseJson = webClient.post()
@@ -372,7 +376,7 @@ public class ShippingCargoService {
 
     public CustomCargoContractResponseDto deleteCustomCargoContract(String providerAccountId){
         WebClient webClient = webClientBuilder
-                .baseUrl("https://api.geliver.io/api/v1")
+                .baseUrl(geliverDomain)
                 .build();
 
         String responseJson = webClient.delete()
@@ -421,7 +425,7 @@ public class ShippingCargoService {
 
     public OfferApproveDto buyOneStepCargo(CargoBuyRequestDto cargoBuyRequestDto){
 
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(geliverDomain).build();
 
         String responseJson = webClient.post()
                 .uri("/transactions")
@@ -471,7 +475,7 @@ public class ShippingCargoService {
 
     public OfferApproveDto buyContractCargo(CargoBuyContractRequestDto cargoBuyRequestDto){
 
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(geliverDomain).build();
 
         String responseJson = webClient.post()
                 .uri("/transactions")
@@ -534,7 +538,7 @@ public class ShippingCargoService {
             String storeIdentifier,
             Boolean isReturned
     ) {
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(geliverDomain).build();
 
         String responseJson = webClient.get()
                 .uri(uriBuilder -> uriBuilder

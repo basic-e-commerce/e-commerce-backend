@@ -89,8 +89,12 @@ public class OrderService {
     private final OrderPackageService orderPackageService;
     private final CouponService couponService;
 
-    @Value("${domain.test}")
-    private String domain;
+    @Value("${domain.name}")
+    private String domainName;
+
+    @Value("${geliver.cargo.test}")
+    private Boolean cargoTest;
+
 
 
 
@@ -1051,7 +1055,7 @@ public class OrderService {
 
         CargoOfferRequestOrder cargoOfferRequestOrder = new CargoOfferRequestOrder(
                 "API",
-                domain,
+                domainName,
                 order.getOrderCode(),
                 order.getTotalPrice(),
                 "TL"
@@ -1064,7 +1068,7 @@ public class OrderService {
 
         for (CargoOfferDesiRequestAdminDto cargoOfferDesiRequestAdminDto: cargoOfferDesiRequestAdminDtos) {
             CargoOfferRequestDto cargoOfferRequestDto = new CargoOfferRequestDto(
-                    true,
+                    cargoTest,
                     senderAddressId,
                     receiptAddress,
                     String.valueOf(cargoOfferDesiRequestAdminDto.getLength()),
@@ -1248,7 +1252,7 @@ public class OrderService {
                             String.valueOf(x.getId()),
                             x.getCreateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                             x.getUpdateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                            true,
+                            cargoTest,
                             x.getBarcode(),
                             null,
                             x.getResponsiveLabelURL(),
@@ -1480,7 +1484,7 @@ public class OrderService {
             CargoBuyRequestDto cargoBuyRequestDto = new CargoBuyRequestDto(
                     cargoBuyDesiRequestAdminDataDto.getCargoCompany(),
                     new ShipmentBuyRequestDto(
-                            true,
+                            cargoTest,
                             senderAddressId,
                             receiptAddress,
                             new CargoBuyRecipientAddress(
@@ -1507,7 +1511,7 @@ public class OrderService {
                             false,
                             new CargoOfferRequestOrder(
                                     "API",
-                                    domain,
+                                    domainName,
                                     order.getOrderCode(),
                                     order.getTotalPrice(),
                                     "TL"
@@ -1552,7 +1556,7 @@ public class OrderService {
                             String.valueOf(x.getId()),
                             x.getCreateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                             x.getUpdateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                            true,
+                            cargoTest,
                             x.getBarcode(),
                             null,
                             x.getResponsiveLabelURL(),
@@ -1608,7 +1612,7 @@ public class OrderService {
                     providerAccountId,
                     cargoBuyDesiRequestAdminDataDto.getCargoCompany(),
                     new ShipmentBuyRequestDto(
-                            true,
+                            cargoTest,
                             senderAddressId,
                             receiptAddress,
                             new CargoBuyRecipientAddress(
@@ -1635,7 +1639,7 @@ public class OrderService {
                             false,
                             new CargoOfferRequestOrder(
                                     "API",
-                                    domain,
+                                    domainName,
                                     order.getOrderCode(),
                                     order.getTotalPrice(),
                                     "TL"
@@ -1679,7 +1683,7 @@ public class OrderService {
                             String.valueOf(x.getId()),
                             x.getCreateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                             x.getUpdateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                            true,
+                            cargoTest,
                             x.getBarcode(),
                             null,
                             x.getResponsiveLabelURL(),
@@ -2007,7 +2011,6 @@ public class OrderService {
     }
 
     private AddressApiDto buildAddressDto(Order order) {
-        Random random = new Random();
         return new AddressApiDto(
                 order.getFirstName() + " " + order.getLastName(),
                 order.getUsername(),
@@ -2021,7 +2024,7 @@ public class OrderService {
                 order.getDistrictID(),
                 order.getPostalCode(),
                 true,
-                order.getFirstName() + " " + order.getLastName() + " " + (1000 + random.nextInt(9000))
+                UUID.randomUUID().toString()
         );
     }
 

@@ -33,13 +33,13 @@ import java.util.concurrent.TimeoutException;
 public class IyzicoPayment implements PaymentStrategy {
 
     @Value("${payment.iyzico.apiKey}")
-    private String apiKey = "sandbox-JbYzNd3TVSGRKgrKKFiM5Ha7MJP7YZSo";
+    private String apiKey;
 
     @Value("${payment.iyzico.secretKey}")
-    private String iyzicoApiSecret = "sandbox-mvXUSAUVAUhj7pNFFsbrKvWjGL5cEaUP";
+    private String iyzicoApiSecret;
 
     @Value("${payment.iyzico.baseUrl}")
-    private String iyzicoApiUrl = "https://sandbox-api.iyzipay.com";
+    private String iyzicoApiUrl;
 
     @Value("${domain.name}")
     private String domainName;
@@ -92,7 +92,6 @@ public class IyzicoPayment implements PaymentStrategy {
 
     @Override
     public PayCallBackDto payCallBack(PaymentComplateDto paymentComplateDto) {
-
 
         if (!"success".equalsIgnoreCase(paymentComplateDto.getStatus())) {
             return new PayCallBackDto(
