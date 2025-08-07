@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.service.storagestrategy;
 
 import com.example.ecommercebackend.dto.file.FilePropertiesDto;
+import com.example.ecommercebackend.exception.BadRequestException;
 import jakarta.transaction.Transactional;
 import org.apache.tika.Tika;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,7 +33,7 @@ public class LocalStorageStrategy implements IStorageStrategy{
 
             String originalFileName = file.getOriginalFilename();
             if (originalFileName == null || originalFileName.isEmpty()) {
-                throw new RuntimeException("File name is invalid");
+                throw new BadRequestException("Dosya ismi geçersizdir.");
             }
 
             // Extension'ı al
@@ -47,19 +48,32 @@ public class LocalStorageStrategy implements IStorageStrategy{
             // İlk dosya adı oluştur
             String finalFileName = safeName + "." + fileExtension;
             Path filePath = path.resolve(finalFileName);
-            System.out.println("filePath-------------: " + filePath);
 
             // Aynı isimde varsa sonuna _1, _2 ekle
             int counter = 1;
             while (Files.exists(filePath)) {
                 finalFileName = safeName + "_" + counter + "." + fileExtension;
-                System.out.println("newFileName------------: " + finalFileName);
                 filePath = path.resolve(finalFileName);
                 counter++;
             }
 
-            // Dosyayı kaydet
-            file.transferTo(filePath.toFile());
+            File outputFile = filePath.toFile();
+
+            // MIME tipi belirlenir
+            String mimeType = detectFileType(file);
+
+            if (mimeType != null && mimeType.startsWith("image/")) {
+                // Resim dosyasıysa küçültülerek kaydedilir
+                net.coobird.thumbnailator.Thumbnails.of(file.getInputStream())
+                        .size(800, 800)
+                        .outputQuality(0.9)
+                        .outputFormat(fileExtension) // "jpg", "png", vs.
+                        .keepAspectRatio(true)
+                        .toFile(outputFile);
+            } else {
+                // Diğer tüm dosyalar doğrudan kaydedilir
+                file.transferTo(outputFile);
+            }
 
             // Dosya bilgilerini al
             long fileSize = file.getSize();
@@ -69,7 +83,7 @@ public class LocalStorageStrategy implements IStorageStrategy{
             return new FilePropertiesDto(finalFileName, fileSize, resolution, fileExtension);
 
         } catch (IOException e) {
-            throw new RuntimeException("Error uploading file: " + e.getMessage(), e);
+            throw new BadRequestException("Dosya yükleme hatası!");
         }
     }
 
