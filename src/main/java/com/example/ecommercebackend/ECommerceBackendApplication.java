@@ -11,6 +11,7 @@ import com.example.ecommercebackend.entity.user.City;
 import com.example.ecommercebackend.entity.user.District;
 import com.example.ecommercebackend.entity.user.Role;
 import com.example.ecommercebackend.exception.BadRequestException;
+import com.example.ecommercebackend.init.InitLoader;
 import com.example.ecommercebackend.repository.merchant.MerchantRepository;
 import com.example.ecommercebackend.repository.product.shipping.CountryRepository;
 import com.example.ecommercebackend.repository.user.AdminRepository;
@@ -45,68 +46,14 @@ public class ECommerceBackendApplication {
 	}
 
 	@Bean
-	public CommandLineRunner init(RoleRepository roleRepository,
+	public CommandLineRunner init(InitLoader initLoader,
 								  MerchantRepository merchantRepository,
 								  CountryRepository countryRepository,
 								  CityRepository cityRepository,
 								  DistrictRepository districtRepository,
-								  ShippingAddressService shippingAddressService,
-								  CityService cityService,
-								  DistrictService districtService,
 								  MerchantService merchantService) {
 		return args -> {
-
-			System.out.println(1);
-			if (!roleRepository.existsByRoleNameEqualsIgnoreCase("ADMIN")) {
-				Role admin = new Role("ADMIN");
-				roleRepository.save(admin);
-			}
-
-			System.out.println(2);
-			if (!roleRepository.existsByRoleNameEqualsIgnoreCase("CUSTOMER")) {
-				Role customer = new Role("CUSTOMER");
-				roleRepository.save(customer);
-			}
-
-			System.out.println(3);
-
-			if (!roleRepository.existsByRoleNameEqualsIgnoreCase("GUEST")) {
-				Role customer = new Role("GUEST");
-				roleRepository.save(customer);
-			}
-
-			System.out.println(4);
-			if(countryRepository.findByUpperName("TURKIYE").isEmpty()){
-				Country turkey = new Country();
-				turkey.setIso("TR");
-				turkey.setName("Türkiye");
-				turkey.setUpperName("TURKIYE");
-				turkey.setIso3("TUR");
-				turkey.setNumCode((short) 792);
-				turkey.setPhoneCode(90);
-				countryRepository.save(turkey);
-			}
-
-			List<CityDto> cities = new ArrayList<>();
-			if (cityService.getAll().isEmpty()) {
-				shippingAddressService.getCities().forEach(x -> {
-					System.out.println(x.getName());
-					cities.add(cityService.save(x));
-				});
-			}
-
-
-			System.out.println(6);
-			if (districtService.getAll().isEmpty()) {
-				for (CityDto cityDto : cities) {
-					List<DistrictDto> districts = shippingAddressService.getDistricts(cityDto.getCityCode());
-					for (DistrictDto districtDto : districts) {
-						System.out.println(districtDto.getName());
-						districtService.createNotThr(districtDto);
-					}
-				}
-			}
-
+			initLoader.loadInitialCountrySql();
 
 			if (merchantRepository.findAll().isEmpty()) {
 				List<OpenCloseHour> openCloseHours = new LinkedList<>();
