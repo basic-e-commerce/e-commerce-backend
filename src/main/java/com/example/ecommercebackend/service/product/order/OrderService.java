@@ -773,23 +773,24 @@ public class OrderService {
         if (refundOrder != null && refundOrder) {
             spec = spec.and(hasRefundOrder());
         }else {
-            if (status != null) {
+            if (status != null && status.equals(OrderStatus.Status.CANCEL)) {
+                spec = spec.and(hasStatus(OrderStatus.Status.CANCEL));
+            }else{
                 spec = spec.and(hasStatus(status));
-            } else {
-                spec = spec.and(hasNullStatus());
+
+                if (orderPackageStatusCode != null) {
+                    spec = spec.and(hasStatusCode(orderPackageStatusCode));
+                } else {
+                    spec = spec.and(hasNullStatusCode());
+                }
+
+                if (paymentStatus != null) {
+                    spec = spec.and(hasPaymentStatus(paymentStatus));
+                } else {
+                    spec = spec.and(hasNullPaymentStatus());
+                }
             }
 
-            if (orderPackageStatusCode != null) {
-                spec = spec.and(hasStatusCode(orderPackageStatusCode));
-            } else {
-                spec = spec.and(hasNullStatusCode());
-            }
-
-            if (paymentStatus != null) {
-                spec = spec.and(hasPaymentStatus(paymentStatus));
-            } else {
-                spec = spec.and(hasNullPaymentStatus());
-            }
         }
 
         return spec;

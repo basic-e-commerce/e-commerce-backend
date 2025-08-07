@@ -230,7 +230,7 @@ public class PaymentService {
 
     public BigDecimal maxRefund(@NotNullParam String orderCode){
         Order order = orderService.findByOrderCode(orderCode);
-        return order.getCustomerPrice().subtract(order.getRefundPrice());
+        return order.getTotalPrice().subtract(order.getRefundPrice());
     }
 
 
