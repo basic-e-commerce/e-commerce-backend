@@ -52,11 +52,12 @@ public class PaymentService {
     private final CardService cardService;
     private final PaymentStrategy paymentStrategy;
     private final MerchantService merchantService;
+    private final PaymentFactory paymentFactory;
 
     @Value("${domain.name}")
     private String domainName;
 
-    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MailService mailService, CardService cardService, PaymentStrategy paymentStrategy, MerchantService merchantService) {
+    public PaymentService(OrderService orderService, PaymentRepository paymentRepository, SellService sellService, MailService mailService, CardService cardService, PaymentStrategy paymentStrategy, MerchantService merchantService, PaymentFactory paymentFactory) {
         this.orderService = orderService;
         this.paymentRepository = paymentRepository;
         this.sellService = sellService;
@@ -64,6 +65,7 @@ public class PaymentService {
         this.cardService = cardService;
         this.paymentStrategy = paymentStrategy;
         this.merchantService = merchantService;
+        this.paymentFactory = paymentFactory;
     }
 
     @Transactional
@@ -99,7 +101,7 @@ public class PaymentService {
         order.setPayments(savePayment);
         System.out.println("payment 13");
 
-        PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod(orderCreateDto.getPaymentCreditCardRequestDto().getPaymentMethod());
+        PaymentStrategy paymentStrategy = paymentFactory.getPaymentMethod(orderCreateDto.getPaymentCreditCardRequestDto().getPaymentMethod());
         System.out.println("payment 14");
 
         BigDecimal totalPrice = order.getTotalPrice();
@@ -156,7 +158,7 @@ public class PaymentService {
         System.out.println("Gelen Callback Parametreleri:");
         collections.forEach((key, value) -> System.out.println(key + ": " + value));
         Payment payment = paymentRepository.findByConversationId(collections.get("conversationId")).orElseThrow(()-> new NotFoundException("Ödeme bulunamadı"));
-        PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
+        PaymentStrategy paymentStrategy = paymentFactory.getPaymentMethod("IYZICO");
 
         PayCallBackDto payCallBackDto = paymentStrategy.payCallBack(
                 new PaymentComplateDto(
@@ -325,7 +327,7 @@ Kuruş farkı toleransı aşan geçersiz istek
         }
 
         Payment payment = order.getPayments();
-        PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
+        PaymentStrategy paymentStrategy = paymentFactory.getPaymentMethod("IYZICO");
         Refund refund = paymentStrategy.refund(payment.getPaymentId(), orderItemRefund.getRefundAmount());
 
         order.setRefundPrice(order.getRefundPrice().add(refund.getPrice()));
@@ -383,7 +385,7 @@ Kuruş farkı toleransı aşan geçersiz istek
         Order order = orderService.findByOrderCode(orderCode);
         if (order.getPayments().getPaymentStatus().equals(Payment.PaymentStatus.SUCCESS)) {
 
-            PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
+            PaymentStrategy paymentStrategy = paymentFactory.getPaymentMethod("IYZICO");
             Cancel cancel = paymentStrategy.cancel(order.getPayments().getPaymentId());
 
             if (cancel != null) {
@@ -425,7 +427,7 @@ Kuruş farkı toleransı aşan geçersiz istek
 
 
     public InstallmentInfoDto getBin(String binCode, BigDecimal price) {
-        PaymentStrategy paymentStrategy = PaymentFactory.getPaymentMethod("IYZICO");
+        PaymentStrategy paymentStrategy = paymentFactory.getPaymentMethod("IYZICO");
         return paymentStrategy.getBin(binCode, price);
     }
 
