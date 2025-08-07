@@ -810,7 +810,7 @@ public class OrderService {
     }
 
     private Specification<Order> filterGuestSuccessOrders(User user) {
-        return Specification.where(hasStatus(OrderStatus.Status.APPROVED).or(hasStatus(OrderStatus.Status.REFUNDED)).or(hasStatus(OrderStatus.Status.PARTIAL_REFUNDED)).or(hasStatus(OrderStatus.Status.CANCEL))).and(hasUser(user));
+        return Specification.where(hasStatus(OrderStatus.Status.APPROVED).or(hasStatus(OrderStatus.Status.REFUNDED)).or(hasStatus(OrderStatus.Status.CANCEL))).and(hasUser(user));
     }
 
 
@@ -850,7 +850,7 @@ public class OrderService {
 
     public List<Order> findSuccessOrderBetweenDates(Instant startDate, Instant endDate) {
         Sort sort = Sort.by(Sort.Direction.DESC,"createdAt");
-        Specification<Order> where = Specification.where(hasPaymentStatus(Payment.PaymentStatus.SUCCESS).or(hasPaymentStatus(Payment.PaymentStatus.REFUNDED)).or(hasPaymentStatus(Payment.PaymentStatus.PARTIAL_REFUNDED)).or(hasPaymentStatus(Payment.PaymentStatus.CANCEL)).and(hasDateBetween(startDate, endDate)));
+        Specification<Order> where = Specification.where(hasPaymentStatus(Payment.PaymentStatus.SUCCESS).or(hasPaymentStatus(Payment.PaymentStatus.REFUNDED)).or(hasPaymentStatus(Payment.PaymentStatus.CANCEL)).and(hasDateBetween(startDate, endDate)));
         return orderRepository.findAll(where, sort);
     }
 
@@ -865,10 +865,20 @@ public class OrderService {
             if (paymentStatus == null) {
                 return cb.conjunction(); // filtre yoksa tüm kayıtlar
             }
+
             Join<Order, Payment> paymentJoin = root.join("payments", JoinType.INNER);
+
+            if (paymentStatus == Payment.PaymentStatus.REFUNDED) {
+                return cb.or(
+                        cb.equal(paymentJoin.get("paymentStatus"), Payment.PaymentStatus.REFUNDED),
+                        cb.equal(paymentJoin.get("paymentStatus"), Payment.PaymentStatus.PARTIAL_REFUNDED)
+                );
+            }
+
             return cb.equal(paymentJoin.get("paymentStatus"), paymentStatus);
         };
     }
+
 
     public Specification<Order> hasRefundPaymentStatus() {
         return (root, query, cb) -> {
@@ -885,10 +895,17 @@ public class OrderService {
     public Specification<Order> hasStatus(OrderStatus.Status status) {
         return (root, query, cb) -> {
             if (status == null) {
-                return cb.conjunction(); // her şeyi döndür (filtre yok)
+                return cb.conjunction(); // filtre uygulanmaz
             }
+
             Join<Order, OrderStatus> statusJoin = root.join("orderStatus");
-            return cb.equal(statusJoin.get("status"), status);
+
+            if (status == OrderStatus.Status.REFUNDED) {
+                // REFUNDED gelirse hem REFUNDED hem PARTIAL_REFUNDED getir
+                return statusJoin.get("status").in(OrderStatus.Status.REFUNDED, OrderStatus.Status.PARTIAL_REFUNDED);
+            } else {
+                return cb.equal(statusJoin.get("status"), status);
+            }
         };
     }
 
