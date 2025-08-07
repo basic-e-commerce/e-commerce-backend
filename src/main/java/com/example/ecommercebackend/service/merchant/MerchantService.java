@@ -12,6 +12,7 @@ import com.example.ecommercebackend.dto.product.shipping.AddressReceiptDto;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.entity.file.CoverImage;
+import com.example.ecommercebackend.entity.merchant.CustomCargoContract;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.exception.ExceptionMessage;
@@ -214,5 +215,20 @@ public class MerchantService {
                     x.getGeliverId()
             );
         }).toList();
+    }
+
+    public void save(Merchant merchant) {
+        merchantRepository.save(merchant);
+    }
+
+    public String selectDefaultCustomCargoContact(Integer customContractId) {
+        Merchant merchant = getMerchant();
+        CustomCargoContract customCargoContract = merchant.getCustomCargoContracts().stream().filter(x->x.getId() == customContractId).findFirst().orElse(null);
+
+        if (customCargoContract == null)
+            throw new NotFoundException("Kargo anlaşması bulunamadı");
+
+        merchant.setDefaultCustomCargoContract(customCargoContract);
+        return "Özel Kargo anlaşması default olarak güncellendi!";
     }
 }

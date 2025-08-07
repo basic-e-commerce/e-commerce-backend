@@ -7,6 +7,7 @@ import com.example.ecommercebackend.dto.product.products.ProductFilterRequest;
 import com.example.ecommercebackend.dto.product.products.productTemplate.CargoOfferDesiRequestAdminDto;
 import com.example.ecommercebackend.dto.product.shipping.CargoBuyDesiRequestAdminDto;
 import com.example.ecommercebackend.dto.product.shipping.CargoManuelDesiRequestAdminDto;
+import com.example.ecommercebackend.dto.product.shipping.CreateCustomCargoContractRequestDto;
 import com.example.ecommercebackend.dto.product.shipping.OfferApproveDto;
 import com.example.ecommercebackend.entity.product.order.OrderPackage;
 import com.example.ecommercebackend.entity.product.products.Product;
@@ -122,9 +123,10 @@ public class OrderController {
         return new ResponseEntity<>(orderService.getAllOrderByUsername(username),HttpStatus.OK);
     }
 
-
-
-
+    @PostMapping("/create-custom-cargo-contract")
+    public ResponseEntity<String> createCustomCargoContract(@RequestBody(required = false)CreateCustomCargoContractRequestDto createCustomCargoContractRequestDto){
+        return new ResponseEntity<>(orderService.createCustomCargoContract(createCustomCargoContractRequestDto),HttpStatus.OK);
+    }
 
 
 }

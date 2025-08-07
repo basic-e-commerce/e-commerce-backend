@@ -106,6 +106,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/merchant/remove-sending-address").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/merchant/select-default-address").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/merchant/list-sending-address").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/merchant/select-default-custom-cargo-contract").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/customer/address").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/customer/address").hasAuthority("CUSTOMER")
@@ -142,6 +143,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-manuel-cancel").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-manuel-refund").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/order/username").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order/create-custom-cargo-contract").hasAuthority("ADMIN")
 
 
 
@@ -221,6 +223,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/order-package/id").permitAll()
                         .requestMatchers(HttpMethod.PUT,"/api/v1/order-package/manuel-update").hasAuthority("ADMIN")
 
+                        .requestMatchers(HttpMethod.GET,"/api/v1/custom-cargo-contract").hasAuthority("ADMIN")
 
                         .anyRequest().permitAll())
                 .anonymous(anonymous -> anonymous

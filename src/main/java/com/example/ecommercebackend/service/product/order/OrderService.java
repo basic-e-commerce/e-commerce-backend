@@ -12,6 +12,7 @@ import com.example.ecommercebackend.dto.product.orderitem.OrderItemResponseDto;
 import com.example.ecommercebackend.dto.product.products.productTemplate.CargoOfferDesiRequestAdminDto;
 import com.example.ecommercebackend.dto.product.shipping.*;
 import com.example.ecommercebackend.dto.user.address.AddressOrderCreateDto;
+import com.example.ecommercebackend.entity.merchant.CustomCargoContract;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.entity.product.card.Card;
@@ -38,6 +39,7 @@ import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.product.order.OrderRepository;
 import com.example.ecommercebackend.repository.user.CustomerRepository;
 import com.example.ecommercebackend.service.invoice.InvoiceService;
+import com.example.ecommercebackend.service.merchant.CustomCargoContractService;
 import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.example.ecommercebackend.service.product.products.CouponService;
 import com.example.ecommercebackend.service.product.products.CustomerCouponService;
@@ -88,6 +90,7 @@ public class OrderService {
     private final ShippingCargoService shippingCargoService;
     private final OrderPackageService orderPackageService;
     private final CouponService couponService;
+    private final CustomCargoContractService customCargoContractService;
 
     @Value("${domain.name}")
     private String domainName;
@@ -98,7 +101,7 @@ public class OrderService {
 
 
 
-    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService, CustomerRepository customerRepository, InvoiceService invoiceService, CustomerCouponService customerCouponService, ShippingAddressService shippingAddressService, ShippingCargoService shippingCargoService, OrderPackageService orderPackageService, CouponService couponService) {
+    public OrderService(OrderRepository orderRepository, GuestService guestService, OrderStatusService orderStatusService, OrderItemService orderItemService, ProductService productService, OrderBuilder orderBuilder, MerchantService merchantService, CustomerRepository customerRepository, InvoiceService invoiceService, CustomerCouponService customerCouponService, ShippingAddressService shippingAddressService, ShippingCargoService shippingCargoService, OrderPackageService orderPackageService, CouponService couponService, CustomCargoContractService customCargoContractService) {
         this.orderRepository = orderRepository;
         this.guestService = guestService;
         this.orderStatusService = orderStatusService;
@@ -113,6 +116,7 @@ public class OrderService {
         this.shippingCargoService = shippingCargoService;
         this.orderPackageService = orderPackageService;
         this.couponService = couponService;
+        this.customCargoContractService = customCargoContractService;
     }
 
     private Coupon isCouponValidationNew(Coupon coupon,List<CardItem> items,Customer customer) {
@@ -2057,6 +2061,40 @@ public class OrderService {
 
     private boolean isPhoneNumber(String input) {
         return input != null && input.matches("^\\+?[0-9]{10,15}$");
+    }
+
+    public String createCustomCargoContract(@NotNullParam CreateCustomCargoContractRequestDto createCustomCargoContractRequestDto){
+
+        Merchant merchant = merchantService.getMerchant();
+
+
+        CustomCargoContractRequestDto customCargoContractRequestDto = new CustomCargoContractRequestDto(
+                createCustomCargoContractRequestDto.getUsername(),
+                createCustomCargoContractRequestDto.getPassword(),
+                merchant.getName() +" "+createCustomCargoContractRequestDto.getCargoCompany().name()+" " +UUID.randomUUID().toString(),
+                createCustomCargoContractRequestDto.getCargoCompany().name(),
+                0,
+                createCustomCargoContractRequestDto.getActive(),
+                createCustomCargoContractRequestDto.getParameters(),
+                createCustomCargoContractRequestDto.isPublic(),
+                createCustomCargoContractRequestDto.isSharable(),
+                createCustomCargoContractRequestDto.isDynamicPrice()
+        );
+
+        CustomCargoContractResponseDto customCargoContractResponseDto = shippingCargoService.createCustomCargoContract(customCargoContractRequestDto);
+
+        CustomCargoContract customCargoContract = customCargoContractService.save(customCargoContractResponseDto.getData());
+
+        String returnText = "Kargo anlaşması Eklendi ";
+        if (merchant.getCustomCargoContracts().isEmpty()){
+            merchant.getCustomCargoContracts().add(customCargoContract);
+            merchant.setDefaultCustomCargoContract(customCargoContract);
+            returnText += ", Kargo anlaşması default olarak ayarlandı!";
+        }else{
+            merchant.getCustomCargoContracts().add(customCargoContract);
+        }
+        merchantService.save(merchant);
+        return returnText;
     }
 
 

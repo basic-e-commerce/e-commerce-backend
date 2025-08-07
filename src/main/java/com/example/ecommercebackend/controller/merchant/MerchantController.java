@@ -75,5 +75,11 @@ public class MerchantController {
         return new ResponseEntity<>(merchantService.selectDefaultSendingAddress(addressId), HttpStatus.OK);
     }
 
+    @PutMapping("/select-default-custom-cargo-contract")
+    @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)
+    public ResponseEntity<String> selectDefaultCustomCargoContact(@RequestParam(required = false) Integer customContractId) {
+        return new ResponseEntity<>(merchantService.selectDefaultCustomCargoContact(customContractId), HttpStatus.OK);
+    }
+
 
 }
