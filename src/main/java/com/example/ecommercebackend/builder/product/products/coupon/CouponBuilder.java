@@ -22,6 +22,7 @@ public class CouponBuilder {
                 coupon.getTimesUsed(),
                 coupon.getTotalUsageLimit(),
                 coupon.getMinOrderAmountLimit(),
+                coupon.getMaxOrderAmountLimit(),
                 coupon.getCouponStartDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
                 coupon.getCouponEndDate().atZone(ZoneId.of("Europe/Istanbul")).toLocalDateTime(),
                 coupon.getActive()

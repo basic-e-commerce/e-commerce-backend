@@ -16,13 +16,14 @@ public class CouponAdminResponseDto {
     private Integer totalUsageLimit; // Genel kullanım limiti (opsiyonel)
 
     private BigDecimal minOrderAmountLimit;
+    private BigDecimal maxOrderAmountLimit;
 
     private LocalDateTime couponStartDate;
     private LocalDateTime couponEndDate;
 
     private Boolean isActive;
 
-    public CouponAdminResponseDto(Integer id, String code, String description, String discountType, BigDecimal discountValue, Integer timesUsed, Integer totalUsageLimit, BigDecimal minOrderAmountLimit, LocalDateTime couponStartDate, LocalDateTime couponEndDate , Boolean isActive) {
+    public CouponAdminResponseDto(Integer id, String code, String description, String discountType, BigDecimal discountValue, Integer timesUsed, Integer totalUsageLimit, BigDecimal minOrderAmountLimit, BigDecimal maxOrderAmountLimit, LocalDateTime couponStartDate, LocalDateTime couponEndDate , Boolean isActive) {
         this.id = id;
         this.code = code;
         this.description = description;
@@ -31,6 +32,7 @@ public class CouponAdminResponseDto {
         this.timesUsed = timesUsed;
         this.totalUsageLimit = totalUsageLimit;
         this.minOrderAmountLimit = minOrderAmountLimit;
+        this.maxOrderAmountLimit = maxOrderAmountLimit;
         this.couponStartDate = couponStartDate;
         this.couponEndDate = couponEndDate;
         this.isActive = isActive;
@@ -122,5 +124,13 @@ public class CouponAdminResponseDto {
 
     public void setActive(Boolean active) {
         isActive = active;
+    }
+
+    public BigDecimal getMaxOrderAmountLimit() {
+        return maxOrderAmountLimit;
+    }
+
+    public void setMaxOrderAmountLimit(BigDecimal maxOrderAmountLimit) {
+        this.maxOrderAmountLimit = maxOrderAmountLimit;
     }
 }
