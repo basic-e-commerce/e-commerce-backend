@@ -23,9 +23,23 @@ public class MerchantResponseDto {
     private String footerDescription;
     private List<OpenCloseHour> openCloseHours;
     private ImageDetailDto coverImage;
-    private AddressDetailDto address;
+    private int addressId;
+    private String title;
+    private String firstName;
+    private String lastName;
+    private String username;
+    private String countryName;
+    private String countryIso;
+    private String city;
+    private String cityCode;
+    private String district;
+    private Integer districtId;
+    private String postalCode;
+    private String addressPrhoneNo;
+    private String addressLine1;
+    private String geliverId;
 
-    public MerchantResponseDto(int id, String name,String addressLink, String phoneNo, String email, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword, String instagram, String instagramLink, String footerDescription, List<OpenCloseHour> openCloseHours, ImageDetailDto coverImage, AddressDetailDto address) {
+    public MerchantResponseDto(int id, String name, String addressLink, String phoneNo, String email, BigDecimal minOrderAmount, BigDecimal shippingFee, String emailPassword, String instagram, String instagramLink, String footerDescription, List<OpenCloseHour> openCloseHours, ImageDetailDto coverImage, int addressId, String title, String firstName, String lastName, String username, String countryName, String countryIso, String city, String cityCode, String district, Integer districtId, String postalCode, String addressPrhoneNo, String addressLine1, String geliverId) {
         this.id = id;
         this.name = name;
         this.addressLink = addressLink;
@@ -39,7 +53,21 @@ public class MerchantResponseDto {
         this.footerDescription = footerDescription;
         this.openCloseHours = openCloseHours;
         this.coverImage = coverImage;
-        this.address = address;
+        this.addressId = addressId;
+        this.title = title;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.countryName = countryName;
+        this.countryIso = countryIso;
+        this.city = city;
+        this.cityCode = cityCode;
+        this.district = district;
+        this.districtId = districtId;
+        this.postalCode = postalCode;
+        this.addressPrhoneNo = addressPrhoneNo;
+        this.addressLine1 = addressLine1;
+        this.geliverId = geliverId;
     }
 
     public int getId() {
@@ -146,11 +174,123 @@ public class MerchantResponseDto {
         this.coverImage = coverImage;
     }
 
-    public AddressDetailDto getAddress() {
-        return address;
+    public int getAddressId() {
+        return addressId;
     }
 
-    public void setAddress(AddressDetailDto address) {
-        this.address = address;
+    public void setAddressId(int addressId) {
+        this.addressId = addressId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
+    }
+
+    public String getCountryIso() {
+        return countryIso;
+    }
+
+    public void setCountryIso(String countryIso) {
+        this.countryIso = countryIso;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public Integer getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Integer districtId) {
+        this.districtId = districtId;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getAddressPrhoneNo() {
+        return addressPrhoneNo;
+    }
+
+    public void setAddressPrhoneNo(String addressPrhoneNo) {
+        this.addressPrhoneNo = addressPrhoneNo;
+    }
+
+    public String getAddressLine1() {
+        return addressLine1;
+    }
+
+    public void setAddressLine1(String addressLine1) {
+        this.addressLine1 = addressLine1;
+    }
+
+    public String getGeliverId() {
+        return geliverId;
+    }
+
+    public void setGeliverId(String geliverId) {
+        this.geliverId = geliverId;
     }
 }

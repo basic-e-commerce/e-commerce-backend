@@ -57,23 +57,22 @@ public class MerchantBuilder {
                         merchant.getCoverImage().getUrl(),
                         0
                 ) : null,
-                new AddressDetailDto(
-                        merchant.getAddress().getId(),
-                        merchant.getAddress().getTitle(),
-                        merchant.getAddress().getFirstName(),
-                        merchant.getAddress().getLastName(),
-                        merchant.getAddress().getUsername(),
-                        merchant.getAddress().getCountry().getName(),
-                        merchant.getAddress().getCountry().getIso(),
-                        merchant.getAddress().getCity().getName(),
-                        merchant.getAddress().getCity().getCityCode(),
-                        merchant.getAddress().getDistrict().getName(),
-                        merchant.getAddress().getDistrict().getDistrictId(),
-                        merchant.getAddress().getPostalCode(),
-                        merchant.getAddress().getPhoneNo(),
-                        merchant.getAddress().getAddressLine1(),
-                        merchant.getAddress().getGeliverId() != null ? merchant.getAddress().getGeliverId() : null
-                )
+
+                merchant.getAddress().getId(),
+                merchant.getAddress().getTitle(),
+                merchant.getAddress().getFirstName(),
+                merchant.getAddress().getLastName(),
+                merchant.getAddress().getUsername(),
+                merchant.getAddress().getCountry().getName(),
+                merchant.getAddress().getCountry().getIso(),
+                merchant.getAddress().getCity().getName(),
+                merchant.getAddress().getCity().getCityCode(),
+                merchant.getAddress().getDistrict().getName(),
+                merchant.getAddress().getDistrict().getDistrictId(),
+                merchant.getAddress().getPostalCode(),
+                merchant.getAddress().getPhoneNo(),
+                merchant.getAddress().getAddressLine1(),
+                merchant.getAddress().getGeliverId() != null ? merchant.getAddress().getGeliverId() : null
         );
 
     }
@@ -100,23 +99,23 @@ public class MerchantBuilder {
                         merchant.getCoverImage().getUrl(),
                         0
                 ) : null,
-                new AddressDetailDto(
-                        merchant.getAddress().getId(),
-                        merchant.getAddress().getTitle(),
-                        merchant.getAddress().getFirstName(),
-                        merchant.getAddress().getLastName(),
-                        merchant.getAddress().getUsername(),
-                        merchant.getAddress().getCountry().getName(),
-                        merchant.getAddress().getCountry().getIso(),
-                        merchant.getAddress().getCity().getName(),
-                        merchant.getAddress().getCity().getCityCode(),
-                        merchant.getAddress().getDistrict().getName(),
-                        merchant.getAddress().getDistrict().getDistrictId(),
-                        merchant.getAddress().getPostalCode(),
-                        merchant.getAddress().getPhoneNo(),
-                        merchant.getAddress().getAddressLine1(),
-                        merchant.getAddress().getGeliverId() != null ? merchant.getAddress().getGeliverId() : null
-                )
+
+                merchant.getAddress().getId(),
+                merchant.getAddress().getTitle(),
+                merchant.getAddress().getFirstName(),
+                merchant.getAddress().getLastName(),
+                merchant.getAddress().getUsername(),
+                merchant.getAddress().getCountry().getName(),
+                merchant.getAddress().getCountry().getIso(),
+                merchant.getAddress().getCity().getName(),
+                merchant.getAddress().getCity().getCityCode(),
+                merchant.getAddress().getDistrict().getName(),
+                merchant.getAddress().getDistrict().getDistrictId(),
+                merchant.getAddress().getPostalCode(),
+                merchant.getAddress().getPhoneNo(),
+                merchant.getAddress().getAddressLine1(),
+                merchant.getAddress().getGeliverId() != null ? merchant.getAddress().getGeliverId() : null
+
         );
 
     }
