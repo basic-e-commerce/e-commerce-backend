@@ -177,6 +177,7 @@ public class MerchantService {
         }
         if (!flag)
             throw new NotFoundException("adres bulunamadı!");
+        merchantRepository.save(merchant);
 
         return new AddressDetailDto(
                 defaultaddress.getId(),
