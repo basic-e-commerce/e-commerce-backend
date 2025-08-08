@@ -212,8 +212,8 @@ public class MerchantService {
                     x.getDistrict().getName(),
                     x.getDistrict().getDistrictId(),
                     x.getPostalCode(),
-                    EncryptionUtils.decrypt(x.getPhoneNo()),
-                    EncryptionUtils.decrypt(x.getAddressLine1()),
+                    x.getPhoneNo(),
+                    x.getAddressLine1(),
                     x.getGeliverId()
             );
         }).toList();
