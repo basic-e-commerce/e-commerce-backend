@@ -2,6 +2,7 @@ package com.example.ecommercebackend.builder.merchant;
 
 import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
+import com.example.ecommercebackend.dto.merchant.MerchantPublicDetailResponse;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantResponseDto;
 import com.example.ecommercebackend.entity.file.CoverImage;
@@ -64,4 +65,34 @@ public class MerchantBuilder {
 
     }
 
+    public MerchantPublicDetailResponse merchantToMerchantPublicDetailResponse(Merchant merchant) {
+
+        return new MerchantPublicDetailResponse(
+                merchant.getId(),
+                merchant.getName(),
+                merchant.getAddress() != null ? merchant.getAddress().getCountry().getName() : null,
+                merchant.getAddress().getCity() != null ? merchant.getAddress().getCity().getName() : null,
+                merchant.getAddress().getDistrict() != null ? merchant.getAddress().getDistrict().getName() : null,
+                merchant.getAddress() != null ? merchant.getAddress().getAddressLine1() : null,
+                merchant.getAddress() != null ? merchant.getAddress().getPostalCode() : null,
+                merchant.getAddressLink(),
+                EncryptionUtils.decrypt(merchant.getPhoneNo()),
+                merchant.getEmail(),
+                merchant.getMinOrderAmount(),
+                merchant.getShippingFee(),
+                merchant.getInstagram(),
+                merchant.getInstagramLink(),
+                merchant.getFooterDescription(),
+                merchant.getOpenCloseHours(),
+                merchant.getCoverImage() != null ? new ImageDetailDto(
+                        merchant.getCoverImage().getId(),
+                        merchant.getCoverImage().getName(),
+                        merchant.getCoverImage().getResolution(),
+                        merchant.getCoverImage().getName(),
+                        merchant.getCoverImage().getUrl(),
+                        0
+                ) : null
+        );
+
+    }
 }

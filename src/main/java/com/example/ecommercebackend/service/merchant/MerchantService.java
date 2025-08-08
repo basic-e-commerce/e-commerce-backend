@@ -4,6 +4,7 @@ import com.example.ecommercebackend.anotation.NotNullParam;
 import com.example.ecommercebackend.builder.merchant.MerchantBuilder;
 import com.example.ecommercebackend.dto.file.CoverImageRequestDto;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
+import com.example.ecommercebackend.dto.merchant.MerchantPublicDetailResponse;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantResponseDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
@@ -78,8 +79,8 @@ public class MerchantService {
     public Merchant getMerchant() {
         return merchantRepository.findAll().stream().findFirst().orElseThrow(() -> new NotFoundException("Merchant " + ExceptionMessage.NOT_FOUND.getMessage()));
     }
-    public List<Merchant> getMerchants() {
-        return merchantRepository.findAll();
+    public List<MerchantResponseDto> getMerchants() {
+        return merchantRepository.findAll().stream().map(merchantBuilder::merchantToMerchantResponseDto).collect(Collectors.toList());
     }
 
     public ImageDetailDto updateCoverImage(MultipartFile file) {
@@ -230,5 +231,9 @@ public class MerchantService {
 
         merchant.setDefaultCustomCargoContract(customCargoContract);
         return "Özel Kargo anlaşması default olarak güncellendi!";
+    }
+
+    public MerchantPublicDetailResponse getDetail() {
+        return merchantBuilder.merchantToMerchantPublicDetailResponse(merchantRepository.findAll().stream().findFirst().get());
     }
 }

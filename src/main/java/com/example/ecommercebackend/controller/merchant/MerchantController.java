@@ -2,6 +2,7 @@ package com.example.ecommercebackend.controller.merchant;
 
 import com.example.ecommercebackend.anotation.RateLimit;
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
+import com.example.ecommercebackend.dto.merchant.MerchantPublicDetailResponse;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantResponseDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
@@ -40,8 +41,13 @@ public class MerchantController {
 
     @GetMapping
     @RateLimit(limit = 10, duration = 1, unit = TimeUnit.SECONDS)
-    public ResponseEntity<List<Merchant>> getMerchants() {
+    public ResponseEntity<List<MerchantResponseDto>> getMerchants() {
         return new ResponseEntity<>(merchantService.getMerchants(), HttpStatus.OK);
+    }
+
+    @GetMapping("/public-detail")
+    public ResponseEntity<MerchantPublicDetailResponse> getDetail(){
+        return new ResponseEntity<>(merchantService.getDetail(),HttpStatus.OK);
     }
 
     @PutMapping("/image")
