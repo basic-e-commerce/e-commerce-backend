@@ -39,11 +39,6 @@ public class MerchantBuilder {
         return new MerchantResponseDto(
                 merchant.getId(),
                 merchant.getName(),
-                merchant.getAddress() != null ? merchant.getAddress().getCountry().getName() : null,
-                merchant.getAddress().getCity() != null ? merchant.getAddress().getCity().getName() : null,
-                merchant.getAddress().getDistrict() != null ? merchant.getAddress().getDistrict().getName() : null,
-                merchant.getAddress() != null ? merchant.getAddress().getAddressLine1() : null,
-                merchant.getAddress() != null ? merchant.getAddress().getPostalCode() : null,
                 merchant.getAddressLink(),
                 merchant.getPhoneNo(),
                 merchant.getEmail(),
@@ -88,11 +83,6 @@ public class MerchantBuilder {
         return new MerchantPublicDetailResponse(
                 merchant.getId(),
                 merchant.getName(),
-                merchant.getAddress() != null ? merchant.getAddress().getCountry().getName() : null,
-                merchant.getAddress().getCity() != null ? merchant.getAddress().getCity().getName() : null,
-                merchant.getAddress().getDistrict() != null ? merchant.getAddress().getDistrict().getName() : null,
-                merchant.getAddress() != null ? merchant.getAddress().getAddressLine1() : null,
-                merchant.getAddress() != null ? merchant.getAddress().getPostalCode() : null,
                 merchant.getAddressLink(),
                 merchant.getPhoneNo(),
                 merchant.getEmail(),
