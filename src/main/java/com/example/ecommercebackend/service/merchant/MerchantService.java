@@ -9,6 +9,7 @@ import com.example.ecommercebackend.dto.merchant.MerchantPublicDetailResponse;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantResponseDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
+import com.example.ecommercebackend.dto.merchant.merchant.SendingAddressDetailDto;
 import com.example.ecommercebackend.dto.product.shipping.AddressApiDto;
 import com.example.ecommercebackend.dto.product.shipping.AddressReceiptDto;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
@@ -196,10 +197,13 @@ public class MerchantService {
         );
     }
 
-    public List<AddressDetailDto> getSendingAddresses() {
+    public List<SendingAddressDetailDto> getSendingAddresses() {
         Merchant merchant = getMerchant();
         return merchant.getSendingAddresses().stream().map(x->{
-            return new AddressDetailDto(
+            boolean isDefault = false;
+            if (merchant.getDefaultSendingAddress().getId() == x.getId())
+                isDefault = true;
+            return new SendingAddressDetailDto(
                     x.getId(),
                     x.getTitle(),
                     x.getFirstName(),
@@ -214,7 +218,8 @@ public class MerchantService {
                     x.getPostalCode(),
                     x.getPhoneNo(),
                     x.getAddressLine1(),
-                    x.getGeliverId()
+                    x.getGeliverId(),
+                    isDefault
             );
         }).toList();
     }

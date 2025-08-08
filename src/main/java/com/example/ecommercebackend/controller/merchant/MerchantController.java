@@ -6,6 +6,7 @@ import com.example.ecommercebackend.dto.merchant.MerchantPublicDetailResponse;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantResponseDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
+import com.example.ecommercebackend.dto.merchant.merchant.SendingAddressDetailDto;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
 import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.entity.merchant.Merchant;
@@ -58,7 +59,7 @@ public class MerchantController {
 
     @GetMapping("/list-sending-address")
     @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)
-    public ResponseEntity<List<AddressDetailDto>> getSendingAddresses() {
+    public ResponseEntity<List<SendingAddressDetailDto>> getSendingAddresses() {
         return new ResponseEntity<>(merchantService.getSendingAddresses(),HttpStatus.OK);
     }
 
