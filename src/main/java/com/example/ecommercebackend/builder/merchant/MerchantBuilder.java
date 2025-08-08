@@ -5,6 +5,7 @@ import com.example.ecommercebackend.dto.file.ImageDetailDto;
 import com.example.ecommercebackend.dto.merchant.MerchantPublicDetailResponse;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantCreateDto;
 import com.example.ecommercebackend.dto.merchant.merchant.MerchantResponseDto;
+import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.entity.file.CoverImage;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.user.Address;
@@ -60,7 +61,24 @@ public class MerchantBuilder {
                         merchant.getCoverImage().getName(),
                         merchant.getCoverImage().getUrl(),
                         0
-                ) : null
+                ) : null,
+                new AddressDetailDto(
+                        merchant.getAddress().getId(),
+                        merchant.getAddress().getTitle(),
+                        merchant.getAddress().getFirstName(),
+                        merchant.getAddress().getLastName(),
+                        merchant.getAddress().getUsername(),
+                        merchant.getAddress().getCountry().getName(),
+                        merchant.getAddress().getCountry().getIso(),
+                        merchant.getAddress().getCity().getName(),
+                        merchant.getAddress().getCity().getCityCode(),
+                        merchant.getAddress().getDistrict().getName(),
+                        merchant.getAddress().getDistrict().getDistrictId(),
+                        merchant.getAddress().getPostalCode(),
+                        merchant.getAddress().getPhoneNo(),
+                        merchant.getAddress().getAddressLine1(),
+                        merchant.getAddress().getGeliverId() != null ? merchant.getAddress().getGeliverId() : null
+                )
         );
 
     }
@@ -91,7 +109,24 @@ public class MerchantBuilder {
                         merchant.getCoverImage().getName(),
                         merchant.getCoverImage().getUrl(),
                         0
-                ) : null
+                ) : null,
+                new AddressDetailDto(
+                        merchant.getAddress().getId(),
+                        merchant.getAddress().getTitle(),
+                        merchant.getAddress().getFirstName(),
+                        merchant.getAddress().getLastName(),
+                        merchant.getAddress().getUsername(),
+                        merchant.getAddress().getCountry().getName(),
+                        merchant.getAddress().getCountry().getIso(),
+                        merchant.getAddress().getCity().getName(),
+                        merchant.getAddress().getCity().getCityCode(),
+                        merchant.getAddress().getDistrict().getName(),
+                        merchant.getAddress().getDistrict().getDistrictId(),
+                        merchant.getAddress().getPostalCode(),
+                        merchant.getAddress().getPhoneNo(),
+                        merchant.getAddress().getAddressLine1(),
+                        merchant.getAddress().getGeliverId() != null ? merchant.getAddress().getGeliverId() : null
+                )
         );
 
     }

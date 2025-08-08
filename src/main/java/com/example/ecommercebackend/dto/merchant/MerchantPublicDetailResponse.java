@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.dto.merchant;
 
 import com.example.ecommercebackend.dto.file.ImageDetailDto;
+import com.example.ecommercebackend.dto.user.address.AddressDetailDto;
 import com.example.ecommercebackend.entity.merchant.OpenCloseHour;
 
 import java.math.BigDecimal;
@@ -24,8 +25,10 @@ public class MerchantPublicDetailResponse {
     private String footerDescription;
     private List<OpenCloseHour> openCloseHours;
     private ImageDetailDto coverImage;
+    private AddressDetailDto address;
 
-    public MerchantPublicDetailResponse(int id, String name, String countryName, String city, String district, String addressLine1, String postalCode, String addressLink, String phoneNo, String email, BigDecimal minOrderAmount, BigDecimal shippingFee, String instagram, String instagramLink, String footerDescription, List<OpenCloseHour> openCloseHours, ImageDetailDto coverImage) {
+
+    public MerchantPublicDetailResponse(int id, String name, String countryName, String city, String district, String addressLine1, String postalCode, String addressLink, String phoneNo, String email, BigDecimal minOrderAmount, BigDecimal shippingFee, String instagram, String instagramLink, String footerDescription, List<OpenCloseHour> openCloseHours, ImageDetailDto coverImage, AddressDetailDto address) {
         this.id = id;
         this.name = name;
         this.countryName = countryName;
@@ -43,6 +46,7 @@ public class MerchantPublicDetailResponse {
         this.footerDescription = footerDescription;
         this.openCloseHours = openCloseHours;
         this.coverImage = coverImage;
+        this.address = address;
     }
 
     public int getId() {
@@ -179,5 +183,13 @@ public class MerchantPublicDetailResponse {
 
     public void setCoverImage(ImageDetailDto coverImage) {
         this.coverImage = coverImage;
+    }
+
+    public AddressDetailDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressDetailDto address) {
+        this.address = address;
     }
 }
