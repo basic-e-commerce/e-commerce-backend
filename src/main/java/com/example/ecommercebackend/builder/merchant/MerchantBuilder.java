@@ -44,7 +44,7 @@ public class MerchantBuilder {
                 merchant.getEmail(),
                 merchant.getMinOrderAmount(),
                 merchant.getShippingFee(),
-                EncryptionUtils.decrypt(merchant.getEmailPassword()),
+                merchant.getEmailPassword(),
                 merchant.getInstagram(),
                 merchant.getInstagramLink(),
                 merchant.getFooterDescription(),
