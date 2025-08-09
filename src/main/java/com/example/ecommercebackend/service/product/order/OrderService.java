@@ -1306,6 +1306,8 @@ public class OrderService {
 
 
         OrderPackage orderPackage = order.getOrderStatus().getOrderPackages().get(0);
+        if(!orderPackage.getManuel())
+            throw new BadRequestException("Bu kargo manuel eklenmemiştir!");
 
         for (OrderItemRefundDto refundDto : refundCreateDto.getOrderItemRefundDtos()) {
 
@@ -1975,9 +1977,7 @@ public class OrderService {
         }
 
         orderRepository.save(saveOrder);
-
         return "Başarılı bir şekilde iade kargosu oluşturuldu!";
-
     }
 
 
