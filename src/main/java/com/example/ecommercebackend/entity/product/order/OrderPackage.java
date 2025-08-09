@@ -217,7 +217,8 @@ public class OrderPackage {
         KOLAYGELSIN_STANDART,
         PAKETTAXI_STANDART,
         ARAS_STANDART,
-        GELIVER_STANDART
+        GELIVER_STANDART,
+        MANUEL_STANDART,
     }
 
     public enum CargoStatus{

@@ -15,10 +15,10 @@ public class OrderPackageResponseDto {
     private String location;
     private String updateAt;
     private Boolean isCancel;
-    private Boolean isMAnuel;
+    private Boolean isManuel;
 
 
-    public OrderPackageResponseDto(int id, Set<OrderItemResponseDto> orderItems, String shipmentId, String statusCode, String cargoId, String cargoCompanyName, String cargoStatus, String location, String updateAt, Boolean isCancel, Boolean isMAnuel) {
+    public OrderPackageResponseDto(int id, Set<OrderItemResponseDto> orderItems, String shipmentId, String statusCode, String cargoId, String cargoCompanyName, String cargoStatus, String location, String updateAt, Boolean isCancel, Boolean isManuel) {
         this.id = id;
         this.orderItems = orderItems;
         this.shipmentId = shipmentId;
@@ -29,7 +29,7 @@ public class OrderPackageResponseDto {
         this.location = location;
         this.updateAt = updateAt;
         this.isCancel = isCancel;
-        this.isMAnuel = isMAnuel;
+        this.isManuel = isManuel;
     }
 
     public int getId() {
@@ -112,11 +112,11 @@ public class OrderPackageResponseDto {
         isCancel = cancel;
     }
 
-    public Boolean getMAnuel() {
-        return isMAnuel;
+    public Boolean getManuel() {
+        return isManuel;
     }
 
-    public void setMAnuel(Boolean MAnuel) {
-        isMAnuel = MAnuel;
+    public void setManuel(Boolean Manuel) {
+        isManuel = Manuel;
     }
 }

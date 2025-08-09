@@ -1269,7 +1269,7 @@ public class OrderService {
                     false,
                     "Alıcı Şubede"
             );
-            orderPackage.setResponsiveLabelURL(cargoOfferDesiRequestAdminDto.getResponsiveLabelUrl());
+            orderPackage.setShipmentId(cargoOfferDesiRequestAdminDto.getCargoCode());
             orderPackage.setOrderPackageStatusCode(OrderPackage.OrderPackageStatusCode.TRANSIT);
 
             order.getOrderStatus().getOrderPackages().add(orderPackage);
