@@ -50,6 +50,9 @@ public class Merchant {
     @OneToOne(cascade = CascadeType.ALL)
     private CustomCargoContract defaultCustomCargoContract;
 
+    @Column(nullable = false,columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean geliver;
+
     public Merchant(
             String name,
             Address address,
@@ -225,5 +228,13 @@ public class Merchant {
 
     public void setDefaultCustomCargoContract(CustomCargoContract defaultCustomCargoContract) {
         this.defaultCustomCargoContract = defaultCustomCargoContract;
+    }
+
+    public Boolean getGeliver() {
+        return geliver;
+    }
+
+    public void setGeliver(Boolean geliver) {
+        this.geliver = geliver;
     }
 }

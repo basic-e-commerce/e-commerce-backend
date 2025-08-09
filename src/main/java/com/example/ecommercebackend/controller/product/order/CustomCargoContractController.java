@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.controller.product.order;
 
+import com.example.ecommercebackend.dto.merchant.merchant.CustomCargoContractUserResponseDataDto;
 import com.example.ecommercebackend.dto.product.shipping.CustomCargoContractResponseDataDto;
 import com.example.ecommercebackend.service.merchant.CustomCargoContractService;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class CustomCargoContractController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomCargoContractResponseDataDto>> getAll() {
+    public ResponseEntity<List<CustomCargoContractUserResponseDataDto>> getAll() {
         return new ResponseEntity<>(service.getListCargoContract(), HttpStatus.OK);
     }
 }
