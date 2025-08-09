@@ -162,6 +162,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/payment/bin").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v1/payment/refund").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/payment/max-refund").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/payment/iban").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/payment/iban-check").hasAuthority("ADMIN")
 
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/sell").hasAuthority("ADMIN")

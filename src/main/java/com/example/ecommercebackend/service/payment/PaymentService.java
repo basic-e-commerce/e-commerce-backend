@@ -68,11 +68,8 @@ public class PaymentService {
         this.paymentFactory = paymentFactory;
     }
 
-    @Transactional
-    public String processCreditCardPayment(@NotNullParam OrderCreateDto orderCreateDto,@NotNullParam HttpServletRequest httpServletRequest) {
+    public String processIBAN(@NotNullParam OrderCreateDto orderCreateDto){
         Order order = orderService.createOrder(orderCreateDto);
-        System.out.println("numara: "+order.getPhoneNumber());
-        System.out.println("adress: "+order.getAddressLine1());
 
         System.out.println("payment 10");
         String conversationId = UUID.randomUUID().toString();
@@ -90,7 +87,51 @@ public class PaymentService {
                 BigDecimal.ZERO,
                 orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber(),
                 "transactionalId",
-                order
+                Payment.PaymentMethod.IBAN,
+                order,
+                Payment.PaymentStatus.CHECKED
+        );
+
+        paymentRepository.save(payment);
+        return "Sipariş kaydedildi, Onay işleminden itibaren kargoya verilecektir!";
+    }
+
+    public String checkedIBAN(String orderCode,Boolean check){
+        Order order = orderService.findByOrderCode(orderCode);
+        if(check){
+            order.getPayments().setPaymentStatus(Payment.PaymentStatus.SUCCESS);
+            orderService.save(order);
+            return "Sipariş onaylandı!";
+        } else{
+            order.getPayments().setPaymentStatus(Payment.PaymentStatus.FAILED);
+            orderService.save(order);
+            return "Sipariş Reddedildi!";
+        }
+    }
+
+    @Transactional
+    public String processCreditCardPayment(@NotNullParam OrderCreateDto orderCreateDto,@NotNullParam HttpServletRequest httpServletRequest) {
+        Order order = orderService.createOrder(orderCreateDto);
+
+        System.out.println("payment 10");
+        String conversationId = UUID.randomUUID().toString();
+        Payment payment = new Payment(
+                order.getFirstName(),
+                order.getLastName(),
+                order.getUsername(),
+                order.getPhoneNumber(),
+                order.getCountry(),
+                order.getCity(),
+                order.getPostalCode(),
+                orderCreateDto.getPaymentCreditCardRequestDto().getCreditCardRequestDto().getCardHolderName(),
+                conversationId,
+                "İslem Baslatılıyor",
+                BigDecimal.ZERO,
+                orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber(),
+                "transactionalId",
+                Payment.PaymentMethod.CREDIT_CARD,
+                order,
+                Payment.PaymentStatus.PROCESS
         );
         System.out.println("payment 11");
 
@@ -230,7 +271,7 @@ public class PaymentService {
 
     public BigDecimal maxRefund(@NotNullParam String orderCode){
         Order order = orderService.findByOrderCode(orderCode);
-        return order.getTotalPrice().subtract(order.getRefundPrice());
+        return order.getCustomerPrice().subtract(order.getRefundPrice());
     }
 
 

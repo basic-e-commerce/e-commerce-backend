@@ -43,6 +43,9 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus = PaymentStatus.PROCESS;
 
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
@@ -50,7 +53,7 @@ public class Payment {
 
     private Instant createdAt = Instant.now();
 
-    public Payment(String name, String surname, String username, String phoneNo, String country, String city, String zipCode, String cardHolderName, String conversationId, String paymentUniqId, BigDecimal totalAmount, int installment, String paymentId, Order order) {
+    public Payment(String name, String surname, String username, String phoneNo, String country, String city, String zipCode, String cardHolderName, String conversationId, String paymentUniqId, BigDecimal totalAmount, int installment, String paymentId, PaymentMethod paymentMethod, Order order,PaymentStatus paymentStatus) {
         this.name = name;
         this.surname = surname;
         this.username = username;
@@ -64,7 +67,9 @@ public class Payment {
         this.totalAmount = totalAmount;
         this.installment = installment;
         this.paymentId = paymentId;
+        this.paymentMethod = paymentMethod;
         this.order = order;
+        this.paymentStatus = paymentStatus;
     }
     public Payment() {
 
@@ -218,7 +223,22 @@ public class Payment {
         this.refundSells = refundSells;
     }
 
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
     public enum PaymentStatus {
-        SUCCESS,PROCESS,FAILED,REFUNDED,PARTIAL_REFUNDED, CANCEL;
+        SUCCESS,PROCESS,FAILED,REFUNDED,PARTIAL_REFUNDED, CANCEL, CHECKED;
+    }
+
+    public enum PaymentMethod {
+        CREDIT_CARD,
+        IBAN,
+        CASH_ON_DELIVERY,
+        WALLET
     }
 }

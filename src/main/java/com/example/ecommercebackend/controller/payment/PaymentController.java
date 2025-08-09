@@ -35,6 +35,18 @@ public class PaymentController {
         return new ResponseEntity<>(paymentService.processCreditCardPayment(orderCreateDto,httpServletRequest), HttpStatus.OK);
     }
 
+    @PostMapping("/iban")
+    @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)
+    public ResponseEntity<String> processIBAN(@RequestBody(required = false) OrderCreateDto orderCreateDto) {
+        return new ResponseEntity<>(paymentService.processIBAN(orderCreateDto), HttpStatus.OK);
+    }
+
+    @PutMapping("/iban-check")
+    @RateLimit(limit = 2,duration = 1,unit = TimeUnit.SECONDS)
+    public ResponseEntity<String > checkIBAN(@RequestParam(required = false) String orderCode,@RequestParam(required = false) Boolean check) {
+        return new ResponseEntity<>(paymentService.checkedIBAN(orderCode,check), HttpStatus.OK);
+    }
+
 
     @PostMapping("/payCallBack")
     @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)

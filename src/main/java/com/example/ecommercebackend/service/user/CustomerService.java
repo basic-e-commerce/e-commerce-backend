@@ -60,9 +60,8 @@ public class CustomerService {
     private final RedisService redisService;
     private final MailService mailService;
     private final OrderService orderService;
-    private final ShippingAddressService shippingAddressService;
 
-    public CustomerService(CustomerRepository customerRepository, UserService userService, PasswordEncoder passwordEncoder, RoleService roleService, CustomerBuilder customerBuilder, AddressService addressService, RedisService redisService, MailService mailService, OrderService orderService, ShippingAddressService shippingAddressService) {
+    public CustomerService(CustomerRepository customerRepository, UserService userService, PasswordEncoder passwordEncoder, RoleService roleService, CustomerBuilder customerBuilder, AddressService addressService, RedisService redisService, MailService mailService, OrderService orderService) {
         this.customerRepository = customerRepository;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -72,7 +71,6 @@ public class CustomerService {
         this.redisService = redisService;
         this.mailService = mailService;
         this.orderService = orderService;
-        this.shippingAddressService = shippingAddressService;
     }
 
     public Customer findByUsername(String username) {
@@ -125,10 +123,11 @@ public class CustomerService {
 
                 Card card = new Card(save);
                 save.setCard(card);
+                Customer save1 = customerRepository.save(save);
 
-                sendCustomerVerificationMail(save);
+                sendCustomerVerificationMail(save1);
 
-                return customerRepository.save(save);
+                return customerRepository.save(save1);
             }else
                 throw new ResourceAlreadyExistException("Bu e posta kullanılmaktadır");
         }
