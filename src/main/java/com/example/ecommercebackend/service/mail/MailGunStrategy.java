@@ -4,17 +4,15 @@ import io.github.cdimascio.dotenv.Dotenv;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MailGunStrategy implements IMailStrategy{
-
-    @Value("${mailgun.key}")
     private String apiKey;
 
     public MailGunStrategy() {
-
+        Dotenv dotenv = Dotenv.load(); // .env dosyasını otomatik bulur
+        this.apiKey = dotenv.get("MAILGUN_API_KEY");
 
     }
 

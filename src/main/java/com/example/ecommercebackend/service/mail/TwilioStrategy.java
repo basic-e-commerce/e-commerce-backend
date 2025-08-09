@@ -10,7 +10,6 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import io.github.cdimascio.dotenv.Dotenv;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,12 +17,12 @@ import java.io.IOException;
 @Service
 public class TwilioStrategy implements IMailStrategy{
 
-    @Value("${sendgrid.api-key}")
     private String apiKey;
-
     private final MerchantService merchantService;
     public TwilioStrategy(MerchantService merchantService) {
         this.merchantService = merchantService;
+        Dotenv dotenv = Dotenv.load(); // .env dosyasını otomatik bulur
+        this.apiKey = dotenv.get("SENDGRID_API_KEY");
 
     }
 
