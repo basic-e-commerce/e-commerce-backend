@@ -9,10 +9,12 @@ public class CargoManuelDesiRequestAdminDto {
     private String orderCode;
 
     List<CargoManuelDesiRequestAdminDataDto> cargoBuyDesiRequestAdminDataDto;
+    private String responsiveLabelUrl;
 
-    public CargoManuelDesiRequestAdminDto(String orderCode, List<CargoManuelDesiRequestAdminDataDto> cargoBuyDesiRequestAdminDataDto) {
+    public CargoManuelDesiRequestAdminDto(String orderCode, List<CargoManuelDesiRequestAdminDataDto> cargoBuyDesiRequestAdminDataDto, String responsiveLabelUrl) {
         this.orderCode = orderCode;
         this.cargoBuyDesiRequestAdminDataDto = cargoBuyDesiRequestAdminDataDto;
+        this.responsiveLabelUrl = responsiveLabelUrl;
     }
 
     public String getOrderCode() {
@@ -29,5 +31,13 @@ public class CargoManuelDesiRequestAdminDto {
 
     public void setCargoBuyDesiRequestAdminDataDto(List<CargoManuelDesiRequestAdminDataDto> cargoBuyDesiRequestAdminDataDto) {
         this.cargoBuyDesiRequestAdminDataDto = cargoBuyDesiRequestAdminDataDto;
+    }
+
+    public String getResponsiveLabelUrl() {
+        return responsiveLabelUrl;
+    }
+
+    public void setResponsiveLabelUrl(String responsiveLabelUrl) {
+        this.responsiveLabelUrl = responsiveLabelUrl;
     }
 }

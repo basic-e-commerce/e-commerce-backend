@@ -26,3 +26,5 @@ CREATE INDEX payment_order_id_idx ON payment (order_id);
 CREATE INDEX payment_payment_status_idx ON payment (payment_status);
 CREATE UNIQUE INDEX payment_conversation_id_idx ON payment (conversation_id);
 CREATE UNIQUE INDEX payment_payment_id_idx ON payment (payment_id);
+CREATE UNIQUE INDEX IF NOT EXISTS customers_username_idx ON customer (username);
+CREATE UNIQUE INDEX IF NOT EXISTS admins_username_idx ON admins (username);

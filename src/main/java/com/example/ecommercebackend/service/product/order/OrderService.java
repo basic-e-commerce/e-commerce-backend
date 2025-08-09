@@ -1251,12 +1251,12 @@ public class OrderService {
                     true,
                     new HashSet<>(order.getOrderItems()),
                     order.getFirstName()+ " " + order.getLastName(),
-                    cargoBuyDesiRequestAdminDataDto.getLength(),
-                    cargoBuyDesiRequestAdminDataDto.getWidth(),
-                    cargoBuyDesiRequestAdminDataDto.getHeight(),
-                    cargoBuyDesiRequestAdminDataDto.getWeight(),
-                    ProductTemplate.DistanceUnit.valueOf(cargoBuyDesiRequestAdminDataDto.getDistanceUnit()),
-                    ProductTemplate.MassUnit.valueOf(cargoBuyDesiRequestAdminDataDto.getMassUnit()),
+                    0,
+                    0,
+                    0,
+                    0,
+                    ProductTemplate.DistanceUnit.cm,
+                    ProductTemplate.MassUnit.g,
                     shippingId,
                     "",
                     cargoBuyDesiRequestAdminDataDto.getCargoFee(),
@@ -1269,6 +1269,7 @@ public class OrderService {
                     false,
                     "Alıcı Şubede"
             );
+            orderPackage.setResponsiveLabelURL(cargoOfferDesiRequestAdminDto.getResponsiveLabelUrl());
             order.getOrderStatus().getOrderPackages().add(orderPackage);
         }
 
