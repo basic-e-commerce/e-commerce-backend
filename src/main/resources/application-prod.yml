@@ -39,7 +39,9 @@ logging:
   pattern:
     console: ${GULCE_LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
   level:
-    org.springframework.security: ${GULCE_SPRING_SECURITY_LOG_LEVEL:TRACE}
+    org.springframework:
+      security: ${GULCE_SPRING_SECURITY_LOG_LEVEL:TRACE}
+      web: DEBUG
 
 upload:
   file:
