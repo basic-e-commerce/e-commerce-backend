@@ -1251,12 +1251,12 @@ public class OrderService {
                     true,
                     new HashSet<>(order.getOrderItems()),
                     order.getFirstName()+ " " + order.getLastName(),
-                    0,
-                    0,
-                    0,
-                    0,
-                    ProductTemplate.DistanceUnit.cm,
-                    ProductTemplate.MassUnit.g,
+                    cargoBuyDesiRequestAdminDataDto.getLength(),
+                    cargoBuyDesiRequestAdminDataDto.getWidth(),
+                    cargoBuyDesiRequestAdminDataDto.getHeight(),
+                    cargoBuyDesiRequestAdminDataDto.getWeight(),
+                    ProductTemplate.DistanceUnit.valueOf(cargoBuyDesiRequestAdminDataDto.getDistanceUnit()),
+                    ProductTemplate.MassUnit.valueOf(cargoBuyDesiRequestAdminDataDto.getMassUnit()),
                     shippingId,
                     "",
                     cargoBuyDesiRequestAdminDataDto.getCargoFee(),
@@ -1270,6 +1270,8 @@ public class OrderService {
                     "Alıcı Şubede"
             );
             orderPackage.setResponsiveLabelURL(cargoOfferDesiRequestAdminDto.getResponsiveLabelUrl());
+            orderPackage.setOrderPackageStatusCode(OrderPackage.OrderPackageStatusCode.TRANSIT);
+
             order.getOrderStatus().getOrderPackages().add(orderPackage);
         }
 
@@ -1472,7 +1474,10 @@ public class OrderService {
 
 
 
-    public List<OfferApproveUserDto> buyOneStepCargo(@NotNullParam CargoBuyDesiRequestAdminDto cargoOfferDesiRequestAdminDto) {
+    public String buyOneStepCargo(@NotNullParam CargoBuyDesiRequestAdminDto cargoOfferDesiRequestAdminDto) {
+        if(!merchantService.getMerchant().getGeliver())
+            throw new BadRequestException("Bu özellik kullanılamamaktadır!");
+
         Order order = findByOrderCode(cargoOfferDesiRequestAdminDto.getOrderCode());
 
         validateAllItemsFullyShipped(order,cargoOfferDesiRequestAdminDto);
@@ -1576,28 +1581,14 @@ public class OrderService {
             );
             order.getOrderStatus().getOrderPackages().add(orderPackage);
         }
-        Order saveOrder = orderRepository.save(order);
+        orderRepository.save(order);
 
 
-        return saveOrder.getOrderStatus().getOrderPackages().stream().map(x->{
-            return new OfferApproveUserDto(
-                    new ShipmentUserDto(
-                            String.valueOf(x.getId()),
-                            x.getCreateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                            x.getUpdateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                            cargoTest,
-                            x.getBarcode(),
-                            null,
-                            x.getResponsiveLabelURL(),
-                            x.getOrderPackageStatusCode().name(),
-                            x.getResponsiveLabelURL()
-                    )
-            );
-        }).toList();
+        return "Kargonuz sistemde oluşturulmuştur!";
     }
 
 
-    public List<OfferApproveUserDto> buyContractCargo(@NotNullParam CargoBuyDesiRequestAdminDto cargoOfferDesiRequestAdminDto){
+    public String buyContractCargo(@NotNullParam CargoBuyDesiRequestAdminDto cargoOfferDesiRequestAdminDto){
         Merchant merchant = merchantService.getMerchant();
         Order order = findByOrderCode(cargoOfferDesiRequestAdminDto.getOrderCode());
         validateAllItemsFullyShipped(order,cargoOfferDesiRequestAdminDto);
@@ -1704,24 +1695,8 @@ public class OrderService {
             );
             order.getOrderStatus().getOrderPackages().add(orderPackage);
         }
-        Order saveOrder = orderRepository.save(order);
-
-        return saveOrder.getOrderStatus().getOrderPackages().stream().map(x->{
-            return new OfferApproveUserDto(
-                    new ShipmentUserDto(
-                            String.valueOf(x.getId()),
-                            x.getCreateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                            x.getUpdateAt().atZone(ZoneId.of("Europe/Istanbul")).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                            cargoTest,
-                            x.getBarcode(),
-                            null,
-                            x.getResponsiveLabelURL(),
-                            x.getOrderPackageStatusCode().name(),
-                            x.getResponsiveLabelURL()
-                    )
-            );
-        }).toList();
-
+        orderRepository.save(order);
+       return "Anlaşmalı kargonuz sistemdee oluşturulmuştur";
     }
 
     /**
@@ -1924,8 +1899,6 @@ public class OrderService {
         }
 
         Address defaultSendingAddress = merchant.getDefaultSendingAddress();
-        System.out.println("defaultAddress: "+ defaultSendingAddress.getPhoneNo());
-        System.out.println("defaultAddress: "+ defaultSendingAddress.getAddressLine1());
         CargoRefundDto cargoRefundDto = new CargoRefundDto(
             true,
                 refundCreateDto.getWillAccept(),

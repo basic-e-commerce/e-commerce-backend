@@ -10,8 +10,9 @@ public class CardResponseDetails {
     private BigDecimal comparePrice;
     private String coverImage;
     private int quantity;
+    private int productQuantity;
 
-    public CardResponseDetails(int id, String title, String productLinkName, BigDecimal price, BigDecimal comparePrice , String coverImage, int quantity) {
+    public CardResponseDetails(int id, String title, String productLinkName, BigDecimal price, BigDecimal comparePrice , String coverImage, int quantity, int productQuantity) {
         this.id = id;
         this.title = title;
         this.productLinkName = productLinkName;
@@ -19,6 +20,7 @@ public class CardResponseDetails {
         this.comparePrice = comparePrice;
         this.coverImage = coverImage;
         this.quantity = quantity;
+        this.productQuantity = productQuantity;
     }
 
     public int getId() {
@@ -77,4 +79,11 @@ public class CardResponseDetails {
         this.productLinkName = productLinkName;
     }
 
+    public int getProductQuantity() {
+        return productQuantity;
+    }
+
+    public void setProductQuantity(int productQuantity) {
+        this.productQuantity = productQuantity;
+    }
 }

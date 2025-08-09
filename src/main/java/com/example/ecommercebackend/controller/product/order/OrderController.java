@@ -109,12 +109,12 @@ public class OrderController {
     }
 
     @PostMapping("/cargo-one-step")
-    public ResponseEntity<List<OfferApproveUserDto>> buyOneStepCargo(@RequestBody(required = false) CargoBuyDesiRequestAdminDto cargoBuyDesiRequestAdminDto){
+    public ResponseEntity<String> buyOneStepCargo(@RequestBody(required = false) CargoBuyDesiRequestAdminDto cargoBuyDesiRequestAdminDto){
         return new ResponseEntity<>(orderService.buyOneStepCargo(cargoBuyDesiRequestAdminDto),HttpStatus.OK);
     }
 
     @PostMapping("/cargo-contract")
-    public ResponseEntity<List<OfferApproveUserDto>> buyContractCargo(@RequestBody(required = false) CargoBuyDesiRequestAdminDto cargoBuyDesiRequestAdminDto){
+    public ResponseEntity<String> buyContractCargo(@RequestBody(required = false) CargoBuyDesiRequestAdminDto cargoBuyDesiRequestAdminDto){
         return new ResponseEntity<>(orderService.buyContractCargo(cargoBuyDesiRequestAdminDto),HttpStatus.OK);
     }
 

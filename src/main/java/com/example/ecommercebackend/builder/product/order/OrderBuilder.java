@@ -125,7 +125,8 @@ public class OrderBuilder {
                                                 .atZone(ZoneId.of("Europe/Istanbul"))
                                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                                                 : null,
-                                        x.getCanceled()
+                                        x.getCanceled(),
+                                        x.getManuel()
                                 )).toList(),
                         Optional.ofNullable(order.getOrderStatus())
                                 .map(OrderStatus::getOrderRefundPackages)
@@ -158,7 +159,8 @@ public class OrderBuilder {
                                                 .atZone(ZoneId.of("Europe/Istanbul"))
                                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                                                 : null,
-                                        x.getCanceled()
+                                        x.getCanceled(),
+                                        x.getManuel()
                                 )).toList(),
                         order.getOrderStatus() != null && order.getOrderStatus().getColor() != null ? order.getOrderStatus().getColor().name() : null,
                         order.getOrderStatus() != null && order.getOrderStatus().getCreatedAt() != null

@@ -1,16 +1,21 @@
 package com.example.ecommercebackend.dto.product.shipping;
 
+import com.example.ecommercebackend.dto.product.orderitem.OrderItemRefundDto;
 import com.example.ecommercebackend.entity.product.order.OrderPackage;
+
+import java.util.List;
 
 public class OrderPackageUpdateDto {
     private OrderPackage.OrderPackageStatusCode orderPackageStatusCode;
-    private OrderPackage.CargoStatus cargoStatus;
+    private List<OrderItemRefundDto> orderItemRefundDtos;
     private String location;
+    private String orderCode;
 
-    public OrderPackageUpdateDto(OrderPackage.OrderPackageStatusCode orderPackageStatusCode, OrderPackage.CargoStatus cargoStatus, String location) {
+    public OrderPackageUpdateDto(OrderPackage.OrderPackageStatusCode orderPackageStatusCode, List<OrderItemRefundDto> orderItemRefundDtos, String location, String orderCode) {
         this.orderPackageStatusCode = orderPackageStatusCode;
-        this.cargoStatus = cargoStatus;
+        this.orderItemRefundDtos = orderItemRefundDtos;
         this.location = location;
+        this.orderCode = orderCode;
     }
 
     public OrderPackage.OrderPackageStatusCode getOrderPackageStatusCode() {
@@ -21,19 +26,27 @@ public class OrderPackageUpdateDto {
         this.orderPackageStatusCode = orderPackageStatusCode;
     }
 
-    public OrderPackage.CargoStatus getCargoStatus() {
-        return cargoStatus;
-    }
-
-    public void setCargoStatus(OrderPackage.CargoStatus cargoStatus) {
-        this.cargoStatus = cargoStatus;
-    }
-
     public String getLocation() {
         return location;
     }
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
+    }
+
+    public List<OrderItemRefundDto> getOrderItemRefundDtos() {
+        return orderItemRefundDtos;
+    }
+
+    public void setOrderItemRefundDtos(List<OrderItemRefundDto> orderItemRefundDtos) {
+        this.orderItemRefundDtos = orderItemRefundDtos;
     }
 }

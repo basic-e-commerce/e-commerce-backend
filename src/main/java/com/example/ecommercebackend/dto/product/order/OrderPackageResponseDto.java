@@ -15,9 +15,10 @@ public class OrderPackageResponseDto {
     private String location;
     private String updateAt;
     private Boolean isCancel;
+    private Boolean isMAnuel;
 
 
-    public OrderPackageResponseDto(int id, Set<OrderItemResponseDto> orderItems, String shipmentId, String statusCode, String cargoId, String cargoCompanyName, String cargoStatus, String location, String updateAt, Boolean isCancel) {
+    public OrderPackageResponseDto(int id, Set<OrderItemResponseDto> orderItems, String shipmentId, String statusCode, String cargoId, String cargoCompanyName, String cargoStatus, String location, String updateAt, Boolean isCancel, Boolean isMAnuel) {
         this.id = id;
         this.orderItems = orderItems;
         this.shipmentId = shipmentId;
@@ -28,6 +29,7 @@ public class OrderPackageResponseDto {
         this.location = location;
         this.updateAt = updateAt;
         this.isCancel = isCancel;
+        this.isMAnuel = isMAnuel;
     }
 
     public int getId() {
@@ -108,5 +110,13 @@ public class OrderPackageResponseDto {
 
     public void setCancel(Boolean cancel) {
         isCancel = cancel;
+    }
+
+    public Boolean getMAnuel() {
+        return isMAnuel;
+    }
+
+    public void setMAnuel(Boolean MAnuel) {
+        isMAnuel = MAnuel;
     }
 }

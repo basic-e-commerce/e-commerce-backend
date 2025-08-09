@@ -105,7 +105,8 @@ public class CardItemService {
                             cardItem.getProduct().getSalePrice(),
                             cardItem.getProduct().getComparePrice(),
                             cardItem.getProduct().getCoverImage().getUrl(),
-                            cardItem.getQuantity()
+                            cardItem.getQuantity(),
+                            cardItem.getProduct().getQuantity()
                     ))
                     .collect(Collectors.toList());
 
@@ -162,7 +163,9 @@ public class CardItemService {
                         product.getSalePrice(),
                         product.getComparePrice(),
                         coverImageUrl,
-                        x.getQuantity());
+                        x.getQuantity(),
+                        product.getQuantity()
+                );
             }).toList();
 
             BigDecimal totalWithOutTax = getTotalWithOutTax(productCollect);
