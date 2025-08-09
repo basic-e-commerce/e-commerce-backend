@@ -1,26 +1,26 @@
 spring:
   application:
     name: e-commerce-basic
+
   servlet:
     multipart:
       max-file-size: 20MB
       max-request-size: 10MB
 
 
-  # http://localhost:8080/oauth2/authorization/google
   # Datasource Configuration (Veritabanı Bağlantısı)
   datasource:
-    url: jdbc:postgresql://localhost:5432/ecommercebackend
-    username: postgres
-    password: postgres
+    url: ${GULCE_DB_URL}
+    username: ${GULCE_DB_USERNAME}
+    password: ${GULCE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       pool-name: HikariPool
-      maximum-pool-size: 20        # Aynı anda en fazla 20 aktif bağlantı
-      minimum-idle: 5              # Her zaman 5 hazır bağlantı beklesin
-      idle-timeout: 30000          # 30 saniye boşta kalan bağlantı kapansın
-      max-lifetime: 600000         # 10 dakika sonra bağlantı yenilensin
-      connection-timeout: 30000    # 30 saniyeden uzun sürede cevap alınmazsa hata ver
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 30000
+      max-lifetime: 600000
+      connection-timeout: 30000
 
   # JPA Hibernate Configuration
   jpa:
@@ -31,61 +31,60 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      host: ${GULCE_REDIS_HOST}
+      port: ${GULCE_REDIS_PORT}
       database: 0
 
 logging:
   pattern:
-    console: ${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
+    console: ${GULCE_LOGPATTERN_CONSOLE}
   level:
-    org.springframework.security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
+    org.springframework.security: ${GULCE_SPRING_SECURITY_LOG_LEVEL}
 
 upload:
   file:
-    dir: /var/www/html/projects/ecommerce/images/
-    url: https://litysofttest1.site/api/v1/upload/
+    dir: ${GULCE_UPLOAD_FILE_DIR}
+    url: ${GULCE_UPLOAD_FILE_URL}
     product:
       size: 104857600
 
 cookie:
   refreshTokenCookie:
-    secure: true
-    refreshmaxAge: 604800
-    sameSite: "Strict"
+    secure: ${GULCE_REFRESH_TOKEN_SECURE}
+    refreshmaxAge: ${GULCE_REFRESH_TOKEN_MAX_AGE}
+    sameSite: ${GULCE_REFRESH_TOKEN_SAME_SITE}
     path: /api/v1/auth
 
 jwt:
-  accessExp: 900000
-  refreshAge: 604800000
-  secret: C2VB987vxNVXvn543xVvxmVX7BCVM432NxvbvbnVXncm
+  accessExp: ${GULCE_JWT_ACCESS_EXP}
+  refreshAge: ${GULCE_JWT_REFRESH_AGE}
+  secret: ${GULCE_JWT_SECRET}
   jwtheader: Authorization
 
 regex:
-  email: ^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$
-  password: ^(?=.*[A-Z]).{8,}$
+  email: ${GULCE_REGEX_EMAIL}
+  password: ${GULCE_REGEX_PASSWORD}
 
 payment:
   iyzico:
-    apiKey: sandbox-JbYzNd3TVSGRKgrKKFiM5Ha7MJP7YZSo
-    secretKey: sandbox-mvXUSAUVAUhj7pNFFsbrKvWjGL5cEaUP
-    baseUrl: https://sandbox-api.iyzipay.com
+    apiKey: ${GULCE_IYZICO_API_KEY}
+    secretKey: ${GULCE_IYZICO_SECRET_KEY}
+    baseUrl: ${GULCE_IYZICO_BASE_URL}
     callBack: /api/v1/payment/payCallBack
 
 domain:
-  test: https://litysofttest1.site
-  name: https://litysofttest1.site
-  namewww: https://www.litysofttest1.site
-  geliver: https://api.geliver.io/api/v1
+  test: ${GULCE_DOMAIN_TEST}
+  name: ${GULCE_DOMAIN_NAME}
+  namewww: ${GULCE_DOMAIN_NAMEWWW}
+  geliver: ${GULCE_DOMAIN_GELIVER}
 
 geliver:
   cargo:
-    test: true
-
-
+    test: ${GULCE_GELIVER_CARGO_TEST}
+    key: ${GULCE_GELIVER_CARGO_KEY}
 
 server:
-  port: 8083
+  port: ${GULCE_SERVER_PORT}
 
 management:
   endpoints:
@@ -93,3 +92,9 @@ management:
       exposure:
         include: "*"
       base-path: /api/actuator
+
+mailgun:
+  key: ${GULCE_MAILGUN_KEY}
+
+sendgrid:
+  api-key: ${GULCE_SENDGRID_API_KEY}

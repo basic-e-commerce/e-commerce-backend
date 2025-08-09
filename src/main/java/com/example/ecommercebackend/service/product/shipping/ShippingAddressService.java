@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -25,16 +26,19 @@ public class ShippingAddressService {
 
     private static final Logger log = LoggerFactory.getLogger(ShippingAddressService.class);
     private final WebClient.Builder webClientBuilder;
+
+    @Value("${geliver.cargo.key}")
     private String apiKey;
+
+    @Value("${domain.geliver}")
+    private String domainGeliver;
 
     public ShippingAddressService(WebClient.Builder webClientBuilder) {
         this.webClientBuilder = webClientBuilder;
-        Dotenv dotenv = Dotenv.load(); // .env dosyasını otomatik bulur
-        this.apiKey = dotenv.get("GELIVER");
     }
 
     public List<CityDto> getCities() {
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(domainGeliver).build();
         String responseJson = webClient.get()
                 .uri("/cities?countryCode=TR")
                 .retrieve()
@@ -73,7 +77,7 @@ public class ShippingAddressService {
     }
 
     public List<DistrictDto> getDistricts(@NotNullParam String cityCode) {
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(domainGeliver).build();
         String responseJson = webClient.get()
                 .uri("/districts?countryCode=TR&cityCode=%s".formatted(cityCode))
                 .retrieve()
@@ -115,7 +119,7 @@ public class ShippingAddressService {
     }
 
     public AddressReceiptDto createSendingAddress(AddressApiDto addressApiDto) {
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(domainGeliver).build();
 
         System.out.println("Adres bilgileri:");
         System.out.println("name: " + addressApiDto.getName());
@@ -182,7 +186,7 @@ public class ShippingAddressService {
     }
 
     public AddressReceiptDto createReceivingAddress(@NotNullParam AddressApiDto addressApiDto) throws JsonProcessingException {
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(domainGeliver).build();
         System.out.println("create receving adress 1");
 
         System.out.println("Adres bilgileri:");
@@ -248,7 +252,7 @@ public class ShippingAddressService {
     }
 
     public AddressShipResponse getAllAddress(@NotNullParam Boolean isRecipientAddress,@NotNullParam Integer limit,@NotNullParam Integer page){
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(domainGeliver).build();
 
         String responseJson = webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -296,7 +300,7 @@ public class ShippingAddressService {
     }
 
     public String deleteShippingAddress(String id) {
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(domainGeliver).build();
         String responseJson = webClient.delete()
                 .uri("/addresses/%s".formatted(id))
                 .header("Content-Type","application/json")
@@ -340,7 +344,7 @@ public class ShippingAddressService {
     }
 
     public AddressReceiptDto getShippingAddress(String id) {
-        WebClient webClient = webClientBuilder.baseUrl("https://api.geliver.io/api/v1").build();
+        WebClient webClient = webClientBuilder.baseUrl(domainGeliver).build();
         String responseJson = webClient.get()
                 .uri("/addresses/%s".formatted(id))
                 .header("Content-Type","application/json")

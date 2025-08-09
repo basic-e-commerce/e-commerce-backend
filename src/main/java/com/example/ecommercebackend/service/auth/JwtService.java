@@ -18,14 +18,14 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+
+    @Value("${jwt.secret}")
     private  String SECRET_KEY;
 
     @Value("${jwt.refreshAge}")
     private long REFRESH_TOKEN_EXPIRATION; // 7 gün
 
     public JwtService() {
-        Dotenv dotenv = Dotenv.load(); // .env dosyasını otomatik bulur
-        this.SECRET_KEY = dotenv.get("JWT_SECRET");
     }
 
     private Key getSigningKey() {
