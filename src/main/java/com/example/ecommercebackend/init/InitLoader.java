@@ -33,6 +33,8 @@ public class InitLoader {
     public void loadInitialCountrySql() throws Exception {
         if (countryRepository.count() == 0) {
             runSqlScript("sql/init/countries.sql");
+            runSqlScript("/sql/init/extension.sql");
+            runSqlScript("/sql/init/index.sql");
         }
 
         if (cityRepository.count() == 0) {

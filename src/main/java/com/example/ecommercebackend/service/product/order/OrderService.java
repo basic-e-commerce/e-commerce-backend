@@ -270,10 +270,16 @@ public class OrderService {
             }
 
             for (OrderItemCreateDto item : orderCreateDto.getOrderItemCreateDtos()) {
+                Product product = productService.findProductById(item.productId());
+                if (item.quantity() > product.getQuantity())
+                    throw new BadRequestException("Ürün stoğu yeterli değildir! "+ product.getProductName());
+
                 if (item.quantity() <= 0) {
                     throw new BadRequestException("Sepette 0 ve altında ürün sayısı bulunamaz");
                 }
             }
+
+
 
             if (customerRepository.findByUsername(orderCreateDto.getAddress().username()).isPresent()){
                 Customer customer = customerRepository.findByUsername(orderCreateDto.getAddress().username()).get();
