@@ -170,7 +170,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/sell/day-sell").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/sell/customer-register").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/sell/sell-product").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/sell/card-contain-product").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/sell/card-contain-product").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/sell/low-product").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/admin").permitAll()

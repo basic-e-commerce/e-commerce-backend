@@ -2082,9 +2082,10 @@ public class OrderService {
     }
 
     public String createCustomCargoContract(@NotNullParam CreateCustomCargoContractRequestDto createCustomCargoContractRequestDto){
-
         Merchant merchant = merchantService.getMerchant();
 
+        if(!merchant.getGeliver())
+            throw new BadRequestException("Kargo anlaşması özelliğini kullanmak için lütfen özelliği açınız!");
 
         CustomCargoContractRequestDto customCargoContractRequestDto = new CustomCargoContractRequestDto(
                 createCustomCargoContractRequestDto.getUsername(),
