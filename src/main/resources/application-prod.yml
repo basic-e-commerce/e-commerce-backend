@@ -86,7 +86,7 @@ geliver:
     key: ${GULCE_GELIVER_CARGO_KEY}
 
 server:
-  port: ${GULCE_SERVER_PORT}
+  port: ${GULCE_SERVER_PORT:8083}
 
 management:
   endpoints:
