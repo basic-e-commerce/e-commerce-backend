@@ -81,9 +81,9 @@ public class ECommerceBackendApplication {
 						"demo@gmail.com",
 						cityRepository.findByCityCode("34").orElse(null),
 						districtRepository.findByDistrictId(107062).orElse(null),
-						EncryptionUtils.encrypt("address line 1"),
+						"address line 1",
 						"34000",
-						EncryptionUtils.encrypt("+905559876758"),
+						"+905559876758",
 						false,
 						true
 				);
@@ -101,9 +101,9 @@ public class ECommerceBackendApplication {
 								"demo@gmail.com",
 								cityRepository.findByCityCode("34").orElse(null),
 								districtRepository.findByDistrictId(107062).orElse(null),
-								EncryptionUtils.encrypt("address line 1"),
+								"address line 1",
 								"34000",
-								EncryptionUtils.encrypt("+905559876758"),
+								"+905559876758",
 								false,
 								true
 								),
@@ -114,7 +114,7 @@ public class ECommerceBackendApplication {
 						"feminizmturkiye2000@gmail.com",
 						BigDecimal.valueOf(1000),
 						BigDecimal.valueOf(75),
-						EncryptionUtils.encrypt("izcb abhl kkto upek"),
+						"izcb abhl kkto upek",
 						"instagram",
 						"instagram link",
 						"footerdesc",
