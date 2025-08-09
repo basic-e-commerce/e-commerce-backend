@@ -6,6 +6,7 @@ import com.example.ecommercebackend.dto.merchant.merchant.MerchantUpdateDto;
 import com.example.ecommercebackend.dto.product.shipping.AddressApiDto;
 import com.example.ecommercebackend.dto.product.shipping.AddressReceiptDto;
 import com.example.ecommercebackend.dto.user.address.AddressCreateDto;
+import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.product.shipping.Country;
 import com.example.ecommercebackend.entity.user.Address;
 import com.example.ecommercebackend.entity.user.City;
@@ -13,6 +14,7 @@ import com.example.ecommercebackend.entity.user.District;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
+import com.example.ecommercebackend.repository.merchant.MerchantRepository;
 import com.example.ecommercebackend.repository.user.AddressRepository;
 import com.example.ecommercebackend.service.product.shipping.CountryService;
 import com.example.ecommercebackend.service.product.shipping.ShippingAddressService;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 public class AddressService {
@@ -33,31 +36,26 @@ public class AddressService {
     private final CityService cityService;
     private final DistrictService districtService;
     private final ShippingAddressService shippingAddressService;
+    private final MerchantRepository merchantRepository;
 
-    public AddressService(CountryService countryService, AddressRepository addressRepository, AddressBuilder addressBuilder, CityService cityService, DistrictService districtService, ShippingAddressService shippingAddressService) {
+    public AddressService(CountryService countryService, AddressRepository addressRepository, AddressBuilder addressBuilder, CityService cityService, DistrictService districtService, ShippingAddressService shippingAddressService, MerchantRepository merchantRepository) {
         this.countryService = countryService;
         this.addressRepository = addressRepository;
         this.addressBuilder = addressBuilder;
         this.cityService = cityService;
         this.districtService = districtService;
         this.shippingAddressService = shippingAddressService;
+        this.merchantRepository = merchantRepository;
     }
 
     public Address createAddress(AddressCreateDto addressCreateDto,Boolean isReceiptAddress) {
         Country country = countryService.findCountryByUpperName(addressCreateDto.getCountryName());
-        System.out.println(1);
         City city = cityService.findByCityCode(addressCreateDto.getCityCode());
-        System.out.println(2);
         District district = districtService.findByDistrictId(addressCreateDto.getDistrictId());
-        System.out.println(3);
         Address address = addressBuilder.addressCreateDtoToAddress(addressCreateDto,country,city,district,isReceiptAddress);
-        System.out.println(4);
         Address save = addressRepository.save(address);
 
-        System.out.println(5);
         if (isReceiptAddress){
-            System.out.println(6);
-            System.out.println(addressCreateDto.getPhoneNo() + "     " +addressCreateDto.getAddressLine1());
 
             Random random = new Random();
             AddressApiDto addressApiDto = new AddressApiDto(
@@ -73,19 +71,20 @@ public class AddressService {
                     district.getDistrictId(),
                     addressCreateDto.getPostalCode(),
                     true,
-                    addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName()+"-"+(100000+random.nextInt(90000))
+                    UUID.randomUUID().toString()
             );
             try {
-                System.out.println(1);
-                addressApiDto.setShortName(address.getShortName());
-                AddressReceiptDto receivingAddress = shippingAddressService.createReceivingAddress(addressApiDto);
-                save.setGeliverId(receivingAddress.getId());
+
+               if (merchantRepository.findAll().stream().findFirst().get().getGeliver()){
+                   addressApiDto.setShortName(address.getShortName());
+                   AddressReceiptDto receivingAddress = shippingAddressService.createReceivingAddress(addressApiDto);
+                   save.setGeliverId(receivingAddress.getId());
+               }
+
             } catch (JsonProcessingException e) {
                 log.error("Address creation 3. parti yazılıma kaydedilemedi", e);
             }
         }else {
-            System.out.println(1);
-            Random random = new Random();
             AddressApiDto addressApiDto = new AddressApiDto(
                     addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName(),
                     addressCreateDto.getUsername(),
@@ -99,7 +98,7 @@ public class AddressService {
                     district.getDistrictId(),
                     addressCreateDto.getPostalCode(),
                     true,
-                    addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName()+"-"+(100000+random.nextInt(90000))
+                    UUID.randomUUID().toString()
             );
 
             addressApiDto.setShortName(address.getShortName());
@@ -195,6 +194,66 @@ public class AddressService {
 
         if (!isUpdated) {
             return address;
+        }else {
+            Merchant merchant = merchantRepository.findAll().stream().findFirst().get();
+            if (merchant.getGeliver()){
+                if (address.getRecipientAddress()){
+                    City city1 = cityService.findByCityCode(addressCreateDto.getCityCode());
+                    District district1 = districtService.findByDistrictId(addressCreateDto.getDistrictId());
+                    Country country1 = countryService.findCountryByUpperName(addressCreateDto.getCountryName());
+                    AddressApiDto addressApiDto = new AddressApiDto(
+                            addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName(),
+                            addressCreateDto.getUsername(),
+                            addressCreateDto.getPhoneNo(),
+                            addressCreateDto.getAddressLine1(),
+                            "",
+                            country1.getIso(),
+                            city1.getName(),
+                            city1.getCityCode(),
+                            district1.getName(),
+                            district1.getDistrictId(),
+                            addressCreateDto.getPostalCode(),
+                            true,
+                            UUID.randomUUID().toString()
+                    );
+                    try {
+
+                        AddressReceiptDto receivingAddress = shippingAddressService.createReceivingAddress(addressApiDto);
+                        Address address1 = addressBuilder.addressCreateDtoToAddress(addressCreateDto,country,city1,district1,address.getRecipientAddress());
+                        address1.setGeliverId(receivingAddress.getId());
+                        addressRepository.save(address1);
+                        return address1;
+
+                    } catch (JsonProcessingException e) {
+                        throw new BadRequestException("3. parti serviste hata bulunmaktadır!");
+                    }
+                }else{
+                    City city1 = cityService.findByCityCode(addressCreateDto.getCityCode());
+                    District district1 = districtService.findByDistrictId(addressCreateDto.getDistrictId());
+                    Country country1 = countryService.findCountryByUpperName(addressCreateDto.getCountryName());
+                    AddressApiDto addressApiDto = new AddressApiDto(
+                            addressCreateDto.getFirstName()+ " " + addressCreateDto.getLastName(),
+                            addressCreateDto.getUsername(),
+                            addressCreateDto.getPhoneNo(),
+                            addressCreateDto.getAddressLine1(),
+                            "",
+                            country1.getIso(),
+                            city1.getName(),
+                            city1.getCityCode(),
+                            district1.getName(),
+                            district1.getDistrictId(),
+                            addressCreateDto.getPostalCode(),
+                            true,
+                            UUID.randomUUID().toString()
+                    );
+
+                    AddressReceiptDto sendingAddress = shippingAddressService.createSendingAddress(addressApiDto);
+                    Address address1 = addressBuilder.addressCreateDtoToAddress(addressCreateDto,country,city1,district1,address.getRecipientAddress());
+                    address1.setGeliverId(sendingAddress.getId());
+                    addressRepository.save(address1);
+                    return address1;
+                }
+            }
         }
 
         return addressRepository.save(address);

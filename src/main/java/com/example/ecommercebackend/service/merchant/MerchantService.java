@@ -243,4 +243,8 @@ public class MerchantService {
     public MerchantPublicDetailResponse getDetail() {
         return merchantBuilder.merchantToMerchantPublicDetailResponse(merchantRepository.findAll().stream().findFirst().get());
     }
+
+    public Boolean isGeliver(){
+        return getMerchant().getGeliver();
+    }
 }
