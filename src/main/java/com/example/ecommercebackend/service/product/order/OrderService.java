@@ -1246,7 +1246,7 @@ public class OrderService {
 
         for (CargoManuelDesiRequestAdminDataDto cargoBuyDesiRequestAdminDataDto: cargoOfferDesiRequestAdminDto.getCargoBuyDesiRequestAdminDataDto()){
 
-            String shippingId = UUID.randomUUID().toString();
+            String shippingId = cargoOfferDesiRequestAdminDto.getCargoCode();
             OrderPackage orderPackage = new OrderPackage(
                     true,
                     new HashSet<>(order.getOrderItems()),
