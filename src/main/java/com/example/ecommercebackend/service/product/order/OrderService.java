@@ -1502,7 +1502,7 @@ public class OrderService {
                     false,
                     merchant.getAddress().getShortName()
             );
-            shippingAddressService.createSendingAddress(addressApiDto);
+            senderAddressId = shippingAddressService.createSendingAddress(addressApiDto).getId();
         }
 
         String receiptAddress = order.getGeliverId();
