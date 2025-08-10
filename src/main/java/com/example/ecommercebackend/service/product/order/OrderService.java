@@ -1382,7 +1382,6 @@ public class OrderService {
         }
 
         order.setRefundOrderItems(refundItems);
-        order.setRefundPrice(refundCreateDto.getRefundAmount());
         Order saveOrder = orderRepository.save(order);
 
         OrderPackage refundOrderPackage = new OrderPackage();
