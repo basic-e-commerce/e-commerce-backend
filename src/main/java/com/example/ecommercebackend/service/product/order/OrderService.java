@@ -1035,8 +1035,8 @@ public class OrderService {
             AddressApiDto addressApiDto = new AddressApiDto(
                     defaultAddress.getFirstName()+ " " + defaultAddress.getLastName(),
                     defaultAddress.getUsername(),
-                    defaultAddress.getPhoneNo(),
-                    defaultAddress.getAddressLine1(),
+                    EncryptionUtils.decrypt(defaultAddress.getPhoneNo()),
+                    EncryptionUtils.decrypt(defaultAddress.getAddressLine1()),
                     "",
                     defaultAddress.getCountry().getIso(),
                     defaultAddress.getCity().getName(),
