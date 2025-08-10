@@ -1381,9 +1381,8 @@ public class OrderService {
             throw new BadRequestException("İade Edilecek ürün bulunamamıştır");
         }
 
-
-
         order.setRefundOrderItems(refundItems);
+        order.setRefundPrice(refundCreateDto.getRefundAmount());
         Order saveOrder = orderRepository.save(order);
 
 
