@@ -50,7 +50,7 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
             throw new BadRequestException("Lütfen hesabınızı onaylatın");
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new NotFoundException(ExceptionMessage.WRONG_CREDENTIALS.getMessage());
+            throw new NotFoundException("Kullanıcı Adı Veya Parola Yanlıştır");
         }
         return createSuccessAuthentication(username,authentication,user);
     }
