@@ -424,6 +424,7 @@ public class ShippingCargoService {
 
 
     public OfferApproveDto buyOneStepCargo(CargoBuyRequestDto cargoBuyRequestDto){
+        System.out.println("one buy step kargo");
 
         WebClient webClient = webClientBuilder.baseUrl(geliverDomain).build();
 
