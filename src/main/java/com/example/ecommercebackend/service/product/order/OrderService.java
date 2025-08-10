@@ -1477,6 +1477,7 @@ public class OrderService {
 
 
     public String buyOneStepCargo(@NotNullParam CargoBuyDesiRequestAdminDto cargoOfferDesiRequestAdminDto) {
+        System.out.println("Buy step kargo");
         if(!merchantService.getMerchant().getGeliver())
             throw new BadRequestException("Bu özellik kullanılamamaktadır!");
 

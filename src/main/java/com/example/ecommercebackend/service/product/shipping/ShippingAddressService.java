@@ -119,6 +119,7 @@ public class ShippingAddressService {
     }
 
     public AddressReceiptDto createSendingAddress(AddressApiDto addressApiDto) {
+        System.out.println("create sending address ");
         WebClient webClient = webClientBuilder.baseUrl(domainGeliver).build();
 
         System.out.println("Adres bilgileri:");
@@ -186,6 +187,7 @@ public class ShippingAddressService {
     }
 
     public AddressReceiptDto createReceivingAddress(@NotNullParam AddressApiDto addressApiDto) throws JsonProcessingException {
+        System.out.println("create receiving address ");
         WebClient webClient = webClientBuilder.baseUrl(domainGeliver).build();
         System.out.println("create receving adress 1");
 
