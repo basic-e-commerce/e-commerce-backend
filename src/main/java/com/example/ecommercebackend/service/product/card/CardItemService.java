@@ -60,7 +60,13 @@ public class CardItemService {
         if (authentication.getPrincipal() instanceof Customer customer1) {
             Customer customer = customerRepository.findById(customer1.getId()).get();
 
+            CardItemCheckDto cardItemCheckDto = checkCardItem(customer.getCard().getItems());
+            if (cardItemCheckDto.getChange()){
+                customer.getCard().setItems(cardItemCheckDto.getCardItems());
+                customerRepository.save(customer);
+            }
             List<CardItem> cardItems = customer.getCard().getItems();
+
             Coupon coupon = customer.getCard().getCoupon();
 
             if (coupon != null) {
@@ -195,6 +201,19 @@ public class CardItemService {
         }else
             throw new BadRequestException("Geçersiz Kullanıcı");
 
+    }
+
+    private CardItemCheckDto checkCardItem(List<CardItem> items) {
+        boolean isChange = false;
+        for (CardItem cardItem : items) {
+            if (cardItem.getProduct().getQuantity() < cardItem.getQuantity()) {
+                cardItem.setQuantity(cardItem.getProduct().getQuantity());
+                isChange = true;
+            }
+        }
+        return new CardItemCheckDto(
+                items,isChange
+        );
     }
 
     private BigDecimal getCouponDiscountAmount(Coupon coupon, List<CardResponseDetails> cardResponseDetails) {
