@@ -32,9 +32,8 @@ public class CargoManuelDesiRequestAdminDataDto {
 
     private List<OrderItemRequestDto> orderItems;
 
-    private BigDecimal cargoFee;
 
-    public CargoManuelDesiRequestAdminDataDto(OrderPackage.CargoCompany cargoCompany, Double length, Double height, Double width, String distanceUnit, Double weight, String massUnit, List<OrderItemRequestDto> orderItems, BigDecimal cargoFee) {
+    public CargoManuelDesiRequestAdminDataDto(OrderPackage.CargoCompany cargoCompany, Double length, Double height, Double width, String distanceUnit, Double weight, String massUnit, List<OrderItemRequestDto> orderItems) {
         this.cargoCompany = cargoCompany;
         this.length = length;
         this.height = height;
@@ -43,7 +42,6 @@ public class CargoManuelDesiRequestAdminDataDto {
         this.weight = weight;
         this.massUnit = massUnit;
         this.orderItems = orderItems;
-        this.cargoFee = cargoFee;
     }
 
     public OrderPackage.CargoCompany getCargoCompany() {
@@ -110,11 +108,4 @@ public class CargoManuelDesiRequestAdminDataDto {
         this.orderItems = orderItems;
     }
 
-    public BigDecimal getCargoFee() {
-        return cargoFee;
-    }
-
-    public void setCargoFee(BigDecimal cargoFee) {
-        this.cargoFee = cargoFee;
-    }
 }

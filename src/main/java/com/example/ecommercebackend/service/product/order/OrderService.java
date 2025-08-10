@@ -1242,6 +1242,7 @@ public class OrderService {
 
     public List<OfferApproveUserDto> cargoManuel(@NotNullParam CargoManuelDesiRequestAdminDto cargoOfferDesiRequestAdminDto) {
         Order order = findByOrderCode(cargoOfferDesiRequestAdminDto.getOrderCode());
+        Merchant merchant = merchantService.getMerchant();
         validateAllItemsFullyShipped(order,cargoOfferDesiRequestAdminDto);
 
         for (CargoManuelDesiRequestAdminDataDto cargoBuyDesiRequestAdminDataDto: cargoOfferDesiRequestAdminDto.getCargoBuyDesiRequestAdminDataDto()){
@@ -1259,7 +1260,7 @@ public class OrderService {
                     ProductTemplate.MassUnit.valueOf(cargoBuyDesiRequestAdminDataDto.getMassUnit()),
                     shippingId,
                     "",
-                    cargoBuyDesiRequestAdminDataDto.getCargoFee(),
+                    merchant.getShippingFee(),
                     cargoBuyDesiRequestAdminDataDto.getCargoCompany(),
                     OrderPackage.CargoStatus.package_accepted,
                     shippingId,
