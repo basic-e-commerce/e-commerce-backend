@@ -289,7 +289,7 @@ Kuruş farkı toleransı aşan geçersiz istek
 
     public String refund(RefundCreateDto orderItemRefund) {
         Order order = orderService.findByOrderCode(orderItemRefund.getOrderCode());
-        Set<OrderItem> orderItems = order.getOrderItems();
+        Set<OrderItem> orderItems = order.getRefundOrderItems();
         Set<OrderItem> refundItems = new HashSet<>();
 
         BigDecimal calculatedRefundAmount = BigDecimal.ZERO;

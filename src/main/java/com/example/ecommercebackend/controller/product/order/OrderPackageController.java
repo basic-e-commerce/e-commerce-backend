@@ -29,7 +29,7 @@ public class OrderPackageController {
     }
 
     @PutMapping("/manuel-update")
-    public ResponseEntity<String> orderPackageUpdate(@RequestParam(required = false) Integer orderPackageId, @RequestBody(required = false)OrderPackageUpdateDto orderPackageUpdateDto){
+    public ResponseEntity<String> orderPackageUpdate(@RequestParam(required = false) Integer orderPackageId, @RequestBody(required = false) OrderPackageUpdateDto orderPackageUpdateDto){
         return new ResponseEntity<>(orderPackageService.orderPackageUpdate(orderPackageId, orderPackageUpdateDto), HttpStatus.OK);
     }
 }
