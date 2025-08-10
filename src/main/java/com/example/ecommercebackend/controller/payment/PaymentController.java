@@ -2,10 +2,12 @@ package com.example.ecommercebackend.controller.payment;
 
 import com.example.ecommercebackend.anotation.RateLimit;
 import com.example.ecommercebackend.dto.payment.PaymentCreditCardRequestDto;
+import com.example.ecommercebackend.dto.payment.refund.PaymentRefundCreateDto;
 import com.example.ecommercebackend.dto.payment.refund.RefundCreateDto;
 import com.example.ecommercebackend.dto.payment.response.InstallmentInfoDto;
 import com.example.ecommercebackend.dto.product.order.OrderCreateDto;
 import com.example.ecommercebackend.dto.product.orderitem.OrderItemRefundDto;
+import com.example.ecommercebackend.entity.payment.Payment;
 import com.example.ecommercebackend.service.payment.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -61,7 +63,7 @@ public class PaymentController {
     }
 
     @PostMapping("/refund")
-    public ResponseEntity<String> refund(@RequestBody(required = false) RefundCreateDto orderItemRefundDtos){
+    public ResponseEntity<String> refund(@RequestBody(required = false) PaymentRefundCreateDto orderItemRefundDtos){
         return new ResponseEntity<>(paymentService.refund(orderItemRefundDtos),HttpStatus.OK);
     }
 
