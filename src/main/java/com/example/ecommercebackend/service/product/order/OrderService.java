@@ -1515,6 +1515,8 @@ public class OrderService {
                 throw new BadRequestException("Müşteri adresi oluşturulamadı");
             }
         }
+        System.out.println("sende: "+senderAddressId);
+        System.out.println("receipt: "+receiptAddress);
 
         for (CargoBuyDesiRequestAdminDataDto cargoBuyDesiRequestAdminDataDto: cargoOfferDesiRequestAdminDto.getCargoBuyDesiRequestAdminDataDto()){
 
@@ -1523,7 +1525,7 @@ public class OrderService {
                     new ShipmentBuyRequestDto(
                             cargoTest,
                             senderAddressId,
-                            receiptAddress,
+                            null,
                             new CargoBuyRecipientAddress(
                                     order.getFirstName() + " "+ order.getLastName(),
                                     order.getPhoneNumber(),

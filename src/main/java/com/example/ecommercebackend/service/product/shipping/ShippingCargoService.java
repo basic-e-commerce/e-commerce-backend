@@ -425,6 +425,13 @@ public class ShippingCargoService {
 
     public OfferApproveDto buyOneStepCargo(CargoBuyRequestDto cargoBuyRequestDto){
         System.out.println("one buy step kargo");
+        try {
+            log.info("Gönderilen Payload: {}",
+                    new ObjectMapper().writerWithDefaultPrettyPrinter()
+                            .writeValueAsString(cargoBuyRequestDto));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         WebClient webClient = webClientBuilder.baseUrl(geliverDomain).build();
 
