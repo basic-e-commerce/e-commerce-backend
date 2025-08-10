@@ -170,6 +170,7 @@ public class ShippingCargoService {
                 .block();
 
         ObjectMapper mapper = new ObjectMapper();
+        System.out.println(responseJson);
 
         try {
             JsonNode root = mapper.readTree(responseJson);
