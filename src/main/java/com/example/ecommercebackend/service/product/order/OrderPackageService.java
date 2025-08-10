@@ -101,137 +101,138 @@ public class OrderPackageService {
 
         Order order = orderRepository.findByOrderCode(orderPackageUpdateDto.getOrderCode()).orElseThrow(()-> new NotFoundException("Sipariş bulunamadı!"));
 
-        if (orderPackageUpdateDto.getOrderPackageStatusCode().equals(OrderPackage.OrderPackageStatusCode.RETURNED)){
-
-            Set<OrderItem> orderItems = order.getOrderItems();
-            Set<OrderItem> refundOrderItems = order.getRefundOrderItems();
-            Set<OrderItem> refundItems = new HashSet<>();
-
-            for (OrderItemRefundDto refundDto : orderPackageUpdateDto.getOrderItemRefundDtos()) {
-
-                Integer refundOrderItemId = refundDto.orderItemId();
-                int refundProductId = refundDto.productId();
-
-                System.out.println("İade talebi kontrol ediliyor -> OrderItemId: " + refundOrderItemId + ", ProductId: " + refundProductId);
-
-                OrderItem matchingOrderItem = null;
-
-                for (OrderItem orderItem : orderItems) {
-                    System.out.println("Kontrol edilen OrderItem -> Id: " + orderItem.getId()
-                            + ", ProductId: " + orderItem.getProduct().getId());
-
-                    if (orderItem.getId().equals(refundOrderItemId) &&
-                            orderItem.getProduct().getId() == refundProductId) {
-                        matchingOrderItem = orderItem;
-                        break;
-                    }
-                }
-
-                OrderItem matchingRefundOrderItem = null;
-
-                for (OrderItem refundOrderItem : refundOrderItems) {
-                    System.out.println("Kontrol edilen OrderItem -> Id: " + refundOrderItem.getId()
-                            + ", ProductId: " + refundOrderItem.getProduct().getId());
-
-                    if (refundOrderItem.getId().equals(refundOrderItemId) &&
-                            refundOrderItem.getProduct().getId() == refundProductId) {
-                        matchingRefundOrderItem = refundOrderItem;
-                        break;
-                    }
-                }
-
-                if (matchingOrderItem == null) {
-                    System.err.println("UYARI: Eşleşen OrderItem bulunamadı! İstenen -> OrderItemId: "
-                            + refundOrderItemId + ", ProductId: " + refundProductId);
-                    throw new BadRequestException(
-                            "Siparişte bu ürün kalemi bulunmamaktadır! OrderItemId: " +
-                                    refundOrderItemId + ", ProductId: " + refundProductId
-                    );
-
-                }else{
-                    if (matchingRefundOrderItem != null) {
-                        if ((matchingOrderItem.getQuantity()-refundDto.quantity()-matchingRefundOrderItem.getQuantity()) < 0)
-                            throw new BadRequestException("Siparişte verilen miktardan fazla iade edemezsiniz!");
-                    }
-                }
-
-                System.out.println("Eşleşen OrderItem bulundu -> Id: " + matchingOrderItem.getId()
-                        + ", ProductId: " + matchingOrderItem.getProduct().getId());
-
-                if (matchingRefundOrderItem != null) {
-                    matchingRefundOrderItem.setQuantity(matchingRefundOrderItem.getQuantity()+refundDto.quantity());
-                    refundItems.add(matchingRefundOrderItem);
-                }else{
-                    OrderItem refundOrderItem = new OrderItem();
-                    refundOrderItem.setProduct(matchingOrderItem.getProduct());
-                    refundOrderItem.setQuantity(refundDto.quantity());
-                    refundOrderItem.setRefund(true);
-                    refundOrderItem.setPrice(matchingOrderItem.getPrice()
-                            .divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(refundDto.quantity())));
-                    refundOrderItem.setDiscountPrice(matchingOrderItem.getDiscountPrice()
-                            .divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(refundDto.quantity())));
-
-                    refundItems.add(refundOrderItem);
-                }
-
-            }
-
-            if (refundItems.isEmpty()) {
-                throw new BadRequestException("İade Edilecek ürün bulunamamıştır");
-            }
-
-            order.setRefundOrderItems(refundItems);
-
-            OrderPackage refundOrderPackage = new OrderPackage();
-            refundOrderPackage.setManuel(true);
-            refundOrderPackage.setLength(orderPackage.getLength());
-            refundOrderPackage.setWeight(orderPackage.getWeight());
-            refundOrderPackage.setWidth(orderPackage.getWidth());
-            refundOrderPackage.setHeight(orderPackage.getHeight());
-            refundOrderPackage.setDistanceUnit(orderPackage.getDistanceUnit());
-            refundOrderPackage.setMassUnit(orderPackage.getMassUnit());
-            refundOrderPackage.setOrderPackageStatusCode(OrderPackage.OrderPackageStatusCode.TRANSIT);
-            refundOrderPackage.setCargoCompany(orderPackage.getCargoCompany());
-            refundOrderPackage.setCargoStatus(OrderPackage.CargoStatus.package_accepted);
-            refundOrderPackage.setProductPaymentOnDelivery(orderPackage.getProductPaymentOnDelivery());
-            refundOrderPackage.setCreateAt(Instant.now());
-            refundOrderPackage.setUpdateAt(Instant.now());
-            refundOrderPackage.setShipmentId(UUID.randomUUID().toString());
-
-            List<OrderPackage> refundOrderPackages = new ArrayList<>();
-            refundOrderPackages.add(refundOrderPackage);
-            order.getOrderStatus().setOrderRefundPackages(refundOrderPackages);
-
-            Order saveOrder = orderRepository.save(order);
-
-            boolean allProductsFullyRefunded = true;
-
-            for (OrderItem orderItem : saveOrder.getOrderItems()) {
-                boolean matched = false;
-                for (OrderItem refundOrderItem : saveOrder.getRefundOrderItems()) {
-                    if (Objects.equals(refundOrderItem.getProduct().getId(), orderItem.getProduct().getId())) {
-                        if (Objects.equals(refundOrderItem.getQuantity(), orderItem.getQuantity())) {
-                            matched = true;
-                            break;
-                        }
-                    }
-                }
-                if (!matched) {
-                    allProductsFullyRefunded = false;
-                    break;
-                }
-            }
-
-            if (allProductsFullyRefunded){
-                saveOrder.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
-                saveOrder.getOrderStatus().setColor(OrderStatus.Color.BLUE);
-            }else{
-                saveOrder.getOrderStatus().setStatus(OrderStatus.Status.PARTIAL_REFUNDED);
-                saveOrder.getOrderStatus().setColor(OrderStatus.Color.TURQUISE);
-            }
-            orderRepository.save(saveOrder);
-            return "Kargo iade edilecek şekilde ayarlanmıştır!";
-        } else if (orderPackageUpdateDto.getOrderPackageStatusCode().equals(OrderPackage.OrderPackageStatusCode.DELIVERED)) {
+//        if (orderPackageUpdateDto.getOrderPackageStatusCode().equals(OrderPackage.OrderPackageStatusCode.RETURNED)){
+////
+////            Set<OrderItem> orderItems = order.getOrderItems();
+////            Set<OrderItem> refundOrderItems = order.getRefundOrderItems();
+////            Set<OrderItem> refundItems = new HashSet<>();
+////
+////            for (OrderItemRefundDto refundDto : orderPackageUpdateDto.getOrderItemRefundDtos()) {
+////
+////                Integer refundOrderItemId = refundDto.orderItemId();
+////                int refundProductId = refundDto.productId();
+////
+////                System.out.println("İade talebi kontrol ediliyor -> OrderItemId: " + refundOrderItemId + ", ProductId: " + refundProductId);
+////
+////                OrderItem matchingOrderItem = null;
+////
+////                for (OrderItem orderItem : orderItems) {
+////                    System.out.println("Kontrol edilen OrderItem -> Id: " + orderItem.getId()
+////                            + ", ProductId: " + orderItem.getProduct().getId());
+////
+////                    if (orderItem.getId().equals(refundOrderItemId) &&
+////                            orderItem.getProduct().getId() == refundProductId) {
+////                        matchingOrderItem = orderItem;
+////                        break;
+////                    }
+////                }
+////
+////                OrderItem matchingRefundOrderItem = null;
+////
+////                for (OrderItem refundOrderItem : refundOrderItems) {
+////                    System.out.println("Kontrol edilen OrderItem -> Id: " + refundOrderItem.getId()
+////                            + ", ProductId: " + refundOrderItem.getProduct().getId());
+////
+////                    if (refundOrderItem.getId().equals(refundOrderItemId) &&
+////                            refundOrderItem.getProduct().getId() == refundProductId) {
+////                        matchingRefundOrderItem = refundOrderItem;
+////                        break;
+////                    }
+////                }
+////
+////                if (matchingOrderItem == null) {
+////                    System.err.println("UYARI: Eşleşen OrderItem bulunamadı! İstenen -> OrderItemId: "
+////                            + refundOrderItemId + ", ProductId: " + refundProductId);
+////                    throw new BadRequestException(
+////                            "Siparişte bu ürün kalemi bulunmamaktadır! OrderItemId: " +
+////                                    refundOrderItemId + ", ProductId: " + refundProductId
+////                    );
+////
+////                }else{
+////                    if (matchingRefundOrderItem != null) {
+////                        if ((matchingOrderItem.getQuantity()-refundDto.quantity()-matchingRefundOrderItem.getQuantity()) < 0)
+////                            throw new BadRequestException("Siparişte verilen miktardan fazla iade edemezsiniz!");
+////                    }
+////                }
+////
+////                System.out.println("Eşleşen OrderItem bulundu -> Id: " + matchingOrderItem.getId()
+////                        + ", ProductId: " + matchingOrderItem.getProduct().getId());
+////
+////                if (matchingRefundOrderItem != null) {
+////                    matchingRefundOrderItem.setQuantity(matchingRefundOrderItem.getQuantity()+refundDto.quantity());
+////                    refundItems.add(matchingRefundOrderItem);
+////                }else{
+////                    OrderItem refundOrderItem = new OrderItem();
+////                    refundOrderItem.setProduct(matchingOrderItem.getProduct());
+////                    refundOrderItem.setQuantity(refundDto.quantity());
+////                    refundOrderItem.setRefund(true);
+////                    refundOrderItem.setPrice(matchingOrderItem.getPrice()
+////                            .divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(refundDto.quantity())));
+////                    refundOrderItem.setDiscountPrice(matchingOrderItem.getDiscountPrice()
+////                            .divide(BigDecimal.valueOf(matchingOrderItem.getQuantity()), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(refundDto.quantity())));
+////
+////                    refundItems.add(refundOrderItem);
+////                }
+////
+////            }
+////
+////            if (refundItems.isEmpty()) {
+////                throw new BadRequestException("İade Edilecek ürün bulunamamıştır");
+////            }
+////
+////            order.setRefundOrderItems(refundItems);
+////
+////            OrderPackage refundOrderPackage = new OrderPackage();
+////            refundOrderPackage.setManuel(true);
+////            refundOrderPackage.setLength(orderPackage.getLength());
+////            refundOrderPackage.setWeight(orderPackage.getWeight());
+////            refundOrderPackage.setWidth(orderPackage.getWidth());
+////            refundOrderPackage.setHeight(orderPackage.getHeight());
+////            refundOrderPackage.setDistanceUnit(orderPackage.getDistanceUnit());
+////            refundOrderPackage.setMassUnit(orderPackage.getMassUnit());
+////            refundOrderPackage.setOrderPackageStatusCode(OrderPackage.OrderPackageStatusCode.TRANSIT);
+////            refundOrderPackage.setCargoCompany(orderPackage.getCargoCompany());
+////            refundOrderPackage.setCargoStatus(OrderPackage.CargoStatus.package_accepted);
+////            refundOrderPackage.setProductPaymentOnDelivery(orderPackage.getProductPaymentOnDelivery());
+////            refundOrderPackage.setCreateAt(Instant.now());
+////            refundOrderPackage.setUpdateAt(Instant.now());
+////            refundOrderPackage.setShipmentId(UUID.randomUUID().toString());
+////
+////            List<OrderPackage> refundOrderPackages = new ArrayList<>();
+////            refundOrderPackages.add(refundOrderPackage);
+////            order.getOrderStatus().setOrderRefundPackages(refundOrderPackages);
+////
+////            Order saveOrder = orderRepository.save(order);
+////
+////            boolean allProductsFullyRefunded = true;
+////
+////            for (OrderItem orderItem : saveOrder.getOrderItems()) {
+////                boolean matched = false;
+////                for (OrderItem refundOrderItem : saveOrder.getRefundOrderItems()) {
+////                    if (Objects.equals(refundOrderItem.getProduct().getId(), orderItem.getProduct().getId())) {
+////                        if (Objects.equals(refundOrderItem.getQuantity(), orderItem.getQuantity())) {
+////                            matched = true;
+////                            break;
+////                        }
+////                    }
+////                }
+////                if (!matched) {
+////                    allProductsFullyRefunded = false;
+////                    break;
+////                }
+////            }
+////
+////            if (allProductsFullyRefunded){
+////                saveOrder.getOrderStatus().setStatus(OrderStatus.Status.REFUNDED);
+////                saveOrder.getOrderStatus().setColor(OrderStatus.Color.BLUE);
+////            }else{
+////                saveOrder.getOrderStatus().setStatus(OrderStatus.Status.PARTIAL_REFUNDED);
+////                saveOrder.getOrderStatus().setColor(OrderStatus.Color.TURQUISE);
+////            }
+////            orderRepository.save(saveOrder);
+////            return "Kargo iade edilecek şekilde ayarlanmıştır!";
+//        } else
+        if (orderPackageUpdateDto.getOrderPackageStatusCode().equals(OrderPackage.OrderPackageStatusCode.DELIVERED)) {
 
             orderPackage.setCargoStatus(OrderPackage.CargoStatus.delivered);
             orderPackage.setOrderPackageStatusCode(OrderPackage.OrderPackageStatusCode.DELIVERED);

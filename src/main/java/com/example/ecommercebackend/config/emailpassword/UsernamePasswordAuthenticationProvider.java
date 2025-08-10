@@ -6,6 +6,7 @@ import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.entity.user.User;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.exception.ExceptionMessage;
+import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.UnAuthorizedException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -49,7 +50,7 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
             throw new BadRequestException("Lütfen hesabınızı onaylatın");
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new UnAuthorizedException(ExceptionMessage.WRONG_CREDENTIALS.getMessage());
+            throw new NotFoundException(ExceptionMessage.WRONG_CREDENTIALS.getMessage());
         }
         return createSuccessAuthentication(username,authentication,user);
     }
