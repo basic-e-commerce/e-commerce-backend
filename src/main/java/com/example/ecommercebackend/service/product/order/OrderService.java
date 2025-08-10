@@ -1035,8 +1035,8 @@ public class OrderService {
             AddressApiDto addressApiDto = new AddressApiDto(
                     defaultAddress.getFirstName()+ " " + defaultAddress.getLastName(),
                     defaultAddress.getUsername(),
-                    EncryptionUtils.decrypt(defaultAddress.getPhoneNo()),
-                    EncryptionUtils.decrypt(defaultAddress.getAddressLine1()),
+                    defaultAddress.getPhoneNo(),
+                    defaultAddress.getAddressLine1(),
                     "",
                     defaultAddress.getCountry().getIso(),
                     defaultAddress.getCity().getName(),
@@ -1384,7 +1384,6 @@ public class OrderService {
         order.setRefundOrderItems(refundItems);
         order.setRefundPrice(refundCreateDto.getRefundAmount());
         Order saveOrder = orderRepository.save(order);
-
 
         OrderPackage refundOrderPackage = new OrderPackage();
         refundOrderPackage.setManuel(true);
@@ -1908,8 +1907,8 @@ public class OrderService {
                 1,
                 new ShippingSenderAddress(
                       defaultSendingAddress.getShortName(),
-                      EncryptionUtils.decrypt(defaultSendingAddress.getPhoneNo()),
-                      EncryptionUtils.decrypt(defaultSendingAddress.getAddressLine1()),
+                      defaultSendingAddress.getPhoneNo(),
+                      defaultSendingAddress.getAddressLine1(),
                       defaultSendingAddress.getCountry().getIso(),
                       defaultSendingAddress.getCity().getCityCode(),
                       defaultSendingAddress.getDistrict().getName()
