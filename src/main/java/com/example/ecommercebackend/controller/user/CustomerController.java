@@ -40,7 +40,7 @@ public class CustomerController {
 
 
     @RateLimit(limit = 3, duration = 1, unit = TimeUnit.SECONDS)
-    @GetMapping
+    @PostMapping("/list")
     public ResponseEntity<List<CustomerResponseDto>> getAll(@RequestBody(required = false)CustomerFilterRequestDto customerFilterRequestDto){
         return new ResponseEntity<>(customerService.getAll(customerFilterRequestDto),HttpStatus.OK);
     }
