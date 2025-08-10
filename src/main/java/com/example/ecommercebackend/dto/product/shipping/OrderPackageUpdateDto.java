@@ -7,14 +7,10 @@ import java.util.List;
 
 public class OrderPackageUpdateDto {
     private OrderPackage.OrderPackageStatusCode orderPackageStatusCode;
-    private List<OrderItemRefundDto> orderItemRefundDtos;
-    private String location;
     private String orderCode;
 
-    public OrderPackageUpdateDto(OrderPackage.OrderPackageStatusCode orderPackageStatusCode, List<OrderItemRefundDto> orderItemRefundDtos, String location, String orderCode) {
+    public OrderPackageUpdateDto(OrderPackage.OrderPackageStatusCode orderPackageStatusCode,String orderCode) {
         this.orderPackageStatusCode = orderPackageStatusCode;
-        this.orderItemRefundDtos = orderItemRefundDtos;
-        this.location = location;
         this.orderCode = orderCode;
     }
 
@@ -26,14 +22,6 @@ public class OrderPackageUpdateDto {
         this.orderPackageStatusCode = orderPackageStatusCode;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
     public String getOrderCode() {
         return orderCode;
     }
@@ -42,11 +30,5 @@ public class OrderPackageUpdateDto {
         this.orderCode = orderCode;
     }
 
-    public List<OrderItemRefundDto> getOrderItemRefundDtos() {
-        return orderItemRefundDtos;
-    }
 
-    public void setOrderItemRefundDtos(List<OrderItemRefundDto> orderItemRefundDtos) {
-        this.orderItemRefundDtos = orderItemRefundDtos;
-    }
 }
