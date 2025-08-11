@@ -85,10 +85,10 @@ public class PaymentService {
                 order.getPostalCode(),
                 orderCreateDto.getPaymentCreditCardRequestDto().getCreditCardRequestDto().getCardHolderName(),
                 conversationId,
-                "İslem Baslatılıyor",
+                "İslem Baslatılıyor-"+UUID.randomUUID().toString(),
                 BigDecimal.ZERO,
                 orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber(),
-                UUID.randomUUID().toString(),
+                "İşlem Başlatılıyor-"+UUID.randomUUID().toString(),
                 Payment.PaymentMethod.IBAN,
                 order,
                 Payment.PaymentStatus.CHECKED
