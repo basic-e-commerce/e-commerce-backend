@@ -405,18 +405,20 @@ Kuruş farkı toleransı aşan geçersiz istek
         throw new BadRequestException("Invalid Card");
     }
 
-
     public String buildOrderConfirmationEmail(Order order) {
         String email = merchantService.getMerchant().getEmail();
+
         // Ürün satırlarını oluştur
         StringBuilder itemsRows = new StringBuilder();
         for (OrderItem item : order.getOrderItems()) {
             itemsRows.append("""
-                <tr>
-                  <td style="padding:8px;border:1px solid #e9ecef;">%s x %s</td>
-                  <td style="padding:8px;border:1px solid #e9ecef;text-align:right;">₺%.2f</td>
-                </tr>
-                """.formatted(item.getQuantity(), item.getProduct().getQuantity(), item.getDiscountPrice()));
+            <tr>
+              <td style="padding:8px;border:1px solid #e9ecef;">%s x %s</td>
+              <td style="padding:8px;border:1px solid #e9ecef;text-align:right;">₺%.2f</td>
+            </tr>
+            """.formatted(item.getQuantity(),
+                    item.getProduct().getQuantity(),
+                    item.getDiscountPrice()));
         }
 
         // Tarih formatı
@@ -424,92 +426,93 @@ Kuruş farkı toleransı aşan geçersiz istek
                 .atZone(java.time.ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm", new java.util.Locale("tr", "TR")));
 
-        // HTML şablon
+        // HTML şablon (yüzde işaretleri -> %%)
         return """
-        <!doctype html>
-        <html lang="tr">
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width,initial-scale=1">
-          <title>Sipariş Onayı</title>
-        </head>
-        <body style="margin:0;padding:0;background:#f4f6f8;font-family:Arial,Helvetica,sans-serif;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;padding:24px 0;">
-            <tr>
-              <td align="center">
-                <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.05);">
-                  <!-- Header -->
-                  <tr>
-                    <td style="padding:20px 30px;background:linear-gradient(90deg,#0d6efd,#0069d9);color:#ffffff;">
-                      <h1 style="margin:0;font-size:20px;">%s - Sipariş Onayı</h1>
-                    </td>
-                  </tr>
-        
-                  <!-- Body -->
-                  <tr>
-                    <td style="padding:24px 30px;color:#333333;">
-                      <p style="margin:0 0 12px 0;">Merhaba <strong>%s</strong>,</p>
-                      <p style="margin:0 0 18px 0;">Ödemeniz başarıyla gerçekleşti. Aşağıda siparişinizin özetini bulabilirsiniz:</p>
-        
-                      <!-- Order summary card -->
-                      <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:18px;">
-                        <tr>
-                          <td style="padding:12px;border:1px solid #e9ecef;border-radius:6px;background:#fbfcfd;">
-                            <strong>Sipariş Kodu:</strong> %s<br>
-                            <strong>Tutar:</strong> ₺%.2f<br>
-                            <strong>Tarih:</strong> %s
-                          </td>
-                        </tr>
-                      </table>
-        
-                      <!-- Items table -->
-                      <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:18px;">
-                        <thead>
-                          <tr>
-                            <th align="left" style="padding:8px;border:1px solid #e9ecef;background:#f8f9fb;">Ürün</th>
-                            <th align="right" style="padding:8px;border:1px solid #e9ecef;background:#f8f9fb;">Fiyat</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          %s
-                          <tr>
-                            <td style="padding:8px;border:1px solid #e9ecef;"><strong>Toplam</strong></td>
-                            <td style="padding:8px;border:1px solid #e9ecef;text-align:right;"><strong>₺%.2f</strong></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <p style="margin:0;color:#6c757d;font-size:13px;">
-                        Eğer bu işlemle ilgili bir sorun varsa, lütfen bizimle iletişime geçin: <a href="mailto:%s">%s</a>
-                      </p>
-                    </td>
-                  </tr>
-        
-                  <!-- Footer -->
-                  <tr>
-                    <td style="padding:18px 30px;background:#f8f9fb;color:#888888;font-size:12px;text-align:center;">
-                      © %d %s. Tüm hakları saklıdır.<br>
-                      Bu e-posta otomatik oluşturulmuştur, lütfen cevaplamayın.
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </body>
-        </html>
-        """.formatted(
+    <!doctype html>
+    <html lang="tr">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <title>Sipariş Onayı</title>
+    </head>
+    <body style="margin:0;padding:0;background:#f4f6f8;font-family:Arial,Helvetica,sans-serif;">
+      <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;padding:24px 0;">
+        <tr>
+          <td align="center">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+              <!-- Header -->
+              <tr>
+                <td style="padding:20px 30px;background:linear-gradient(90deg,#0d6efd,#0069d9);color:#ffffff;">
+                  <h1 style="margin:0;font-size:20px;">%s - Sipariş Onayı</h1>
+                </td>
+              </tr>
+
+              <!-- Body -->
+              <tr>
+                <td style="padding:24px 30px;color:#333333;">
+                  <p style="margin:0 0 12px 0;">Merhaba <strong>%s</strong>,</p>
+                  <p style="margin:0 0 18px 0;">Ödemeniz başarıyla gerçekleşti. Aşağıda siparişinizin özetini bulabilirsiniz:</p>
+
+                  <!-- Order summary card -->
+                  <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:18px;">
+                    <tr>
+                      <td style="padding:12px;border:1px solid #e9ecef;border-radius:6px;background:#fbfcfd;">
+                        <strong>Sipariş Kodu:</strong> %s<br>
+                        <strong>Tutar:</strong> ₺%.2f<br>
+                        <strong>Tarih:</strong> %s
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Items table -->
+                  <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:18px;">
+                    <thead>
+                      <tr>
+                        <th align="left" style="padding:8px;border:1px solid #e9ecef;background:#f8f9fb;">Ürün</th>
+                        <th align="right" style="padding:8px;border:1px solid #e9ecef;background:#f8f9fb;">Fiyat</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      %s
+                      <tr>
+                        <td style="padding:8px;border:1px solid #e9ecef;"><strong>Toplam</strong></td>
+                        <td style="padding:8px;border:1px solid #e9ecef;text-align:right;"><strong>₺%.2f</strong></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <p style="margin:0;color:#6c757d;font-size:13px;">
+                    Eğer bu işlemle ilgili bir sorun varsa, lütfen bizimle iletişime geçin: <a href="mailto:%s">%s</a>
+                  </p>
+                </td>
+              </tr>
+
+              <!-- Footer -->
+              <tr>
+                <td style="padding:18px 30px;background:#f8f9fb;color:#888888;font-size:12px;text-align:center;">
+                  © %d %s. Tüm hakları saklıdır.<br>
+                  Bu e-posta otomatik oluşturulmuştur, lütfen cevaplamayın.
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+    """.formatted(
                 domainName,                      // Başlık
                 order.getFirstName(),            // Kullanıcı adı
                 order.getOrderCode(),            // Sipariş kodu
-                order.getCustomerPrice(),        // Toplam fiyat
-                orderDate,                       // Sipariş tarihi
+                order.getCustomerPrice(),        // Tutar
+                orderDate,                       // Tarih
                 itemsRows,                       // Ürün satırları
-                email,
-                email,
-                order.getCustomerPrice(),        // Toplam fiyat (alt)
+                order.getCustomerPrice(),        // Toplam fiyat
+                email,                           // E-posta
+                email,                           // E-posta
                 java.time.Year.now().getValue(), // Yıl
                 domainName                       // Firma adı
         );
     }
+
 
 }
