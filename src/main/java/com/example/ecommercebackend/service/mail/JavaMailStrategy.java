@@ -5,11 +5,13 @@ import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.exception.BadRequestException;
 import com.example.ecommercebackend.service.merchant.MerchantService;
+import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.util.Properties;
@@ -28,14 +30,17 @@ public class JavaMailStrategy implements IMailStrategy {
     public String send(String to, String subject, String body) {
         try {
             Merchant merchant = merchantService.getMerchant();
-
             JavaMailSender mailSender = createJavaMailSender(merchant);
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(merchant.getEmail());
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(body);
-            mailSender.send(message);
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            helper.setFrom(merchant.getEmail());
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(body, true); // true = HTML format
+
+            mailSender.send(mimeMessage);
             log.info("Email sent: "+ to);
 
             return "Mail Gönderildi!";
