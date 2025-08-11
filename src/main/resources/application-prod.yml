@@ -8,9 +8,9 @@ spring:
       max-request-size: 10MB
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/ecommercebackend}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       pool-name: HikariPool
@@ -28,35 +28,35 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
       database: 0
 
 logging:
   pattern:
-    console: ${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
+    console: ${LOGPATTERN_CONSOLE}
   level:
-    org.springframework.security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
+    org.springframework.security: ${SPRING_SECURITY_LOG_LEVEL}
 
 upload:
   file:
-    dir: ${UPLOAD_FILE_DIR:/var/www/html/projects/ecommerce/images/}
-    url: ${UPLOAD_FILE_URL:https://litysofttest1.site/api/v1/upload/}
+    dir: ${UPLOAD_FILE_DIR}
+    url: ${UPLOAD_FILE_URL}
     product:
       size: 104857600
 
 cookie:
   refreshTokenCookie:
-    secure: ${REFRESH_TOKEN_COOKIE_SECURE:true}
-    refreshmaxAge: ${REFRESH_TOKEN_COOKIE_REFRESH_MAX_AGE:604800}
-    sameSite: ${REFRESH_TOKEN_COOKIE_SAME_SITE:Strict}
-    path: ${REFRESH_TOKEN_COOKIE_PATH:/api/v1/auth}
+    secure: ${REFRESH_TOKEN_COOKIE_SECURE}
+    refreshmaxAge: ${REFRESH_TOKEN_COOKIE_REFRESH_MAX_AGE}
+    sameSite: ${REFRESH_TOKEN_COOKIE_SAME_SITE}
+    path: ${REFRESH_TOKEN_COOKIE_PATH}
 
 jwt:
-  accessExp: ${JWT_ACCESS_EXP:900000}
-  refreshAge: ${JWT_REFRESH_AGE:604800000}
-  secret: ${JWT_SECRET:C2VB987vxNVXvn543xVvxmVX7BCVM432NxvbvbnVXncm}
-  jwtheader: ${JWT_HEADER:Authorization}
+  accessExp: ${JWT_ACCESS_EXP}
+  refreshAge: ${JWT_REFRESH_AGE}
+  secret: ${JWT_SECRET}
+  jwtheader: ${JWT_HEADER}
 
 regex:
   email: ^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$
@@ -64,24 +64,24 @@ regex:
 
 payment:
   iyzico:
-    apiKey: ${IYZICO_API_KEY:sandbox-JbYzNd3TVSGRKgrKKFiM5Ha7MJP7YZSo}
-    secretKey: ${IYZICO_SECRET_KEY:sandbox-mvXUSAUVAUhj7pNFFsbrKvWjGL5cEaUP}
-    baseUrl: ${IYZICO_BASE_URL:https://sandbox-api.iyzipay.com}
+    apiKey: ${IYZICO_API_KEY}
+    secretKey: ${IYZICO_SECRET_KEY}
+    baseUrl: ${IYZICO_BASE_URL}
     callBack: /api/v1/payment/payCallBack
 
 domain:
-  test: ${DOMAIN_TEST:https://litysofttest1.site}
-  name: ${DOMAIN_NAME:https://litysofttest1.site}
-  namewww: ${DOMAIN_NAMEWWW:https://www.litysofttest1.site}
-  geliver: ${DOMAIN_GELIVER:https://api.geliver.io/api/v1}
+  test: ${DOMAIN_TEST}
+  name: ${DOMAIN_NAME}
+  namewww: ${DOMAIN_NAMEWWW}
+  geliver: ${DOMAIN_GELIVER}
 
 geliver:
   cargo:
-    test: ${GELIVER_CARGO_TEST:true}
-    key: ${GELIVER:f0818afa-0027-41c2-b985-ef135ea30dd9}
+    test: ${GELIVER_CARGO_TEST}
+    key: ${GELIVER}
 
 server:
-  port: ${SERVER_PORT:8083}
+  port: ${SERVER_PORT}
 
 management:
   endpoints:
