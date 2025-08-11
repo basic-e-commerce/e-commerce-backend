@@ -128,5 +128,10 @@ public class OrderController {
         return new ResponseEntity<>(orderService.createCustomCargoContract(createCustomCargoContractRequestDto),HttpStatus.OK);
     }
 
+    @GetMapping("/user-order")
+    public ResponseEntity<List<OrderDetailDto>> getAllUserOrder(@RequestParam(required = false) Integer userId){
+        return new ResponseEntity<>(orderService.getAllOrderByUserId(userId),HttpStatus.OK);
+    }
+
 
 }

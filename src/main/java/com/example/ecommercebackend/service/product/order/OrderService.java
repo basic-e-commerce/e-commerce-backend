@@ -2096,4 +2096,10 @@ public class OrderService {
     }
 
 
+    public List<OrderDetailDto> getAllOrderByUserId(Integer userId) {
+        User user = customerRepository.findById(userId).orElseThrow(()-> new NotFoundException("Kullanıcı bulunamadı!"));
+        Specification<Order> orderSpecification = Specification.where(hasUser(user));
+        Sort sort = Sort.by(Sort.Direction.DESC,"createdAt");
+        return orderRepository.findAll(orderSpecification,sort).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
+    }
 }
