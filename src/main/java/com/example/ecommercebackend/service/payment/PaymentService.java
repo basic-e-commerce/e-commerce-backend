@@ -261,7 +261,7 @@ public class PaymentService {
 
             // create save
             String redirectUrl = domainName+"/success-payment?orderCode=" + payment.getOrder().getOrderCode(); // Query parametreli URL
-            mailService.send(order.getUsername(),"Siparişiniz onaylandı","Order code: "+ order.getOrderCode());
+            mailService.send(order.getUsername(),"Siparişiniz onaylandı",buildOrderConfirmationEmail(order));
             httpServletResponse.sendRedirect(redirectUrl);
         }else{
             payment.setPaymentStatus(Payment.PaymentStatus.FAILED);
