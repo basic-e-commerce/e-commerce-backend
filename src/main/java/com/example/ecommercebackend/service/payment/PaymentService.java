@@ -127,10 +127,10 @@ public class PaymentService {
                 order.getPostalCode(),
                 orderCreateDto.getPaymentCreditCardRequestDto().getCreditCardRequestDto().getCardHolderName(),
                 conversationId,
-                "İslem Baslatılıyor",
+                "İslem Baslatılıyor-"+UUID.randomUUID().toString(),
                 BigDecimal.ZERO,
                 orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber(),
-                "transactionalId",
+                "TransactionId-"+UUID.randomUUID().toString(),
                 Payment.PaymentMethod.CREDIT_CARD,
                 order,
                 Payment.PaymentStatus.PROCESS
