@@ -88,7 +88,7 @@ public class PaymentService {
                 "İslem Baslatılıyor",
                 BigDecimal.ZERO,
                 orderCreateDto.getPaymentCreditCardRequestDto().getInstallmentNumber(),
-                "transactionalId",
+                UUID.randomUUID().toString(),
                 Payment.PaymentMethod.IBAN,
                 order,
                 Payment.PaymentStatus.CHECKED
