@@ -1,28 +1,25 @@
 spring:
   application:
     name: e-commerce-basic
+
   servlet:
     multipart:
       max-file-size: 20MB
       max-request-size: 10MB
 
-
-  # http://localhost:8080/oauth2/authorization/google
-  # Datasource Configuration (Veritabanı Bağlantısı)
   datasource:
-    url: jdbc:postgresql://localhost:5432/ecommercebackend
-    username: postgres
-    password: postgres
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ecommercebackend}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
     hikari:
       pool-name: HikariPool
-      maximum-pool-size: 20        # Aynı anda en fazla 20 aktif bağlantı
-      minimum-idle: 5              # Her zaman 5 hazır bağlantı beklesin
-      idle-timeout: 30000          # 30 saniye boşta kalan bağlantı kapansın
-      max-lifetime: 600000         # 10 dakika sonra bağlantı yenilensin
-      connection-timeout: 30000    # 30 saniyeden uzun sürede cevap alınmazsa hata ver
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 30000
+      max-lifetime: 600000
+      connection-timeout: 30000
 
-  # JPA Hibernate Configuration
   jpa:
     hibernate:
       ddl-auto: update
@@ -43,23 +40,23 @@ logging:
 
 upload:
   file:
-    dir: /var/www/html/projects/ecommerce/images/
-    url: https://litysofttest1.site/api/v1/upload/
+    dir: ${UPLOAD_FILE_DIR:/var/www/html/projects/ecommerce/images/}
+    url: ${UPLOAD_FILE_URL:https://litysofttest1.site/api/v1/upload/}
     product:
       size: 104857600
 
 cookie:
   refreshTokenCookie:
-    secure: true
-    refreshmaxAge: 604800
-    sameSite: "Strict"
-    path: /api/v1/auth
+    secure: ${REFRESH_TOKEN_COOKIE_SECURE:true}
+    refreshmaxAge: ${REFRESH_TOKEN_COOKIE_REFRESH_MAX_AGE:604800}
+    sameSite: ${REFRESH_TOKEN_COOKIE_SAME_SITE:Strict}
+    path: ${REFRESH_TOKEN_COOKIE_PATH:/api/v1/auth}
 
 jwt:
-  accessExp: 900000
-  refreshAge: 604800000
-  secret: C2VB987vxNVXvn543xVvxmVX7BCVM432NxvbvbnVXncm
-  jwtheader: Authorization
+  accessExp: ${JWT_ACCESS_EXP:900000}
+  refreshAge: ${JWT_REFRESH_AGE:604800000}
+  secret: ${JWT_SECRET:C2VB987vxNVXvn543xVvxmVX7BCVM432NxvbvbnVXncm}
+  jwtheader: ${JWT_HEADER:Authorization}
 
 regex:
   email: ^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$
@@ -67,24 +64,24 @@ regex:
 
 payment:
   iyzico:
-    apiKey: sandbox-JbYzNd3TVSGRKgrKKFiM5Ha7MJP7YZSo
-    secretKey: sandbox-mvXUSAUVAUhj7pNFFsbrKvWjGL5cEaUP
-    baseUrl: https://sandbox-api.iyzipay.com
+    apiKey: ${IYZICO_API_KEY:sandbox-JbYzNd3TVSGRKgrKKFiM5Ha7MJP7YZSo}
+    secretKey: ${IYZICO_SECRET_KEY:sandbox-mvXUSAUVAUhj7pNFFsbrKvWjGL5cEaUP}
+    baseUrl: ${IYZICO_BASE_URL:https://sandbox-api.iyzipay.com}
     callBack: /api/v1/payment/payCallBack
 
 domain:
-  test: https://litysofttest1.site
-  name: https://litysofttest1.site
-  namewww: https://www.litysofttest1.site
-  geliver: https://api.geliver.io/api/v1
+  test: ${DOMAIN_TEST:https://litysofttest1.site}
+  name: ${DOMAIN_NAME:https://litysofttest1.site}
+  namewww: ${DOMAIN_NAMEWWW:https://www.litysofttest1.site}
+  geliver: ${DOMAIN_GELIVER:https://api.geliver.io/api/v1}
 
 geliver:
   cargo:
-    test: true
-    key: f0818afa-0027-41c2-b985-ef135ea30dd9
+    test: ${GELIVER_CARGO_TEST:true}
+    key: ${GELIVER:f0818afa-0027-41c2-b985-ef135ea30dd9}
 
 server:
-  port: 8083
+  port: ${SERVER_PORT:8083}
 
 management:
   endpoints:
@@ -92,5 +89,3 @@ management:
       exposure:
         include: "*"
       base-path: /api/actuator
-
-
