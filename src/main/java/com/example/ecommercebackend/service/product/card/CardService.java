@@ -134,7 +134,7 @@ public class CardService {
             CustomerCoupon customerCoupon = customerCouponService.findCouponAndCustomer(coupon,customer);
             if (customerCoupon != null) {
                 if (customerCoupon.getUsed())
-                    return null;
+                    throw new BadRequestException("Bu Kupon kullanılmıştır!");
             }
 
             isCouponValidationNew(coupon,customer.getCard().getItems(), customer);
