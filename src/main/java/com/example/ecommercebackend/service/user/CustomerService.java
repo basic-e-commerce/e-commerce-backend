@@ -38,10 +38,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -77,8 +74,8 @@ public class CustomerService {
         return customerRepository.findByUsername(username).orElseThrow(()-> new NotFoundException("Customer "+ExceptionMessage.NOT_FOUND.getMessage()));
     }
 
-    public Customer findByUsernameNull(String username) {
-        return customerRepository.findByUsername(username).orElse(null);
+    public Optional<Customer> findByUsernameNull(String username) {
+        return customerRepository.findByUsername(username);
     }
 
 

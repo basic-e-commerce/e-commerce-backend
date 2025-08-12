@@ -3,6 +3,7 @@ package com.example.ecommercebackend.controller.user;
 import com.example.ecommercebackend.anotation.RateLimit;
 import com.example.ecommercebackend.dto.user.authentication.AuthenticationRequestDto;
 import com.example.ecommercebackend.dto.user.authentication.AuthenticationResponseDto;
+import com.example.ecommercebackend.dto.user.customer.VerificationPasswordDto;
 import com.example.ecommercebackend.service.auth.AuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -57,8 +58,8 @@ public class AuthenticationController {
     }
     @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)
     @PutMapping("/verification-password")
-    public ResponseEntity<String> verificationPassword(@RequestParam String code, @RequestParam String password,@RequestParam String rePassword) {
-        return new ResponseEntity<>(authenticationService.verificationPassword(code,password,rePassword),HttpStatus.OK);
+    public ResponseEntity<String> verificationPassword(@RequestBody(required = false) VerificationPasswordDto verificationPasswordDto) {
+        return new ResponseEntity<>(authenticationService.verificationPassword(verificationPasswordDto),HttpStatus.OK);
     }
 
 }

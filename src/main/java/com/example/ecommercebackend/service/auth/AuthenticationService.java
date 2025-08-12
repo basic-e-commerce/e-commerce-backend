@@ -3,6 +3,7 @@ package com.example.ecommercebackend.service.auth;
 import com.example.ecommercebackend.anotation.NotNullParameter;
 import com.example.ecommercebackend.dto.user.authentication.AuthenticationRequestDto;
 import com.example.ecommercebackend.dto.user.authentication.AuthenticationResponseDto;
+import com.example.ecommercebackend.dto.user.customer.VerificationPasswordDto;
 import com.example.ecommercebackend.entity.user.Admin;
 import com.example.ecommercebackend.entity.user.Customer;
 import com.example.ecommercebackend.entity.user.RefreshToken;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class AuthenticationService {
@@ -188,13 +190,38 @@ public class AuthenticationService {
         return "Successfully logged out";
     }
 
-    public String verification(String code,HttpServletResponse response) {
+    public String verification(String code, HttpServletResponse response) {
+        String link = domainName;
+
+        // 1️⃣ Redis'ten kullanıcı adını al
         String username = (String) redisService.getData(code);
-        Customer customer = customerService.findByUsername(username);
+
+        // Kullanıcı adı yoksa: Süresi geçmiş
+        if (username == null) {
+            link += "/account-not-verified?message=Onay süresi geçmiştir";
+            return redirect(response, link);
+        }
+
+        // 2️⃣ Kullanıcıyı bul
+        Optional<Customer> optionalCustomer = customerService.findByUsernameNull(username);
+        if (optionalCustomer.isEmpty()) {
+            link += "/account-not-verified?username=" + username + "&message=Kullanıcı bulunamamıştır";
+            return redirect(response, link);
+        }
+
+        // 3️⃣ Onayla
+        Customer customer = optionalCustomer.get();
         customer.setEnabled(true);
         customer.setAccountNonLocked(true);
         customerService.save(customer);
-        String link = domainName+"/account-verified?username=" + username;
+
+        // 4️⃣ Başarılı sayfaya yönlendir
+        link += "/account-verified?username=" + username;
+        return redirect(response, link);
+    }
+
+    // Yardımcı method
+    private String redirect(HttpServletResponse response, String link) {
         try {
             response.sendRedirect(link);
         } catch (IOException e) {
@@ -209,28 +236,28 @@ public class AuthenticationService {
         String generateCode = String.valueOf(100000 + (int)(Math.random() * 900000));
         redisService.saveData(generateCode,customer.getUsername(), Duration.ofMinutes(30));
         System.out.println("----------"+customer.getUsername());
-        String link = domainName + "/password-reset/" + generateCode;
+        String link = domainName + "/password-reset?code=" + generateCode;
 
         String onayKodu = mailService.send(customer.getUsername(),"Şifre resetleme linki",link);
         System.out.println(onayKodu);
         System.out.println("reset link: "+link);
-        return onayKodu;
+        return "Şifres sıfırlama linki emaile gönderilmiştir!";
     }
 
-    public String verificationPassword(String verificationCode, String password,String rePassword) {
-        String username = (String) redisService.getData(verificationCode);
+    public String verificationPassword(VerificationPasswordDto verificationPasswordDto) {
+        String username = (String) redisService.getData(verificationPasswordDto.getCode());
         if (username == null)
             throw new BadRequestException("Geçerli User bulunamadı");
 
-        if (!password.equals(rePassword))
+        if (!verificationPasswordDto.getPassword().equals(verificationPasswordDto.getRePassword()))
             throw new BadRequestException("Şifreler Eşleşmiyor");
 
         Customer customer = customerService.findByUsername(username);
-        String hashPassword = passwordEncoder.encode(password);
+        String hashPassword = passwordEncoder.encode(verificationPasswordDto.getPassword());
         customer.setPassword(hashPassword);
         customerService.save(customer);
-        redisService.deleteData(verificationCode);
-        return "Password verification";
+        redisService.deleteData(verificationPasswordDto.getCode());
+        return "Şifre Güncellendi!";
     }
 
 
