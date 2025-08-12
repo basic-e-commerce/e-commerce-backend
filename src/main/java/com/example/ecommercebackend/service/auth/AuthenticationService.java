@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -187,13 +188,19 @@ public class AuthenticationService {
         return "Successfully logged out";
     }
 
-    public String verification(String code) {
+    public String verification(String code,HttpServletResponse response) {
         String username = (String) redisService.getData(code);
         Customer customer = customerService.findByUsername(username);
         customer.setEnabled(true);
         customer.setAccountNonLocked(true);
         customerService.save(customer);
-        return "customer onaylandı";
+        String link = domainName+"/account-verified?username=" + username;
+        try {
+            response.sendRedirect(link);
+        } catch (IOException e) {
+            throw new BadRequestException("Yönlendirme Hatası!");
+        }
+        return link;
     }
 
     public String resetPassword(String username) {

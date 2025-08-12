@@ -47,8 +47,8 @@ public class AuthenticationController {
     }
     @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)
     @GetMapping("/verification/{code}")
-    public ResponseEntity<String> verification(@PathVariable("code") String code) {
-        return new ResponseEntity<>(authenticationService.verification(code),HttpStatus.OK);
+    public ResponseEntity<String> verification(@PathVariable("code") String code,HttpServletResponse response) {
+        return new ResponseEntity<>(authenticationService.verification(code,response),HttpStatus.OK);
     }
     @RateLimit(limit = 2, duration = 1, unit = TimeUnit.SECONDS)
     @PutMapping("/reset-password")
