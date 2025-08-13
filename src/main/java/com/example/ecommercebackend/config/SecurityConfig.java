@@ -229,7 +229,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET,"/api/v1/custom-cargo-contract").hasAuthority("ADMIN")
 
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .anonymous(anonymous -> anonymous
                         .principal("anonymousUser") // Opsiyonel: Principal adını belirtebilirsin
                         .authorities("ROLE_ANONYMOUS"))
