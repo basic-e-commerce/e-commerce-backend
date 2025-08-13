@@ -91,7 +91,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v1/product/name/admin/{name}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/product/filter").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v1/product/filter/small/link-name").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/v1/product/filter/small/").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/product/filter/small").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/product/name/{linkName}").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/product/name/admin/{linkName}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/product").hasAuthority("ADMIN")
