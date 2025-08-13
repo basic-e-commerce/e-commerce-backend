@@ -252,9 +252,10 @@ public class PaymentService {
 
             if (order.getUser() != null){
                 if (order.getUser() instanceof Customer customer){
-                    customer.getCard().getItems().clear();
-                    customer.getCard().setCoupon(null);
-                    orderService.saveCustomer(customer);
+                    Card card = cardService.findByCustomer(customer);
+                    card.getItems().clear();
+                    card.setCoupon(null);
+                    cardService.save(card);
                 }
             }
 

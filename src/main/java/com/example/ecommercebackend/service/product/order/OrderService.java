@@ -2102,8 +2102,4 @@ public class OrderService {
         Sort sort = Sort.by(Sort.Direction.DESC,"createdAt");
         return orderRepository.findAll(orderSpecification,sort).stream().map(orderBuilder::orderToOrderDetailDto).collect(Collectors.toList());
     }
-
-    public void saveCustomer(Customer customer) {
-        customerRepository.save(customer);
-    }
 }
