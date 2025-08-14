@@ -30,7 +30,7 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
-      database: ${REDIS_DB:1}
+      database: ${REDIS_DB:0}
 
 logging:
   pattern:
