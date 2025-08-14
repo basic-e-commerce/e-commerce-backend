@@ -39,7 +39,6 @@ public class Merchant {
     private String emailPassword;
     private String instagram;
     private String instagramLink;
-    @Column(length = 5000)
     private String footerDescription;
     @ElementCollection
     @CollectionTable(name = "merchant_open_close_hours", joinColumns = @JoinColumn(name = "merchant_id"))
