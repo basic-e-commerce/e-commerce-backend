@@ -2060,6 +2060,29 @@ public class OrderService {
         return input != null && input.matches("^\\+?[0-9]{10,15}$");
     }
 
+    public String createCustomCargoContract(String providerCode, OrderPackage.CargoCompany cargoCompany){
+        Merchant merchant = merchantService.getMerchant();
+        if(!merchant.getGeliver())
+            throw new BadRequestException("Kargo anlaşması özelliğini kullanmak için lütfen özelliği açınız!");
+
+        CustomCargoContract customCargoContract = new CustomCargoContract();
+        customCargoContract.setCargoContractId(providerCode);
+        customCargoContract.setCargoCompany(cargoCompany);
+        customCargoContract.setActive(true);
+
+        CustomCargoContract save = customCargoContractService.save(customCargoContract);
+        String returnText = "Kargo anlaşması Eklendi ";
+        if (merchant.getCustomCargoContracts().isEmpty()){
+            merchant.getCustomCargoContracts().add(save);
+            merchant.setDefaultCustomCargoContract(save);
+            returnText += ", Kargo anlaşması default olarak ayarlandı!";
+        }else{
+            merchant.getCustomCargoContracts().add(save);
+        }
+        merchantService.save(merchant);
+        return returnText;
+    }
+
     public String createCustomCargoContract(@NotNullParam CreateCustomCargoContractRequestDto createCustomCargoContractRequestDto){
         Merchant merchant = merchantService.getMerchant();
 

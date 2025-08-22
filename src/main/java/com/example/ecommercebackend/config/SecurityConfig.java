@@ -145,6 +145,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/order/cargo-manuel-refund").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/order/username").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v1/order/create-custom-cargo-contract").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order/create-custom-cargo-contract-simple").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/v1/order/user-order").hasAuthority("ADMIN")
 
 

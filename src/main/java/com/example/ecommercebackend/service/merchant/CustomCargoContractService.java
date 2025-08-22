@@ -33,6 +33,10 @@ public class CustomCargoContractService {
         return customCargoContractRepository.save(customCargoContract);
     }
 
+    public CustomCargoContract save(CustomCargoContract customCargoContract) {
+        return customCargoContractRepository.save(customCargoContract);
+    }
+
     public List<CustomCargoContractUserResponseDataDto> getListCargoContract() {
         Merchant merchant = merchantRepository.findAll().stream().findFirst().get();
         return customCargoContractRepository
