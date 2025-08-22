@@ -134,6 +134,7 @@ public class ECommerceBackendApplication {
 						"Footer Açıklama",
 						openCloseHours
 				);
+				merchant.setGeliver(true);
 				Merchant save = merchantRepository.save(merchant);
 				merchantService.selectDefaultSendingAddress(save.getSendingAddresses().getFirst().getId());
 			}
