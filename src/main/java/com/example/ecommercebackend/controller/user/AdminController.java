@@ -22,11 +22,11 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @PostMapping
-    @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
-    public ResponseEntity<Admin> createAdmin(@RequestBody AdminCreateDto adminCreateDto) {
-        return new ResponseEntity<>(adminService.createAdmin(adminCreateDto), HttpStatus.CREATED);
-    }
+//    @PostMapping
+//    @RateLimit(limit = 5, duration = 1, unit = TimeUnit.SECONDS)
+//    public ResponseEntity<Admin> createAdmin(@RequestBody AdminCreateDto adminCreateDto) {
+//        return new ResponseEntity<>(adminService.createAdmin(adminCreateDto), HttpStatus.CREATED);
+//    }
 
 
 

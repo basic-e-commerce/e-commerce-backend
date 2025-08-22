@@ -3,6 +3,7 @@ package com.example.ecommercebackend;
 import com.example.ecommercebackend.config.EncryptionUtils;
 import com.example.ecommercebackend.dto.product.shipping.CityDto;
 import com.example.ecommercebackend.dto.product.shipping.DistrictDto;
+import com.example.ecommercebackend.dto.user.admin.AdminCreateDto;
 import com.example.ecommercebackend.entity.merchant.Merchant;
 import com.example.ecommercebackend.entity.merchant.OpenCloseHour;
 import com.example.ecommercebackend.entity.product.shipping.Country;
@@ -20,6 +21,7 @@ import com.example.ecommercebackend.repository.user.DistrictRepository;
 import com.example.ecommercebackend.repository.user.RoleRepository;
 import com.example.ecommercebackend.service.merchant.MerchantService;
 import com.example.ecommercebackend.service.product.shipping.ShippingAddressService;
+import com.example.ecommercebackend.service.user.AdminService;
 import com.example.ecommercebackend.service.user.CityService;
 import com.example.ecommercebackend.service.user.DistrictService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,9 +53,21 @@ public class ECommerceBackendApplication {
 								  CountryRepository countryRepository,
 								  CityRepository cityRepository,
 								  DistrictRepository districtRepository,
-								  MerchantService merchantService) {
+								  MerchantService merchantService,
+								  AdminService adminService) {
 		return args -> {
 			initLoader.loadInitialCountrySql();
+			if (adminService.findAll().isEmpty()){
+				AdminCreateDto adminCreateDto = new AdminCreateDto(
+						"Ugur Soner",
+						"Dogan",
+						"gidagulce@gmail.com",
+						"Gidagulce!17",
+						"Gidagulce!17",
+						"+905416877502"
+				);
+				adminService.createAdmin(adminCreateDto);
+			}
 
 			if (merchantRepository.findAll().isEmpty()) {
 				List<OpenCloseHour> openCloseHours = new LinkedList<>();
@@ -76,14 +90,14 @@ public class ECommerceBackendApplication {
 				Address address = new Address(
 						"Mağaza Adresi",
 						countryRepository.findByUpperName("TURKIYE").get(),
-						"demo",
-						"demo",
-						"demo@gmail.com",
+						"Ugur Soner",
+						"Dogan",
+						"gidagulce@gmail.com",
 						cityRepository.findByCityCode("34").orElse(null),
 						districtRepository.findByDistrictId(107062).orElse(null),
-						"address line 1",
+						"address",
 						"34000",
-						"+905559876758",
+						"+905416877502",
 						false,
 						true
 				);
@@ -92,32 +106,32 @@ public class ECommerceBackendApplication {
 				sendingAddress.add(address);
 
 				Merchant merchant = new Merchant(
-						"demo",
+						"Gülce Gıda",
 						new Address(
 								"Mağaza Adresi",
 								countryRepository.findByUpperName("TURKIYE").get(),
-								"demo",
-								"demo",
-								"demo@gmail.com",
+								"Ugur Soner",
+								"Doğan",
+								"gidagulce@gmail.com",
 								cityRepository.findByCityCode("34").orElse(null),
 								districtRepository.findByDistrictId(107062).orElse(null),
-								"address line 1",
+								"Çanakkale Merkez",
 								"34000",
-								"+905559876758",
+								"+905416877502",
 								false,
 								true
 								),
 						"addresslink",
 						sendingAddress,
 						null,
-						EncryptionUtils.encrypt("+905098765432"),
-						"feminizmturkiye2000@gmail.com",
+						"+905098765432",
+						"gidagulce@gmail.com",
 						BigDecimal.valueOf(1000),
 						BigDecimal.valueOf(75),
-						"izcb abhl kkto upek",
+						"jobw hfxr lspm kgej",
 						"instagram",
 						"instagram link",
-						"footerdesc",
+						"Footer Açıklama",
 						openCloseHours
 				);
 				Merchant save = merchantRepository.save(merchant);

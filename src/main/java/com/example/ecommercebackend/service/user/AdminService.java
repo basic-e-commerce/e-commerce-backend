@@ -9,10 +9,12 @@ import com.example.ecommercebackend.exception.ExceptionMessage;
 import com.example.ecommercebackend.exception.NotFoundException;
 import com.example.ecommercebackend.exception.ResourceAlreadyExistException;
 import com.example.ecommercebackend.repository.user.AdminRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -75,5 +77,9 @@ public class AdminService {
 
     public void save(Admin admin) {
         adminRepository.save(admin);
+    }
+
+    public List<Admin> findAll() {
+        return adminRepository.findAll();
     }
 }
