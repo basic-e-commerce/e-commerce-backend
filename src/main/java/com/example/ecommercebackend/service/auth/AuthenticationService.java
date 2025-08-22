@@ -143,9 +143,9 @@ public class AuthenticationService {
             response.addHeader("Set-Cookie", "refresh_token=" + hash
                     + "; Path=" + "/"//path
                     + "; HttpOnly"
-                    + "; Secure=" + "false"//secure
+                    + "; Secure=" + "true"//secure
                     + "; Max-Age=" + "360000" //Integer.parseInt(maxAge)
-                    + "; SameSite=" + "Lax"//sameSite
+                    + "; SameSite=" + "sameSite"//sameSite
             );
 
             return new AuthenticationResponseDto(accessToken, admin.getFirstName(), admin.getLastName(), admin.getUsername(),"ADMIN");

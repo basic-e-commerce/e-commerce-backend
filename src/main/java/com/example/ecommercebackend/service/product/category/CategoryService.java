@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -87,7 +88,10 @@ public class CategoryService {
     }
 
     public List<Category> findParentCategories() {
-        return categoryRepository.findAllByParentCategoryIsNull();
+        return categoryRepository.findAllByParentCategoryIsNull()
+                .stream()
+                .sorted(Comparator.comparing(Category::getCategoryName, String.CASE_INSENSITIVE_ORDER))
+                .toList();
     }
 
     public Category findCategoryById(int id) {

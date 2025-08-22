@@ -241,7 +241,7 @@ public class SecurityConfig {
     private CorsConfigurationSource corsConfigurationSource() {
         return request -> {
             CorsConfiguration ccfg = new CorsConfiguration();
-            ccfg.setAllowedOrigins(Arrays.asList("http://localhost:3000","http://localhost:5173","https://sandbox-api.iyzipay.com",domainName,domainNameWWW,"https://app.geliver.io","https://www.app.geliver.io"));
+            ccfg.setAllowedOrigins(Arrays.asList("https://api.iyzipay.com","http://localhost:5173",domainName,domainNameWWW,"https://app.geliver.io","https://www.app.geliver.io"));
             ccfg.setAllowedMethods(Collections.singletonList("*"));
             ccfg.setAllowCredentials(true);
             ccfg.setAllowedHeaders(Collections.singletonList("*"));

@@ -51,6 +51,7 @@ public class Category {
     private Category parentCategory;
 
     @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("categoryName asc")
     private Set<Category> subCategories = new HashSet<>();
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")

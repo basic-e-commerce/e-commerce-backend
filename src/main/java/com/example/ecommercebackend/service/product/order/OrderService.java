@@ -873,7 +873,7 @@ public class OrderService {
                 return cb.conjunction(); // filtre yoksa tüm kayıtlar
             }
 
-            Join<Order, Payment> paymentJoin = root.join("payments", JoinType.INNER);
+            Join<Order, Payment> paymentJoin = root.join("payments");
 
             if (paymentStatus == Payment.PaymentStatus.REFUNDED) {
                 return cb.or(
