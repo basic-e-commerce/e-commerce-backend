@@ -1028,7 +1028,7 @@ public class OrderService {
         Order order = findByOrderCode(orderCode);
         String senderAddressId = merchantService.getMerchant().getDefaultSendingAddress().getGeliverId();
 
-        if (senderAddressId == null){
+        if (senderAddressId == null || senderAddressId.isEmpty()) {
             Address defaultAddress = merchantService.getMerchant().getDefaultSendingAddress();
             System.out.println("adres: "+defaultAddress.getAddressLine1());
             System.out.println("telefon: "+defaultAddress.getPhoneNo());
@@ -1050,7 +1050,7 @@ public class OrderService {
             shippingAddressService.createSendingAddress(addressApiDto);
         }
         String receiptAddress = order.getGeliverId();
-        if (receiptAddress == null){
+        if (receiptAddress == null || receiptAddress.isEmpty()){
             AddressApiDto addressApiDto = buildAddressDto(order);
             try {
                 receiptAddress = shippingAddressService.createReceivingAddress(addressApiDto).getId();

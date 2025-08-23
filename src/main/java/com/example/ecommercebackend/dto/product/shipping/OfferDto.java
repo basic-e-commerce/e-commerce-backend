@@ -60,8 +60,14 @@ public class OfferDto {
     @JsonProperty("providerServiceCode")
     private String providerServiceCode;
 
+    @JsonProperty("providerAccountID")
+    private String providerAccountID;
+
     @JsonProperty("averageEstimatedTimeHumanReadible")
     private String averageEstimatedTimeHumanReadible;
+
+    @JsonProperty("averageEstimatedTime")
+    private Integer averageEstimatedTime;
 
     @JsonProperty("durationTerms")
     private String durationTerms;
@@ -93,7 +99,7 @@ public class OfferDto {
     @JsonProperty("providerAccountName")
     private String providerAccountName;
 
-    public OfferDto(String id, String createdAt, String updatedAt, String amount, String currency, String amountLocal, String currencyLocal, String amountVat, String amountLocalVat, String amountTax, String amountLocalTax, String totalAmount, String totalAmountLocal, String amountOld, String amountLocalOld, String discountRate, String bonusBalance, String providerCode, String providerServiceCode, String averageEstimatedTimeHumanReadible, String durationTerms, double rating, boolean isAccepted, boolean isGlobal, boolean isC2C, String integrationType, boolean isMainOffer, boolean isProviderAccountOffer, String providerAccountOwnerType, String providerAccountName) {
+    public OfferDto(String id, String createdAt, String updatedAt, String amount, String currency, String amountLocal, String currencyLocal, String amountVat, String amountLocalVat, String amountTax, String amountLocalTax, String totalAmount, String totalAmountLocal, String amountOld, String amountLocalOld, String discountRate, String bonusBalance, String providerCode, String providerServiceCode, String providerAccountID, String averageEstimatedTimeHumanReadible, Integer averageEstimatedTime, String durationTerms, double rating, boolean isAccepted, boolean isGlobal, boolean isC2C, String integrationType, boolean isMainOffer, boolean isProviderAccountOffer, String providerAccountOwnerType, String providerAccountName) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -113,7 +119,9 @@ public class OfferDto {
         this.bonusBalance = bonusBalance;
         this.providerCode = providerCode;
         this.providerServiceCode = providerServiceCode;
+        this.providerAccountID = providerAccountID;
         this.averageEstimatedTimeHumanReadible = averageEstimatedTimeHumanReadible;
+        this.averageEstimatedTime = averageEstimatedTime;
         this.durationTerms = durationTerms;
         this.rating = rating;
         this.isAccepted = isAccepted;
@@ -367,5 +375,21 @@ public class OfferDto {
 
     public void setProviderAccountName(String providerAccountName) {
         this.providerAccountName = providerAccountName;
+    }
+
+    public String getProviderAccountID() {
+        return providerAccountID;
+    }
+
+    public void setProviderAccountID(String providerAccountID) {
+        this.providerAccountID = providerAccountID;
+    }
+
+    public Integer getAverageEstimatedTime() {
+        return averageEstimatedTime;
+    }
+
+    public void setAverageEstimatedTime(Integer averageEstimatedTime) {
+        this.averageEstimatedTime = averageEstimatedTime;
     }
 }
