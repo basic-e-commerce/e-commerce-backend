@@ -67,7 +67,7 @@ public class OfferDto {
     private String averageEstimatedTimeHumanReadible;
 
     @JsonProperty("averageEstimatedTime")
-    private Integer averageEstimatedTime;
+    private String averageEstimatedTime;
 
     @JsonProperty("durationTerms")
     private String durationTerms;
@@ -99,7 +99,7 @@ public class OfferDto {
     @JsonProperty("providerAccountName")
     private String providerAccountName;
 
-    public OfferDto(String id, String createdAt, String updatedAt, String amount, String currency, String amountLocal, String currencyLocal, String amountVat, String amountLocalVat, String amountTax, String amountLocalTax, String totalAmount, String totalAmountLocal, String amountOld, String amountLocalOld, String discountRate, String bonusBalance, String providerCode, String providerServiceCode, String providerAccountID, String averageEstimatedTimeHumanReadible, Integer averageEstimatedTime, String durationTerms, double rating, boolean isAccepted, boolean isGlobal, boolean isC2C, String integrationType, boolean isMainOffer, boolean isProviderAccountOffer, String providerAccountOwnerType, String providerAccountName) {
+    public OfferDto(String id, String createdAt, String updatedAt, String amount, String currency, String amountLocal, String currencyLocal, String amountVat, String amountLocalVat, String amountTax, String amountLocalTax, String totalAmount, String totalAmountLocal, String amountOld, String amountLocalOld, String discountRate, String bonusBalance, String providerCode, String providerServiceCode, String providerAccountID, String averageEstimatedTimeHumanReadible, String averageEstimatedTime, String durationTerms, double rating, boolean isAccepted, boolean isGlobal, boolean isC2C, String integrationType, boolean isMainOffer, boolean isProviderAccountOffer, String providerAccountOwnerType, String providerAccountName) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -385,11 +385,11 @@ public class OfferDto {
         this.providerAccountID = providerAccountID;
     }
 
-    public Integer getAverageEstimatedTime() {
+    public String getAverageEstimatedTime() {
         return averageEstimatedTime;
     }
 
-    public void setAverageEstimatedTime(Integer averageEstimatedTime) {
+    public void setAverageEstimatedTime(String averageEstimatedTime) {
         this.averageEstimatedTime = averageEstimatedTime;
     }
 }
